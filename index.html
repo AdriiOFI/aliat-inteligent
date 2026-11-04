@@ -1303,30 +1303,27 @@
         }
 
         document.getElementById('chat-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const msg = input.value.trim();
-            
+            e.preventDefault(); const input = document.getElementById('chat-input'); const msg = input.value.trim();
             if (!msg && !currentAttachmentBase64) return;
             
-            let displayMsg = msg;
-            let aiPayloadMsg = msg;
-            
-            if (currentAttachmentBase64) {
-                displayMsg = `<img src="${currentAttachmentBase64}" class="max-w-[200px] rounded-lg mb-2 border border-slate-600"><br>` + msg;
-                aiPayloadMsg = `[L'alumne ha adjuntat una imatge. Analitza-la]. ` + msg;
+            let displayMsg = msg; 
+            let payloadContent = msg || "Si us plau, analitza aquesta imatge i explica'm què hi veus relacionat amb els meus estudis.";
+            let payloadImage = null;
+
+            if (currentAttachmentBase64) { 
+                displayMsg = `<img src="${currentAttachmentBase64}" class="max-w-[200px] rounded-lg mb-2"><br>` + msg; 
+                payloadImage = currentAttachmentBase64;
             }
             
-            appendMessage('user', displayMsg);
-            input.value = '';
-            input.style.height = 'auto'; // Retorna el textarea a la mida original
+            appendMessage('user', displayMsg); 
+            input.value = ''; 
+            input.style.height = 'auto'; 
             
-            chatHistory.push({ role: 'user', content: aiPayloadMsg });
-            removeAttachment();
+            // Guardem el text I la imatge real a l'historial per enviar-la a Gemini
+            chatHistory.push({ role: 'user', content: payloadContent, image: payloadImage }); 
             
-            // GUARDAT INSTANTANI DEL TEU MISSATGE! (Abans de que l'IA respongui)
-            saveSession();
-            
+            removeAttachment(); 
+            saveSession(); 
             triggerAiResponse();
         });
 

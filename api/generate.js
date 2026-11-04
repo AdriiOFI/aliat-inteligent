@@ -22,7 +22,7 @@ module.exports = async function handler(req, res) {
         const studentContext = body.studentContext || "";
 
         // Utilitzem Gemini 1.5 Flash: ideal per velocitat, PDFs grans i (properament) imatges
-        const GEMINI_MODEL = "gemini-1.5-flash"; 
+        const GEMINI_MODEL = "gemini-3.8-flash"; 
 
         const safetyRules = `
         NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):

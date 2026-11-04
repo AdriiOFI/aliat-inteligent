@@ -31,19 +31,29 @@ module.exports = async function handler(req, res) {
         3. Llenguatge i respecte: Mantindràs un estil comunicatiu respectuós, constructiu i adaptat a un entorn educatiu i de desenvolupament personal.
         4. Privacitat de dades: No sol·licitaràs, ni recordaràs informació personal sensible dels usuaris.`;
 
-        // Funció per traduir l'historial a l'idioma de Gemini
+        // Funció per traduir l'historial a l'idioma de Gemini (ara suporta IMATGES natives)
         const formatGeminiHistory = (historyArray) => {
             let safeHistory = [];
-            let lastRole = "";
             for (let msg of historyArray) {
                 let role = msg.role === 'assistant' ? 'model' : 'user';
-                if (role !== lastRole) {
-                    safeHistory.push({ role: role, parts: [{ text: msg.content }] });
-                    lastRole = role;
+                let parts = [];
+                
+                if (msg.content) parts.push({ text: msg.content });
+                
+                // Si l'usuari ha pujat una imatge, la transformem al format multimodal de Google
+                if (msg.image && msg.image.includes('base64,')) {
+                    const mimeType = msg.image.split(';')[0].split(':')[1];
+                    const base64Data = msg.image.split(',')[1];
+                    parts.push({
+                        inlineData: { mimeType: mimeType, data: base64Data }
+                    });
+                }
+
+                // Gemini exigeix que no hi hagi dos missatges seguits del mateix rol, així que els agrupem
+                if (safeHistory.length > 0 && safeHistory[safeHistory.length - 1].role === role) {
+                    safeHistory[safeHistory.length - 1].parts.push(...parts);
                 } else {
-                    if (safeHistory.length > 0) {
-                        safeHistory[safeHistory.length - 1].parts[0].text += "\n\n" + msg.content;
-                    }
+                    safeHistory.push({ role: role, parts: parts });
                 }
             }
             return safeHistory;

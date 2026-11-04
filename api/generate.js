@@ -177,6 +177,8 @@ module.exports = async function handler(req, res) {
                 } catch(e) { console.error("Error buscant a internet amb Tavily:", e); }
             }
 
+            const dataAvui = new Date().toLocaleDateString('ca-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
             const systemPromptFree = "Ets Aliat Intel·ligent, el XatBot assistent personal i tutor virtual.\n" + safetyRules + "\n\n" + 
             "La teva funció és respondre de forma natural, útil i amigable en català, aplicant sempre els filtres de seguretat establerts." + searchContext;
             

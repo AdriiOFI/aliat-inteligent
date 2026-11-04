@@ -1,0 +1,9 @@
+{
+  "name": "aliat-intelligent",
+  "version": "1.0.0",
+  "dependencies": {
+    "@libsql/client": "latest",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

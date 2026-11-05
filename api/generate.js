@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
     try {
         if (req.method !== 'POST') return res.status(200).json({ error: 'Mètode no permès.' });
 
-        const geminiApiKey = process.env.GEMINI_API_KEY;
+        const geminiApiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
         if (!geminiApiKey) return res.status(200).json({ error: 'Falta la clau GEMINI_API_KEY a les variables d\'entorn.' });
 
         const body = req.body || {};
@@ -24,8 +24,9 @@ module.exports = async function handler(req, res) {
 
         // Llista de models per a contingència i alta demanda (Failover)
         const MODEL_FALLBACK_LIST = [
-            process.env.GEMINI_MODEL || "gemini-3.8-flash",
-            "gemini-3.1-flash-lite",
+            process.env.GEMINI_MODEL || "gemini-2.5-flash",
+            "gemini-2.0-flash",
+            "gemini-1.5-flash",
             "gemini-flash-latest"
         ];
 

@@ -15,6 +15,7 @@ module.exports = async function handler(req, res) {
             return res.status(400).json({ error: 'Email i contrasenya obligatoris' });
         }
 
+        const normalizedEmail = String(email).trim().toLowerCase();
         const client = getDbClient();
 
         // Prova de connexió
@@ -26,7 +27,7 @@ module.exports = async function handler(req, res) {
 
         const existingUser = await client.execute({
             sql: 'SELECT * FROM users WHERE email = ?',
-            args: [email]
+            args: [normalizedEmail]
         });
 
         if (existingUser.rows && existingUser.rows.length > 0) {
@@ -39,7 +40,7 @@ module.exports = async function handler(req, res) {
 
         await client.execute({
             sql: 'INSERT INTO users (id, email, password_hash) VALUES (?, ?, ?)',
-            args: [id, email, password_hash]
+            args: [id, normalizedEmail, password_hash]
         });
 
         return res.status(200).json({ success: true, message: 'Usuari registrat correctament' });

@@ -19,7 +19,7 @@ const mockClient = {
 
         // 2. Select user by email
         if (sql.includes('FROM users WHERE email = ?')) {
-            const email = args[0];
+            const email = (args[0] || '').trim().toLowerCase();
             const user = memoryStore.users.get(email);
             return { rows: user ? [user] : [] };
         }
@@ -34,7 +34,8 @@ const mockClient = {
 
         // 4. Insert user
         if (sql.includes('INSERT INTO users')) {
-            const [id, email, password_hash] = args;
+            const [id, rawEmail, password_hash] = args;
+            const email = (rawEmail || '').trim().toLowerCase();
             const newUser = { id, email, password_hash, name: '', theme: 'light' };
             memoryStore.users.set(email, newUser);
             memoryStore.usersById.set(id, newUser);
@@ -108,10 +109,20 @@ function getDbClient() {
 
     if (dbUrl && dbToken && dbUrl.includes('turso.io')) {
         try {
-            return createClient({
+            const realClient = createClient({
                 url: dbUrl,
                 authToken: dbToken
             });
+            return {
+                execute: async (query) => {
+                    try {
+                        return await realClient.execute(query);
+                    } catch (err) {
+                        console.warn('[Aliat Intel·ligent] Remote database query failed, falling back to mock memory store:', err.message);
+                        return await mockClient.execute(query);
+                    }
+                }
+            };
         } catch (err) {
             console.warn('[Aliat Intel·ligent] Failed to create Turso client, using in-memory mock store:', err.message);
             return mockClient;

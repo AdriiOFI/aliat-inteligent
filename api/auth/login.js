@@ -16,12 +16,13 @@ module.exports = async function handler(req, res) {
         const { email, password } = req.body || {};
         if (!email || !password) return res.status(400).json({ error: 'Email i contrasenya obligatoris' });
 
+        const normalizedEmail = String(email).trim().toLowerCase();
         const client = getDbClient();
 
         // Buscar l'usuari a la base de dades
         const result = await client.execute({
             sql: 'SELECT * FROM users WHERE email = ?',
-            args: [email]
+            args: [normalizedEmail]
         });
 
         if (!result.rows || result.rows.length === 0) {

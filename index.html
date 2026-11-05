@@ -356,8 +356,8 @@
                     </div>
                     
                     <div class="flex items-center gap-1.5 md:gap-2">
-                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-xs md:text-sm bg-white dark:bg-zinc-850 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-xs md:text-sm bg-blue-100 dark:bg-blue-950/70 border border-blue-300 dark:border-blue-800 text-blue-950 dark:text-blue-200 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-700 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             <span class="hidden sm:inline">Pla d'Estudi</span>
                         </button>
                         <button id="tools-header-btn" onclick="showToolsModal()" class="text-xs md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-xl hover:opacity-90 transition flex items-center gap-1.5 whitespace-nowrap shadow-md">
@@ -1220,83 +1220,178 @@
             }
         };
 
-        // --- HUB MODAL D'EINES D'ESTUDI ---
+        // --- HUB D'EINES BASADES EN EL XAT I HISTORIAL ---
+        function getCurrentChatTopic() {
+            if (chatHistory && chatHistory.length > 0) {
+                for (let i = chatHistory.length - 1; i >= 0; i--) {
+                    const c = typeof chatHistory[i].content === 'string' ? chatHistory[i].content : '';
+                    if (chatHistory[i].role === 'user' && c && c.length > 3) {
+                        const clean = c.replace(/^(Hola|Crea|Genera|Explica|Vull|Fes|Quin|Quina|Quins|Quines|Demano|Comencem|Posa'm a prova)\s+/i, '').trim();
+                        if (clean.length > 3) return clean.substring(0, 45);
+                    }
+                }
+            }
+            const activeSession = allSessions.find(s => s.id === currentSessionId);
+            if (activeSession && activeSession.title && activeSession.title !== 'Nova Conversa' && activeSession.title !== 'Classe Activa') {
+                return activeSession.title.substring(0, 45);
+            }
+            if (generatedCalendarArray.length > 0 && generatedCalendarArray[0].tema) {
+                return generatedCalendarArray[0].tema.substring(0, 45);
+            }
+            if (finalStudyText && finalStudyText.trim().length > 0) {
+                return finalStudyText.trim().split('\n')[0].substring(0, 40);
+            }
+            return "Temari de la conversa actual";
+        }
+
         window.showToolsModal = function() {
+            const currentTopic = getCurrentChatTopic();
             let htmlContent = `
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4 text-left">
-                <button onclick="Swal.close(); openVisionModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                    </div>
-                    <div>
-                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-blue-600 transition">Lector de Fotos</div>
-                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Analitza apunts, resol exercicis i transcriu pissarres.</div>
-                    </div>
-                </button>
+            <div class="mt-2 text-left space-y-3">
+                <div class="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 rounded-xl flex items-center justify-between text-xs">
+                    <span class="font-bold text-blue-900 dark:text-blue-200 truncate flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> Context del xat: <span class="underline">${currentTopic}</span>
+                    </span>
+                    <span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold uppercase shrink-0">Automàtic</span>
+                </div>
 
-                <button onclick="Swal.close(); openDiagramModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="10" y1="6.5" x2="14" y2="6.5"/><line x1="6.5" y1="10" x2="6.5" y2="14"/><line x1="17.5" y1="10" x2="17.5" y2="14"/><line x1="10" y1="17.5" x2="14" y2="17.5"/></svg>
-                    </div>
-                    <div>
-                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-indigo-600 transition">Diagrames Visuals</div>
-                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Esquemes visuals per a memòria fotogràfica.</div>
-                    </div>
-                </button>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <!-- 1. DIAGRAMA VISUAL -->
+                    <button onclick="Swal.close(); triggerToolFromChat('diagram');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-500 transition group flex items-start gap-3 text-left">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold shrink-0">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-indigo-600 transition">Esquema / Diagrama Visual</div>
+                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Genera un diagrama interactiu del que hem parlat.</div>
+                        </div>
+                    </button>
 
-                <button onclick="Swal.close(); openAnkiModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-purple-500 dark:hover:border-purple-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h10"/><path d="M7 11h6"/><path d="M7 7h4"/></svg>
-                    </div>
-                    <div>
-                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-purple-600 transition">Baralla Anki IA</div>
-                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Targetes de repetició espaiada amb active recall.</div>
-                    </div>
-                </button>
+                    <!-- 2. FLASHCARDS ANKI -->
+                    <button onclick="Swal.close(); triggerToolFromChat('anki');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-purple-500 dark:hover:border-purple-500 transition group flex items-start gap-3 text-left">
+                        <div class="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold shrink-0">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h10"/><path d="M7 11h6"/></svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-purple-600 transition">Baralla Anki (Flashcards)</div>
+                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Targetes 3D d'estudi amb els conceptes actuals.</div>
+                        </div>
+                    </button>
 
-                <button onclick="Swal.close(); openExamSimulatorModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-emerald-500 dark:hover:border-emerald-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    </div>
-                    <div>
-                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-emerald-600 transition">Simulador Examen</div>
-                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Test amb puntuació /10 i correcció explicada.</div>
-                    </div>
-                </button>
+                    <!-- 3. SIMULADOR TEST / EXAMEN -->
+                    <button onclick="Swal.close(); triggerToolFromChat('exam');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-emerald-500 dark:hover:border-emerald-500 transition group flex items-start gap-3 text-left">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold shrink-0">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-emerald-600 transition">Test d'Examen Kahoot</div>
+                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">5 preguntes puntuades amb correcció del tema.</div>
+                        </div>
+                    </button>
 
-                <button onclick="Swal.close(); openCheatsheetModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-amber-500 dark:hover:border-amber-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    </div>
-                    <div>
-                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-amber-600 transition">Formulari & Resums</div>
-                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Extracció de fórmules clau, conceptes i cronologia.</div>
-                    </div>
-                </button>
+                    <!-- 4. CHULETA & FORMULARI -->
+                    <button onclick="Swal.close(); triggerToolFromChat('cheatsheet');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-amber-500 dark:hover:border-amber-500 transition group flex items-start gap-3 text-left">
+                        <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold shrink-0">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-amber-600 transition">Formulari & Resum Clau</div>
+                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Chuleta resumida de fórmules i conceptes clau.</div>
+                        </div>
+                    </button>
+                </div>
 
-                <button onclick="Swal.close(); openPomodoroModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-rose-500 dark:hover:border-rose-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    </div>
-                    <div>
-                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-rose-600 transition">Pomodoro & Sons</div>
-                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Temporitzador 25/5 min i so de pluja sintetitzada.</div>
-                    </div>
-                </button>
+                <!-- EINES AUXILIARS -->
+                <div class="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex gap-2">
+                    <button onclick="Swal.close(); openVisionModal();" class="flex-1 py-2.5 px-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-center gap-1.5 transition">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Lector de Fotos
+                    </button>
+                    <button onclick="Swal.close(); openPomodoroModal();" class="flex-1 py-2.5 px-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-center gap-1.5 transition">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pomodoro & Sons
+                    </button>
+                </div>
             </div>`;
 
             Swal.fire({
-                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Eines d\'Estudi Integrades</div>',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Eines Basades en el Xat</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-2xl', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
-        // --- MODAL LECTOR DE FOTOS I CÀMERA EN DIRECTE ---
+        // --- EXECUTOR DIRECTE D'EINES BASADES EN EL CONTEXT DEL XAT ---
+        window.triggerToolFromChat = async function(toolType) {
+            if (typeof Swal !== 'undefined') Swal.close();
+            
+            // Assegurem que la vista del xat està visible
+            document.getElementById('welcome-view')?.classList.add('hidden');
+            document.getElementById('setup-view')?.classList.add('hidden');
+            document.getElementById('setup-view')?.classList.remove('flex');
+            document.getElementById('quiz-view')?.classList.add('hidden');
+            document.getElementById('quiz-view')?.classList.remove('flex');
+            
+            const chatView = document.getElementById('chat-view');
+            if (chatView) {
+                chatView.classList.remove('hidden');
+                chatView.classList.add('flex');
+            }
+            const chatForm = document.getElementById('chat-form');
+            if (chatForm) chatForm.classList.remove('hidden');
+
+            const topic = getCurrentChatTopic();
+            let userPromptText = '';
+            let apiPayload = null;
+
+            if (toolType === 'diagram') {
+                userPromptText = 'Crea un esquema o diagrama visual sobre: ' + topic;
+                apiPayload = { action: 'generate_diagram', topic: topic, style: 'diagrama_cientific' };
+            } else if (toolType === 'anki') {
+                userPromptText = 'Crea una baralla de Flashcards 3D (Anki) sobre: ' + topic;
+                apiPayload = { action: 'generate_anki_deck', topic: topic };
+            } else if (toolType === 'exam') {
+                userPromptText = 'Prepara un simulacre d\'examen test sobre: ' + topic;
+                apiPayload = {
+                    action: 'chat',
+                    chatHistory: [{ role: 'user', content: `Crea un Test d'Examen Kahoot de 5 preguntes realistes amb distractors plausibles sobre el tema: ${topic}. Retorna NOMÉS el bloc kahoot.` }]
+                };
+            } else if (toolType === 'cheatsheet') {
+                userPromptText = 'Extreu un formulari i resum essencial sobre: ' + topic;
+                apiPayload = { action: 'generate_cheatsheet', sourceText: topic, formatType: 'formulas' };
+            }
+
+            if (!apiPayload) return;
+
+            appendMessage('user', userPromptText);
+            chatHistory.push({ role: 'user', content: userPromptText });
+
+            const loadingId = 'loading-' + Date.now();
+            appendLoading(loadingId);
+
+            try {
+                const res = await callGenerateApi(apiPayload);
+                document.getElementById(loadingId)?.remove();
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                let aiContent = '';
+                if (toolType === 'diagram') aiContent = data.diagram;
+                else if (toolType === 'anki') aiContent = data.deck;
+                else if (toolType === 'exam') aiContent = data.reply;
+                else if (toolType === 'cheatsheet') aiContent = data.result;
+
+                appendMessage('ai', aiContent || 'Recurs generat correctament.');
+                chatHistory.push({ role: 'assistant', content: aiContent || 'Recurs generat correctament.' });
+                saveSession();
+            } catch (e) {
+                document.getElementById(loadingId)?.remove();
+                showToast("S'ha produït un error en generar el contingut", "error");
+                appendMessage('ai', '⚠️ No s\'ha pogut completar la generació: ' + (e.message || 'Error de connexió'));
+            }
+        };
         let currentVisionImageBase64 = null;
 
         window.openVisionModal = function() {
@@ -1545,25 +1640,39 @@
         };
 
         window.processGenerateDiagram = async function() {
-            const topic = document.getElementById('diagram-topic').value.trim();
-            const style = document.getElementById('diagram-style').value;
+            const topic = document.getElementById('diagram-topic')?.value?.trim();
+            const style = document.getElementById('diagram-style')?.value || 'diagrama_cientific';
             if (!topic) { showToast('Escriu un tema per al diagrama.', 'error'); return; }
 
-            Swal.fire({ title: 'Dissenyant Diagrama...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
+            Swal.close();
+            document.getElementById('welcome-view')?.classList.add('hidden');
+            document.getElementById('setup-view')?.classList.add('hidden');
+            document.getElementById('quiz-view')?.classList.add('hidden');
+            document.getElementById('chat-view')?.classList.remove('hidden');
+            document.getElementById('chat-view')?.classList.add('flex');
+            document.getElementById('chat-form')?.classList.remove('hidden');
+
+            const userMsg = 'Genera un diagrama sobre: ' + topic;
+            appendMessage('user', userMsg);
+            chatHistory.push({ role: 'user', content: userMsg });
+
+            const loadingId = 'loading-' + Date.now();
+            appendLoading(loadingId);
 
             try {
                 const res = await callGenerateApi({ action: 'generate_diagram', topic: topic, style: style });
+                document.getElementById(loadingId)?.remove();
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
-                Swal.close();
-                appendMessage('user', 'Genera un diagrama sobre: ' + topic);
                 appendMessage('ai', data.diagram);
-                chatHistory.push({ role: 'user', content: 'Genera un diagrama sobre: ' + topic });
                 chatHistory.push({ role: 'assistant', content: data.diagram });
                 saveSession();
-
-            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+            } catch(e) { 
+                document.getElementById(loadingId)?.remove();
+                showToast(e.message, 'error');
+                appendMessage('ai', '⚠️ Error en generar el diagrama: ' + e.message);
+            }
         };
 
         // --- MODAL GENERADOR DE BARALLES ANKI ---
@@ -1591,24 +1700,38 @@
         };
 
         window.processGenerateAnki = async function() {
-            const topic = document.getElementById('anki-topic').value.trim();
+            const topic = document.getElementById('anki-topic')?.value?.trim();
             if (!topic) { showToast('Escriu un tema per a les Flashcards.', 'error'); return; }
 
-            Swal.fire({ title: 'Generant Baralla Anki...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
+            Swal.close();
+            document.getElementById('welcome-view')?.classList.add('hidden');
+            document.getElementById('setup-view')?.classList.add('hidden');
+            document.getElementById('quiz-view')?.classList.add('hidden');
+            document.getElementById('chat-view')?.classList.remove('hidden');
+            document.getElementById('chat-view')?.classList.add('flex');
+            document.getElementById('chat-form')?.classList.remove('hidden');
+
+            const userMsg = 'Crea una baralla Anki de: ' + topic;
+            appendMessage('user', userMsg);
+            chatHistory.push({ role: 'user', content: userMsg });
+
+            const loadingId = 'loading-' + Date.now();
+            appendLoading(loadingId);
 
             try {
                 const res = await callGenerateApi({ action: 'generate_anki_deck', topic: topic });
+                document.getElementById(loadingId)?.remove();
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
-                Swal.close();
-                appendMessage('user', 'Crea una baralla Anki de: ' + topic);
                 appendMessage('ai', data.deck);
-                chatHistory.push({ role: 'user', content: 'Crea una baralla Anki de: ' + topic });
                 chatHistory.push({ role: 'assistant', content: data.deck });
                 saveSession();
-
-            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+            } catch(e) { 
+                document.getElementById(loadingId)?.remove();
+                showToast(e.message, 'error');
+                appendMessage('ai', '⚠️ Error en generar les flashcards: ' + e.message);
+            }
         };
 
         // --- MODAL SIMULADOR D'EXÀMENS I TEST ---
@@ -1636,27 +1759,41 @@
         };
 
         window.processGenerateExamSim = async function() {
-            const topic = document.getElementById('exam-sim-topic').value.trim();
+            const topic = document.getElementById('exam-sim-topic')?.value?.trim();
             if (!topic) { showToast('Escriu un tema per a l\'examen.', 'error'); return; }
 
-            Swal.fire({ title: 'Dissenyant Examen...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
+            Swal.close();
+            document.getElementById('welcome-view')?.classList.add('hidden');
+            document.getElementById('setup-view')?.classList.add('hidden');
+            document.getElementById('quiz-view')?.classList.add('hidden');
+            document.getElementById('chat-view')?.classList.remove('hidden');
+            document.getElementById('chat-view')?.classList.add('flex');
+            document.getElementById('chat-form')?.classList.remove('hidden');
+
+            const userMsg = 'Genera un Examen Puntuat de: ' + topic;
+            appendMessage('user', userMsg);
+            chatHistory.push({ role: 'user', content: userMsg });
+
+            const loadingId = 'loading-' + Date.now();
+            appendLoading(loadingId);
 
             try {
                 const res = await callGenerateApi({
                     action: 'chat',
                     chatHistory: [{ role: 'user', content: `Crea un Test d'Examen Kahoot de 5 preguntes realistes amb distractors plausibles sobre el tema: ${topic}. Retorna NOMÉS el bloc kahoot.` }]
                 });
+                document.getElementById(loadingId)?.remove();
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
-                Swal.close();
-                appendMessage('user', 'Genera un Examen Puntuat de: ' + topic);
                 appendMessage('ai', data.reply);
-                chatHistory.push({ role: 'user', content: 'Genera un Examen Puntuat de: ' + topic });
                 chatHistory.push({ role: 'assistant', content: data.reply });
                 saveSession();
-
-            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+            } catch(e) { 
+                document.getElementById(loadingId)?.remove();
+                showToast(e.message, 'error');
+                appendMessage('ai', '⚠️ Error en generar l\'examen: ' + e.message);
+            }
         };
 
         // --- MODAL FORMULARIS I RESUMS ---
@@ -1692,24 +1829,38 @@
         };
 
         window.processGenerateCheatsheet = async function() {
-            const sourceText = document.getElementById('cheatsheet-text').value.trim();
-            const formatType = document.getElementById('cheatsheet-format').value;
+            const sourceText = document.getElementById('cheatsheet-text')?.value?.trim() || getCurrentChatTopic();
+            const formatType = document.getElementById('cheatsheet-format')?.value || 'formulas';
 
-            Swal.fire({ title: 'Processant Formulari...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
+            Swal.close();
+            document.getElementById('welcome-view')?.classList.add('hidden');
+            document.getElementById('setup-view')?.classList.add('hidden');
+            document.getElementById('quiz-view')?.classList.add('hidden');
+            document.getElementById('chat-view')?.classList.remove('hidden');
+            document.getElementById('chat-view')?.classList.add('flex');
+            document.getElementById('chat-form')?.classList.remove('hidden');
+
+            const userMsg = 'Genera un Formulari d\'Estudi (' + formatType + ')';
+            appendMessage('user', userMsg);
+            chatHistory.push({ role: 'user', content: userMsg });
+
+            const loadingId = 'loading-' + Date.now();
+            appendLoading(loadingId);
 
             try {
                 const res = await callGenerateApi({ action: 'generate_cheatsheet', sourceText: sourceText, formatType: formatType });
+                document.getElementById(loadingId)?.remove();
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
-                Swal.close();
-                appendMessage('user', 'Genera un Formulari d\'Estudi (' + formatType + ')');
                 appendMessage('ai', data.result);
-                chatHistory.push({ role: 'user', content: 'Genera un Formulari d\'Estudi (' + formatType + ')' });
                 chatHistory.push({ role: 'assistant', content: data.result });
                 saveSession();
-
-            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+            } catch(e) { 
+                document.getElementById(loadingId)?.remove();
+                showToast(e.message, 'error');
+                appendMessage('ai', '⚠️ Error en processar el formulari: ' + e.message);
+            }
         };
 
         // --- ⏱️ POMODORO DE CONCENTRACIÓ I SINTETITZADOR DE SO AMBIENTAL ---
@@ -2271,12 +2422,14 @@
                 document.getElementById('chat-view').classList.remove('hidden'); 
                 document.getElementById('chat-view').classList.add('flex'); 
                 document.getElementById('global-menu-btn').classList.add('hidden'); 
+                document.getElementById('chat-form').classList.remove('hidden');
                 
                 document.getElementById('calendar-header-btn')?.classList.remove('hidden');
                 document.getElementById('tools-header-btn')?.classList.remove('hidden');
                 document.getElementById('memory-header-btn')?.classList.remove('hidden');
                 document.getElementById('history-header-btn')?.classList.remove('hidden');
                 document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
+                document.getElementById('chat-mode-label').innerText = "Classe Activa";
             } else { 
                 // Si no hi ha calendari, anem a la pantalla de pujar el PDF
                 document.getElementById('setup-view').classList.remove('hidden'); 
@@ -2520,31 +2673,51 @@
         }
 
         async function startChatPhase(score, level) {
-            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('welcome-view')?.classList.add('hidden');
+            document.getElementById('setup-view')?.classList.add('hidden');
+            document.getElementById('setup-view')?.classList.remove('flex');
+            document.getElementById('quiz-view')?.classList.add('hidden');
+            document.getElementById('quiz-view')?.classList.remove('flex');
+            
             document.getElementById('chat-view').classList.remove('hidden');
             document.getElementById('chat-view').classList.add('flex');
             document.getElementById('global-menu-btn').classList.add('hidden'); 
-            document.getElementById('theory-header-btn').classList.remove('hidden');
+            
+            document.getElementById('calendar-header-btn')?.classList.remove('hidden');
+            document.getElementById('tools-header-btn')?.classList.remove('hidden');
+            document.getElementById('memory-header-btn')?.classList.remove('hidden');
+            document.getElementById('history-header-btn')?.classList.remove('hidden');
+            document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
+            document.getElementById('chat-form').classList.remove('hidden');
+            document.getElementById('chat-mode-label').innerText = "Classe Activa";
+
             studentContextStr = `L'alumne ha tret ${score}/5 (${level}).`;
             document.getElementById('chat-messages').innerHTML = `
                 <div class="w-full flex justify-center my-4" id="welcome-card">
-                    <div class="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-2xl text-center shadow-sm max-w-xl w-full mx-2">
-                        <h2 class="text-xl font-black text-zinc-800 dark:text-zinc-100 mb-2">Pla Activat!</h2>
-                        <p class="text-zinc-600 dark:text-zinc-400 mb-4 text-xs md:text-sm font-medium">Nota: ${score}/5 (${level}).</p>
-                        <button onclick="startTeaching()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg w-full text-xs md:text-sm flex items-center justify-center gap-2">▶ Començar la Lliçó</button>
+                    <div class="bg-blue-50 dark:bg-zinc-900 border border-blue-200 dark:border-zinc-800 p-5 rounded-2xl text-center shadow-sm max-w-xl w-full mx-2">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg mx-auto mb-2">🎯</div>
+                        <h2 class="text-xl font-black text-zinc-900 dark:text-zinc-100 mb-1">Pla d'Estudi Activat!</h2>
+                        <p class="text-zinc-600 dark:text-zinc-400 text-xs md:text-sm font-medium">Test de diagnòstic completat: <b class="text-blue-600 dark:text-blue-400">${score}/5 encerts</b> (${level}).</p>
                     </div>
                 </div>`;
             saveSession();
+
+            // Iniciem directament la primera sessió perquè el xat no quedi buit ni requereixi clics extra
+            setTimeout(() => {
+                const prompt = "Hola tutor! Estic preparat. **Comença explicant-me el primer tema del nostre pla d'estudi basat en els apunts**. Explica-ho a poc a poc i acaba només amb l'etiqueta [BOTON_FLASHCARDS].";
+                appendMessage('user', "Comencem la primera sessió del pla!");
+                chatHistory.push({ role: 'user', content: prompt });
+                triggerAiResponse();
+            }, 300);
         }
 
         window.startTeaching = function() {
-            document.getElementById('welcome-card').style.display = 'none';
             document.getElementById('chat-form').classList.remove('hidden');
             const prompt = "Hola tutor! Estic preparat. **Comença explicant-me el primer tema del nostre pla d'estudi basat en els apunts**. Explica-ho a poc a poc i acaba només amb l'etiqueta [BOTON_FLASHCARDS].";
             appendMessage('user', "Comencem la primera sessió!");
             chatHistory.push({ role: 'user', content: prompt });
             triggerAiResponse();
-        }
+        };
 
         let currentAttachmentBase64 = null;
 
@@ -2753,57 +2926,109 @@
 
         // --- SISTEMA DE MODALS (UI) ---
         window.showHistoryModal = function() {
-            let htmlContent = '<div class="text-left overflow-y-auto max-h-[65vh] mt-4 space-y-4 pr-1">';
+            let htmlContent = '<div class="text-left overflow-y-auto max-h-[65vh] mt-3 space-y-4 pr-1">';
 
-            if (generatedCalendarArray.length === 0 && Object.keys(window.interactiveGames).length === 0) {
-                htmlContent += '<div class="p-6 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 text-center rounded-2xl text-sm border border-zinc-200 dark:border-zinc-800">Encara no s\'ha generat cap lliçó o examen en aquesta sessió.</div>';
+            const userMessages = chatHistory.filter(m => m.role === 'user');
+            const gamesList = Object.values(window.interactiveGames || {});
+            const memory = typeof getStudentMemory === 'function' ? getStudentMemory() : null;
+
+            // 1. Resum General de l'Activitat Real
+            htmlContent += `
+            <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-blue-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-blue-200 dark:border-zinc-800">
+                    <div class="text-xl font-black text-blue-600 dark:text-blue-400">${userMessages.length}</div>
+                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mt-0.5">Preguntes Fetes</div>
+                </div>
+                <div class="bg-purple-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-purple-200 dark:border-zinc-800">
+                    <div class="text-xl font-black text-purple-600 dark:text-purple-400">${gamesList.length}</div>
+                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mt-0.5">Tests Jugats</div>
+                </div>
+                <div class="bg-emerald-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-emerald-200 dark:border-zinc-800">
+                    <div class="text-xl font-black text-emerald-600 dark:text-emerald-400">${memory ? (memory.masteryScore + '%') : '--'}</div>
+                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mt-0.5">Nivell Assolit</div>
+                </div>
+            </div>`;
+
+            // 2. Tests i Minijocs Interactius Reals
+            htmlContent += `
+            <div>
+                <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                    <span>Tests i Preguntes Contestades (${gamesList.length})</span>
+                </h4>`;
+            
+            if (gamesList.length === 0) {
+                htmlContent += `<div class="p-3.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 italic">Encara no has respost cap minijoc o test interactiu en aquesta sessió.</div>`;
             } else {
-                if (generatedCalendarArray.length > 0) {
-                    htmlContent += '<div class="text-xs font-bold uppercase text-zinc-600 dark:text-zinc-400 tracking-wider mb-2 flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Temes i Lliçons Unificades</div>';
-                    generatedCalendarArray.forEach((item, index) => {
-                        let gameIdKey = Object.keys(window.interactiveGames)[index];
-                        let game = gameIdKey ? window.interactiveGames[gameIdKey] : null;
-                        
-                        let testStatusHtml = '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Test No Iniciat</span>';
-                        if (game) {
-                            if (game.status === 'completed') {
-                                testStatusHtml = game.isWin 
-                                    ? '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Test Superat</span>'
-                                    : '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-900 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-300 dark:border-rose-800"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Test Reintentar</span>';
-                            } else {
-                                testStatusHtml = '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-300 dark:border-amber-800"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Test Pendent</span>';
-                            }
-                        }
+                htmlContent += `<div class="space-y-2">`;
+                gamesList.forEach((game, idx) => {
+                    const isWin = game.isWin;
+                    const statusText = isWin ? 'Superat Correctament' : 'Necessita Repàs';
+                    const badgeClass = isWin 
+                        ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+                        : 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800';
+                    const iconSvg = isWin 
+                        ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>'
+                        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
-                        htmlContent += `
-                        <div class="border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm space-y-3">
-                            <div class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-2">
-                                <span class="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">Unitat ${item.num} · ${item.dia_real}</span>
-                                ${testStatusHtml}
-                            </div>
-                            <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm md:text-base leading-snug">${item.tema}</h4>
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Teoria i Esquema
-                                </div>
-                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h10"/><path d="M7 11h6"/></svg> Flashcards 3D
-                                </div>
-                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Truc Mnemotècnic
-                                </div>
-                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Test i Avaluació
-                                </div>
-                            </div>
-                        </div>`;
-                    });
-                }
+                    htmlContent += `
+                    <div class="p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm flex items-center justify-between gap-2">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">${game.question || ('Pregunta de repàs #' + (idx + 1))}</div>
+                            <div class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Intents realitzats: ${game.attempts || 1}</div>
+                        </div>
+                        <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border ${badgeClass} shrink-0">
+                            ${iconSvg} ${statusText}
+                        </span>
+                    </div>`;
+                });
+                htmlContent += `</div>`;
             }
+            htmlContent += `</div>`;
+
+            // 3. Preguntes Reals de l'Usuari en aquesta sessió
+            htmlContent += `
+            <div>
+                <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span>Preguntes i Consultes Fetes per Tu (${userMessages.length})</span>
+                </h4>`;
+
+            if (userMessages.length === 0) {
+                htmlContent += `<div class="p-3.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 italic">No has fet cap consulta en aquesta conversa encara.</div>`;
+            } else {
+                htmlContent += `<div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">`;
+                userMessages.forEach((m, idx) => {
+                    const cleanTxt = (m.content || '').replace(/<[^>]*>?/gm, '').trim();
+                    htmlContent += `
+                    <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs flex items-start gap-2">
+                        <span class="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
+                        <span class="text-zinc-800 dark:text-zinc-200 font-medium leading-relaxed">${cleanTxt}</span>
+                    </div>`;
+                });
+                htmlContent += `</div>`;
+            }
+            htmlContent += `</div>`;
+
+            // 4. Pla d'Estudis si existeix
+            if (generatedCalendarArray && generatedCalendarArray.length > 0) {
+                htmlContent += `
+                <div class="pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                    <div class="flex items-center justify-between text-xs font-bold text-zinc-900 dark:text-zinc-200 mb-2">
+                        <span>Pla d'Estudis Actiu</span>
+                        <span class="text-blue-600 dark:text-blue-400 font-semibold">${generatedCalendarArray.length} sessions programades</span>
+                    </div>
+                    <div class="text-xs text-zinc-600 dark:text-zinc-400 bg-blue-50 dark:bg-blue-950/30 p-2.5 rounded-xl border border-blue-200 dark:border-blue-900/50 flex items-center justify-between">
+                        <span class="truncate">Sessió actual: <b>${generatedCalendarArray[0]?.tema || 'Inici de temari'}</b></span>
+                        <button onclick="Swal.close(); showCalendarModal();" class="text-blue-600 dark:text-blue-400 hover:underline font-bold shrink-0 ml-2">Veure Tot</button>
+                    </div>
+                </div>`;
+            }
+
             htmlContent += '</div>';
 
             Swal.fire({
-                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> Resultats i Lliçons Unificades</div>',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> Resultats i Activitat Real</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 confirmButtonText: 'Tancar',

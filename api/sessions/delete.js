@@ -1,5 +1,5 @@
-const { createClient } = require('@libsql/client/web');
 const jwt = require('jsonwebtoken');
+const { getDbClient, JWT_SECRET } = require('../db');
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -12,13 +12,10 @@ module.exports = async function handler(req, res) {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'No autoritzat' });
         
-        const decoded = jwt.verify(authHeader.split(' ')[1], process.env.JWT_SECRET);
-        const { id } = req.body;
+        const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+        const { id } = req.body || {};
 
-        const client = createClient({
-            url: process.env.TURSO_DATABASE_URL,
-            authToken: process.env.TURSO_AUTH_TOKEN,
-        });
+        const client = getDbClient();
 
         // Eliminar el xat només si pertany a l'usuari que ho demana
         await client.execute({
@@ -28,6 +25,7 @@ module.exports = async function handler(req, res) {
 
         return res.status(200).json({ success: true });
     } catch (error) {
+        console.error('Sessions delete error:', error);
         return res.status(500).json({ error: 'Error: ' + error.message });
     }
-}
+};

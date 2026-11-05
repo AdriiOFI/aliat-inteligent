@@ -1,5 +1,5 @@
-const { createClient } = require('@libsql/client/web');
 const jwt = require('jsonwebtoken');
+const { getDbClient, JWT_SECRET } = require('../db');
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -12,16 +12,13 @@ module.exports = async function handler(req, res) {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'No autoritzat' });
         
-        const decoded = jwt.verify(authHeader.split(' ')[1], process.env.JWT_SECRET);
-        const { id, mode, title, chat_history, calendar, games, html, context, pdf_text } = req.body;
+        const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+        const { id, mode, title, chat_history, calendar, games, html, context, pdf_text } = req.body || {};
 
         // Assegurem que l'ID sempre existeix per evitar bloquejos a la BD
         if (!id) return res.status(400).json({ error: 'Falta ID de sessió' });
 
-        const client = createClient({
-            url: process.env.TURSO_DATABASE_URL,
-            authToken: process.env.TURSO_AUTH_TOKEN,
-        });
+        const client = getDbClient();
 
         await client.execute({
             sql: `INSERT INTO sessions (id, user_id, mode, title, chat_history, calendar, games, html, context, pdf_text, updated_at) 
@@ -40,9 +37,9 @@ module.exports = async function handler(req, res) {
                 decoded.id, 
                 mode || 'free', 
                 title || 'Nova Conversa',
-                JSON.stringify(chat_history || []), 
-                JSON.stringify(calendar || []), 
-                JSON.stringify(games || {}),
+                typeof chat_history === 'string' ? chat_history : JSON.stringify(chat_history || []), 
+                typeof calendar === 'string' ? calendar : JSON.stringify(calendar || []), 
+                typeof games === 'string' ? games : JSON.stringify(games || {}),
                 html || '',
                 context || '',
                 pdf_text || ''
@@ -50,6 +47,7 @@ module.exports = async function handler(req, res) {
         });
         return res.status(200).json({ success: true });
     } catch (error) { 
+        console.error('Sessions save error:', error);
         return res.status(500).json({ error: 'Error BD Guardar: ' + error.message }); 
     }
-}
+};

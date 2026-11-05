@@ -1,0 +1,7 @@
+{
+  "name": "Aliat Intel·ligent",
+  "description": "Tutor virtual intel·ligent per crear plans d'estudi amb IA, tests de diagnòstic i xat interactiu.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

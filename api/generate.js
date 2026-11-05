@@ -12,7 +12,7 @@ module.exports = async function handler(req, res) {
         if (req.method !== 'POST') return res.status(200).json({ error: 'Mètode no permès.' });
 
         const geminiApiKey = process.env.GEMINI_API_KEY;
-        if (!geminiApiKey) return res.status(200).json({ error: 'Falta la clau GEMINI_API_KEY a Vercel.' });
+        if (!geminiApiKey) return res.status(200).json({ error: 'Falta la clau GEMINI_API_KEY a les variables d\'entorn.' });
 
         const body = req.body || {};
         const action = body.action;
@@ -21,8 +21,8 @@ module.exports = async function handler(req, res) {
         const totalSessionsToGenerate = body.totalSessionsToGenerate || 5;
         const studentContext = body.studentContext || "";
 
-        // Utilitzem Gemini 1.5 Flash: ideal per velocitat, PDFs grans i (properament) imatges
-        const GEMINI_MODEL = "gemini-3.5-flash-lite"; 
+        // Model Gemini recomanat per velocitat, multimodalitat i precisió
+        const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash"; 
 
         const safetyRules = `
         NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):

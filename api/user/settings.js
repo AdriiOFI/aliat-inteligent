@@ -1,5 +1,5 @@
-const { createClient } = require('@libsql/client/web');
 const jwt = require('jsonwebtoken');
+const { getDbClient, JWT_SECRET } = require('../db');
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -12,14 +12,11 @@ module.exports = async function handler(req, res) {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'No autoritzat' });
         
-        const decoded = jwt.verify(authHeader.split(' ')[1], process.env.JWT_SECRET);
-        const client = createClient({
-            url: process.env.TURSO_DATABASE_URL,
-            authToken: process.env.TURSO_AUTH_TOKEN,
-        });
+        const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+        const client = getDbClient();
 
         if (req.method === 'POST') {
-            const { name, theme } = req.body;
+            const { name, theme } = req.body || {};
             await client.execute({
                 sql: 'UPDATE users SET name = ?, theme = ? WHERE id = ?',
                 args: [name || '', theme || 'light', decoded.id]
@@ -30,12 +27,13 @@ module.exports = async function handler(req, res) {
                 sql: 'SELECT name, theme FROM users WHERE id = ?',
                 args: [decoded.id]
             });
-            if (result.rows.length > 0) {
+            if (result.rows && result.rows.length > 0) {
                 return res.status(200).json({ success: true, name: result.rows[0].name, theme: result.rows[0].theme });
             }
             return res.status(404).json({ error: 'Usuari no trobat' });
         }
     } catch (error) {
+        console.error('User settings error:', error);
         return res.status(500).json({ error: 'Error: ' + error.message });
     }
-}
+};

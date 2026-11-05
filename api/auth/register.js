@@ -1,5 +1,5 @@
-const { createClient } = require('@libsql/client/web');
 const bcrypt = require('bcryptjs');
+const { getDbClient } = require('../db');
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -10,34 +10,18 @@ module.exports = async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const { email, password } = req.body;
-        
-        const dbUrl = process.env.TURSO_DATABASE_URL;
-        const dbToken = process.env.TURSO_AUTH_TOKEN;
-
-        // 1. Comprobar que las variables existen en Vercel
-        if (!dbUrl || !dbToken) {
-            return res.status(500).json({ error: "Faltan las variables TURSO_DATABASE_URL o TURSO_AUTH_TOKEN en Vercel." });
+        const { email, password } = req.body || {};
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email i contrasenya obligatoris' });
         }
 
-        // 2. Limpiar espacios en blanco accidentales
-        const cleanUrl = dbUrl.trim();
-        const cleanToken = dbToken.trim();
+        const client = getDbClient();
 
-        if (!cleanUrl.includes('turso.io')) {
-            return res.status(500).json({ error: `La URL de la base de datos es incorrecta. Debería terminar en turso.io. URL actual: ${cleanUrl.substring(0, 20)}...` });
-        }
-
-        const client = createClient({
-            url: cleanUrl,
-            authToken: cleanToken,
-        });
-
-        // 3. Prueba de conexión aislada para forzar el error real
+        // Prova de connexió
         try {
             await client.execute('SELECT 1');
         } catch (connErr) {
-            return res.status(500).json({ error: `Fallo de conexión a Turso: Comprueba que el Token es de la base de datos y no de la plataforma. Detalle: ${connErr.message}` });
+            console.warn('DB check fallback:', connErr.message);
         }
 
         const existingUser = await client.execute({
@@ -45,7 +29,7 @@ module.exports = async function handler(req, res) {
             args: [email]
         });
 
-        if (existingUser.rows.length > 0) {
+        if (existingUser.rows && existingUser.rows.length > 0) {
             return res.status(400).json({ error: 'Aquest usuari ja està registrat' });
         }
 
@@ -61,7 +45,7 @@ module.exports = async function handler(req, res) {
         return res.status(200).json({ success: true, message: 'Usuari registrat correctament' });
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: `Error crítico: ${error.message} (Código: ${error.code || 'Desconocido'})` });
+        console.error('Register error:', error);
+        return res.status(500).json({ error: `Error crític: ${error.message}` });
     }
-}
+};

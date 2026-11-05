@@ -335,11 +335,11 @@
                     </div>
                     
                     <div class="flex items-center gap-1.5 md:gap-2">
-                        <!-- Selector Mode Tutor -->
-                        <div class="relative">
-                            <select id="tutor-mode-select" onchange="setTutorMode(this.value)" class="text-[10px] md:text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold px-2 md:px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 outline-none cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition shadow-sm">
+                        <!-- Selector Mode Tutor en Header -->
+                        <div class="relative hidden sm:block">
+                            <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem text-[10px] md:text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold px-2 md:px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 outline-none cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition shadow-sm">
                                 <option value="standard">🎓 Tutor Estàndard</option>
-                                <option value="socratic">🤔 Mode Socràtic</option>
+                                <option value="socratic">🧐 Mode Socràtic</option>
                                 <option value="feynman">👶 Mode Feynman</option>
                                 <option value="tribunal">⚖️ Tribunal Examen</option>
                             </select>
@@ -378,31 +378,62 @@
                         </div>
                     </div>
                     
-                    <form id="chat-form" class="max-w-4xl mx-auto relative flex items-center gap-1.5 md:gap-2 hidden">
-                        <!-- Botó Lector de Fotos / Càmera -->
-                        <button type="button" onclick="openVisionModal()" title="📸 Lector de Fotos i Càmera en Directe" class="p-2 md:p-3 text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                        </button>
+                    <div class="max-w-4xl mx-auto flex flex-col gap-2.5">
+                        <!-- BARRA D'EINES DE MODES A BAIX (Tutor Mode Selector stil IA + Botons de Calendari i Test) -->
+                        <div id="chat-toolbar-bottom" class="flex flex-wrap items-center justify-between gap-2 px-1 text-xs">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <!-- Selector estil IA de la imatge -->
+                                <div class="relative inline-flex items-center">
+                                    <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem appearance-none text-xs bg-zinc-800 dark:bg-zinc-800 text-white font-bold pl-3.5 pr-8 py-2 rounded-xl border border-zinc-700 outline-none cursor-pointer hover:bg-zinc-700 transition shadow-md">
+                                        <option value="standard">🎓 Tutor Estàndard</option>
+                                        <option value="socratic">🧐 Mode Socràtic</option>
+                                        <option value="feynman">👶 Mode Feynman</option>
+                                        <option value="tribunal">⚖️ Tribunal Examen</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-zinc-300">
+                                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                                    </div>
+                                </div>
 
-                        <!-- Botó d'Adjuntar Fitxers -->
-                        <label title="Adjuntar Imatge o Document" class="cursor-pointer p-2 md:p-3 text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
-                            <input type="file" id="chat-attachment" accept="image/*,.pdf" class="hidden" onchange="handleAttachment(this)">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                        </label>
-
-                        <!-- Botó de Dictat per Veu (Micròfon) -->
-                        <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="🎤 Dictat per Veu" class="p-2 md:p-3 text-zinc-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn relative">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                            <span id="mic-pulse" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
-                        </button>
-                        
-                        <div class="relative flex-1">
-                            <textarea id="chat-input" rows="1" placeholder="Escriu, dicti per veu o adjunta una foto..." class="w-full pl-4 pr-12 py-3 md:py-4 md:pl-5 md:pr-14 rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none transition shadow-sm text-sm md:text-base resize-none overflow-y-auto min-h-[48px] max-h-[150px]" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
-                            <button type="submit" class="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 md:p-2.5 rounded-xl transition shadow-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                            </button>
+                                <!-- Botons ràpids per al Calendari i Resultats a baix -->
+                                <button id="calendar-bottom-btn" onclick="showCalendarModal()" title="Veure Pla d'Estudi" class="bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 font-bold px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 transition flex items-center gap-1.5 shadow-sm">
+                                    📅 <span>Pla d'Estudi</span>
+                                </button>
+                                <button id="history-bottom-btn" onclick="showHistoryModal()" title="Resultats dels Tests" class="bg-indigo-50 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-zinc-700 text-indigo-700 dark:text-indigo-300 font-bold px-3 py-1.5 rounded-xl border border-transparent dark:border-zinc-700 transition flex items-center gap-1.5 shadow-sm">
+                                    📊 <span>Resultats Tests</span>
+                                </button>
+                                <button id="memory-bottom-btn" onclick="showMemoryModal()" title="Memòria de l'Alumne" class="bg-purple-50 dark:bg-zinc-800 hover:bg-purple-100 dark:hover:bg-zinc-700 text-purple-700 dark:text-purple-300 font-bold px-3 py-1.5 rounded-xl border border-transparent dark:border-zinc-700 transition flex items-center gap-1.5 shadow-sm">
+                                    🧠 <span>Memòria</span>
+                                </button>
+                            </div>
                         </div>
-                    </form>
+
+                        <form id="chat-form" class="relative flex items-center gap-1.5 md:gap-2 hidden">
+                            <!-- Botó Lector de Fotos / Càmera -->
+                            <button type="button" onclick="openVisionModal()" title="📸 Lector de Fotos i Càmera en Directe" class="p-2 md:p-3 text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                            </button>
+
+                            <!-- Botó d'Adjuntar Fitxers -->
+                            <label title="Adjuntar Imatge o Document" class="cursor-pointer p-2 md:p-3 text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
+                                <input type="file" id="chat-attachment" accept="image/*,.pdf" class="hidden" onchange="handleAttachment(this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            </label>
+
+                            <!-- Botó de Dictat per Veu (Micròfon) -->
+                            <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="🎤 Dictat per Veu" class="p-2 md:p-3 text-zinc-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn relative">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                <span id="mic-pulse" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
+                            </button>
+                            
+                            <div class="relative flex-1">
+                                <textarea id="chat-input" rows="1" placeholder="Escriu, dicti per veu o adjunta una foto..." class="w-full pl-4 pr-12 py-3 md:py-4 md:pl-5 md:pr-14 rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none transition shadow-sm text-sm md:text-base resize-none overflow-y-auto min-h-[48px] max-h-[150px]" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
+                                <button type="submit" class="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 md:p-2.5 rounded-xl transition shadow-md flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </main>
@@ -2363,6 +2394,20 @@
             saveSession(); 
             triggerAiResponse();
         });
+
+        window.setTutorMode = function(mode) {
+            window.currentTutorMode = mode;
+            document.querySelectorAll('.tutor-mode-select-elem').forEach(el => {
+                if (el.value !== mode) el.value = mode;
+            });
+            const modeLabels = {
+                'standard': '🎓 Tutor Estàndard',
+                'socratic': '🧐 Mode Socràtic',
+                'feynman': '👶 Mode Feynman',
+                'tribunal': '⚖️ Tribunal Examen'
+            };
+            showToast(`Mode de Tutor activat: ${modeLabels[mode] || mode}`, 'info');
+        };
 
         async function triggerAiResponse() {
             const loadingId = 'loading-' + Date.now();

@@ -29,6 +29,7 @@ module.exports = async function handler(req, res) {
         let openAiApiKey = process.env.OPENAI_API_KEY || body.openAiApiKey || "";
         let deepseekApiKey = process.env.DEEPSEEK_API_KEY || body.deepseekApiKey || "";
         let mistralApiKey = process.env.MISTRAL_API_KEY || body.mistralApiKey || "";
+        let vercelApiKey = process.env.VERCEL_API_KEY || body.vercelApiKey || "";
 
         let userPreferredProvider = body.aiProvider || "";
         let userCustomKey = body.customApiKey || "";
@@ -186,8 +187,8 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
             // 3. Fallbacks a altres proveïdors si hi ha claus configurades
             if (groqApiKey && userPreferredProvider !== 'groq') {
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.3-70b-versatile' });
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.1-8b-instant' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
             }
             if (openRouterApiKey && userPreferredProvider !== 'openrouter') {
                 runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: 'meta-llama/llama-3.3-70b-instruct' });

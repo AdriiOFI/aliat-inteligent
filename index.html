@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Aliat Intel·ligent - Tutor Virtual</title>
+    <title>Aliat Intel·ligent</title>
     <meta name="description" content="Tutor virtual intel·ligent per crear plans d'estudi amb IA, tests de diagnòstic i xat interactiu.">
-    <meta property="og:title" content="Aliat Intel·ligent - Tutor Virtual">
+    <meta property="og:title" content="Aliat Intel·ligent">
     <meta property="og:description" content="Tutor virtual intel·ligent per crear plans d'estudi amb IA, tests de diagnòstic i xat interactiu.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -16,21 +19,21 @@
         
         tailwind.config = { 
             darkMode: 'class', 
-            theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } 
+            theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] } } } 
         }
     </script>
     <style>
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
-        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
+        .dark ::-webkit-scrollbar-thumb { background: #3f3f46; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #52525b; }
         
         .interactive-btn { transition: all 0.15s ease-in-out; }
         .interactive-btn:active { transform: scale(0.97); }
         .day-checkbox:checked + div { background-color: #eff6ff; border-color: #3b82f6; color: #2563eb; font-weight: bold; }
-        .dark .day-checkbox:checked + div { background-color: #1e3a8a; border-color: #3b82f6; color: #60a5fa; }
+        .dark .day-checkbox:checked + div { background-color: #27272a; border-color: #52525b; color: #f4f4f5; font-weight: bold; }
         
         /* CSS PEL MENÚ LATERAL COL·LAPSABLE */
         body.sidebar-collapsed #sidebar { width: 4.5rem; }
@@ -39,9 +42,11 @@
         .sidebar-tooltip { display: none; }
         #sidebar { transition: width 0.3s ease-in-out; }
         
-        /* Ajustes per SweetAlert en Mode Fosc */
-        .dark .swal2-popup { background-color: #1e293b !important; color: #f1f5f9 !important; border: 1px solid #334155; }
-        .dark .swal2-title, .dark .swal2-html-container { color: #f8fafc !important; }
+        /* Ajustes per SweetAlert en Mode Fosc (Gris Neutre Professional) */
+        .dark .swal2-popup { background-color: #18181b !important; color: #f4f4f5 !important; border: 1px solid #27272a !important; border-radius: 1.25rem !important; }
+        .dark .swal2-title, .dark .swal2-html-container { color: #f4f4f5 !important; }
+        .dark .swal2-confirm { border-radius: 0.75rem !important; }
+        .dark .swal2-cancel { background-color: #27272a !important; color: #d4d4d8 !important; border-radius: 0.75rem !important; }
     </style>
     <script>
         // Anti-Parpadeig (FOUC): Apliquem classes ABANS de que es dibuixi la web
@@ -58,7 +63,7 @@
         html.is-logged-in #app-container { display: flex !important; opacity: 1 !important; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 h-[100dvh] flex overflow-hidden antialiased font-sans relative w-full transition-colors duration-300">
+<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 h-[100dvh] flex overflow-hidden antialiased font-sans relative w-full transition-colors duration-300">
 
     <script>
         if (localStorage.getItem('aliat_sidebar_collapsed') === 'true' && window.innerWidth >= 768) {
@@ -69,33 +74,33 @@
     <!-- ============================================== -->
     <!-- PANTALLA D'AUTENTICACIÓ (LOGIN / REGISTRE)     -->
     <!-- ============================================== -->
-    <div id="auth-view" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800 transition-opacity duration-500">
-        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-[2rem] shadow-2xl p-6 md:p-10 w-full max-w-md relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-500/10 to-transparent rounded-bl-full -z-10"></div>
+    <div id="auth-view" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-950 dark:to-zinc-900 transition-opacity duration-500">
+        <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl p-6 md:p-10 w-full max-w-md relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-zinc-500/10 to-transparent rounded-bl-full -z-10"></div>
             
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/30 mx-auto mb-4 transform hover:rotate-12 transition-transform">🤖</div>
-                <h1 class="text-2xl font-black text-slate-800 dark:text-white">Aliat Intel·ligent</h1>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 font-medium">Inicia sessió per sincronitzar els teus estudis</p>
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/20 mx-auto mb-4 transform hover:rotate-12 transition-transform">🤖</div>
+                <h1 class="text-2xl font-black text-zinc-900 dark:text-white">Aliat Intel·ligent</h1>
+                <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1 font-medium">Inicia sessió per sincronitzar els teus estudis</p>
             </div>
 
             <!-- Tabs -->
-            <div class="flex p-1 bg-slate-100 dark:bg-slate-900/50 rounded-xl mb-6">
-                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-bold bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all">Iniciar Sessió</button>
-                <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 rounded-lg hover:text-slate-700 dark:hover:text-slate-300 transition-all">Crear Compte</button>
+            <div class="flex p-1 bg-zinc-100 dark:bg-zinc-950/70 rounded-xl mb-6">
+                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-bold bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all">Iniciar Sessió</button>
+                <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-bold text-zinc-500 dark:text-zinc-400 rounded-lg hover:text-zinc-700 dark:hover:text-zinc-300 transition-all">Crear Compte</button>
             </div>
 
             <form id="auth-form" onsubmit="handleAuth(event)">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wide">Correu Electrònic</label>
-                        <input type="email" id="auth-email" required placeholder="tu@email.com" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
+                        <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5 uppercase tracking-wide">Correu Electrònic</label>
+                        <input type="email" id="auth-email" required placeholder="tu@email.com" class="w-full px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
                     </div>
                     <div class="relative">
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wide">Contrasenya</label>
+                        <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5 uppercase tracking-wide">Contrasenya</label>
                         <div class="relative">
-                            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner pr-12">
-                            <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition outline-none">
+                            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner pr-12">
+                            <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition outline-none">
                                 <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             </button>
                         </div>
@@ -104,10 +109,10 @@
                 <button type="submit" id="auth-submit-btn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all hover:shadow-lg hover:shadow-blue-500/25 mt-6 flex items-center justify-center gap-2">
                     Accedir
                 </button>
-                <div class="mt-5 flex items-start gap-2 p-3 bg-blue-50 dark:bg-slate-800/50 border border-blue-100 dark:border-slate-700 rounded-xl">
+                <div class="mt-5 flex items-start gap-2 p-3 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-500 shrink-0 mt-0.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-tight">
-                        Privadesa garantida: No necessites posar un correu. Pots utilitzazr un usuari i una contrasenya per entrar.
+                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium leading-tight">
+                        Privadesa garantida: No necessites posar un correu. Pots utilitzar un usuari i una contrasenya per entrar.
                     </p>
                 </div>
             </form>
@@ -120,114 +125,114 @@
     <!-- ============================================== -->
     <div id="app-container" class="flex w-full h-full hidden opacity-0 transition-opacity duration-700">
         
-        <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/60 z-40 hidden backdrop-blur-sm transition-opacity opacity-0 md:hidden"></div>
+        <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm transition-opacity opacity-0 md:hidden"></div>
 
-        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[85%] max-w-[280px] md:w-72 h-full bg-[#131314] text-slate-300 flex flex-col shrink-0 transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 hidden md:flex border-r border-slate-800">
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[85%] max-w-[280px] md:w-72 h-full bg-[#121214] text-zinc-300 flex flex-col shrink-0 transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 hidden md:flex border-r border-zinc-800/80">
             <div class="p-4 flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="p-2 hover:bg-slate-800 rounded-full transition text-slate-400 hover:text-white shrink-0">
+                <button onclick="toggleSidebar()" class="p-2 hover:bg-zinc-800 rounded-full transition text-zinc-400 hover:text-white shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
                 <span class="font-bold text-white text-lg sidebar-text tracking-wide truncate">Aliat Intel·ligent</span>
             </div>
 
             <div class="px-3 mt-2 mb-4">
-                <button onclick="newSession()" class="flex items-center gap-3 w-full p-3 bg-slate-800 hover:bg-slate-700 rounded-2xl transition text-sm text-white group relative shadow-md">
+                <button onclick="newSession()" class="flex items-center gap-3 w-full p-3 bg-zinc-800 hover:bg-zinc-700 rounded-2xl transition text-sm text-white group relative shadow-md border border-zinc-700/60">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                     <span class="sidebar-text font-semibold truncate">Nova conversa</span>
-                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-slate-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Nova conversa</span>
+                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Nova conversa</span>
                 </button>
             </div>
 
             <div class="px-3 space-y-1">
-                <button onclick="startStudyMode()" class="flex items-center gap-3 w-full p-3 hover:bg-slate-800 rounded-xl transition text-sm text-slate-300 group relative">
+                <button onclick="startStudyMode()" class="flex items-center gap-3 w-full p-3 hover:bg-zinc-800/80 rounded-xl transition text-sm text-zinc-300 group relative">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                     <span class="sidebar-text font-medium truncate">Pla d'Estudis</span>
-                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-slate-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Pla d'Estudis</span>
+                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Pla d'Estudis</span>
                 </button>
-                <button onclick="startFreeChatMode()" class="flex items-center gap-3 w-full p-3 hover:bg-slate-800 rounded-xl transition text-sm text-slate-300 group relative">
+                <button onclick="startFreeChatMode()" class="flex items-center gap-3 w-full p-3 hover:bg-zinc-800/80 rounded-xl transition text-sm text-zinc-300 group relative">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     <span class="sidebar-text font-medium truncate">XatBot</span>
-                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-slate-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">XatBot</span>
+                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">XatBot</span>
                 </button>
             </div>
 
             <div class="mt-6 flex-1 overflow-y-auto px-3 sidebar-text">
-                <h3 class="text-xs font-bold text-slate-500 mb-3 px-3 uppercase tracking-wider">Historial al Núvol</h3>
+                <h3 class="text-xs font-bold text-zinc-500 mb-3 px-3 uppercase tracking-wider">Historial al Núvol</h3>
                 <div id="history-list" class="space-y-1"></div>
             </div>
             
-            <button onclick="toggleSidebar()" class="hidden sidebar-tooltip flex items-center gap-3 w-full p-3 mx-3 hover:bg-slate-800 rounded-xl transition text-slate-400 group relative">
+            <button onclick="toggleSidebar()" class="hidden sidebar-tooltip flex items-center gap-3 w-full p-3 mx-3 hover:bg-zinc-800 rounded-xl transition text-zinc-400 group relative">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
-                <span class="absolute left-[4.5rem] bg-slate-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Obre Historial</span>
+                <span class="absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Obre Historial</span>
             </button>
 
             <!-- PERFIL AMB CONFIGURACIÓ I LOGOUT -->
-            <div class="p-4 border-t border-slate-800 mt-auto flex items-center justify-between bg-[#0f0f10]">
+            <div class="p-4 border-t border-zinc-800/80 mt-auto flex items-center justify-between bg-[#0e0e10]">
                 <div class="flex items-center gap-3 text-sm sidebar-text overflow-hidden flex-1 cursor-pointer hover:opacity-80 transition" onclick="openSettings()">
                     <div id="profile-initial" class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shrink-0 shadow-md text-lg">U</div>
                     <div class="flex flex-col truncate">
-                        <span id="profile-email" class="font-bold text-slate-200 truncate text-[13px] tracking-wide">Usuari</span>
+                        <span id="profile-email" class="font-bold text-zinc-200 truncate text-[13px] tracking-wide">Usuari</span>
                         <span class="text-[10px] text-emerald-400 font-medium flex items-center gap-1.5 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_5px_#34d399]"></span> En línia</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-1">
-                    <button onclick="openSettings()" class="p-2 hover:bg-slate-800 rounded-xl transition text-slate-400 hover:text-white group relative shrink-0">
+                    <button onclick="openSettings()" class="p-2 hover:bg-zinc-800 rounded-xl transition text-zinc-400 hover:text-white group relative shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        <span class="sidebar-tooltip absolute left-[3rem] bg-slate-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Configuració</span>
+                        <span class="sidebar-tooltip absolute left-[3rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Configuració</span>
                     </button>
                 </div>
             </div>
         </aside>
 
         <main class="flex-1 flex flex-col relative w-full h-full overflow-hidden">
-            <button id="global-menu-btn" onclick="toggleSidebar()" class="absolute top-3 left-3 md:top-6 md:left-6 z-20 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 p-2.5 rounded-xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition md:hidden">
+            <button id="global-menu-btn" onclick="toggleSidebar()" class="absolute top-3 left-3 md:top-6 md:left-6 z-20 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 p-2.5 rounded-xl shadow-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition md:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
             </button>
 
             <!-- BENVINGUDA -->
-            <div id="welcome-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-8 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+            <div id="welcome-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-8 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
                 <div class="w-full max-w-6xl text-center space-y-8 md:space-y-12 pb-10 mt-12 md:mt-0">
                     <div class="space-y-4 md:space-y-6 pt-4 md:pt-10">
                         <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center text-4xl md:text-5xl shadow-xl shadow-blue-500/20 mx-auto transform hover:rotate-[10deg] transition-all duration-300">🤖</div>
-                        <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-slate-800 dark:text-white tracking-tight px-2">
+                        <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-zinc-800 dark:text-white tracking-tight px-2">
                             Benvingut <span id="welcome-user-name" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600"></span>
                         </h1>
-                        <p class="text-slate-600 dark:text-slate-400 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed px-4">Quin tipus d'ajuda necessites avui?</p>
+                        <p class="text-zinc-600 dark:text-zinc-400 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed px-4">Quin tipus d'ajuda necessites avui?</p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 max-w-5xl mx-auto px-2">
                         
                         <!-- TARGETA 1: PLA D'ESTUDIS -->
-                        <button onclick="startStudyMode()" class="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left group flex flex-col h-full relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-blue-50 dark:from-blue-900/30 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+                        <button onclick="startStudyMode()" class="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left group flex flex-col h-full relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-blue-50 dark:from-zinc-800/40 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-blue-600 dark:text-blue-400 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
                                 <!-- ICONA ESTUDIS (SVG unificat) -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-8 md:h-8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 md:mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Pla d'Estudis</h3>
-                            <p class="text-xs md:text-base text-slate-500 dark:text-slate-400 flex-1 leading-relaxed mb-4 md:mb-6">Puja el teu PDF i genera un calendari d'estudi amb minijocs.</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-zinc-800 dark:text-zinc-100 mb-2 md:mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Pla d'Estudis</h3>
+                            <p class="text-xs md:text-base text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed mb-4 md:mb-6">Puja el teu PDF i genera un calendari d'estudi amb minijocs.</p>
                         </button>
                         
                         <!-- TARGETA 2: XATBOT -->
-                        <button onclick="startFreeChatMode()" class="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left group flex flex-col h-full relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-emerald-50 dark:from-emerald-900/30 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
+                        <button onclick="startFreeChatMode()" class="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left group flex flex-col h-full relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-emerald-50 dark:from-zinc-800/40 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-emerald-600 dark:text-emerald-400 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
                                 <!-- ICONA XAT (SVG unificat en lloc d'emoji) -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-8 md:h-8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 md:mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">XatBot Lliure</h3>
-                            <p class="text-xs md:text-base text-slate-500 dark:text-slate-400 flex-1 leading-relaxed mb-4 md:mb-6">Conversa directa per fer consultes lliures o investigar temes.</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-zinc-800 dark:text-zinc-100 mb-2 md:mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">XatBot Lliure</h3>
+                            <p class="text-xs md:text-base text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed mb-4 md:mb-6">Conversa directa per fer consultes lliures o investigar temes.</p>
                         </button>
 
                         <!-- TARGETA 3: ÚS QUOTIDIÀ (Pròximament) -->
-                        <button onclick="return false" class="bg-slate-50 dark:bg-slate-800/50 border-2 border-slate-200/60 dark:border-slate-700/50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left flex flex-col h-full relative overflow-hidden cursor-not-allowed group opacity-80">
-                            <div class="absolute top-4 right-4 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 rounded-full uppercase tracking-widest shadow-sm">Pròximament</div>
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 grayscale opacity-70">
+                        <button onclick="return false" class="bg-zinc-50 dark:bg-zinc-900/50 border-2 border-zinc-200/60 dark:border-zinc-800/50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left flex flex-col h-full relative overflow-hidden cursor-not-allowed group opacity-80">
+                            <div class="absolute top-4 right-4 bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 rounded-full uppercase tracking-widest shadow-sm">Pròximament</div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 grayscale opacity-70">
                                 <!-- ICONA EINES (SVG unificat) -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-8 md:h-8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-bold text-slate-400 dark:text-slate-500 mb-2 md:mb-3">Ús Quotidià</h3>
-                            <p class="text-xs md:text-base text-slate-400 dark:text-slate-500 flex-1 leading-relaxed mb-4 md:mb-6">Eines per simplificar tasques diàries o gestionar rutines.</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-zinc-400 dark:text-zinc-500 mb-2 md:mb-3">Ús Quotidià</h3>
+                            <p class="text-xs md:text-base text-zinc-400 dark:text-zinc-500 flex-1 leading-relaxed mb-4 md:mb-6">Eines per simplificar tasques diàries o gestionar rutines.</p>
                         </button>
 
                     </div>
@@ -235,46 +240,46 @@
             </div>
 
             <!-- CONFIGURACIÓ PLA -->
-            <div id="setup-view" class="hidden flex-1 overflow-y-auto items-center justify-center p-4 md:p-8 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-                <div class="w-full max-w-2xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-[2rem] shadow-2xl shadow-blue-500/5 p-6 md:p-10 relative mt-10 md:mt-0">
-                    <button onclick="backToHome()" class="absolute top-5 left-5 md:top-6 md:left-6 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition bg-slate-100 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 p-2.5 rounded-full">
+            <div id="setup-view" class="hidden flex-1 overflow-y-auto items-center justify-center p-4 md:p-8 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
+                <div class="w-full max-w-2xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800 rounded-[2rem] shadow-2xl shadow-blue-500/5 p-6 md:p-10 relative mt-10 md:mt-0">
+                    <button onclick="backToHome()" class="absolute top-5 left-5 md:top-6 md:left-6 text-zinc-400 dark:text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400 transition bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-50 dark:hover:bg-zinc-700 p-2.5 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
                     <div class="text-center mb-8 md:mb-10 mt-6 md:mt-0">
-                        <h1 class="text-2xl md:text-4xl font-black text-slate-800 dark:text-white mb-2">Preparació de l'Estudi</h1>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm md:text-base font-medium">Configura el teu pla estratègic i adapta els dies.</p>
+                        <h1 class="text-2xl md:text-4xl font-black text-zinc-800 dark:text-white mb-2">Preparació de l'Estudi</h1>
+                        <p class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base font-medium">Configura el teu pla estratègic i adapta els dies.</p>
                     </div>
                     <div class="space-y-6 md:space-y-8">
                         <div>
-                            <label class="block text-xs md:text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">📅 Data de l'examen</label>
-                            <input type="date" id="exam-date" class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm md:text-base font-medium shadow-inner">
-                            <div id="days-left-marker" class="text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 mt-2 hidden"></div>
+                            <label class="block text-xs md:text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2 uppercase tracking-wide">📅 Data de l'examen</label>
+                            <input type="date" id="exam-date" class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm md:text-base font-medium shadow-inner">
+                            <div id="days-left-marker" class="text-xs md:text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-2 hidden"></div>
                         </div>
                         <div>
-                            <label class="block text-xs md:text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 uppercase tracking-wide">🗓️ Dies disponibles</label>
+                            <label class="block text-xs md:text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-3 uppercase tracking-wide">🗓️ Dies disponibles</label>
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5" id="available-days">
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="1" class="day-checkbox hidden" checked><div class="py-2 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-xs md:text-sm transition dark:text-slate-300 shadow-sm">Dilluns</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="2" class="day-checkbox hidden" checked><div class="py-2 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-xs md:text-sm transition dark:text-slate-300 shadow-sm">Dimarts</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="3" class="day-checkbox hidden" checked><div class="py-2 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-xs md:text-sm transition dark:text-slate-300 shadow-sm">Dimecres</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="4" class="day-checkbox hidden" checked><div class="py-2 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-xs md:text-sm transition dark:text-slate-300 shadow-sm">Dijous</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="5" class="day-checkbox hidden" checked><div class="py-2 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-xs md:text-sm transition dark:text-slate-300 shadow-sm">Divendres</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="6" class="day-checkbox hidden"><div class="py-2 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-xs md:text-sm transition dark:text-slate-300 shadow-sm">Dissabte</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="0" class="day-checkbox hidden"><div class="py-2 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-xs md:text-sm transition dark:text-slate-300 shadow-sm">Diumenge</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="1" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dilluns</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="2" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dimarts</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="3" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dimecres</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="4" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dijous</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="5" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Divendres</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="6" class="day-checkbox hidden"><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dissabte</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="0" class="day-checkbox hidden"><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Diumenge</div></label>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs md:text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">📚 Temari</label>
-                            <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl p-5 md:p-6 text-center hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-700/50 transition-all relative cursor-pointer group">
+                            <label class="block text-xs md:text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2 uppercase tracking-wide">📚 Temari</label>
+                            <div class="border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl p-5 md:p-6 text-center hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-zinc-800/50 transition-all relative cursor-pointer group">
                                 <input type="file" id="pdf-upload" accept=".pdf" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                                 <div class="flex flex-col items-center gap-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-slate-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                    <span id="pdf-status" class="text-xs md:text-sm font-semibold text-slate-600 dark:text-slate-400">Arrossega o fes clic per pujar PDFs</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-zinc-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    <span id="pdf-status" class="text-xs md:text-sm font-semibold text-zinc-600 dark:text-zinc-400">Arrossega o fes clic per pujar PDFs</span>
                                 </div>
                             </div>
                             <ul id="pdf-list" class="mt-3 space-y-2"></ul>
                             <div class="mt-4 md:mt-5">
-                                <p class="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 mb-2 font-semibold">O explica manualment de què tracta l'examen:</p>
-                                <textarea id="manual-topic" placeholder="Ex: Tinc un examen sobre biologia cel·lular..." class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm resize-none shadow-inner" rows="3"></textarea>
+                                <p class="text-[11px] md:text-xs text-zinc-500 dark:text-zinc-400 mb-2 font-semibold">O explica manualment de què tracta l'examen:</p>
+                                <textarea id="manual-topic" placeholder="Ex: Tinc un examen sobre biologia cel·lular..." class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm resize-none shadow-inner" rows="3"></textarea>
                             </div>
                         </div>
                         <button id="btn-start" onclick="proceedToNextStep()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl transition-all hover:shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 text-base md:text-lg mt-4">
@@ -285,20 +290,20 @@
             </div>
 
             <!-- VISTA CALENDARI I TEST DIAGNÒSTIC -->
-            <div id="quiz-view" class="hidden flex-1 overflow-y-auto items-start justify-center p-4 md:p-8 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+            <div id="quiz-view" class="hidden flex-1 overflow-y-auto items-start justify-center p-4 md:p-8 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
                 <div class="w-full max-w-4xl space-y-6 md:space-y-8">
-                    <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-[2rem] shadow-xl p-6 md:p-8">
-                        <h2 class="text-xl md:text-3xl font-black text-slate-800 dark:text-white flex items-center gap-3 mb-4 md:mb-8">
-                            <span class="bg-blue-100 dark:bg-blue-900/50 p-2.5 rounded-xl text-blue-600 dark:text-blue-400">📅</span> El teu Pla d'Estudi
+                    <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800 rounded-[2rem] shadow-xl p-6 md:p-8">
+                        <h2 class="text-xl md:text-3xl font-black text-zinc-800 dark:text-white flex items-center gap-3 mb-4 md:mb-8">
+                            <span class="bg-blue-100 dark:bg-zinc-800 border dark:border-zinc-700 p-2.5 rounded-xl text-blue-600 dark:text-blue-400">📅</span> El teu Pla d'Estudi
                         </h2>
                         <div id="calendar-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5"></div>
                     </div>
-                    <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-[2rem] shadow-xl p-6 md:p-8">
-                        <div class="border-b border-slate-100 dark:border-slate-700/50 pb-4 mb-4 md:pb-6 md:mb-8 flex items-center gap-3">
-                            <span class="bg-indigo-100 dark:bg-indigo-900/50 p-2.5 rounded-xl text-indigo-600 dark:text-indigo-400 text-xl">🎯</span>
+                    <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800 rounded-[2rem] shadow-xl p-6 md:p-8">
+                        <div class="border-b border-zinc-100 dark:border-zinc-800 pb-4 mb-4 md:pb-6 md:mb-8 flex items-center gap-3">
+                            <span class="bg-indigo-100 dark:bg-zinc-800 border dark:border-zinc-700 p-2.5 rounded-xl text-indigo-600 dark:text-indigo-400 text-xl">🎯</span>
                             <div>
-                                <h2 class="text-xl md:text-3xl font-black text-slate-800 dark:text-white">Test de Diagnòstic</h2>
-                                <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-medium mt-1">Valora el teu nivell abans de començar.</p>
+                                <h2 class="text-xl md:text-3xl font-black text-zinc-800 dark:text-white">Test de Diagnòstic</h2>
+                                <p class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm font-medium mt-1">Valora el teu nivell abans de començar.</p>
                             </div>
                         </div>
                         <div id="quiz-container" class="space-y-4 md:space-y-6 mb-6 md:mb-8"></div>
@@ -310,25 +315,25 @@
             </div>
 
             <!-- XAT VIEW -->
-            <div id="chat-view" class="hidden flex-1 flex-col h-full bg-slate-50 dark:bg-slate-900 relative">
-                <div class="p-3 md:p-4 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center shadow-sm z-30 gap-2">
+            <div id="chat-view" class="hidden flex-1 flex-col h-full bg-zinc-50 dark:bg-zinc-950 relative">
+                <div class="p-3 md:p-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center shadow-sm z-30 gap-2">
                     <div class="flex items-center gap-2 md:gap-3">
-                        <button onclick="toggleSidebar()" class="p-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition md:hidden">
+                        <button onclick="toggleSidebar()" class="p-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition md:hidden">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
                         </button>
-                        <div class="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 md:gap-2 text-[12px] md:text-base">
+                        <div class="font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 md:gap-2 text-[12px] md:text-base">
                             <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> <span id="chat-mode-label">Classe Activa</span>
                         </div>
                     </div>
                     
                     <div class="flex items-center gap-1.5 md:gap-2">
-                        <button id="theory-header-btn" onclick="scrollToLatestTheory()" class="text-[10px] md:text-sm bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 font-bold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/60 transition flex items-center gap-1 md:gap-2 whitespace-nowrap hidden">
+                        <button id="theory-header-btn" onclick="scrollToLatestTheory()" class="text-[10px] md:text-sm bg-blue-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-blue-700 dark:text-blue-300 font-bold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-blue-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 md:gap-2 whitespace-nowrap hidden">
                             📖 <span class="hidden sm:inline">Índex de Lliçons</span>
                         </button>
-                        <button id="history-header-btn" onclick="showHistoryModal()" class="text-[10px] md:text-sm bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 font-bold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition flex items-center gap-1 md:gap-2 whitespace-nowrap">
+                        <button id="history-header-btn" onclick="showHistoryModal()" class="text-[10px] md:text-sm bg-indigo-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-indigo-700 dark:text-indigo-300 font-bold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 md:gap-2 whitespace-nowrap">
                             📊 <span class="hidden sm:inline">Resultats</span>
                         </button>
-                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-[10px] md:text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center gap-1 md:gap-2 whitespace-nowrap">
+                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-[10px] md:text-sm bg-zinc-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition flex items-center gap-1 md:gap-2 whitespace-nowrap">
                             📅 <span class="hidden sm:inline">Pla d'Estudi</span>
                         </button>
                     </div>
@@ -336,10 +341,10 @@
                 
                 <div id="chat-messages" class="flex-1 overflow-y-auto p-3 md:p-6 space-y-4 md:space-y-6 pb-2 scroll-smooth"></div>
                 
-                <div class="p-3 md:p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-800 relative z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.02)] pb-safe md:pb-4 transition-colors duration-300">
+                <div class="p-3 md:p-4 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 relative z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.02)] pb-safe md:pb-4 transition-colors duration-300">
                     <!-- Contenidor per previsualitzar la imatge adjunta -->
                     <div id="attachment-preview" class="hidden mx-auto max-w-4xl mb-2 px-2">
-                        <div class="relative inline-block bg-slate-100 dark:bg-slate-700 p-2 rounded-xl border border-slate-200 dark:border-slate-600">
+                        <div class="relative inline-block bg-zinc-100 dark:bg-zinc-800 p-2 rounded-xl border border-zinc-200 dark:border-zinc-700">
                             <img id="preview-img" src="" class="h-16 w-auto rounded-lg object-cover">
                             <button type="button" onclick="removeAttachment()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -349,13 +354,13 @@
                     
                     <form id="chat-form" class="max-w-4xl mx-auto relative flex items-center gap-2 hidden">
                         <!-- Botó d'Adjuntar -->
-                        <label class="cursor-pointer p-2 md:p-3 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 transition shadow-sm shrink-0">
+                        <label class="cursor-pointer p-2 md:p-3 text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0">
                             <input type="file" id="chat-attachment" accept="image/*,.pdf" class="hidden" onchange="handleAttachment(this)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                         </label>
                         
                         <div class="relative flex-1">
-                            <textarea id="chat-input" rows="1" placeholder="Escriu un missatge o adjunta una imatge..." class="w-full pl-4 pr-12 py-3 md:py-4 md:pl-5 md:pr-14 rounded-2xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition shadow-sm text-sm md:text-base resize-none overflow-y-auto min-h-[48px] max-h-[150px]" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
+                            <textarea id="chat-input" rows="1" placeholder="Escriu un missatge o adjunta una imatge..." class="w-full pl-4 pr-12 py-3 md:py-4 md:pl-5 md:pr-14 rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none transition shadow-sm text-sm md:text-base resize-none overflow-y-auto min-h-[48px] max-h-[150px]" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
                             <button type="submit" class="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 md:p-2.5 rounded-xl transition shadow-md">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                             </button>
@@ -367,41 +372,73 @@
     </div>
 
     <!-- MODAL CONFIGURACIÓ -->
-    <div id="settings-modal" class="fixed inset-0 bg-slate-900/80 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-        <div class="bg-white dark:bg-slate-800 rounded-[2rem] w-full max-w-md flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 border border-slate-200 dark:border-slate-700" id="settings-modal-box">
-            <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
-                <h3 class="font-black text-slate-800 dark:text-slate-100 flex items-center gap-2 text-lg">⚙️ Configuració del Compte</h3>
-                <button onclick="closeSettings()" class="text-slate-400 dark:text-slate-500 hover:text-red-500 transition bg-white dark:bg-slate-800 p-2 rounded-full shadow-sm border border-slate-200 dark:border-slate-600">
+    <div id="settings-modal" class="fixed inset-0 bg-zinc-950/80 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-md flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 border border-zinc-200 dark:border-zinc-800" id="settings-modal-box">
+            <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50 dark:bg-zinc-950/50">
+                <h3 class="font-black text-zinc-800 dark:text-zinc-100 flex items-center gap-2 text-lg">⚙️ Configuració del Compte</h3>
+                <button onclick="closeSettings()" class="text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition bg-white dark:bg-zinc-800 p-2 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-700">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
             <div class="p-6 space-y-6">
                 <!-- Nom -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">El teu Nom (Públic)</label>
-                    <input type="text" id="setting-name" placeholder="Com vols que et diguem?" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 text-slate-800 dark:text-slate-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium shadow-inner">
+                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-2 uppercase tracking-wide">El teu Nom (Públic)</label>
+                    <input type="text" id="setting-name" placeholder="Com vols que et diguem?" class="w-full px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium shadow-inner">
                 </div>
                 <!-- Aparença -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">Aparença de l'App</label>
-                    <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 hover:border-blue-400 transition-all group">
-                        <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Canviar Tema (Clar / Fosc)</span>
-                        <svg id="theme-icon-modal" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500 group-hover:text-blue-500"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-2 uppercase tracking-wide">Aparença de l'App</label>
+                    <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 hover:border-blue-400 transition-all group">
+                        <span class="text-sm font-bold text-zinc-700 dark:text-zinc-200">Canviar Tema (Clar / Fosc)</span>
+                        <svg id="theme-icon-modal" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500 group-hover:text-blue-500"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                     </button>
                 </div>
                 <!-- Tancar Sessió -->
-                <div class="pt-4 border-t border-slate-100 dark:border-slate-700">
-                    <button onclick="logout()" class="w-full flex items-center justify-center gap-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold py-3 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition shadow-sm text-sm border border-red-200 dark:border-red-800/50">
+                <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                    <button onclick="logout()" class="w-full flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-bold py-3 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition shadow-sm text-sm border border-red-200 dark:border-red-900/50">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                         Tancar Sessió Segura
                     </button>
                 </div>
             </div>
-            <div class="p-5 border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+            <div class="p-5 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50">
                 <button onclick="saveSettings()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md text-sm">
                     Guardar Canvis
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL MINIJOCS INTERACTIUS -->
+    <div id="game-modal" class="fixed inset-0 bg-zinc-950/80 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-lg flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 border border-zinc-200 dark:border-zinc-800" id="game-modal-box">
+            <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50 dark:bg-zinc-950/50">
+                <h3 id="game-modal-title" class="font-black text-zinc-800 dark:text-zinc-100 flex items-center gap-2 text-lg">🎮 Minijoc</h3>
+                <button onclick="closeGameModal()" class="text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition bg-white dark:bg-zinc-800 p-2 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-700">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <div id="game-modal-content" class="p-6 overflow-y-auto max-h-[75vh]">
+            </div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX IMATGES -->
+    <div id="image-lightbox" onclick="closeLightbox()" class="fixed inset-0 bg-zinc-950/90 z-[150] hidden flex items-center justify-center p-4 backdrop-blur-md opacity-0 transition-opacity duration-300 cursor-zoom-out">
+        <div class="relative max-w-5xl max-h-[90vh] flex items-center justify-center">
+            <img id="lightbox-img" src="" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-zinc-800">
+            <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white bg-zinc-800 hover:bg-zinc-700 p-2.5 rounded-full transition shadow-lg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICACIÓ BAIX MIG -->
+    <div id="bottom-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] pointer-events-none transition-all duration-300 transform translate-y-12 opacity-0">
+        <div id="toast-content" class="bg-zinc-900/95 dark:bg-zinc-800/95 text-white px-5 py-3 rounded-2xl shadow-2xl border border-zinc-700/80 backdrop-blur-xl flex items-center gap-3 text-xs md:text-sm font-medium">
+            <span id="toast-icon">✨</span>
+            <span id="toast-msg">Notificació</span>
         </div>
     </div>
 
@@ -429,16 +466,16 @@
             
             if(deck.flipped) {
                 cardEl.classList.replace('bg-white', 'bg-emerald-50');
-                cardEl.classList.replace('dark:bg-slate-800', 'dark:bg-emerald-900/30');
-                cardEl.classList.replace('border-slate-200', 'border-emerald-300');
-                cardEl.classList.replace('dark:border-slate-700', 'dark:border-emerald-800/50');
+                cardEl.classList.replace('dark:bg-zinc-900', 'dark:bg-emerald-950/40');
+                cardEl.classList.replace('border-zinc-200', 'border-emerald-300');
+                cardEl.classList.replace('dark:border-zinc-800', 'dark:border-emerald-800/50');
                 contentEl.innerHTML = `<span class="text-[10px] uppercase text-emerald-600 block mb-2 tracking-widest">Resposta</span><div class="text-base font-medium text-emerald-900 dark:text-emerald-100 prose prose-sm max-w-none dark:prose-invert text-center leading-snug">${marked.parseInline(deck.cards[deck.current].a)}</div>`;
             } else {
                 cardEl.classList.replace('bg-emerald-50', 'bg-white');
-                cardEl.classList.replace('dark:bg-emerald-900/30', 'dark:bg-slate-800');
-                cardEl.classList.replace('border-emerald-300', 'border-slate-200');
-                cardEl.classList.replace('dark:border-emerald-800/50', 'dark:border-slate-700');
-                contentEl.innerHTML = `<span class="text-[10px] uppercase text-slate-400 block mb-2 tracking-widest">Pregunta</span><div class="text-lg font-bold text-slate-800 dark:text-slate-100 prose prose-sm max-w-none dark:prose-invert text-center leading-tight">${marked.parseInline(deck.cards[deck.current].q)}</div>`;
+                cardEl.classList.replace('dark:bg-emerald-950/40', 'dark:bg-zinc-900');
+                cardEl.classList.replace('border-emerald-300', 'border-zinc-200');
+                cardEl.classList.replace('dark:border-emerald-800/50', 'dark:border-zinc-800');
+                contentEl.innerHTML = `<span class="text-[10px] uppercase text-zinc-400 block mb-2 tracking-widest">Pregunta</span><div class="text-lg font-bold text-zinc-800 dark:text-zinc-100 prose prose-sm max-w-none dark:prose-invert text-center leading-tight">${marked.parseInline(deck.cards[deck.current].q)}</div>`;
             }
         };
 
@@ -554,12 +591,12 @@
             const btnSubmit = document.getElementById('auth-submit-btn');
             
             if(mode === 'login') {
-                tabLogin.className = "flex-1 py-2 text-sm font-bold bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all";
-                tabRegister.className = "flex-1 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 rounded-lg hover:text-slate-700 dark:hover:text-slate-300 transition-all";
+                tabLogin.className = "flex-1 py-2 text-sm font-bold bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all";
+                tabRegister.className = "flex-1 py-2 text-sm font-bold text-zinc-500 dark:text-zinc-400 rounded-lg hover:text-zinc-700 dark:hover:text-zinc-300 transition-all";
                 btnSubmit.innerText = "Accedir";
             } else {
-                tabRegister.className = "flex-1 py-2 text-sm font-bold bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all";
-                tabLogin.className = "flex-1 py-2 text-sm font-bold text-slate-500 dark:text-slate-400 rounded-lg hover:text-slate-700 dark:hover:text-slate-300 transition-all";
+                tabRegister.className = "flex-1 py-2 text-sm font-bold bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all";
+                tabLogin.className = "flex-1 py-2 text-sm font-bold text-zinc-500 dark:text-zinc-400 rounded-lg hover:text-zinc-700 dark:hover:text-zinc-300 transition-all";
                 btnSubmit.innerText = "Registrar-se";
             }
         }
@@ -663,7 +700,7 @@
                 } catch(e) { console.error(e); }
             }
             closeSettings();
-            Swal.fire({ title: 'Guardat!', text: 'La teva configuració s\'ha actualitzat.', icon: 'success', timer: 1500, showConfirmButton: false, target: 'main', customClass: { popup: 'rounded-[1.5rem] dark:bg-slate-800 dark:text-white border dark:border-slate-700' }});
+            Swal.fire({ title: 'Guardat!', text: 'La teva configuració s\'ha actualitzat.', icon: 'success', timer: 1500, showConfirmButton: false, target: 'main', customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }});
         }
 
         function updateProfileUI() {
@@ -787,13 +824,13 @@
                 
                 if (!res.ok) {
                     const data = await res.json().catch(() => ({}));
-                    Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Error de Vercel (Save): ' + (data.error || res.status), showConfirmButton: false, timer: 6000, customClass: { popup: 'dark:bg-slate-800 dark:text-white border border-red-500' } });
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Error de Vercel (Save): ' + (data.error || res.status), showConfirmButton: false, timer: 6000, customClass: { popup: 'dark:bg-zinc-900 dark:text-white border border-red-500' } });
                     return;
                 }
 
                 const data = await res.json();
                 if (data.error) {
-                    Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Error Turso: ' + data.error, showConfirmButton: false, timer: 6000, customClass: { popup: 'dark:bg-slate-800 dark:text-white border border-red-500' } });
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Error Turso: ' + data.error, showConfirmButton: false, timer: 6000, customClass: { popup: 'dark:bg-zinc-900 dark:text-white border border-red-500' } });
                 } else {
                     syncCloudSessions(true);
                 }
@@ -901,7 +938,7 @@
             
             const sortedSessions = [...allSessions].sort((a, b) => b.date - a.date);
             if (sortedSessions.length === 0) {
-                list.innerHTML = '<div class="text-[11px] text-slate-600 px-3 py-2 italic">Cap conversa guardada</div>';
+                list.innerHTML = '<div class="text-[11px] text-zinc-500 px-3 py-2 italic">Cap conversa guardada</div>';
                 return;
             }
 
@@ -912,8 +949,8 @@
                 let dateStr = new Date(s.date).toLocaleDateString('ca-ES', { day: '2-digit', month: 'short' });
                 
                 let activeClass = (s.id === currentSessionId) 
-                    ? "bg-slate-800 text-white font-bold" 
-                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-200 font-medium";
+                    ? "bg-zinc-800 text-white font-bold" 
+                    : "text-zinc-400 hover:bg-zinc-800/80 hover:text-zinc-200 font-medium";
 
                 // Botó amagat amb la PAPERERA (grup-hover)
                 list.innerHTML += `
@@ -922,7 +959,7 @@
                             <span class="truncate pr-2">${title}</span>
                             <span class="text-[10px] opacity-60 shrink-0 group-hover:hidden">${dateStr}</span>
                         </button>
-                        <button onclick="deleteSession('${s.id}')" class="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10">
+                        <button onclick="deleteSession('${s.id}')" class="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                     </div>
@@ -940,9 +977,9 @@
                 cancelButtonColor: '#3b82f6',
                 confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancel·lar',
-                background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#fff',
-                color: document.documentElement.classList.contains('dark') ? '#fff' : '#1e293b',
-                customClass: { popup: 'rounded-3xl border dark:border-slate-700' }
+                background: document.documentElement.classList.contains('dark') ? '#18181b' : '#fff',
+                color: document.documentElement.classList.contains('dark') ? '#f4f4f5' : '#18181b',
+                customClass: { popup: 'rounded-3xl border dark:border-zinc-800' }
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     // 1. Esborrar localment
@@ -1146,7 +1183,7 @@
             const list = document.getElementById('pdf-list');
             list.innerHTML = '';
             uploadedPDFs.forEach(pdf => {
-                list.innerHTML += `<li class="flex items-center justify-between bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-2 rounded-xl shadow-sm"><span class="text-[10px] md:text-sm text-slate-700 dark:text-slate-300 font-medium truncate flex-1">📄 ${pdf.name}</span><button onclick="removePdf('${pdf.id}')" class="text-red-500 p-1 md:p-2 rounded-lg text-xs md:text-base">❌</button></li>`;
+                list.innerHTML += `<li class="flex items-center justify-between bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-2 rounded-xl shadow-sm"><span class="text-[10px] md:text-sm text-zinc-700 dark:text-zinc-300 font-medium truncate flex-1">📄 ${pdf.name}</span><button onclick="removePdf('${pdf.id}')" class="text-red-500 p-1 md:p-2 rounded-lg text-xs md:text-base">❌</button></li>`;
             });
             extractedText = uploadedPDFs.map(p => p.text).join("\n\n---\n\n");
         }
@@ -1180,7 +1217,7 @@
         }
 
         async function generatePlanAndQuiz() {
-            Swal.fire({ title: 'Planificant...', allowOutsideClick: false, target: 'main', heightAuto: false, customClass: { container: 'absolute z-[999]', popup: 'rounded-[2rem] dark:bg-slate-800 dark:text-white border dark:border-slate-700' }, didOpen: () => Swal.showLoading() });            
+            Swal.fire({ title: 'Planificant...', allowOutsideClick: false, target: 'main', heightAuto: false, customClass: { container: 'absolute z-[999]', popup: 'rounded-[2rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }, didOpen: () => Swal.showLoading() });            
             try {
                 let numSessions = validStudyDates.length > 15 ? 15 : validStudyDates.length;
                 const res = await fetch('/api/generate', {
@@ -1216,10 +1253,10 @@
             container.innerHTML = '';
             generatedCalendarArray.forEach(item => {
                 container.innerHTML += `
-                    <div class="bg-blue-50 dark:bg-slate-700/50 border border-blue-200 dark:border-slate-600 p-3 md:p-5 rounded-2xl flex flex-col shadow-sm relative overflow-hidden">
+                    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 md:p-5 rounded-2xl flex flex-col shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 right-0 bg-blue-600 text-white text-[8px] md:text-[10px] font-bold px-2 py-1 rounded-bl-lg">Sessió ${item.num}</div>
                         <span class="text-[9px] md:text-xs font-black text-blue-600 dark:text-blue-400 uppercase mb-1 mt-1">${item.dia_real}</span>
-                        <span class="text-[11px] md:text-sm font-semibold text-slate-800 dark:text-slate-200">${item.tema}</span>
+                        <span class="text-[11px] md:text-sm font-semibold text-zinc-800 dark:text-zinc-200">${item.tema}</span>
                     </div>`;
             });
         }
@@ -1229,13 +1266,13 @@
             container.innerHTML = '';
             currentQuizData.forEach((q, idx) => {
                 container.innerHTML += `
-                    <div class="p-4 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-xs md:text-base mb-3 flex gap-2"><span class="text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px]">${idx + 1}</span> <span>${q.pregunta}</span></h3>
+                    <div class="p-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-zinc-800 dark:text-zinc-100 text-xs md:text-base mb-3 flex gap-2"><span class="text-blue-600 dark:text-zinc-200 bg-blue-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px]">${idx + 1}</span> <span>${q.pregunta}</span></h3>
                         <div class="space-y-2 pl-7">
                             ${q.opcions.map((opt) => `
-                                <label class="flex items-center gap-2 p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl cursor-pointer hover:border-blue-400 transition shadow-sm">
+                                <label class="flex items-center gap-2 p-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl cursor-pointer hover:border-blue-400 transition shadow-sm">
                                     <input type="radio" name="q_${idx}" value="${opt.replace(/"/g, '&quot;')}" class="w-3 h-3 text-blue-600 shrink-0">
-                                    <span class="text-[11px] md:text-sm font-medium text-slate-700 dark:text-slate-300 leading-tight">${opt}</span>
+                                    <span class="text-[11px] md:text-sm font-medium text-zinc-700 dark:text-zinc-300 leading-tight">${opt}</span>
                                 </label>`).join('')}
                         </div>
                     </div>`;
@@ -1260,9 +1297,9 @@
             studentContextStr = `L'alumne ha tret ${score}/5 (${level}).`;
             document.getElementById('chat-messages').innerHTML = `
                 <div class="w-full flex justify-center my-4" id="welcome-card">
-                    <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 p-5 rounded-2xl text-center shadow-sm max-w-xl w-full mx-2">
-                        <h2 class="text-xl font-black text-blue-800 dark:text-blue-300 mb-2">Pla Activat!</h2>
-                        <p class="text-blue-700 dark:text-blue-400 mb-4 text-xs md:text-sm font-medium">Nota: ${score}/5.</p>
+                    <div class="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-5 rounded-2xl text-center shadow-sm max-w-xl w-full mx-2">
+                        <h2 class="text-xl font-black text-zinc-800 dark:text-zinc-100 mb-2">Pla Activat!</h2>
+                        <p class="text-zinc-600 dark:text-zinc-400 mb-4 text-xs md:text-sm font-medium">Nota: ${score}/5 (${level}).</p>
                         <button onclick="startTeaching()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-lg w-full text-xs md:text-sm flex items-center justify-center gap-2">▶ Començar la Lliçó</button>
                     </div>
                 </div>`;
@@ -1310,11 +1347,11 @@
             if (!msg && !currentAttachmentBase64) return;
             
             let displayMsg = msg; 
-            let payloadContent = msg || "Si us plau, analitza aquesta imatge i explica'm què hi veus relacionat amb els meus estudis.";
+            let payloadContent = msg || "Si us plau, analitza aquesta imatge i explica'm què hi veus relacionat com a tutor d'estudis.";
             let payloadImage = null;
 
             if (currentAttachmentBase64) { 
-                displayMsg = `<img src="${currentAttachmentBase64}" class="max-w-[200px] rounded-lg mb-2"><br>` + msg; 
+                displayMsg = `<img src="${currentAttachmentBase64}" onclick="openLightbox(this.src)" class="max-w-[220px] rounded-xl mb-2 cursor-zoom-in hover:opacity-90 transition shadow-md border border-zinc-700/50"><br>` + msg; 
                 payloadImage = currentAttachmentBase64;
             }
             
@@ -1347,9 +1384,88 @@
                 saveSession();
             } catch (err) {
                 document.getElementById(loadingId)?.remove();
-                appendMessage('ai', '⚠️ Error: ' + err.message + '. Escriu alguna cosa per reintentar.');
+                showToast("⚠️ S'ha produït un error al generar la resposta", "error");
+                
+                // Missatge d'error amb botó de reintentar elegant
+                const box = document.getElementById('chat-messages');
+                const div = document.createElement('div');
+                div.className = "flex justify-start gap-2 w-full mb-3 chat-msg-ai";
+                div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md mt-1">!</div>
+                <div class="bg-white dark:bg-zinc-900 border border-red-200 dark:border-red-900/50 text-zinc-800 dark:text-zinc-100 px-4 py-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-md w-full">
+                    <p class="text-sm font-semibold text-red-600 dark:text-red-400 mb-3">No s'ha pogut completar la resposta: ${err.message}</p>
+                    <button onclick="retryAiResponse(this)" class="bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-800 dark:hover:bg-zinc-700 text-white font-bold py-2.5 px-4 rounded-xl transition text-xs flex items-center gap-2 border border-transparent dark:border-zinc-700 shadow-sm interactive-btn">
+                        🔄 Reintentar darrer missatge
+                    </button>
+                </div>`;
+                box.appendChild(div);
+                box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
             }
         }
+
+        window.retryAiResponse = function(btn) {
+            btn.closest('.flex.justify-start').remove();
+            showToast("🔄 Reintentant connexió amb la IA...", "info");
+            triggerAiResponse();
+        };
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('bottom-toast');
+            const msgEl = document.getElementById('toast-msg');
+            const iconEl = document.getElementById('toast-icon');
+            
+            if(!toast) return;
+            msgEl.innerText = msg;
+            iconEl.innerText = type === 'error' ? '⚠️' : type === 'info' ? 'ℹ️' : '✨';
+            
+            toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+            }, 3500);
+        }
+
+        window.openLightbox = function(src) {
+            const lb = document.getElementById('image-lightbox');
+            const img = document.getElementById('lightbox-img');
+            if(!lb || !img) return;
+            img.src = src;
+            lb.classList.remove('hidden');
+            setTimeout(() => lb.classList.remove('opacity-0'), 10);
+        };
+
+        window.closeLightbox = function() {
+            const lb = document.getElementById('image-lightbox');
+            if(!lb) return;
+            lb.classList.add('opacity-0');
+            setTimeout(() => lb.classList.add('hidden'), 300);
+        };
+
+        // --- SUPORT PER ENGANXAR IMATGES (Ctrl+V) ---
+        window.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        currentAttachmentBase64 = event.target.result;
+                        const previewImg = document.getElementById('preview-img');
+                        const previewContainer = document.getElementById('attachment-preview');
+                        if (previewImg && previewContainer) {
+                            previewImg.src = currentAttachmentBase64;
+                            previewContainer.classList.remove('hidden');
+                            showToast("📸 Imatge enganxada des del portapapers!");
+                        }
+                    };
+                    reader.readAsDataURL(blob);
+                    e.preventDefault();
+                    break;
+                }
+            }
+        });
 
         window.unlockTheory = function() {
             document.querySelectorAll('.chat-msg-ai').forEach(el => {
@@ -1387,7 +1503,7 @@
             let htmlContent = '<div class="text-left overflow-y-auto max-h-[60vh] mt-4 space-y-4">';
 
             if (gamesKeys.length === 0) {
-                htmlContent += '<div class="p-6 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-center rounded-xl text-sm border border-slate-200 dark:border-slate-700">Encara no has realitzat cap test o esquema en aquesta sessió.</div>';
+                htmlContent += '<div class="p-6 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 text-center rounded-xl text-sm border border-zinc-200 dark:border-zinc-800">Encara no has realitzat cap test o esquema en aquesta sessió.</div>';
             } else {
                 gamesKeys.forEach((key, index) => {
                     let g = window.interactiveGames[key];
@@ -1400,16 +1516,16 @@
                         
                         let detalls = '';
                         if (isCompleted) {
-                            detalls = `<div class="mt-3 text-[11px] md:text-xs bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-lg border border-slate-100 dark:border-slate-700"><span class="font-bold text-slate-600 dark:text-slate-400">La teva resposta:</span> <span class="dark:text-slate-300">${k.opcions[g.userPick]}</span><br><span class="font-bold text-slate-600 dark:text-slate-400 mt-1 inline-block">Solució correcta:</span> <span class="dark:text-slate-300">${k.opcions[k.correcta]}</span></div>`;
+                            detalls = `<div class="mt-3 text-[11px] md:text-xs bg-zinc-50 dark:bg-zinc-950/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800"><span class="font-bold text-zinc-600 dark:text-zinc-400">La teva resposta:</span> <span class="dark:text-zinc-300">${k.opcions[g.userPick]}</span><br><span class="font-bold text-zinc-600 dark:text-zinc-400 mt-1 inline-block">Solució correcta:</span> <span class="dark:text-zinc-300">${k.opcions[k.correcta]}</span></div>`;
                         }
                         
                         htmlContent += `
-                        <div class="border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-sm bg-white dark:bg-slate-800">
+                        <div class="border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl shadow-sm bg-white dark:bg-zinc-900">
                             <div class="flex justify-between items-start mb-2 gap-2">
-                                <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">🎮 Joc ${index + 1}: Pregunta Ràpida</div>
+                                <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm">🎮 Joc ${index + 1}: Pregunta Ràpida</div>
                                 ${statusBadge}
                             </div>
-                            <div class="text-xs md:text-sm text-slate-600 dark:text-slate-300 font-medium mb-1">${k.pregunta}</div>
+                            <div class="text-xs md:text-sm text-zinc-600 dark:text-zinc-300 font-medium mb-1">${k.pregunta}</div>
                             ${detalls}
                         </div>`;
                     } else if (g.type === 'schema') {
@@ -1419,20 +1535,20 @@
                         
                         let detalls = '';
                         if (g.attemptsLog && g.attemptsLog.length > 0) {
-                            detalls = `<div class="mt-3 text-[11px] md:text-xs space-y-1.5"><div class="font-bold text-slate-600 dark:text-slate-400 uppercase text-[9px] tracking-wider">Historial d'intents:</div>`;
+                            detalls = `<div class="mt-3 text-[11px] md:text-xs space-y-1.5"><div class="font-bold text-zinc-600 dark:text-zinc-400 uppercase text-[9px] tracking-wider">Historial d'intents:</div>`;
                             g.attemptsLog.forEach((log, i) => {
-                                detalls += `<div class="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300"><span class="font-bold text-slate-700 dark:text-slate-400">Intent ${i+1}:</span> ${log}</div>`;
+                                detalls += `<div class="bg-zinc-50 dark:bg-zinc-950/60 p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300"><span class="font-bold text-zinc-700 dark:text-zinc-400">Intent ${i+1}:</span> ${log}</div>`;
                             });
                             detalls += `</div>`;
                         }
 
                         htmlContent += `
-                        <div class="border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-sm bg-white dark:bg-slate-800">
+                        <div class="border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl shadow-sm bg-white dark:bg-zinc-900">
                             <div class="flex justify-between items-start mb-2 gap-2">
-                                <div class="font-bold text-slate-800 dark:text-slate-100 text-sm">🧩 Joc ${index + 1}: Esquema</div>
+                                <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm">🧩 Joc ${index + 1}: Esquema</div>
                                 ${statusBadge}
                             </div>
-                            <div class="text-xs md:text-sm text-slate-600 dark:text-slate-300 font-medium mb-1">${s.titol || 'Esquema conceptual'}</div>
+                            <div class="text-xs md:text-sm text-zinc-600 dark:text-zinc-300 font-medium mb-1">${s.titol || 'Esquema conceptual'}</div>
                             ${detalls}
                         </div>`;
                     }
@@ -1448,14 +1564,14 @@
                 confirmButtonColor: '#2563eb',
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-slate-800 dark:text-white border dark:border-slate-700', title: 'font-black text-slate-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-800 dark:text-white' }
             });
         }
 
         function showCalendarModal() {
             let htmlContent = '<div class="grid grid-cols-1 gap-2 mt-3 text-left overflow-y-auto max-h-[50vh] md:max-h-96">';
             generatedCalendarArray.forEach(item => {
-                htmlContent += `<div class="p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg flex gap-3 items-center"><div class="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 font-bold rounded-full w-6 h-6 flex items-center justify-center shrink-0 text-xs">${item.num}</div><div><div class="text-[9px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">${item.dia_real}</div><div class="text-[11px] font-semibold text-slate-800 dark:text-slate-200">${item.tema}</div></div></div>`;
+                htmlContent += `<div class="p-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg flex gap-3 items-center"><div class="bg-blue-100 dark:bg-zinc-800 text-blue-700 dark:text-zinc-200 border border-transparent dark:border-zinc-700 font-bold rounded-full w-6 h-6 flex items-center justify-center shrink-0 text-xs">${item.num}</div><div><div class="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 mb-0.5">${item.dia_real}</div><div class="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200">${item.tema}</div></div></div>`;
             });
             htmlContent += '</div>';
             Swal.fire({ 
@@ -1466,14 +1582,14 @@
                 confirmButtonColor: '#2563eb', 
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-slate-800 dark:text-white border dark:border-slate-700', title: 'font-black text-slate-800 dark:text-white' } 
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-800 dark:text-white' } 
             });
         }
         
         window.scrollToLatestTheory = function() {
             const markers = document.querySelectorAll('.theory-marker');
             if(markers.length === 0) {
-                Swal.fire({ title: 'Cap lliçó activa', text: 'Encara no s\'ha generat contingut a la sessió.', icon: 'info', confirmButtonColor: '#2563eb', target: 'main', heightAuto: false, customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] dark:bg-slate-800 dark:text-white border dark:border-slate-700' } });
+                Swal.fire({ title: 'Cap lliçó activa', text: 'Encara no s\'ha generat contingut a la sessió.', icon: 'info', confirmButtonColor: '#2563eb', target: 'main', heightAuto: false, customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' } });
                 return;
             }
             
@@ -1484,8 +1600,8 @@
                 let type = m.getAttribute('data-type');
                 let mId = m.id;
                 htmlContent += `
-                <button onclick="Swal.close(); const el = document.getElementById('${mId}').closest('.chat-msg-ai'); el.scrollIntoView({behavior: 'smooth', block: 'start'}); el.classList.add('ring-4', 'ring-blue-400', 'transition-all', 'duration-500'); setTimeout(()=>el.classList.remove('ring-4', 'ring-blue-400'), 2000);" class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition text-left w-full shadow-sm">
-                    <div class="font-bold text-slate-700 dark:text-slate-200 text-sm md:text-base">${type}</div>
+                <button onclick="Swal.close(); const el = document.getElementById('${mId}').closest('.chat-msg-ai'); el.scrollIntoView({behavior: 'smooth', block: 'start'}); el.classList.add('ring-4', 'ring-blue-400', 'transition-all', 'duration-500'); setTimeout(()=>el.classList.remove('ring-4', 'ring-blue-400'), 2000);" class="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition text-left w-full shadow-sm">
+                    <div class="font-bold text-zinc-700 dark:text-zinc-200 text-sm md:text-base">${type}</div>
                 </button>`;
             });
             htmlContent += '</div>';
@@ -1497,7 +1613,7 @@
                 showConfirmButton: false,
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-slate-800 dark:text-white border dark:border-slate-700', title: 'font-black text-slate-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-800 dark:text-white' }
             });
         };
 
@@ -1560,7 +1676,7 @@
             }
 
             return `
-                <div class="text-slate-800 dark:text-slate-100 font-bold text-sm md:text-lg mb-6 text-center">${k.pregunta || 'Pregunta:'}</div>
+                <div class="text-zinc-800 dark:text-zinc-100 font-bold text-sm md:text-lg mb-6 text-center">${k.pregunta || 'Pregunta:'}</div>
                 <div class="grid grid-cols-1 gap-3">${buttonsHtml}</div>
                 ${resultHtml}
             `;
@@ -1592,16 +1708,16 @@
             let isDone = game.status === 'completed';
             
             let boxesHtml = s.buits.map((item, idx) => {
-                let inputClass = "bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-500 px-3 py-2 text-sm text-slate-800 dark:text-slate-100 w-1/2 outline-none rounded-xl text-center shadow-inner transition";
+                let inputClass = "bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 focus:border-blue-500 dark:focus:border-blue-500 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-100 w-1/2 outline-none rounded-xl text-center shadow-inner transition";
                 let val = "";
                 if (isDone) {
                     val = `value="${item.resposta.replace(/"/g, '&quot;')}" disabled`;
-                    inputClass = "bg-slate-100 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 px-3 py-2 text-sm text-slate-600 dark:text-slate-400 w-1/2 rounded-xl text-center font-bold";
+                    inputClass = "bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-300 dark:border-zinc-700 px-3 py-2 text-sm text-zinc-600 dark:text-zinc-300 w-1/2 rounded-xl text-center font-bold";
                 }
                 return `
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 px-3 py-2 rounded-xl text-xs md:text-sm font-bold w-1/2 text-right border border-blue-200 dark:border-blue-800/50 leading-tight">${item.context || ''}</div>
-                    <div class="text-slate-300 dark:text-slate-600 font-black text-lg">➔</div>
+                    <div class="bg-blue-100 dark:bg-zinc-800 text-blue-800 dark:text-zinc-200 px-3 py-2 rounded-xl text-xs md:text-sm font-bold w-1/2 text-right border border-blue-200 dark:border-zinc-700 leading-tight">${item.context || ''}</div>
+                    <div class="text-zinc-300 dark:text-zinc-600 font-black text-lg">➔</div>
                     <input type="text" id="modal_input_${id}_${idx}" ${val} placeholder="..." class="${inputClass}">
                 </div>`;
             }).join('');
@@ -1613,9 +1729,9 @@
             
             let historyHtml = "";
             if (game.attemptsLog && game.attemptsLog.length > 0) {
-                historyHtml = `<div class="mt-6 border-t border-slate-200 dark:border-slate-700 pt-4"><h4 class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Historial d'intents:</h4><ul class="space-y-2 text-xs text-slate-600 dark:text-slate-400">`;
+                historyHtml = `<div class="mt-6 border-t border-zinc-200 dark:border-zinc-800 pt-4"><h4 class="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2">Historial d'intents:</h4><ul class="space-y-2 text-xs text-zinc-600 dark:text-zinc-400">`;
                 game.attemptsLog.forEach((log, i) => {
-                    historyHtml += `<li class="bg-slate-100 dark:bg-slate-800/50 p-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm"><span class="font-bold text-slate-700 dark:text-slate-300">Intent ${i+1}:</span> ${log}</li>`;
+                    historyHtml += `<li class="bg-zinc-100 dark:bg-zinc-800/50 p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-sm"><span class="font-bold text-zinc-700 dark:text-zinc-300">Intent ${i+1}:</span> ${log}</li>`;
                 });
                 historyHtml += `</ul></div>`;
             }
@@ -1627,7 +1743,7 @@
             }
 
             return `
-                <div class="text-slate-800 dark:text-slate-100 font-black text-lg md:text-xl mb-6 text-center">${s.titol || 'Esquema'}</div>
+                <div class="text-zinc-800 dark:text-zinc-100 font-black text-lg md:text-xl mb-6 text-center">${s.titol || 'Esquema'}</div>
                 <div class="mb-2">${boxesHtml}</div>
                 ${actionHtml}
                 ${resultHtml}
@@ -1646,7 +1762,7 @@
                 currentAttemptWords.push(val || '(buit)');
                 
                 if(val.toLowerCase() === buit.resposta.trim().toLowerCase()) {
-                    inputEl.classList.replace('border-slate-200', 'border-green-500');
+                    inputEl.classList.replace('border-zinc-200', 'border-green-500');
                     inputEl.classList.replace('border-red-500', 'border-green-500');
                     inputEl.classList.add('bg-green-50', 'text-green-700', 'font-bold');
                     inputEl.disabled = true;
@@ -1806,19 +1922,22 @@
             // Fer que els enllaços siguin blaus i s'obrin en una pestanya nova
             htmlContent = htmlContent.replace(/<a href="/g, '<a target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 underline font-semibold transition-colors" href="');
 
+            // Fer que les imatges de markdown es puguin clicar per obrir el lightbox
+            htmlContent = htmlContent.replace(/<img /g, '<img onclick="openLightbox(this.src)" class="cursor-zoom-in hover:opacity-95 transition shadow-lg rounded-xl my-2 max-h-[320px] object-cover border border-zinc-200 dark:border-zinc-800" ');
+
             htmlContent = htmlContent.replace(/\[BOTON_FLASHCARDS\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="📖 Teoria General"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'Molt bé, teoria entesa. Ara dóna\\'m les Flashcards i l\\'Esquema visual d\\'aquest tema.')" class="bg-blue-100 dark:bg-blue-900/40 border border-blue-300 dark:border-blue-800 text-blue-800 dark:text-blue-400 font-bold py-2.5 px-5 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/60 transition shadow-sm flex items-center gap-2 text-sm">Següent: Esquema i Flashcards ➔</button></div>`;
+                return `<div id="${mId}" class="theory-marker hidden" data-type="📖 Teoria General"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'Molt bé, teoria entesa. Ara dóna\\'m les Flashcards i l\\'Esquema visual d\\'aquest tema.')" class="bg-blue-50 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 text-blue-700 dark:text-zinc-200 font-bold py-2.5 px-5 rounded-xl hover:bg-blue-100 dark:hover:bg-zinc-700/80 transition shadow-sm flex items-center gap-2 text-sm">Següent: Esquema i Flashcards ➔</button></div>`;
             });
 
             htmlContent = htmlContent.replace(/\[BOTON_MNEMOTECNIA\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="🗂️ Esquema i Flashcards"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'Perfecte. Ara explica\\'m un truc de mnemotècnia per recordar això fàcilment.')" class="bg-purple-100 dark:bg-purple-900/40 border border-purple-300 dark:border-purple-800 text-purple-800 dark:text-purple-400 font-bold py-2.5 px-5 rounded-xl hover:bg-purple-200 dark:hover:bg-purple-900/60 transition shadow-sm flex items-center gap-2 text-sm">Següent: Truc de Memòria ➔</button></div>`;
+                return `<div id="${mId}" class="theory-marker hidden" data-type="🗂️ Esquema i Flashcards"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'Perfecte. Ara explica\\'m un truc de mnemotècnia per recordar això fàcilment.')" class="bg-purple-50 dark:bg-zinc-800 border border-purple-200 dark:border-zinc-700 text-purple-700 dark:text-zinc-200 font-bold py-2.5 px-5 rounded-xl hover:bg-purple-100 dark:hover:bg-zinc-700/80 transition shadow-sm flex items-center gap-2 text-sm">Següent: Truc de Memòria ➔</button></div>`;
             });
 
             htmlContent = htmlContent.replace(/\[BOTON_ENTENDIDO\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="🧠 Mnemotècnia"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestMinigame(this)" class="bg-green-100 dark:bg-green-900/40 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-400 font-bold py-2.5 px-5 rounded-xl hover:bg-green-200 dark:hover:bg-green-900/60 transition shadow-sm flex items-center gap-2 text-sm">✅ Posar-me a prova</button></div>`;
+                return `<div id="${mId}" class="theory-marker hidden" data-type="🧠 Mnemotècnia"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestMinigame(this)" class="bg-emerald-50 dark:bg-zinc-800 border border-emerald-200 dark:border-zinc-700 text-emerald-700 dark:text-zinc-200 font-bold py-2.5 px-5 rounded-xl hover:bg-emerald-100 dark:hover:bg-zinc-700/80 transition shadow-sm flex items-center gap-2 text-sm">✅ Posar-me a prova</button></div>`;
             });
 
             for (let i = 0; i < interactiveBlocks.length; i++) {
@@ -1830,22 +1949,22 @@
                         window.flashcardDecks[block.id] = { cards: block.data, current: 0, flipped: false };
                         uiCode = `
                         <div class="my-6 max-w-sm mx-auto relative select-none">
-                            <div class="text-center text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">Repàs Actiu (Flashcards)</div>
-                            <div id="${block.id}_card" onclick="flipFC('${block.id}')" class="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 shadow-xl rounded-[2rem] p-6 h-48 flex flex-col items-center justify-center cursor-pointer transition-all hover:shadow-2xl hover:border-blue-400 text-center relative overflow-hidden group">
-                                <span class="absolute top-4 right-4 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-[10px] px-2 py-1 rounded-lg font-bold" id="${block.id}_counter">1/${block.data.length}</span>
+                            <div class="text-center text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase tracking-wide">Repàs Actiu (Flashcards)</div>
+                            <div id="${block.id}_card" onclick="flipFC('${block.id}')" class="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-[2rem] p-6 h-48 flex flex-col items-center justify-center cursor-pointer transition-all hover:shadow-2xl hover:border-blue-400 text-center relative overflow-hidden group">
+                                <span class="absolute top-4 right-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[10px] px-2 py-1 rounded-lg font-bold" id="${block.id}_counter">1/${block.data.length}</span>
                                 <div id="${block.id}_content" class="flex flex-col items-center justify-center w-full h-full">
-                                    <span class="text-[10px] uppercase text-slate-400 block mb-2 tracking-widest">Pregunta</span>
-                                    <span class="text-lg font-bold text-slate-800 dark:text-slate-100">${block.data[0].q}</span>
+                                    <span class="text-[10px] uppercase text-zinc-400 block mb-2 tracking-widest">Pregunta</span>
+                                    <span class="text-lg font-bold text-zinc-800 dark:text-zinc-100">${block.data[0].q}</span>
                                 </div>
-                                <div class="absolute bottom-4 text-[10px] text-slate-400 group-hover:text-blue-500 transition-colors font-bold uppercase tracking-widest">👆 Clica per girar</div>
+                                <div class="absolute bottom-4 text-[10px] text-zinc-400 group-hover:text-blue-500 transition-colors font-bold uppercase tracking-widest">👆 Clica per girar</div>
                             </div>
                             <div class="flex justify-between items-center mt-4 px-4">
-                                <button onclick="prevFC('${block.id}')" class="p-3 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all shadow-sm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
-                                <button onclick="nextFC('${block.id}')" class="p-3 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/60 transition-all shadow-sm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></button>
+                                <button onclick="prevFC('${block.id}')" class="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition-all shadow-sm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+                                <button onclick="nextFC('${block.id}')" class="p-3 bg-zinc-900 dark:bg-zinc-800 text-white dark:text-zinc-200 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-all shadow-sm border border-transparent dark:border-zinc-700"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></button>
                             </div>
                         </div>`;
                     } else if (block.type === 'html') {
-                        uiCode = `<div class="my-6 w-full max-w-lg mx-auto bg-slate-50 rounded-[1.2rem] p-4 md:p-5 shadow border border-slate-200 overflow-x-auto text-slate-900 text-sm [&_*]:!text-slate-900 [&_summary]:cursor-pointer [&_summary]:font-bold [&_summary]:text-base [&_details]:bg-white [&_details]:p-3 [&_details]:rounded-lg [&_details]:border [&_details]:border-slate-200 [&_details]:mt-1.5 [&_h2]:text-lg [&_h3]:text-base">${block.data}</div>`;
+                        uiCode = `<div class="my-6 w-full max-w-lg mx-auto bg-zinc-50 dark:bg-zinc-900 rounded-[1.2rem] p-4 md:p-5 shadow border border-zinc-200 dark:border-zinc-800 overflow-x-auto text-zinc-900 dark:text-zinc-100 text-sm [&_summary]:cursor-pointer [&_summary]:font-bold [&_summary]:text-base [&_details]:bg-white dark:[&_details]:bg-zinc-800 [&_details]:p-3 [&_details]:rounded-lg [&_details]:border [&_details]:border-zinc-200 dark:[&_details]:border-zinc-700 [&_details]:mt-1.5 [&_h2]:text-lg [&_h3]:text-base">${block.data}</div>`;
                     } else {
                         if (!window.interactiveGames[block.id]) {
                             block.data.attempts = 0;
@@ -1854,7 +1973,7 @@
                         }
                         
                         let game = window.interactiveGames[block.id];
-                        let btnClass = "bg-indigo-100 dark:bg-indigo-900/40 border border-indigo-300 dark:border-indigo-800/50 text-indigo-800 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-900/60";
+                        let btnClass = "bg-indigo-100 dark:bg-zinc-800 border border-indigo-300 dark:border-zinc-700 text-indigo-800 dark:text-zinc-200 hover:bg-indigo-200 dark:hover:bg-zinc-700/80";
                         let btnText = "🕹️ Obre l'Examen Interactiu";
                         
                         if (game.status === 'completed') {
@@ -1879,13 +1998,13 @@
             const div = document.createElement('div');
             if (sender === 'user') {
                 div.className = "flex justify-end w-full mb-3";
-                div.innerHTML = `<div class="bg-slate-800 text-white px-4 py-3 rounded-2xl rounded-tr-sm max-w-[90%] text-[13px] shadow-sm break-words">${formatMessage(text)}</div>`;
+                div.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-800 text-white border border-transparent dark:border-zinc-700 px-4 py-3 rounded-2xl rounded-tr-sm max-w-[90%] text-[13px] shadow-sm break-words">${formatMessage(text)}</div>`;
             } else {
                 div.className = "flex justify-start gap-2 w-full mb-3 chat-msg-ai transition-all duration-500";
                 div.innerHTML = `
                 <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md mt-1">AI</div>
-                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 px-4 py-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-md w-full overflow-hidden relative group">
-                    <button onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); Swal.fire({toast:true, position:'top-end', icon:'success', title:'Copiat!', showConfirmButton:false, timer:1500, background: '#1e293b', color: '#fff'});" class="absolute top-2 right-2 p-1.5 bg-slate-100 dark:bg-slate-700 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-100 px-4 py-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-md w-full overflow-hidden relative group">
+                    <button onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); Swal.fire({toast:true, position:'top-end', icon:'success', title:'Copiat!', showConfirmButton:false, timer:1500, background: '#18181b', color: '#f4f4f5'});" class="absolute top-2 right-2 p-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     </button>
                     <div class="prose prose-sm dark:prose-invert max-w-none text-[13px] break-words overflow-x-auto">${formatMessage(text)}</div>
@@ -1900,7 +2019,7 @@
             const div = document.createElement('div');
             div.id = id;
             div.className = "flex justify-start gap-2 w-full mb-3";
-            div.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md mt-1">AI</div><div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-3.5 rounded-2xl rounded-tl-sm flex gap-1 shadow-md items-center h-10"><div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"></div><div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div><div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div></div>`;
+            div.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md mt-1">AI</div><div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-4 py-3.5 rounded-2xl rounded-tl-sm flex gap-1 shadow-md items-center h-10"><div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"></div><div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div><div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div></div>`;
             box.appendChild(div);
             box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
         }

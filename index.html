@@ -140,7 +140,7 @@
         
         <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm transition-opacity opacity-0 md:hidden"></div>
 
-        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[85%] max-w-[280px] md:w-72 h-full bg-[#121214] text-zinc-300 flex flex-col shrink-0 transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 hidden md:flex border-r border-zinc-800/80">
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[85%] max-w-[280px] md:w-72 h-full bg-[#121214] text-zinc-300 flex flex-col shrink-0 transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 border-r border-zinc-800/80 shadow-2xl md:shadow-none">
             <div class="p-4 flex items-center gap-4">
                 <button onclick="toggleSidebar()" class="p-2 hover:bg-zinc-800 rounded-full transition text-zinc-400 hover:text-white shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
@@ -345,57 +345,58 @@
 
             <!-- XAT VIEW -->
             <div id="chat-view" class="hidden flex-1 flex-col h-full bg-zinc-50 dark:bg-zinc-950 relative">
-                <div class="p-3 md:p-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center shadow-sm z-30 gap-2">
-                    <div class="flex items-center gap-2 md:gap-3">
-                        <button onclick="toggleSidebar()" class="p-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition md:hidden">
+                <div class="p-2.5 sm:p-3 md:p-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center shadow-sm z-30 gap-1.5 sm:gap-2">
+                    <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+                        <button onclick="toggleSidebar()" class="p-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition md:hidden shrink-0" aria-label="Menú">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
                         </button>
-                        <div class="font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 md:gap-2 text-[12px] md:text-base">
-                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> <span id="chat-mode-label">Classe Activa</span>
+                        <div class="font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 text-xs sm:text-sm md:text-base min-w-0 truncate">
+                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0"></span> 
+                            <span id="chat-mode-label" class="truncate max-w-[90px] xs:max-w-[130px] sm:max-w-xs">Classe Activa</span>
                         </div>
                     </div>
                     
-                    <div class="flex items-center gap-1.5 md:gap-2">
-                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-xs md:text-sm bg-blue-100 dark:bg-blue-950/70 border border-blue-300 dark:border-blue-800 text-blue-950 dark:text-blue-200 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                    <div class="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
+                        <button id="calendar-header-btn" onclick="showCalendarModal()" title="Pla d'Estudi" class="text-xs md:text-sm bg-blue-100 dark:bg-blue-950/70 border border-blue-300 dark:border-blue-800 text-blue-950 dark:text-blue-200 font-bold p-2 sm:px-3 sm:py-2 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-700 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             <span class="hidden sm:inline">Pla d'Estudi</span>
                         </button>
-                        <button id="tools-header-btn" onclick="showToolsModal()" class="text-xs md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-xl hover:opacity-90 transition flex items-center gap-1.5 whitespace-nowrap shadow-md">
+                        <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold p-2 sm:px-3 sm:py-2 rounded-xl hover:opacity-90 transition flex items-center gap-1.5 whitespace-nowrap shadow-md">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-amber-300 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                             <span class="hidden sm:inline">Eines</span>
                         </button>
-                        <button id="memory-header-btn" onclick="showMemoryModal()" class="text-xs md:text-sm bg-purple-100 dark:bg-purple-950/70 border border-purple-300 dark:border-purple-800 text-purple-950 dark:text-purple-200 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-purple-200 dark:hover:bg-purple-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                        <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria" class="text-xs md:text-sm bg-purple-100 dark:bg-purple-950/70 border border-purple-300 dark:border-purple-800 text-purple-950 dark:text-purple-200 font-bold p-2 sm:px-3 sm:py-2 rounded-xl hover:bg-purple-200 dark:hover:bg-purple-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-purple-700 dark:text-purple-300 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
                             <span class="hidden sm:inline">Memòria</span>
                         </button>
-                        <button id="history-header-btn" onclick="showHistoryModal()" class="text-xs md:text-sm bg-indigo-100 dark:bg-indigo-950/70 border border-indigo-300 dark:border-indigo-800 text-indigo-950 dark:text-indigo-200 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                        <button id="history-header-btn" onclick="showHistoryModal()" title="Resultats" class="text-xs md:text-sm bg-indigo-100 dark:bg-indigo-950/70 border border-indigo-300 dark:border-indigo-800 text-indigo-950 dark:text-indigo-200 font-bold p-2 sm:px-3 sm:py-2 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-700 dark:text-indigo-300 shrink-0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                             <span class="hidden sm:inline">Resultats</span>
                         </button>
                     </div>
                 </div>
                 
-                <div id="chat-messages" class="flex-1 overflow-y-auto p-3 md:p-6 space-y-4 md:space-y-6 pb-2 scroll-smooth"></div>
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-2.5 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6 pb-2 scroll-smooth"></div>
                 
-                <div class="p-3 md:p-4 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 relative z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.02)] pb-safe md:pb-4 transition-colors duration-300">
+                <div class="p-2 sm:p-3 md:p-4 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 relative z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.02)] pb-safe md:pb-4 transition-colors duration-300">
                     <!-- Contenidor per previsualitzar la imatge adjunta -->
-                    <div id="attachment-preview" class="hidden mx-auto max-w-4xl mb-2 px-2">
-                        <div class="relative inline-block bg-zinc-100 dark:bg-zinc-800 p-2 rounded-xl border border-zinc-200 dark:border-zinc-700">
-                            <img id="preview-img" src="" class="h-16 w-auto rounded-lg object-cover">
+                    <div id="attachment-preview" class="hidden mx-auto max-w-4xl mb-2 px-1">
+                        <div class="relative inline-block bg-zinc-100 dark:bg-zinc-800 p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700">
+                            <img id="preview-img" src="" class="h-14 sm:h-16 w-auto rounded-lg object-cover">
                             <button type="button" onclick="removeAttachment()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                             </button>
                         </div>
                     </div>
                     
-                    <div class="max-w-4xl mx-auto flex flex-col gap-2">
-                        <!-- BARRA D'EINES DE MODES A BAIX (Tutor Mode Selector robust que no s'encongeix) -->
-                        <div id="chat-toolbar-bottom" class="flex items-center gap-2 px-1 text-xs sm:text-sm w-full">
-                            <div class="relative inline-flex items-center w-full sm:w-auto min-w-[220px] sm:min-w-[260px] shrink-0">
+                    <div class="max-w-4xl mx-auto flex flex-col gap-1.5 sm:gap-2">
+                        <!-- BARRA D'EINES DE MODES A BAIX -->
+                        <div id="chat-toolbar-bottom" class="flex items-center gap-2 px-0.5 text-xs sm:text-sm w-full">
+                            <div class="relative inline-flex items-center w-full sm:w-auto min-w-[200px] sm:min-w-[260px] shrink-0">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                                 </div>
-                                <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem appearance-none w-full text-xs sm:text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold pl-9 pr-9 py-2.5 rounded-xl border-2 border-zinc-300 dark:border-zinc-700 outline-none cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition shadow-sm">
+                                <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem appearance-none w-full text-xs sm:text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold pl-9 pr-9 py-2 rounded-xl border-2 border-zinc-300 dark:border-zinc-700 outline-none cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition shadow-sm">
                                     <option value="standard">Tutor Estàndard (Complet)</option>
                                     <option value="socratic">Mode Socràtic (Guiat)</option>
                                     <option value="feynman">Mode Feynman (Simple)</option>
@@ -407,28 +408,28 @@
                             </div>
                         </div>
 
-                        <form id="chat-form" class="relative flex items-center gap-1.5 md:gap-2 hidden">
+                        <form id="chat-form" class="relative flex items-center gap-1 sm:gap-2 hidden">
                             <!-- Botó Lector de Fotos / Càmera -->
-                            <button type="button" onclick="openVisionModal()" title="Lector de Fotos i Càmera en Directe" class="p-2 md:p-3 text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                            <button type="button" onclick="openVisionModal()" title="Lector de Fotos i Càmera en Directe" class="p-2 sm:p-2.5 text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-white dark:bg-zinc-950 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                             </button>
 
                             <!-- Botó d'Adjuntar Fitxers -->
-                            <label title="Adjuntar Imatge o Document" class="cursor-pointer p-2 md:p-3 text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
+                            <label title="Adjuntar Imatge o Document" class="cursor-pointer p-2 sm:p-2.5 text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-white dark:bg-zinc-950 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
                                 <input type="file" id="chat-attachment" accept="image/*,.pdf" class="hidden" onchange="handleAttachment(this)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                             </label>
 
                             <!-- Botó de Dictat per Veu (Micròfon) -->
-                            <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="Dictat per Veu" class="p-2 md:p-3 text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn relative">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                                <span id="mic-pulse" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
+                            <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="Dictat per Veu" class="p-2 sm:p-2.5 text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 bg-white dark:bg-zinc-950 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                <span id="mic-pulse" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
                             </button>
                             
-                            <div class="relative flex-1">
-                                <textarea id="chat-input" rows="1" placeholder="Escriu, dicti per veu o adjunta una foto..." class="w-full pl-4 pr-12 py-3 md:py-4 md:pl-5 md:pr-14 rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none transition shadow-sm text-sm md:text-base resize-none overflow-y-auto min-h-[48px] max-h-[150px]" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
-                                <button type="submit" class="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 md:p-2.5 rounded-xl transition shadow-md flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            <div class="relative flex-1 min-w-0">
+                                <textarea id="chat-input" rows="1" placeholder="Escriu, dicti o adjunta apunts..." class="w-full pl-3.5 pr-11 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none transition shadow-sm text-[16px] md:text-sm resize-none overflow-y-auto min-h-[42px] sm:min-h-[46px] max-h-[140px]" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 140) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
+                                <button type="submit" aria-label="Enviar" class="absolute right-1.5 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white w-8 h-8 rounded-lg sm:rounded-xl transition shadow-md flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                                 </button>
                             </div>
                         </form>
@@ -662,44 +663,6 @@
             }
         };
 
-        function loadActiveSessionData() {
-            let activeSession = allSessions.find(s => s.id === currentSessionId);
-            
-            if (activeSession && activeSession.history && activeSession.history.length > 0) {
-                chatHistory = activeSession.history;
-                generatedCalendarArray = activeSession.calendar || [];
-                appMode = activeSession.mode || 'study';
-                window.interactiveGames = activeSession.games || {}; 
-                
-                studentContextStr = localStorage.getItem('aliat_local_context_' + currentSessionId) || "";
-                finalStudyText = localStorage.getItem('aliat_local_text_' + currentSessionId) || "";
-                
-                document.getElementById('chat-messages').innerHTML = activeSession.html || localStorage.getItem('aliat_local_html_' + currentSessionId) || '';
-                
-                document.getElementById('welcome-view').classList.add('hidden');
-                document.getElementById('setup-view').classList.add('hidden');
-                document.getElementById('global-menu-btn').classList.add('hidden');
-                
-                document.getElementById('chat-view').classList.remove('hidden');
-                document.getElementById('chat-view').classList.add('flex');
-                document.getElementById('chat-form').classList.remove('hidden');
-                
-                if(appMode === 'free') {
-                    document.getElementById('calendar-header-btn').classList.add('hidden');
-                    document.getElementById('history-header-btn').classList.add('hidden');
-                    document.getElementById('theory-header-btn').classList.add('hidden');
-                    document.getElementById('chat-mode-label').innerText = "XatBot";
-                } else {
-                    document.getElementById('theory-header-btn').classList.remove('hidden');
-                }
-                
-                setTimeout(() => {
-                    const box = document.getElementById('chat-messages');
-                    if(box) box.scrollTop = box.scrollHeight;
-                }, 50);
-            }
-        }
-
         // --- SISTEMA D'AUTENTICACIÓ (NOU) ---
         let authMode = 'login';
         
@@ -860,7 +823,7 @@
                 } catch(e) { console.error(e); }
             }
             closeSettings();
-            Swal.fire({ title: 'Guardat!', text: 'La teva configuració s\'ha actualitzat.', icon: 'success', timer: 1500, showConfirmButton: false, target: 'main', customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }});
+            Swal.fire({ title: 'Guardat!', text: 'La teva configuració s\'ha actualitzat.', icon: 'success', timer: 1500, showConfirmButton: false, customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }});
         }
         window.openSettings = openSettings;
         window.closeSettings = closeSettings;
@@ -1098,9 +1061,7 @@
                 showCloseButton: true,
                 confirmButtonText: 'Tancar',
                 confirmButtonColor: '#2563eb',
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1317,9 +1278,7 @@
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1460,9 +1419,7 @@
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1581,7 +1538,7 @@
                 title: 'Analitzant apunt...',
                 text: 'Processant imatge amb el motor d\'IA multimodal.',
                 allowOutsideClick: false,
-                target: 'main',
+                customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' },
                 didOpen: () => Swal.showLoading()
             });
 
@@ -1633,9 +1590,7 @@
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1693,9 +1648,7 @@
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1752,9 +1705,7 @@
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1822,9 +1773,7 @@
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1913,9 +1862,7 @@
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md w-full', title: 'font-black text-zinc-800 dark:text-white' }
             });
         };
 
@@ -2038,19 +1985,6 @@
             }
         }
 
-        async function saveSessionToCloud(sessionData) {
-            try {
-                await fetch('/api/sessions/save', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + authToken
-                    },
-                    body: JSON.stringify(sessionData)
-                });
-            } catch (e) { console.error("Error guardant al núvol:", e); }
-        }
-
         function saveSession() {
             // Assegurem que el xat té un ID abans d'enviar-lo al servidor
             if (!currentSessionId || currentSessionId === 'null') {
@@ -2064,7 +1998,20 @@
             
             document.getElementById('chat-mode-label').innerText = currentTitle;
             
-            const sessionData = { id: currentSessionId, mode: appMode, title: currentTitle, history: chatHistory, chat_history: chatHistory, calendar: generatedCalendarArray, games: window.interactiveGames, html: document.getElementById('chat-messages').innerHTML, context: studentContextStr, pdf_text: finalStudyText, date: new Date().getTime() };
+            const sessionData = { 
+                id: currentSessionId, 
+                mode: appMode, 
+                title: currentTitle, 
+                history: chatHistory, 
+                chat_history: chatHistory, 
+                calendar: generatedCalendarArray, 
+                games: window.interactiveGames, 
+                initial_quiz: window.initialQuizResults || null,
+                html: document.getElementById('chat-messages').innerHTML, 
+                context: studentContextStr, 
+                pdf_text: finalStudyText, 
+                date: new Date().getTime() 
+            };
             
             const idx = allSessions.findIndex(s => s.id === currentSessionId);
             if(idx >= 0) allSessions[idx] = sessionData; else allSessions.push(sessionData);
@@ -2076,6 +2023,9 @@
             localStorage.setItem('aliat_local_html_' + currentSessionId, sessionData.html); 
             localStorage.setItem('aliat_local_context_' + currentSessionId, studentContextStr); 
             localStorage.setItem('aliat_local_text_' + currentSessionId, finalStudyText);
+            if (window.initialQuizResults) {
+                localStorage.setItem('aliat_initial_quiz_' + currentSessionId, JSON.stringify(window.initialQuizResults));
+            }
         }
 
         async function syncCloudSessions(isBackground = false) {
@@ -2143,6 +2093,13 @@
                 // Ara llegeix de la base de dades (activeSession.context) i si no hi és, busca al local
                 studentContextStr = activeSession.context || localStorage.getItem('aliat_local_context_' + currentSessionId) || "";
                 finalStudyText = activeSession.pdf_text || localStorage.getItem('aliat_local_text_' + currentSessionId) || "";
+                window.initialQuizResults = activeSession.initial_quiz || null;
+                if (!window.initialQuizResults) {
+                    try {
+                        const localQuiz = localStorage.getItem('aliat_initial_quiz_' + currentSessionId);
+                        if (localQuiz) window.initialQuizResults = JSON.parse(localQuiz);
+                    } catch (e) {}
+                }
                 
                 document.getElementById('chat-messages').innerHTML = activeSession.html || localStorage.getItem('aliat_local_html_' + currentSessionId) || '';
                 
@@ -2241,6 +2198,7 @@
             chatHistory = [];
             generatedCalendarArray = [];
             window.interactiveGames = {};
+            window.initialQuizResults = null;
             studentContextStr = "";
             finalStudyText = "";
             appMode = 'none';
@@ -2575,10 +2533,19 @@
         }
 
         async function generatePlanAndQuiz() {
-            Swal.fire({ title: 'Planificant...', allowOutsideClick: false, target: 'main', heightAuto: false, customClass: { container: 'absolute z-[999]', popup: 'rounded-[2rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }, didOpen: () => Swal.showLoading() });            
+            Swal.fire({ 
+                title: 'Planificant...', 
+                text: 'Analitzant apunts i preparant sessions personalitzades...',
+                allowOutsideClick: false, 
+                customClass: { popup: 'rounded-[2rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }, 
+                didOpen: () => Swal.showLoading() 
+            });            
             try {
                 let numSessions = validStudyDates.length > 15 ? 15 : validStudyDates.length;
-                const res = await callGenerateApi({ action: 'prepare_study', pdfText: finalStudyText.substring(0, 4500), totalSessionsToGenerate: numSessions });
+                if (currentSessionId) {
+                    localStorage.setItem('aliat_local_text_' + currentSessionId, finalStudyText);
+                }
+                const res = await callGenerateApi({ action: 'prepare_study', pdfText: finalStudyText.substring(0, 18000), totalSessionsToGenerate: numSessions });
                 if (!res.ok) throw new Error("El servidor no ha pogut processar la petició.");
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
@@ -2663,11 +2630,34 @@
 
         function evaluateQuiz() {
             let correct = 0;
+            const detailedQuestions = [];
             currentQuizData.forEach((q, idx) => {
                 const sel = document.querySelector(`input[name="q_${idx}"]:checked`);
-                if (sel && sel.value.trim().toLowerCase() === q.resposta_correcta.trim().toLowerCase()) correct++;
+                const userVal = sel ? sel.value.trim() : "(Sense resposta)";
+                const correctVal = (q.resposta_correcta || '').trim();
+                const isMatch = sel && userVal.toLowerCase() === correctVal.toLowerCase();
+                if (isMatch) correct++;
+                detailedQuestions.push({
+                    num: idx + 1,
+                    pregunta: q.pregunta || (`Pregunta ${idx + 1}`),
+                    opcions: q.opcions || [],
+                    user_answer: userVal,
+                    resposta_correcta: correctVal,
+                    is_correct: !!isMatch
+                });
             });
             let level = correct <= 2 ? "Nivell Inicial" : correct <= 4 ? "Nivell Intermedi" : "Nivell Avançat";
+            
+            window.initialQuizResults = {
+                score: correct,
+                total: currentQuizData.length || 5,
+                level: level,
+                date: new Date().toLocaleDateString('ca-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }),
+                questions: detailedQuestions
+            };
+            if (currentSessionId) {
+                localStorage.setItem('aliat_initial_quiz_' + currentSessionId, JSON.stringify(window.initialQuizResults));
+            }
             updateStudentMemory('quiz', { score: correct, level: level });
             startChatPhase(correct, level);
         }
@@ -2926,9 +2916,35 @@
 
         // --- SISTEMA DE MODALS (UI) ---
         window.showHistoryModal = function() {
-            let htmlContent = '<div class="text-left overflow-y-auto max-h-[65vh] mt-3 space-y-4 pr-1">';
+            let htmlContent = '<div class="text-left overflow-y-auto max-h-[70vh] md:max-h-[75vh] mt-2 space-y-4 pr-1">';
 
-            const userMessages = chatHistory.filter(m => m.role === 'user');
+            const initialQuiz = window.initialQuizResults || (function() {
+                try {
+                    const raw = localStorage.getItem('aliat_initial_quiz_' + currentSessionId);
+                    return raw ? JSON.parse(raw) : null;
+                } catch(e) { return null; }
+            })();
+
+            const userMessages = chatHistory.filter(m => {
+                if (m.role !== 'user') return false;
+                const txt = (m.content || '').trim();
+                if (!txt) return false;
+                if (txt.includes('[BOTON_') || 
+                    txt.includes('Hola tutor! Estic preparat') || 
+                    txt.startsWith('Següent:') || 
+                    txt.startsWith('Molt bé, teoria entesa') || 
+                    txt.startsWith('Perfecte. Ara explica') || 
+                    txt.startsWith('Ho he entès! Posa\'m a prova') || 
+                    txt.startsWith('Comencem la primera sessió') ||
+                    txt.startsWith('Demano un repàs dels meus punts febles') ||
+                    txt.startsWith('Anàlisi d\'apunt') ||
+                    txt.startsWith('Crea una baralla Anki de:') ||
+                    txt.startsWith('Genera un diagrama sobre:')) {
+                    return false;
+                }
+                return true;
+            });
+
             const gamesList = Object.values(window.interactiveGames || {});
             const memory = typeof getStudentMemory === 'function' ? getStudentMemory() : null;
 
@@ -2936,29 +2952,75 @@
             htmlContent += `
             <div class="grid grid-cols-3 gap-2 text-center">
                 <div class="bg-blue-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-blue-200 dark:border-zinc-800">
-                    <div class="text-xl font-black text-blue-600 dark:text-blue-400">${userMessages.length}</div>
-                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mt-0.5">Preguntes Fetes</div>
+                    <div class="text-lg md:text-xl font-black text-blue-600 dark:text-blue-400">${initialQuiz ? (initialQuiz.score + '/' + initialQuiz.total) : (userMessages.length)}</div>
+                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mt-0.5">${initialQuiz ? 'Test Inicial' : 'Preguntes'}</div>
                 </div>
                 <div class="bg-purple-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-purple-200 dark:border-zinc-800">
-                    <div class="text-xl font-black text-purple-600 dark:text-purple-400">${gamesList.length}</div>
-                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mt-0.5">Tests Jugats</div>
+                    <div class="text-lg md:text-xl font-black text-purple-600 dark:text-purple-400">${gamesList.length}</div>
+                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mt-0.5">Minijocs</div>
                 </div>
                 <div class="bg-emerald-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-emerald-200 dark:border-zinc-800">
-                    <div class="text-xl font-black text-emerald-600 dark:text-emerald-400">${memory ? (memory.masteryScore + '%') : '--'}</div>
-                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mt-0.5">Nivell Assolit</div>
+                    <div class="text-lg md:text-xl font-black text-emerald-600 dark:text-emerald-400">${initialQuiz ? initialQuiz.level.replace('Nivell ', '') : (memory ? (memory.masteryScore + '%') : '--')}</div>
+                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mt-0.5">Nivell</div>
                 </div>
             </div>`;
 
-            // 2. Tests i Minijocs Interactius Reals
+            // 2. TEST DE DIAGNÒSTIC INICIAL (SECCIÓ PRINCIPAL REQUERIDA)
+            htmlContent += `
+            <div>
+                <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center justify-between">
+                    <span class="flex items-center gap-1.5">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        <span>Test de Diagnòstic Inicial</span>
+                    </span>
+                    ${initialQuiz ? `<span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-900/50">${initialQuiz.score}/${initialQuiz.total} encerts (${Math.round((initialQuiz.score / initialQuiz.total) * 100)}%)</span>` : ''}
+                </h4>`;
+
+            if (!initialQuiz || !Array.isArray(initialQuiz.questions) || initialQuiz.questions.length === 0) {
+                htmlContent += `<div class="p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 italic">Encara no s'ha realitzat cap test de diagnòstic en aquesta sessió. Crea un Pla d'Estudis per activar-lo.</div>`;
+            } else {
+                htmlContent += `<div class="space-y-2.5">`;
+                initialQuiz.questions.forEach((q) => {
+                    const isCorrect = q.is_correct;
+                    const cardBorder = isCorrect ? 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/30 dark:bg-emerald-950/20' : 'border-rose-200 dark:border-rose-900/50 bg-rose-50/30 dark:bg-rose-950/20';
+                    const badgeClass = isCorrect ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' : 'bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800';
+                    const iconSvg = isCorrect ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+                    htmlContent += `
+                    <div class="p-3 rounded-xl border ${cardBorder} shadow-sm text-xs space-y-1.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <span class="font-bold text-zinc-900 dark:text-zinc-100 text-xs leading-snug flex-1">
+                                <span class="text-blue-600 dark:text-blue-400 font-black mr-1">${q.num}.</span> ${q.pregunta}
+                            </span>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${badgeClass} shrink-0">
+                                ${iconSvg} ${isCorrect ? 'Encertat' : 'A revisar'}
+                            </span>
+                        </div>
+                        <div class="pl-4 border-l-2 ${isCorrect ? 'border-emerald-400 dark:border-emerald-600' : 'border-rose-400 dark:border-rose-600'} space-y-1 mt-1">
+                            <div class="text-[11px] ${isCorrect ? 'text-emerald-700 dark:text-emerald-300 font-semibold' : 'text-rose-700 dark:text-rose-300 font-semibold'}">
+                                La teva resposta: <span class="font-medium">${q.user_answer}</span>
+                            </div>
+                            ${!isCorrect ? `
+                            <div class="text-[11px] text-emerald-700 dark:text-emerald-300 font-bold">
+                                Resposta correcta: <span class="font-semibold">${q.resposta_correcta}</span>
+                            </div>` : ''}
+                        </div>
+                    </div>`;
+                });
+                htmlContent += `</div>`;
+            }
+            htmlContent += `</div>`;
+
+            // 3. Tests i Minijocs Interactius Reals
             htmlContent += `
             <div>
                 <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-                    <span>Tests i Preguntes Contestades (${gamesList.length})</span>
+                    <span>Minijocs i Preguntes Contestades (${gamesList.length})</span>
                 </h4>`;
             
             if (gamesList.length === 0) {
-                htmlContent += `<div class="p-3.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 italic">Encara no has respost cap minijoc o test interactiu en aquesta sessió.</div>`;
+                htmlContent += `<div class="p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 italic">Encara no has respost cap minijoc interactiu en aquesta sessió.</div>`;
             } else {
                 htmlContent += `<div class="space-y-2">`;
                 gamesList.forEach((game, idx) => {
@@ -2986,18 +3048,15 @@
             }
             htmlContent += `</div>`;
 
-            // 3. Preguntes Reals de l'Usuari en aquesta sessió
-            htmlContent += `
-            <div>
-                <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    <span>Preguntes i Consultes Fetes per Tu (${userMessages.length})</span>
-                </h4>`;
-
-            if (userMessages.length === 0) {
-                htmlContent += `<div class="p-3.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 italic">No has fet cap consulta en aquesta conversa encara.</div>`;
-            } else {
-                htmlContent += `<div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">`;
+            // 4. Preguntes Reals de l'Usuari en aquesta sessió
+            if (userMessages.length > 0) {
+                htmlContent += `
+                <div>
+                    <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span>Dubtes i Preguntes Fetes per Tu (${userMessages.length})</span>
+                    </h4>
+                    <div class="space-y-1.5 max-h-40 overflow-y-auto pr-1">`;
                 userMessages.forEach((m, idx) => {
                     const cleanTxt = (m.content || '').replace(/<[^>]*>?/gm, '').trim();
                     htmlContent += `
@@ -3006,11 +3065,10 @@
                         <span class="text-zinc-800 dark:text-zinc-200 font-medium leading-relaxed">${cleanTxt}</span>
                     </div>`;
                 });
-                htmlContent += `</div>`;
+                htmlContent += `</div></div>`;
             }
-            htmlContent += `</div>`;
 
-            // 4. Pla d'Estudis si existeix
+            // 5. Pla d'Estudis si existeix
             if (generatedCalendarArray && generatedCalendarArray.length > 0) {
                 htmlContent += `
                 <div class="pt-2 border-t border-zinc-200 dark:border-zinc-800">
@@ -3028,19 +3086,17 @@
             htmlContent += '</div>';
 
             Swal.fire({
-                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> Resultats i Activitat Real</div>',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> Resultats i Progrés Real</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 confirmButtonText: 'Tancar',
                 confirmButtonColor: '#2563eb',
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
         function showCalendarModal() {
-            let htmlContent = '<div class="grid grid-cols-1 gap-2 mt-3 text-left overflow-y-auto max-h-[50vh] md:max-h-96">';
+            let htmlContent = '<div class="grid grid-cols-1 gap-2 mt-3 text-left overflow-y-auto max-h-[50vh] md:max-h-96 pr-1">';
             generatedCalendarArray.forEach(item => {
                 htmlContent += `<div class="p-2.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl flex gap-3 items-center"><div class="bg-blue-100 dark:bg-zinc-800 text-blue-700 dark:text-zinc-200 border border-transparent dark:border-zinc-700 font-bold rounded-full w-7 h-7 flex items-center justify-center shrink-0 text-xs">${item.num}</div><div><div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-0.5">${item.dia_real}</div><div class="text-[12px] font-bold text-zinc-900 dark:text-zinc-100">${item.tema}</div></div></div>`;
             });
@@ -3051,16 +3107,14 @@
                 showCloseButton: true, 
                 confirmButtonText: 'Tancar', 
                 confirmButtonColor: '#2563eb', 
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-900 dark:text-white' } 
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md w-full', title: 'font-black text-zinc-900 dark:text-white' } 
             });
         }
         
         window.scrollToLatestTheory = function() {
             const markers = document.querySelectorAll('.theory-marker');
             if(markers.length === 0) {
-                Swal.fire({ title: 'Cap lliçó activa', text: 'Encara no s\'ha generat contingut a la sessió.', icon: 'info', confirmButtonColor: '#2563eb', target: 'main', heightAuto: false, customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' } });
+                Swal.fire({ title: 'Cap lliçó activa', text: 'Encara no s\'ha generat contingut a la sessió.', icon: 'info', confirmButtonColor: '#2563eb', customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' } });
                 return;
             }
             
@@ -3082,9 +3136,7 @@
                 html: htmlContent, 
                 showCloseButton: true, 
                 showConfirmButton: false,
-                target: 'main',
-                heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 

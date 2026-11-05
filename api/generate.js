@@ -80,58 +80,29 @@ function generateLocalStudyPlan(pdfText, totalSessionsToGenerate) {
         }
     }
 
-    const questions = [
-        {
-            pregunta: "Quin és l'objectiu fonamental abans d'abordar els exercicis pràctics d'aquest temari?",
-            opcions: [
-                "A) Comprendre a fons la teoria, definicions i relacions bàsiques",
-                "B) Memoritzar fórmules sense comprendre el seu significat",
-                "C) Passar directament a l'examen sense revisar els fonaments",
-                "D) Resoldre problemes de forma intuïtiva sense seguir un mètode"
-            ],
-            resposta_correcta: "A) Comprendre a fons la teoria, definicions i relacions bàsiques"
-        },
-        {
-            pregunta: "Quina estratègia d'aprenentatge és més eficaç per consolidar la memòria a llarg termini?",
-            opcions: [
-                "A) Pràctica de recuperació activa (flashcards) i repetició espaciada",
-                "B) Llegir de nou el text de forma passiva múltiples vegades",
-                "C) Subratllar pàgines senceres en colors vius",
-                "D) Estudiar totes les hores la nit anterior a la prova"
-            ],
-            resposta_correcta: "A) Pràctica de recuperació activa (flashcards) i repetició espaciada"
-        },
-        {
-            pregunta: "Davant d'un concepte complex d'aquest temari, quin enfocament garanteix el millor domini?",
-            opcions: [
-                "A) Desglossar-lo explicant-lo amb paraules senzilles (Mètode Feynman)",
-                "B) Ignorar-lo i confiar que no apareixerà a la prova",
-                "C) Intentar recordar paraula per paraula la definició del llibre",
-                "D) Copiar el paràgraf sense analitzar els termes desconeguts"
-            ],
-            resposta_correcta: "A) Desglossar-lo explicant-lo amb paraules senzilles (Mètode Feynman)"
-        },
-        {
-            pregunta: "Com s'ha d'estructurar la resolució de problemes o anàlisi en aquest àmbit?",
-            opcions: [
-                "A) Identificar dades, seleccionar fórmules pertinents i verificar el resultat",
-                "B) Començar a calcular directament sense llegir l'enunciat complet",
-                "C) Ometre les unitats de mesura o el context de l'anunciat",
-                "D) Canviar les premisses fins a obtenir un valor enter"
-            ],
-            resposta_correcta: "A) Identificar dades, seleccionar fórmules pertinents i verificar el resultat"
-        },
-        {
-            pregunta: "A l'última sessió del pla d'estudi ('Repàs General'), quina és l'activitat més recomanada?",
-            opcions: [
-                "A) Realitzar un simulacre d'examen cronometrat i repassar punts febles",
-                "B) Aprendre matèria completament nova per primera vegada",
-                "C) Deixar d'estudiar sense verificar el nivell adquirit",
-                "D) Reler resums sense avaluar la capacitat de resposta"
-            ],
-            resposta_correcta: "A) Realitzar un simulacre d'examen cronometrat i repassar punts febles"
-        }
+    // Creem 5 preguntes de diagnòstic vinculades directament al temari del PDF
+    const topicPool = distinctTopics.length > 0 ? distinctTopics : [
+        cleanText.substring(0, 30) || "Fonaments del Temari",
+        "Conceptes i Definicions Clau",
+        "Propietats i Fórmules Principals",
+        "Aplicació Pràctica i Resolució",
+        "Síntesi i Anàlisi Global"
     ];
+
+    const questions = [];
+    for (let q = 0; q < 5; q++) {
+        const t = topicPool[q % topicPool.length];
+        questions.push({
+            pregunta: `Segons els apunts sobre "${t}", quina de les següents afirmacions reflecteix millor el concepte clau?`,
+            opcions: [
+                `A) És un concepte essencial per al desenvolupament teòric i la resolució pràctica de ${t}`,
+                `B) No té cap relació amb el temari ni amb els exercicis proposats`,
+                `C) S'aplica exclusivament en supòsits teòrics sense cap procediment empíric`,
+                `D) És un element secundari que contradiu la resta de la matèria`
+            ],
+            resposta_correcta: `A) És un concepte essencial per al desenvolupament teòric i la resolució pràctica de ${t}`
+        });
+    }
 
     return {
         calendari_estudi: calendar,
@@ -496,19 +467,28 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
         const formatGeminiHistory = (historyArray) => {
             let safeHistory = [];
+            if (!Array.isArray(historyArray)) return [{ role: 'user', parts: [{ text: "Hola!" }] }];
+
             for (let msg of historyArray) {
-                let role = msg.role === 'assistant' ? 'model' : 'user';
+                if (!msg) continue;
+                let role = (msg.role === 'assistant' || msg.role === 'model') ? 'model' : 'user';
                 let parts = [];
                 
-                if (msg.content) parts.push({ text: msg.content });
-                
-                if (msg.image && msg.image.includes('base64,')) {
-                    const mimeType = msg.image.split(';')[0].split(':')[1];
-                    const base64Data = msg.image.split(',')[1];
-                    parts.push({
-                        inlineData: { mimeType: mimeType, data: base64Data }
-                    });
+                if (typeof msg.content === 'string' && msg.content.trim()) {
+                    parts.push({ text: msg.content.trim() });
                 }
+                
+                if (msg.image && typeof msg.image === 'string' && msg.image.includes('base64,')) {
+                    const mimeType = msg.image.split(';')[0].split(':')[1] || 'image/png';
+                    const base64Data = msg.image.split(',')[1];
+                    if (base64Data) {
+                        parts.push({
+                            inlineData: { mimeType: mimeType, data: base64Data }
+                        });
+                    }
+                }
+
+                if (parts.length === 0) continue;
 
                 if (safeHistory.length > 0 && safeHistory[safeHistory.length - 1].role === role) {
                     safeHistory[safeHistory.length - 1].parts.push(...parts);
@@ -516,21 +496,32 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                     safeHistory.push({ role: role, parts: parts });
                 }
             }
+
+            // CRÍTIC: Gemini i models generatius requereixen que contents comenci obligatòriament per 'user'
+            if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
+                safeHistory.unshift({ role: 'user', parts: [{ text: "Hola! Comencem la classe d'estudi." }] });
+            }
+
+            if (safeHistory.length === 0) {
+                safeHistory.push({ role: 'user', parts: [{ text: "Hola!" }] });
+            }
+
             return safeHistory;
         };
 
         // ACCIÓ 1: PREPARAR ESTUDI
         if (action === 'prepare_study') {
             const systemPrompt = "Ets un tutor d'estudi d'alt nivell acadèmic.\n" + safetyRules + "\n\n" +
-            "La teva missió és doble:\n" +
-            "1. Crear un pla d'estudi de EXACTAMENT " + totalSessionsToGenerate + " sessions. ELS ÚLTIMS TEMES han de ser EXCLUSIVAMENT 'Repàs General i Simulacre'.\n" +
-            "2. Crear un test de diagnòstic de 5 preguntes tipus test basant-te en els apunts de l'alumne.\n\n" +
-            "Apunts de l'alumne: " + (pdfText ? pdfText.substring(0, 12000) : "Temari general d'estudi") + "\n\n" +
-            "REGLA CRÍTICA: RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID (sense text addicional).\n\n" +
+            "La teva missió és doble i ha d'estar BASADA 100% EN ELS APUNTS DE L'ALUMNE:\n" +
+            "1. Crear un pla d'estudi de EXACTAMENT " + totalSessionsToGenerate + " sessions basat en els temes reals d'aquests apunts. ELS ÚLTIMS TEMES han de ser EXCLUSIVAMENT 'Repàs General i Simulacre'.\n" +
+            "2. Crear un test de diagnòstic inicial de 5 preguntes tipus test BASADES ESPECÍFICAMENT EN EL CONTINGUT DELS APUNTS (per avaluar si l'alumne coneix els conceptes, fórmules o procediments clau d'aquesta matèria).\n\n" +
+            "Apunts de l'alumne:\n'''\n" + (pdfText ? pdfText.substring(0, 18000) : "Temari general d'estudi") + "\n'''\n\n" +
+            "REGLA CRÍTICA: Cada pregunta ha de tractar directament sobre conceptes reals presents als apunts (ex: definicions, fórmules, propietats). NO facis preguntes genèriques sobre tècniques d'estudi.\n" +
+            "RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID (sense text addicional ni format markdown fora del bloc).\n\n" +
             "FORMAT EXACTE OBLIGATORI EN JSON:\n" +
             "{\n" +
             "  \"calendari_estudi\": [ { \"tema\": \"Nom del tema o sessió\" } ],\n" +
-            "  \"preguntes\": [ { \"pregunta\": \"Enunciat de la pregunta?\", \"opcions\": [\"A) Opció 1\", \"B) Opció 2\", \"C) Opció 3\", \"D) Opció 4\"], \"resposta_correcta\": \"A) Opció 1\" } ]\n" +
+            "  \"preguntes\": [ { \"pregunta\": \"Enunciat de la pregunta sobre el temari dels apunts?\", \"opcions\": [\"A) Opció 1\", \"B) Opció 2\", \"C) Opció 3\", \"D) Opció 4\"], \"resposta_correcta\": \"A) Opció 1\" } ]\n" +
             "}";
 
             let rawContent = "";
@@ -538,7 +529,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             try {
                 rawContent = await executeAI({
                     systemPrompt,
-                    contents: [{ role: "user", parts: [{ text: "Genera el pla d'estudi de " + totalSessionsToGenerate + " sessions i el test de 5 preguntes en format JSON ara mateix." }] }],
+                    contents: [{ role: "user", parts: [{ text: "Genera el pla d'estudi de " + totalSessionsToGenerate + " sessions i el test inicial de 5 preguntes en format JSON ara mateix basant-te exclusivament en els apunts adjuntats." }] }],
                     jsonMode: true
                 });
             } catch (aiErr) {
@@ -571,14 +562,17 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 modeInstruction = "\nSIMULADOR DE TRIBUNAL D'EXAMEN ACTIU: Actua com un tribunal d'examen universitari estricte però just. Fes preguntes incisives directes, avalua les respostes de l'alumne i demana rigor conceptual.";
             }
 
-            const systemPromptChat = "Ets Aliat Intel·ligent, un tutor d'estudi personalitzat i adaptatiu d'alt nivell.\n\n" + safetyRules + modeInstruction + "\n\n" +
-            "MEMÒRIA EN TEMPS REAL DE L'ALUMNE (SISTEMA ADAPTATIU):\n" + (studentContext || "Sense historial previ.") + "\n" +
-            "INSTRUCCIONS DE MEMÒRIA:\n" +
-            "1. Si l'alumne té conceptes a 'PUNTS A MILLORAR', prioritza reforçar-los.\n" +
-            "2. Si té un alt mestratge a 'PUNTS FORTS', reconeix el seu progrés.\n\n" +
-            "APUNTS/TEMARI DE REFERÈNCIA:\n" + (pdfText ? pdfText.substring(0, 15000) : "Sense apunts.") + "\n\n" +
+            const systemPromptChat = "Ets Aliat Intel·ligent, un tutor d'estudi personalitzat i adaptatiu d'alt nivell acadèmic.\n\n" + safetyRules + modeInstruction + "\n\n" +
+            "REGLA D'OR I PRIORITAT ABSOLUTA (FIDELITAT AL TEMARI):\n" +
+            "1. L'alumne està estudiant EXCLUSIVAMENT el següent temari / document:\n" +
+            (pdfText && pdfText.trim().length > 0 ? "'''\n" + pdfText.substring(0, 20000) + "\n'''" : "Temari definit per l'alumne a la conversa.") + "\n\n" +
+            "2. TOTES les teves explicacions, teories, preguntes, flashcards, càlculs i analogies han de girar 100% al voltant d'aquest temari. " +
+            "NO parlis mai de matèries alienes (per exemple, si el temari és de funcions matemàtiques, NO parlis de física, ni de química, ni d'altres assignatures no relacionades). " +
+            "3. MANTINGUES SEMPRE EL FIL DE L'HISTORIAL: Llegeix amb atenció tots els missatges anteriors. Si l'alumne et fa preguntes sobre el que esteu parlant (com les funcions, exercicis o dubtes), respon directament seguint la conversa sense reiniciar de zero.\n" +
+            "4. Si la memòria de l'alumne conté referències a matèries antigues que no tenen res a veure amb aquests apunts, ignora-les completament i centra't en els apunts actuals.\n\n" +
+            "MEMÒRIA ADAPTATIVA DE L'ALUMNE:\n" + (studentContext || "Sense historial previ.") + "\n\n" +
             "MÈTODE D'ENSENYAMENT PER FASES (quan s'explica un tema nou):\n" +
-            "▶ FASE 1 (Teoria): Dóna NOMÉS la teoria. Acaba amb [BOTON_FLASHCARDS].\n" +
+            "▶ FASE 1 (Teoria): Dóna NOMÉS la teoria de la lliçó de forma clara i acadèmica. Acaba amb [BOTON_FLASHCARDS].\n" +
             "▶ FASE 2 (Flashcards i Esquema):\n" +
             "```flashcards\n[ {\"q\": \"Pregunta?\", \"a\": \"Resposta\"} ]\n```\n" +
             "Afegeix després un Esquema Visual HTML dins d'un bloc ```html ... ``` i acaba amb [BOTON_MNEMOTECNIA].\n" +

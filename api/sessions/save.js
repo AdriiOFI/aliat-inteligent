@@ -13,12 +13,20 @@ module.exports = async function handler(req, res) {
         if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'No autoritzat' });
         
         const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
-        const { id, mode, title, chat_history, calendar, games, html, context, pdf_text } = req.body || {};
+        const { id, mode, title, chat_history, calendar, games, initial_quiz, html, context, pdf_text } = req.body || {};
 
         // Assegurem que l'ID sempre existeix per evitar bloquejos a la BD
         if (!id) return res.status(400).json({ error: 'Falta ID de sessió' });
 
         const client = getDbClient();
+
+        let gamesObj = {};
+        try {
+            gamesObj = typeof games === 'string' ? JSON.parse(games || '{}') : (games || {});
+        } catch (e) { gamesObj = {}; }
+        if (initial_quiz) {
+            gamesObj.__initial_quiz = initial_quiz;
+        }
 
         await client.execute({
             sql: `INSERT INTO sessions (id, user_id, mode, title, chat_history, calendar, games, html, context, pdf_text, updated_at) 
@@ -39,7 +47,7 @@ module.exports = async function handler(req, res) {
                 title || 'Nova Conversa',
                 typeof chat_history === 'string' ? chat_history : JSON.stringify(chat_history || []), 
                 typeof calendar === 'string' ? calendar : JSON.stringify(calendar || []), 
-                typeof games === 'string' ? games : JSON.stringify(games || {}),
+                JSON.stringify(gamesObj),
                 html || '',
                 context || '',
                 pdf_text || ''

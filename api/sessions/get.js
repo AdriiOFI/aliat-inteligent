@@ -27,10 +27,16 @@ module.exports = async function handler(req, res) {
         });
 
         const sessions = (result.rows || []).map(row => {
-            let pHistory = [], pCalendar = [], pGames = {};
+            let pHistory = [], pCalendar = [], pGames = {}, pInitialQuiz = null;
             try { pHistory = typeof row.chat_history === 'string' ? JSON.parse(row.chat_history || '[]') : (row.chat_history || []); } catch(e) {}
             try { pCalendar = typeof row.calendar === 'string' ? JSON.parse(row.calendar || '[]') : (row.calendar || []); } catch(e) {}
-            try { pGames = typeof row.games === 'string' ? JSON.parse(row.games || '{}') : (row.games || {}); } catch(e) {}
+            try { 
+                pGames = typeof row.games === 'string' ? JSON.parse(row.games || '{}') : (row.games || {}); 
+                if (pGames && pGames.__initial_quiz) {
+                    pInitialQuiz = pGames.__initial_quiz;
+                    delete pGames.__initial_quiz;
+                }
+            } catch(e) {}
             
             return {
                 id: row.id,
@@ -39,6 +45,7 @@ module.exports = async function handler(req, res) {
                 history: pHistory,
                 calendar: pCalendar,
                 games: pGames,
+                initial_quiz: pInitialQuiz,
                 html: row.html || '',
                 context: row.context || '',
                 pdf_text: row.pdf_text || '',

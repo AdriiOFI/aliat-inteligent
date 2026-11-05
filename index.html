@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
@@ -334,17 +335,32 @@
                     </div>
                     
                     <div class="flex items-center gap-1.5 md:gap-2">
-                        <button id="memory-header-btn" onclick="showMemoryModal()" class="text-[10px] md:text-sm bg-purple-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-purple-700 dark:text-purple-300 font-bold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-purple-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 md:gap-2 whitespace-nowrap">
+                        <!-- Selector Mode Tutor -->
+                        <div class="relative">
+                            <select id="tutor-mode-select" onchange="setTutorMode(this.value)" class="text-[10px] md:text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold px-2 md:px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 outline-none cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition shadow-sm">
+                                <option value="standard">🎓 Tutor Estàndard</option>
+                                <option value="socratic">🤔 Mode Socràtic</option>
+                                <option value="feynman">👶 Mode Feynman</option>
+                                <option value="tribunal">⚖️ Tribunal Examen</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Botó Desplegable d'Eines d'Estudi -->
+                        <button id="tools-header-btn" onclick="showToolsModal()" class="text-[10px] md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-xl hover:opacity-90 transition flex items-center gap-1 md:gap-1.5 whitespace-nowrap shadow-md">
+                            ⚡ <span class="hidden sm:inline">Eines</span>
+                        </button>
+
+                        <button id="memory-header-btn" onclick="showMemoryModal()" class="text-[10px] md:text-sm bg-purple-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-purple-700 dark:text-purple-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-purple-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap">
                             🧠 <span class="hidden sm:inline">Memòria</span>
                         </button>
-                        <button id="theory-header-btn" onclick="scrollToLatestTheory()" class="text-[10px] md:text-sm bg-blue-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-blue-700 dark:text-blue-300 font-bold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-blue-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 md:gap-2 whitespace-nowrap hidden">
-                            📖 <span class="hidden sm:inline">Índex de Lliçons</span>
+                        <button id="theory-header-btn" onclick="scrollToLatestTheory()" class="text-[10px] md:text-sm bg-blue-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-blue-700 dark:text-blue-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-blue-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap hidden">
+                            📖 <span class="hidden sm:inline">Lliçons</span>
                         </button>
-                        <button id="history-header-btn" onclick="showHistoryModal()" class="text-[10px] md:text-sm bg-indigo-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-indigo-700 dark:text-indigo-300 font-bold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 md:gap-2 whitespace-nowrap">
+                        <button id="history-header-btn" onclick="showHistoryModal()" class="text-[10px] md:text-sm bg-indigo-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-indigo-700 dark:text-indigo-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap">
                             📊 <span class="hidden sm:inline">Resultats</span>
                         </button>
-                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-[10px] md:text-sm bg-zinc-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold px-2.5 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition flex items-center gap-1 md:gap-2 whitespace-nowrap">
-                            📅 <span class="hidden sm:inline">Pla d'Estudi</span>
+                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-[10px] md:text-sm bg-zinc-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap">
+                            📅 <span class="hidden sm:inline">Pla</span>
                         </button>
                     </div>
                 </div>
@@ -362,15 +378,26 @@
                         </div>
                     </div>
                     
-                    <form id="chat-form" class="max-w-4xl mx-auto relative flex items-center gap-2 hidden">
-                        <!-- Botó d'Adjuntar -->
-                        <label class="cursor-pointer p-2 md:p-3 text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0">
+                    <form id="chat-form" class="max-w-4xl mx-auto relative flex items-center gap-1.5 md:gap-2 hidden">
+                        <!-- Botó Lector de Fotos / Càmera -->
+                        <button type="button" onclick="openVisionModal()" title="📸 Lector de Fotos i Càmera en Directe" class="p-2 md:p-3 text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                        </button>
+
+                        <!-- Botó d'Adjuntar Fitxers -->
+                        <label title="Adjuntar Imatge o Document" class="cursor-pointer p-2 md:p-3 text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
                             <input type="file" id="chat-attachment" accept="image/*,.pdf" class="hidden" onchange="handleAttachment(this)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                         </label>
+
+                        <!-- Botó de Dictat per Veu (Micròfon) -->
+                        <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="🎤 Dictat per Veu" class="p-2 md:p-3 text-zinc-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 bg-zinc-50 dark:bg-zinc-950 rounded-xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                            <span id="mic-pulse" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
+                        </button>
                         
                         <div class="relative flex-1">
-                            <textarea id="chat-input" rows="1" placeholder="Escriu un missatge o adjunta una imatge..." class="w-full pl-4 pr-12 py-3 md:py-4 md:pl-5 md:pr-14 rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none transition shadow-sm text-sm md:text-base resize-none overflow-y-auto min-h-[48px] max-h-[150px]" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
+                            <textarea id="chat-input" rows="1" placeholder="Escriu, dicti per veu o adjunta una foto..." class="w-full pl-4 pr-12 py-3 md:py-4 md:pl-5 md:pr-14 rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none transition shadow-sm text-sm md:text-base resize-none overflow-y-auto min-h-[48px] max-h-[150px]" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
                             <button type="submit" class="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-2 md:p-2.5 rounded-xl transition shadow-md">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                             </button>
@@ -957,6 +984,726 @@
             appendMessage('user', "Demano un repàs dels meus punts febles: " + topics);
             chatHistory.push({ role: 'user', content: promptText });
             triggerAiResponse();
+        };
+
+        // --- MODES DE TUTOR I VEU (TTS I STT) ---
+        window.currentTutorMode = 'standard';
+        let isVoiceRecording = false;
+        let speechRecognitionObj = null;
+
+        window.setTutorMode = function(mode) {
+            window.currentTutorMode = mode;
+            let labels = {
+                'standard': '🎓 Tutor Estàndard de classe',
+                'socratic': '🤔 Mode Socràtic (Guiat per preguntes)',
+                'feynman': '👶 Mode Feynman (Com si tingués 10 anys)',
+                'tribunal': '⚖️ Simulador de Tribunal d\'Examen'
+            };
+            showToast('Activat: ' + (labels[mode] || mode));
+        };
+
+        window.speakMessageText = function(text) {
+            if (!('speechSynthesis' in window)) {
+                showToast('⚠️ El teu navegador no suporta síntesi de veu.', 'error');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            let cleanText = text.replace(/```[\s\S]*?```/g, '').replace(/\[.*?\]/g, '').replace(/[*_#`]/g, '').trim();
+            if (!cleanText) return;
+
+            let utterance = new SpeechSynthesisUtterance(cleanText.substring(0, 800));
+            utterance.lang = 'ca-ES';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            
+            let voices = window.speechSynthesis.getVoices();
+            let caVoice = voices.find(v => v.lang.includes('ca') || v.lang.includes('es'));
+            if (caVoice) utterance.voice = caVoice;
+
+            window.speechSynthesis.speak(utterance);
+            showToast('🔊 Escoltant explicació...');
+        };
+
+        window.toggleVoiceDictation = function() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                showToast('⚠️ El teu navegador no suporta reconeixement de veu.', 'error');
+                return;
+            }
+
+            const input = document.getElementById('chat-input');
+            const pulse = document.getElementById('mic-pulse');
+
+            if (isVoiceRecording && speechRecognitionObj) {
+                speechRecognitionObj.stop();
+                isVoiceRecording = false;
+                if(pulse) pulse.classList.add('hidden');
+                showToast('🎤 Dictat aturat.');
+                return;
+            }
+
+            speechRecognitionObj = new SpeechRecognition();
+            speechRecognitionObj.lang = 'ca-ES';
+            speechRecognitionObj.continuous = false;
+            speechRecognitionObj.interimResults = false;
+
+            speechRecognitionObj.onstart = function() {
+                isVoiceRecording = true;
+                if(pulse) pulse.classList.remove('hidden');
+                showToast('🎤 Parla ara... Estic escoltant!');
+            };
+
+            speechRecognitionObj.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                if (input) {
+                    input.value = (input.value ? input.value + " " : "") + transcript;
+                    input.style.height = 'auto';
+                    input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+                }
+            };
+
+            speechRecognitionObj.onerror = function(err) {
+                isVoiceRecording = false;
+                if(pulse) pulse.classList.add('hidden');
+                showToast('⚠️ Error de veu: ' + err.error, 'error');
+            };
+
+            speechRecognitionObj.onend = function() {
+                isVoiceRecording = false;
+                if(pulse) pulse.classList.add('hidden');
+            };
+
+            speechRecognitionObj.start();
+        };
+
+        // --- PARELL DE SAMPLES PRE-CARREGATS DE LECTOR DE FOTOS (1-CLICK TEST) ---
+        const SAMPLE_NOTES = {
+            'biologia': {
+                name: "🧬 Biologia Cel·lular (Mitocòndria)",
+                svg: `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto bg-zinc-900 rounded-xl p-2"><ellipse cx="200" cy="120" rx="160" ry="90" fill="#1e293b" stroke="#3b82f6" stroke-width="4"/><path d="M 60 120 Q 90 70 120 120 T 180 120 T 240 120 T 300 120 T 340 120" fill="none" stroke="#10b981" stroke-dasharray="4" stroke-width="3"/><text x="140" y="50" fill="#ef4444" font-size="14" font-weight="bold">Membrana Externa</text><text x="120" y="180" fill="#10b981" font-size="14" font-weight="bold">Crestes Mitocondrials (Respiració ATP)</text><text x="150" y="125" fill="#f59e0b" font-size="12">Matriu i Ribosomes</text></svg>`
+            },
+            'fisica': {
+                name: "📐 Física: Pla Inclinat (Forces)",
+                svg: `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto bg-zinc-900 rounded-xl p-2"><polygon points="40,200 360,200 360,60" fill="#1e293b" stroke="#6366f1" stroke-width="4"/><rect x="180" y="100" width="50" height="40" transform="rotate(-25 205 120)" fill="#f59e0b" stroke="#fff" stroke-width="2"/><line x1="205" y1="120" x2="205" y2="180" stroke="#ef4444" stroke-width="3"/><text x="210" y="175" fill="#ef4444" font-size="12" font-weight="bold">P = m·g</text><line x1="205" y1="120" x2="150" y2="95" stroke="#10b981" stroke-width="3"/><text x="130" y="90" fill="#10b981" font-size="12" font-weight="bold">Fricció (Ff)</text><text x="80" y="190" fill="#a1a1aa" font-size="14">Angle θ = 30°</text></svg>`
+            },
+            'matematices': {
+                name: "🔢 Matemàtiques: Integrals i Derivades",
+                svg: `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto bg-zinc-900 rounded-xl p-2"><text x="30" y="50" fill="#60a5fa" font-size="20" font-weight="bold">∫ (x² · eˣ) dx</text><text x="30" y="90" fill="#f4f4f5" font-size="14">Mètode: Integració per parts (u·v - ∫v·du)</text><text x="30" y="130" fill="#10b981" font-size="14">u = x²  ➔  du = 2x dx</text><text x="30" y="160" fill="#f59e0b" font-size="14">dv = eˣ dx  ➔  v = eˣ</text><text x="30" y="200" fill="#a855f7" font-size="16" font-weight="bold">Resolució: eˣ(x² - 2x + 2) + C</text></svg>`
+            }
+        };
+
+        // --- HUB MODAL D'EINES D'ESTUDI ---
+        window.showToolsModal = function() {
+            let htmlContent = `
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4 text-left">
+                <button onclick="Swal.close(); openVisionModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 transition group flex flex-col justify-between">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-lg mb-3">📸</div>
+                    <div>
+                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-blue-600 transition">Lector de Fotos</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Analitza llibretes, resol exàmens i transcriu fotos.</div>
+                    </div>
+                </button>
+
+                <button onclick="Swal.close(); openDiagramModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-500 transition group flex flex-col justify-between">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-lg mb-3">🎨</div>
+                    <div>
+                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-indigo-600 transition">Diagrames Visuals</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Esquemes visuals per a memòria fotogràfica.</div>
+                    </div>
+                </button>
+
+                <button onclick="Swal.close(); openAnkiModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-purple-500 dark:hover:border-purple-500 transition group flex flex-col justify-between">
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-lg mb-3">📇</div>
+                    <div>
+                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-purple-600 transition">Baralla Anki IA</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Genera targetes Anki de repetició espaciada.</div>
+                    </div>
+                </button>
+
+                <button onclick="Swal.close(); openExamSimulatorModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-emerald-500 dark:hover:border-emerald-500 transition group flex flex-col justify-between">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg mb-3">📝</div>
+                    <div>
+                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-emerald-600 transition">Simulador Examen</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Test amb puntuació /10 i confetti en aprovar.</div>
+                    </div>
+                </button>
+
+                <button onclick="Swal.close(); openCheatsheetModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-amber-500 dark:hover:border-amber-500 transition group flex flex-col justify-between">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-lg mb-3">⚡</div>
+                    <div>
+                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-amber-600 transition">Chuleta & Resums</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Extrau fórmules, mapa conceptual i cronologia.</div>
+                    </div>
+                </button>
+
+                <button onclick="Swal.close(); openPomodoroModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-rose-500 dark:hover:border-rose-500 transition group flex flex-col justify-between">
+                    <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold text-lg mb-3">⏱️</div>
+                    <div>
+                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-rose-600 transition">Pomodoro & Sons</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Temporitzador 25/5 min i so de pluja sintetitzada.</div>
+                    </div>
+                </button>
+            </div>`;
+
+            Swal.fire({
+                title: '⚡ Eines d\'Estudi Integrades',
+                html: htmlContent,
+                showCloseButton: true,
+                showConfirmButton: false,
+                target: 'main',
+                heightAuto: false,
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-2xl', title: 'font-black text-zinc-800 dark:text-white' }
+            });
+        };
+
+        // --- 📸 MODAL LECTOR DE FOTOS I CÀMERA EN DIRECTE ---
+        let currentVisionImageBase64 = null;
+
+        window.openVisionModal = function() {
+            let htmlContent = `
+            <div class="space-y-4 text-left mt-2">
+                <!-- Modes d'anàlisi -->
+                <div>
+                    <label class="block text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2">1. Selecciona el Mètode d'Anàlisi</label>
+                    <div class="grid grid-cols-2 gap-2" id="vision-mode-selector">
+                        <button onclick="selectVisionMode('solve', this)" class="v-mode-btn active p-2.5 rounded-xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center gap-2">
+                            🧮 Resolver Exercici
+                        </button>
+                        <button onclick="selectVisionMode('diagram_breakdown', this)" class="v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 font-bold text-xs flex items-center gap-2">
+                            🧬 Desglosar Esquema
+                        </button>
+                        <button onclick="selectVisionMode('transcribe_summarize', this)" class="v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 font-bold text-xs flex items-center gap-2">
+                            ✍️ Transcriure i Resumir
+                        </button>
+                        <button onclick="selectVisionMode('study_pack', this)" class="v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 font-bold text-xs flex items-center gap-2">
+                            📦 Pack d'Estudi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Provar Apunts de Exemple en 1-Clic -->
+                <div>
+                    <label class="block text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">O prova amb 3 Apunts de Exemple en 1-Clic:</label>
+                    <div class="flex gap-2 overflow-x-auto pb-1">
+                        <button onclick="loadSampleVision('biologia')" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-500 hover:text-white rounded-xl text-xs font-semibold shrink-0 transition border border-zinc-200 dark:border-zinc-700">🧬 Biologia Cel·lular</button>
+                        <button onclick="loadSampleVision('fisica')" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-500 hover:text-white rounded-xl text-xs font-semibold shrink-0 transition border border-zinc-200 dark:border-zinc-700">📐 Física: Pla Inclinat</button>
+                        <button onclick="loadSampleVision('matematices')" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-500 hover:text-white rounded-xl text-xs font-semibold shrink-0 transition border border-zinc-200 dark:border-zinc-700">🔢 Matemàtiques: Integrals</button>
+                    </div>
+                </div>
+
+                <!-- Àrea de càmera o pujar foto -->
+                <div class="border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-4 text-center relative bg-zinc-50 dark:bg-zinc-950/50" id="vision-dropzone">
+                    <div id="vision-preview-box" class="hidden mb-3">
+                        <img id="vision-img-element" class="max-h-48 mx-auto rounded-xl shadow-md border border-zinc-700">
+                    </div>
+                    <div id="vision-svg-box" class="hidden mb-3"></div>
+                    <input type="file" id="vision-file-input" accept="image/*" class="hidden" onchange="handleVisionFileSelect(this)">
+                    <div class="flex items-center justify-center gap-3">
+                        <button onclick="document.getElementById('vision-file-input').click()" class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-100 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2">
+                            📁 Pujar Foto/Apunt
+                        </button>
+                        <button onclick="startLiveCamera()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2">
+                            📷 Obrir Càmera
+                        </button>
+                    </div>
+                    <video id="vision-video" class="hidden w-full max-h-48 rounded-xl mt-3 object-cover border border-zinc-700" autoplay playsinline></video>
+                    <button id="vision-snap-btn" onclick="snapCameraPhoto()" class="hidden w-full mt-2 bg-red-600 text-white font-bold py-2 rounded-xl text-xs">📸 Capturar Foto de la Càmera</button>
+                </div>
+
+                <button id="btn-process-vision" onclick="processVisionAnalysis()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
+                    🔍 Analitzar Foto amb Gemini 3.8 Flash
+                </button>
+            </div>`;
+
+            window.selectedVisionMode = 'solve';
+            currentVisionImageBase64 = null;
+
+            Swal.fire({
+                title: '📸 Lector i Solucionador d\'Apunts',
+                html: htmlContent,
+                showCloseButton: true,
+                showConfirmButton: false,
+                target: 'main',
+                heightAuto: false,
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl', title: 'font-black text-zinc-800 dark:text-white' }
+            });
+        };
+
+        window.selectVisionMode = function(mode, btn) {
+            window.selectedVisionMode = mode;
+            document.querySelectorAll('.v-mode-btn').forEach(b => {
+                b.className = "v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 font-bold text-xs flex items-center gap-2";
+            });
+            btn.className = "v-mode-btn active p-2.5 rounded-xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center gap-2";
+        };
+
+        window.loadSampleVision = function(sampleKey) {
+            const sample = SAMPLE_NOTES[sampleKey];
+            if (!sample) return;
+            const svgBox = document.getElementById('vision-svg-box');
+            const imgEl = document.getElementById('vision-img-element');
+            const prevBox = document.getElementById('vision-preview-box');
+            
+            if(svgBox) {
+                svgBox.innerHTML = sample.svg;
+                svgBox.classList.remove('hidden');
+            }
+            if(prevBox) prevBox.classList.add('hidden');
+
+            const svgString = new XMLSerializer().serializeToString(svgBox.querySelector('svg'));
+            currentVisionImageBase64 = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
+            showToast('Apunt carregat: ' + sample.name);
+        };
+
+        window.handleVisionFileSelect = function(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentVisionImageBase64 = e.target.result;
+                const imgEl = document.getElementById('vision-img-element');
+                const prevBox = document.getElementById('vision-preview-box');
+                const svgBox = document.getElementById('vision-svg-box');
+                if(svgBox) svgBox.classList.add('hidden');
+                if(imgEl) imgEl.src = currentVisionImageBase64;
+                if(prevBox) prevBox.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.startLiveCamera = async function() {
+            try {
+                const video = document.getElementById('vision-video');
+                const snapBtn = document.getElementById('vision-snap-btn');
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+                video.classList.remove('hidden');
+                snapBtn.classList.remove('hidden');
+            } catch(e) {
+                showToast('⚠️ No s\'ha pogut accedir a la càmera: ' + e.message, 'error');
+            }
+        };
+
+        window.snapCameraPhoto = function() {
+            const video = document.getElementById('vision-video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            currentVisionImageBase64 = canvas.toDataURL('image/png');
+
+            const imgEl = document.getElementById('vision-img-element');
+            const prevBox = document.getElementById('vision-preview-box');
+            if(imgEl) imgEl.src = currentVisionImageBase64;
+            if(prevBox) prevBox.classList.remove('hidden');
+
+            if(video.srcObject) {
+                video.srcObject.getTracks().forEach(t => t.stop());
+            }
+            video.classList.add('hidden');
+            document.getElementById('vision-snap-btn').classList.add('hidden');
+            showToast('📸 Foto capturada!');
+        };
+
+        window.processVisionAnalysis = async function() {
+            if (!currentVisionImageBase64) {
+                showToast('⚠️ Selecciona o captura una foto d\'apunts primer.', 'error');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Analitzant apunt...',
+                text: 'Gemini 3.8 Flash està processant la imatge.',
+                allowOutsideClick: false,
+                target: 'main',
+                didOpen: () => Swal.showLoading()
+            });
+
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'vision_analyze',
+                        imageBase64: currentVisionImageBase64,
+                        mode: window.selectedVisionMode || 'solve'
+                    })
+                });
+
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                Swal.close();
+                appendMessage('user', '📸 Anàlisi d\'apunt (' + window.selectedVisionMode + ')');
+                appendMessage('ai', data.analysis);
+                chatHistory.push({ role: 'user', content: '📸 Anàlisi d\'apunt (' + window.selectedVisionMode + ')' });
+                chatHistory.push({ role: 'assistant', content: data.analysis });
+                saveSession();
+
+            } catch(e) {
+                Swal.fire('Error', e.message, 'error');
+            }
+        };
+
+        // --- 🎨 MODAL GENERADOR VISUAL DE DIAGRAMES ---
+        window.openDiagramModal = function() {
+            let htmlContent = `
+            <div class="space-y-4 text-left mt-2">
+                <div>
+                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Tema del Diagrama</label>
+                    <input type="text" id="diagram-topic" placeholder="Ex: Ciclo de Krebs, Capas de la Tierra, Sinapsis Neuronal, Leyes de Kepler..." class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-medium outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Estil Visual</label>
+                    <select id="diagram-style" class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-bold outline-none">
+                        <option value="diagrama_cientific">📐 Diagrama Científic amb Etiquetes</option>
+                        <option value="infografia_3d">🎨 Infografia 3D Interactiva</option>
+                        <option value="dibuix_anatomic">🧬 Dibuix Anatòmic Vectorial</option>
+                    </select>
+                </div>
+                <button onclick="processGenerateDiagram()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
+                    ✨ Generar Diagrama Visual
+                </button>
+            </div>`;
+
+            Swal.fire({
+                title: '🎨 Generador Visual de Diagrames',
+                html: htmlContent,
+                showCloseButton: true,
+                showConfirmButton: false,
+                target: 'main',
+                heightAuto: false,
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+            });
+        };
+
+        window.processGenerateDiagram = async function() {
+            const topic = document.getElementById('diagram-topic').value.trim();
+            const style = document.getElementById('diagram-style').value;
+            if (!topic) { showToast('Escriu un tema per al diagrama.', 'error'); return; }
+
+            Swal.fire({ title: 'Dissenyant Diagrama...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
+
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'generate_diagram', topic: topic, style: style })
+                });
+                const data = await res.json();
+                if(data.error) throw new Error(data.error);
+
+                Swal.close();
+                appendMessage('user', '🎨 Genera un diagrama sobre: ' + topic);
+                appendMessage('ai', data.diagram);
+                chatHistory.push({ role: 'user', content: '🎨 Genera un diagrama sobre: ' + topic });
+                chatHistory.push({ role: 'assistant', content: data.diagram });
+                saveSession();
+
+            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+        };
+
+        // --- 📇 MODAL GENERADOR DE BARAJES ANKI ---
+        window.openAnkiModal = function() {
+            let htmlContent = `
+            <div class="space-y-4 text-left mt-2">
+                <div>
+                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Matèria o concepte</label>
+                    <input type="text" id="anki-topic" placeholder="Ex: Vocabulari d'Anglès B2, Taula Periòdica, Història d'Espanya..." class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-medium outline-none">
+                </div>
+                <button onclick="processGenerateAnki()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
+                    📇 Crear Baralla Anki amb IA
+                </button>
+            </div>`;
+
+            Swal.fire({
+                title: '📇 Flashcards (Métode Anki)',
+                html: htmlContent,
+                showCloseButton: true,
+                showConfirmButton: false,
+                target: 'main',
+                heightAuto: false,
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+            });
+        };
+
+        window.processGenerateAnki = async function() {
+            const topic = document.getElementById('anki-topic').value.trim();
+            if (!topic) { showToast('Escriu un tema per a les Flashcards.', 'error'); return; }
+
+            Swal.fire({ title: 'Generant Baralla Anki...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
+
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'generate_anki_deck', topic: topic })
+                });
+                const data = await res.json();
+                if(data.error) throw new Error(data.error);
+
+                Swal.close();
+                appendMessage('user', '📇 Crea una baralla Anki de: ' + topic);
+                appendMessage('ai', data.deck);
+                chatHistory.push({ role: 'user', content: '📇 Crea una baralla Anki de: ' + topic });
+                chatHistory.push({ role: 'assistant', content: data.deck });
+                saveSession();
+
+            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+        };
+
+        // --- 📝 MODAL SIMULADOR D'EXAMENS I TEST AMB CONFETTI ---
+        window.openExamSimulatorModal = function() {
+            let htmlContent = `
+            <div class="space-y-4 text-left mt-2">
+                <div>
+                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Tema de l'Examen</label>
+                    <input type="text" id="exam-sim-topic" placeholder="Ex: Anatomia del Cor, Dret Constitucional, Liqueus i Fongs..." class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-medium outline-none">
+                </div>
+                <button onclick="processGenerateExamSim()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
+                    📝 Començar Examen Puntuat
+                </button>
+            </div>`;
+
+            Swal.fire({
+                title: '📝 Simulador de Test i Exàmens',
+                html: htmlContent,
+                showCloseButton: true,
+                showConfirmButton: false,
+                target: 'main',
+                heightAuto: false,
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+            });
+        };
+
+        window.processGenerateExamSim = async function() {
+            const topic = document.getElementById('exam-sim-topic').value.trim();
+            if (!topic) { showToast('Escriu un tema per a l\'examen.', 'error'); return; }
+
+            Swal.fire({ title: 'Dissenyant Examen...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
+
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'chat',
+                        chatHistory: [{ role: 'user', content: `Crea un Test d'Examen Kahoot de 5 preguntes realistes amb distractors plausibles sobre el tema: ${topic}. Retorna NOMÉS el bloc kahoot.` }]
+                    })
+                });
+                const data = await res.json();
+                if(data.error) throw new Error(data.error);
+
+                Swal.close();
+                appendMessage('user', '📝 Genera un Examen Puntuat de: ' + topic);
+                appendMessage('ai', data.reply);
+                chatHistory.push({ role: 'user', content: '📝 Genera un Examen Puntuat de: ' + topic });
+                chatHistory.push({ role: 'assistant', content: data.reply });
+                saveSession();
+
+            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+        };
+
+        // --- ⚡ MODAL CHULETES DE FÓRMULES I MAPES CONCEPTUALS ---
+        window.openCheatsheetModal = function() {
+            let htmlContent = `
+            <div class="space-y-4 text-left mt-2">
+                <div>
+                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Apunts o Text a Extreure</label>
+                    <textarea id="cheatsheet-text" placeholder="Enganxa aquí el teu text o apunts llargs..." class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-medium outline-none h-28 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Tipus de Resum</label>
+                    <select id="cheatsheet-format" class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-bold outline-none">
+                        <option value="formulas">⚡ Chuleta de Fórmules i Equacions</option>
+                        <option value="mindmap">🗺️ Mapa Conceptual Jeràrquic</option>
+                        <option value="timeline">⏳ Línia Cronològica d'Etapes</option>
+                    </select>
+                </div>
+                <button onclick="processGenerateCheatsheet()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
+                    ⚡ Extreure Chuleta
+                </button>
+            </div>`;
+
+            Swal.fire({
+                title: '⚡ Chuletes de Fórmules i Resúmens',
+                html: htmlContent,
+                showCloseButton: true,
+                showConfirmButton: false,
+                target: 'main',
+                heightAuto: false,
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+            });
+        };
+
+        window.processGenerateCheatsheet = async function() {
+            const sourceText = document.getElementById('cheatsheet-text').value.trim();
+            const formatType = document.getElementById('cheatsheet-format').value;
+
+            Swal.fire({ title: 'Processant Chuleta...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
+
+            try {
+                const res = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'generate_cheatsheet', sourceText: sourceText, formatType: formatType })
+                });
+                const data = await res.json();
+                if(data.error) throw new Error(data.error);
+
+                Swal.close();
+                appendMessage('user', '⚡ Genera una Chuleta d\'Estudi (' + formatType + ')');
+                appendMessage('ai', data.result);
+                chatHistory.push({ role: 'user', content: '⚡ Genera una Chuleta d\'Estudi (' + formatType + ')' });
+                chatHistory.push({ role: 'assistant', content: data.result });
+                saveSession();
+
+            } catch(e) { Swal.fire('Error', e.message, 'error'); }
+        };
+
+        // --- ⏱️ POMODORO DE CONCENTRACIÓ I SINTETITZADOR DE SO AMBIENTAL ---
+        let pomodoroTimeLeft = 25 * 60;
+        let pomodoroTimerId = null;
+        let pomodoroIsRunning = false;
+        let activeAudioSynth = null;
+
+        window.openPomodoroModal = function() {
+            let minutes = Math.floor(pomodoroTimeLeft / 60);
+            let seconds = pomodoroTimeLeft % 60;
+            let formattedTime = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+
+            let htmlContent = `
+            <div class="space-y-5 text-center mt-2">
+                <div class="text-5xl font-black text-zinc-800 dark:text-zinc-100 tracking-wider font-mono bg-zinc-100 dark:bg-zinc-950 py-6 rounded-3xl border border-zinc-200 dark:border-zinc-800" id="pomo-display">
+                    ${formattedTime}
+                </div>
+                
+                <div class="flex justify-center gap-3">
+                    <button onclick="togglePomodoroTimer()" id="pomo-start-btn" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-6 rounded-xl text-sm transition shadow-md">
+                        ${pomodoroIsRunning ? '⏸️ Pausa' : '▶️ Iniciar Pomodoro'}
+                    </button>
+                    <button onclick="resetPomodoroTimer()" class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold py-3 px-4 rounded-xl text-sm transition">
+                        🔄 Reiniciar (25m)
+                    </button>
+                </div>
+
+                <div class="border-t border-zinc-200 dark:border-zinc-800 pt-4 text-left">
+                    <label class="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Sons Ambientals per a Concentració</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="playAmbientSound('rain')" class="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 hover:border-blue-500 text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                            🌧️ So de Pluja
+                        </button>
+                        <button onclick="playAmbientSound('waves')" class="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 hover:border-cyan-500 text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                            🌊 Ones del Mar
+                        </button>
+                        <button onclick="playAmbientSound('white')" class="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 hover:border-purple-500 text-xs font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                            📻 Soroll Blanc
+                        </button>
+                        <button onclick="stopAmbientSound()" class="p-2.5 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs font-bold flex items-center gap-2">
+                            🔇 Aturar So
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+
+            Swal.fire({
+                title: '⏱️ Pomodoro de Concentració',
+                html: htmlContent,
+                showCloseButton: true,
+                showConfirmButton: false,
+                target: 'main',
+                heightAuto: false,
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+            });
+        };
+
+        window.togglePomodoroTimer = function() {
+            if (pomodoroIsRunning) {
+                clearInterval(pomodoroTimerId);
+                pomodoroIsRunning = false;
+                document.getElementById('pomo-start-btn').innerText = '▶️ Reprendre Pomodoro';
+            } else {
+                pomodoroIsRunning = true;
+                document.getElementById('pomo-start-btn').innerText = '⏸️ Pausa';
+                pomodoroTimerId = setInterval(() => {
+                    if (pomodoroTimeLeft > 0) {
+                        pomodoroTimeLeft--;
+                        let m = Math.floor(pomodoroTimeLeft / 60);
+                        let s = pomodoroTimeLeft % 60;
+                        let displayEl = document.getElementById('pomo-display');
+                        if (displayEl) displayEl.innerText = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+                    } else {
+                        clearInterval(pomodoroTimerId);
+                        pomodoroIsRunning = false;
+                        showToast('🎉 Pomodoro completat! Hora de descansar 5 minuts.');
+                        if (typeof confetti === 'function') {
+                            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+                        }
+                    }
+                }, 1000);
+            }
+        };
+
+        window.resetPomodoroTimer = function() {
+            clearInterval(pomodoroTimerId);
+            pomodoroIsRunning = false;
+            pomodoroTimeLeft = 25 * 60;
+            let displayEl = document.getElementById('pomo-display');
+            if (displayEl) displayEl.innerText = "25:00";
+            const btn = document.getElementById('pomo-start-btn');
+            if(btn) btn.innerText = '▶️ Iniciar Pomodoro';
+        };
+
+        window.playAmbientSound = function(type) {
+            stopAmbientSound();
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            const bufferSize = ctx.sampleRate * 2;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            noise.loop = true;
+
+            const filter = ctx.createBiquadFilter();
+            if (type === 'rain') {
+                filter.type = 'lowpass';
+                filter.frequency.value = 1000;
+            } else if (type === 'waves') {
+                filter.type = 'bandpass';
+                filter.frequency.value = 400;
+            } else {
+                filter.type = 'lowpass';
+                filter.frequency.value = 3000;
+            }
+
+            const gain = ctx.createGain();
+            gain.gain.value = 0.15;
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start();
+
+            activeAudioSynth = { ctx, noise };
+            showToast('🎶 Reproduint so ambiental: ' + type);
+        };
+
+        window.stopAmbientSound = function() {
+            if (activeAudioSynth) {
+                try {
+                    activeAudioSynth.noise.stop();
+                    activeAudioSynth.ctx.close();
+                } catch(e){}
+                activeAudioSynth = null;
+                showToast('🔇 So aturat.');
+            }
         };
         // --- SISTEMA DE SESSIONS AL NÚVOL (NOU) ---
         async function syncCloudSessions() {
@@ -1624,7 +2371,13 @@
                 const actionToSend = appMode === 'free' ? 'free_chat' : 'chat';
                 const res = await fetch('/api/generate', { 
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ action: actionToSend, chatHistory: chatHistory, pdfText: finalStudyText, studentContext: studentContextStr }) 
+                    body: JSON.stringify({ 
+                        action: actionToSend, 
+                        chatHistory: chatHistory, 
+                        pdfText: finalStudyText, 
+                        studentContext: studentContextStr,
+                        tutorMode: window.currentTutorMode || 'standard' 
+                    }) 
                 });
                 document.getElementById(loadingId)?.remove();
                 const data = await res.json();
@@ -2293,9 +3046,14 @@
                 div.innerHTML = `
                 <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md mt-1">AI</div>
                 <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-100 px-4 py-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-md w-full overflow-hidden relative group">
-                    <button onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); Swal.fire({toast:true, position:'top-end', icon:'success', title:'Copiat!', showConfirmButton:false, timer:1500, background: '#18181b', color: '#f4f4f5'});" class="absolute top-2 right-2 p-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    </button>
+                    <div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <button onclick="speakMessageText(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="🔊 Escoltar amb veu" class="p-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg transition">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        </button>
+                        <button onclick="navigator.clipboard.writeText(this.closest('.chat-msg-ai').querySelector('.prose').innerText); Swal.fire({toast:true, position:'top-end', icon:'success', title:'Copiat!', showConfirmButton:false, timer:1500, background: '#18181b', color: '#f4f4f5'});" title="Copiar text" class="p-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </div>
                     <div class="prose prose-sm dark:prose-invert max-w-none text-[13px] break-words overflow-x-auto">${formatMessage(text)}</div>
                 </div>`;
             }

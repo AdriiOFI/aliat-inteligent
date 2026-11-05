@@ -26,8 +26,7 @@ module.exports = async function handler(req, res) {
         const MODEL_FALLBACK_LIST = [
             process.env.GEMINI_MODEL || "gemini-3.8-flash",
             "gemini-3.1-flash-lite",
-            "gemini-2.5-flash",
-            "gemini-3.5-flash-lite"
+            "gemini-flash-latest"
         ];
 
         const safetyRules = `
@@ -50,8 +49,10 @@ module.exports = async function handler(req, res) {
                     });
                     if (response.ok) {
                         const data = await response.json();
-                        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-                            return data.candidates[0].content.parts[0].text;
+                        const parts = data.candidates?.[0]?.content?.parts || [];
+                        const textContent = parts.map(p => p.text || '').filter(Boolean).join('\n');
+                        if (textContent) {
+                            return textContent;
                         }
                     } else {
                         const errText = await response.text();
@@ -112,7 +113,8 @@ module.exports = async function handler(req, res) {
             }));
 
             try {
-                let result = JSON.parse(rawContent.trim());
+                const cleanedContent = rawContent.trim().replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '').trim();
+                let result = JSON.parse(cleanedContent);
                 return res.status(200).json(result);
             } catch (parseError) {
                 return res.status(200).json({ error: "Error d'estructura JSON: " + parseError.message });

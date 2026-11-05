@@ -335,32 +335,17 @@
                     </div>
                     
                     <div class="flex items-center gap-1.5 md:gap-2">
-                        <!-- Selector Mode Tutor en Header -->
-                        <div class="relative hidden sm:block">
-                            <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem text-[10px] md:text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-bold px-2 md:px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 outline-none cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-700 transition shadow-sm">
-                                <option value="standard">🎓 Tutor Estàndard</option>
-                                <option value="socratic">🧐 Mode Socràtic</option>
-                                <option value="feynman">👶 Mode Feynman</option>
-                                <option value="tribunal">⚖️ Tribunal Examen</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Botó Desplegable d'Eines d'Estudi -->
+                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-[10px] md:text-sm bg-zinc-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap shadow-sm">
+                            📅 <span class="hidden sm:inline">Pla d'Estudi</span>
+                        </button>
                         <button id="tools-header-btn" onclick="showToolsModal()" class="text-[10px] md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-xl hover:opacity-90 transition flex items-center gap-1 md:gap-1.5 whitespace-nowrap shadow-md">
                             ⚡ <span class="hidden sm:inline">Eines</span>
                         </button>
-
                         <button id="memory-header-btn" onclick="showMemoryModal()" class="text-[10px] md:text-sm bg-purple-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-purple-700 dark:text-purple-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-purple-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap">
                             🧠 <span class="hidden sm:inline">Memòria</span>
                         </button>
-                        <button id="theory-header-btn" onclick="scrollToLatestTheory()" class="text-[10px] md:text-sm bg-blue-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-blue-700 dark:text-blue-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-blue-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap hidden">
-                            📖 <span class="hidden sm:inline">Lliçons</span>
-                        </button>
                         <button id="history-header-btn" onclick="showHistoryModal()" class="text-[10px] md:text-sm bg-indigo-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-indigo-700 dark:text-indigo-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap">
                             📊 <span class="hidden sm:inline">Resultats</span>
-                        </button>
-                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-[10px] md:text-sm bg-zinc-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap">
-                            📅 <span class="hidden sm:inline">Pla</span>
                         </button>
                     </div>
                 </div>
@@ -378,33 +363,19 @@
                         </div>
                     </div>
                     
-                    <div class="max-w-4xl mx-auto flex flex-col gap-2.5">
-                        <!-- BARRA D'EINES DE MODES A BAIX (Tutor Mode Selector stil IA + Botons de Calendari i Test) -->
-                        <div id="chat-toolbar-bottom" class="flex flex-wrap items-center justify-between gap-2 px-1 text-xs">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <!-- Selector estil IA de la imatge -->
-                                <div class="relative inline-flex items-center">
-                                    <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem appearance-none text-xs bg-zinc-800 dark:bg-zinc-800 text-white font-bold pl-3.5 pr-8 py-2 rounded-xl border border-zinc-700 outline-none cursor-pointer hover:bg-zinc-700 transition shadow-md">
-                                        <option value="standard">🎓 Tutor Estàndard</option>
-                                        <option value="socratic">🧐 Mode Socràtic</option>
-                                        <option value="feynman">👶 Mode Feynman</option>
-                                        <option value="tribunal">⚖️ Tribunal Examen</option>
-                                    </select>
-                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-zinc-300">
-                                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-                                    </div>
+                    <div class="max-w-4xl mx-auto flex flex-col gap-2">
+                        <!-- BARRA D'EINES DE MODES A BAIX (NOMÉS EL MÒDUL / MODO DE TUTOR COM SOL·LICITAT) -->
+                        <div id="chat-toolbar-bottom" class="flex items-center gap-2 px-1 text-xs">
+                            <div class="relative inline-flex items-center">
+                                <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem appearance-none text-xs bg-zinc-800 dark:bg-zinc-800 text-white font-bold pl-3.5 pr-8 py-2 rounded-xl border border-zinc-700 outline-none cursor-pointer hover:bg-zinc-700 transition shadow-md">
+                                    <option value="standard">🎓 Tutor Estàndard</option>
+                                    <option value="socratic">🧐 Mode Socràtic</option>
+                                    <option value="feynman">👶 Mode Feynman</option>
+                                    <option value="tribunal">⚖️ Tribunal Examen</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-zinc-300">
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                                 </div>
-
-                                <!-- Botons ràpids per al Calendari i Resultats a baix -->
-                                <button id="calendar-bottom-btn" onclick="showCalendarModal()" title="Veure Pla d'Estudi" class="bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 font-bold px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 transition flex items-center gap-1.5 shadow-sm">
-                                    📅 <span>Pla d'Estudi</span>
-                                </button>
-                                <button id="history-bottom-btn" onclick="showHistoryModal()" title="Resultats dels Tests" class="bg-indigo-50 dark:bg-zinc-800 hover:bg-indigo-100 dark:hover:bg-zinc-700 text-indigo-700 dark:text-indigo-300 font-bold px-3 py-1.5 rounded-xl border border-transparent dark:border-zinc-700 transition flex items-center gap-1.5 shadow-sm">
-                                    📊 <span>Resultats Tests</span>
-                                </button>
-                                <button id="memory-bottom-btn" onclick="showMemoryModal()" title="Memòria de l'Alumne" class="bg-purple-50 dark:bg-zinc-800 hover:bg-purple-100 dark:hover:bg-zinc-700 text-purple-700 dark:text-purple-300 font-bold px-3 py-1.5 rounded-xl border border-transparent dark:border-zinc-700 transition flex items-center gap-1.5 shadow-sm">
-                                    🧠 <span>Memòria</span>
-                                </button>
                             </div>
                         </div>
 
@@ -1885,16 +1856,18 @@
                 let displayTitle = activeSession.title || (appMode === 'study' ? "Pla d'Estudis" : "XatBot");
                 document.getElementById('chat-mode-label').innerText = displayTitle;
 
-                if(appMode === 'free') {
+                if (appMode === 'free') {
                     document.getElementById('calendar-header-btn')?.classList.add('hidden');
+                    document.getElementById('tools-header-btn')?.classList.add('hidden');
                     document.getElementById('history-header-btn')?.classList.add('hidden');
-                    document.getElementById('theory-header-btn')?.classList.add('hidden');
                     document.getElementById('memory-header-btn')?.classList.add('hidden');
+                    document.getElementById('chat-toolbar-bottom')?.classList.add('hidden');
                 } else {
-                    document.getElementById('memory-header-btn')?.classList.remove('hidden');
-                    document.getElementById('theory-header-btn')?.classList.remove('hidden');
                     document.getElementById('calendar-header-btn')?.classList.remove('hidden');
+                    document.getElementById('tools-header-btn')?.classList.remove('hidden');
+                    document.getElementById('memory-header-btn')?.classList.remove('hidden');
                     document.getElementById('history-header-btn')?.classList.remove('hidden');
+                    document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
                 }
                 
                 setTimeout(() => {
@@ -2104,10 +2077,11 @@
                 document.getElementById('chat-view').classList.add('flex'); 
                 document.getElementById('global-menu-btn').classList.add('hidden'); 
                 
-                document.getElementById('memory-header-btn')?.classList.remove('hidden');
-                document.getElementById('theory-header-btn')?.classList.remove('hidden');
                 document.getElementById('calendar-header-btn')?.classList.remove('hidden');
+                document.getElementById('tools-header-btn')?.classList.remove('hidden');
+                document.getElementById('memory-header-btn')?.classList.remove('hidden');
                 document.getElementById('history-header-btn')?.classList.remove('hidden');
+                document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
             } else { 
                 // Si no hi ha calendari, anem a la pantalla de pujar el PDF
                 document.getElementById('setup-view').classList.remove('hidden'); 
@@ -2142,11 +2116,12 @@
             document.getElementById('chat-view').classList.add('flex'); 
             document.getElementById('chat-form').classList.remove('hidden'); 
             
-            // Amagar botons propis del Pla d'Estudis
+            // Amagar botons i toolbar propis del Pla d'Estudis en el XatBot lliure
             document.getElementById('calendar-header-btn')?.classList.add('hidden'); 
+            document.getElementById('tools-header-btn')?.classList.add('hidden'); 
             document.getElementById('history-header-btn')?.classList.add('hidden'); 
-            document.getElementById('theory-header-btn')?.classList.add('hidden'); 
             document.getElementById('memory-header-btn')?.classList.add('hidden'); 
+            document.getElementById('chat-toolbar-bottom')?.classList.add('hidden'); 
             document.getElementById('chat-mode-label').innerText = "XatBot"; 
             
             if (chatHistory.length === 0) { 
@@ -2547,74 +2522,57 @@
 
         // --- SISTEMA DE MODALS (UI) ---
         window.showHistoryModal = function() {
-            let gamesKeys = Object.keys(window.interactiveGames);
-            let htmlContent = '<div class="text-left overflow-y-auto max-h-[60vh] mt-4 space-y-4">';
+            let htmlContent = '<div class="text-left overflow-y-auto max-h-[65vh] mt-4 space-y-4 pr-1">';
 
-            if (gamesKeys.length === 0) {
-                htmlContent += '<div class="p-6 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 text-center rounded-xl text-sm border border-zinc-200 dark:border-zinc-800">Encara no has realitzat cap test o esquema en aquesta sessió.</div>';
+            if (generatedCalendarArray.length === 0 && Object.keys(window.interactiveGames).length === 0) {
+                htmlContent += '<div class="p-6 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 text-center rounded-2xl text-sm border border-zinc-200 dark:border-zinc-800">Encara no s\'ha generat cap lliçó o examen en aquesta sessió.</div>';
             } else {
-                gamesKeys.forEach((key, index) => {
-                    let g = window.interactiveGames[key];
-                    let isCompleted = g.status === 'completed';
-                    
-                    if (g.type === 'kahoot') {
-                        let k = g.data;
-                        let isWin = g.userPick === k.correcta;
-                        let statusBadge = !isCompleted ? '<span class="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] px-2 py-1 rounded font-bold border border-amber-200 dark:border-amber-800/50">Pendent</span>' : (isWin ? '<span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] px-2 py-1 rounded font-bold border border-green-200 dark:border-green-800/50">✅ Encertat</span>' : '<span class="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[10px] px-2 py-1 rounded font-bold border border-red-200 dark:border-red-800/50">❌ Fallat</span>');
-                        
-                        let detalls = '';
-                        if (isCompleted) {
-                            detalls = `<div class="mt-3 text-[11px] md:text-xs bg-zinc-50 dark:bg-zinc-950/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800"><span class="font-bold text-zinc-600 dark:text-zinc-400">La teva resposta:</span> <span class="dark:text-zinc-300">${k.opcions[g.userPick]}</span><br><span class="font-bold text-zinc-600 dark:text-zinc-400 mt-1 inline-block">Solució correcta:</span> <span class="dark:text-zinc-300">${k.opcions[k.correcta]}</span></div>`;
-                        }
-                        
-                        htmlContent += `
-                        <div class="border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl shadow-sm bg-white dark:bg-zinc-900">
-                            <div class="flex justify-between items-start mb-2 gap-2">
-                                <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm">🎮 Joc ${index + 1}: Pregunta Ràpida</div>
-                                ${statusBadge}
-                            </div>
-                            <div class="text-xs md:text-sm text-zinc-600 dark:text-zinc-300 font-medium mb-1">${k.pregunta}</div>
-                            ${detalls}
-                        </div>`;
-                    } else if (g.type === 'schema') {
-                        let s = g.data;
-                        let isWin = g.isWin;
-                        let statusBadge = !isCompleted ? '<span class="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] px-2 py-1 rounded font-bold border border-amber-200 dark:border-amber-800/50">Pendent</span>' : (isWin ? '<span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] px-2 py-1 rounded font-bold border border-green-200 dark:border-green-800/50">✅ Superat</span>' : '<span class="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[10px] px-2 py-1 rounded font-bold border border-red-200 dark:border-red-800/50">❌ Fallat</span>');
-                        
-                        let detalls = '';
-                        if (g.attemptsLog && g.attemptsLog.length > 0) {
-                            detalls = `<div class="mt-3 text-[11px] md:text-xs space-y-1.5"><div class="font-bold text-zinc-600 dark:text-zinc-400 uppercase text-[9px] tracking-wider">Historial d'intents:</div>`;
-                            g.attemptsLog.forEach((log, i) => {
-                                detalls += `<div class="bg-zinc-50 dark:bg-zinc-950/60 p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300"><span class="font-bold text-zinc-700 dark:text-zinc-400">Intent ${i+1}:</span> ${log}</div>`;
-                            });
-                            detalls += `</div>`;
-                        }
+                if (generatedCalendarArray.length > 0) {
+                    htmlContent += '<div class="text-xs font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider mb-2">📚 Temes i Lliçons Unificades</div>';
+                    generatedCalendarArray.forEach((item, index) => {
+                        let gameIdKey = Object.keys(window.interactiveGames)[index];
+                        let game = gameIdKey ? window.interactiveGames[gameIdKey] : null;
+                        let testStatus = game ? (game.status === 'completed' ? (game.isWin ? '✅ Test Superat' : '❌ Test Reintentar') : '⏳ Test Pendent') : '🎯 Test No Iniciat';
+                        let testBadgeColor = game && game.status === 'completed' ? (game.isWin ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300') : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300';
 
                         htmlContent += `
-                        <div class="border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl shadow-sm bg-white dark:bg-zinc-900">
-                            <div class="flex justify-between items-start mb-2 gap-2">
-                                <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm">🧩 Joc ${index + 1}: Esquema</div>
-                                ${statusBadge}
+                        <div class="border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm space-y-3">
+                            <div class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-2">
+                                <span class="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">Unitat ${item.num} · ${item.dia_real}</span>
+                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border border-transparent dark:border-zinc-700 ${testBadgeColor}">${testStatus}</span>
                             </div>
-                            <div class="text-xs md:text-sm text-zinc-600 dark:text-zinc-300 font-medium mb-1">${s.titol || 'Esquema conceptual'}</div>
-                            ${detalls}
+                            <h4 class="font-bold text-zinc-800 dark:text-zinc-100 text-sm md:text-base leading-snug">${item.tema}</h4>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
+                                    📖 Teoria i Esquema
+                                </div>
+                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
+                                    📇 Flashcards 3D
+                                </div>
+                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
+                                    💡 Truc Mnemotècnic
+                                </div>
+                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
+                                    🎯 Test i Avaluació
+                                </div>
+                            </div>
                         </div>`;
-                    }
-                });
+                    });
+                }
             }
             htmlContent += '</div>';
 
             Swal.fire({
-                title: '📊 Resultats i Historial',
+                title: '📊 Resultats i Lliçons Unificades',
                 html: htmlContent,
                 showCloseButton: true,
                 confirmButtonText: 'Tancar',
                 confirmButtonColor: '#2563eb',
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg', title: 'font-black text-zinc-800 dark:text-white' }
             });
-        }
+        };
 
         function showCalendarModal() {
             let htmlContent = '<div class="grid grid-cols-1 gap-2 mt-3 text-left overflow-y-auto max-h-[50vh] md:max-h-96">';

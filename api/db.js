@@ -120,21 +120,81 @@ const mockClient = {
     }
 };
 
+let cachedRealClient = null;
+let migrationStarted = false;
+
+async function ensureSchema(client) {
+    if (migrationStarted) return;
+    migrationStarted = true;
+    try {
+        await client.execute(`
+            CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,
+                email TEXT UNIQUE,
+                password_hash TEXT,
+                name TEXT DEFAULT '',
+                theme TEXT DEFAULT 'light',
+                ai_provider TEXT DEFAULT '',
+                ai_api_key TEXT DEFAULT '',
+                ai_model TEXT DEFAULT '',
+                created_at TEXT DEFAULT (datetime('now'))
+            )
+        `);
+        await client.execute(`
+            CREATE TABLE IF NOT EXISTS sessions (
+                id TEXT PRIMARY KEY,
+                user_id TEXT,
+                mode TEXT DEFAULT 'free',
+                title TEXT DEFAULT 'Nova Conversa',
+                chat_history TEXT,
+                calendar TEXT,
+                games TEXT,
+                html TEXT DEFAULT '',
+                context TEXT DEFAULT '',
+                pdf_text TEXT DEFAULT '',
+                updated_at TEXT DEFAULT (datetime('now'))
+            )
+        `);
+        const userCols = ['ai_provider', 'ai_api_key', 'ai_model'];
+        for (const col of userCols) {
+            try {
+                await client.execute(`ALTER TABLE users ADD COLUMN ${col} TEXT DEFAULT ''`);
+            } catch (ignore) {}
+        }
+    } catch (e) {
+        console.warn('[Aliat Intel·ligent] Schema migration notice:', e.message);
+    }
+}
+
 function getDbClient() {
     const dbUrl = (process.env.TURSO_DATABASE_URL || '').trim();
     const dbToken = (process.env.TURSO_AUTH_TOKEN || '').trim();
 
-    if (dbUrl && dbToken && dbUrl.includes('turso.io')) {
+    if (dbUrl && dbToken && (dbUrl.includes('turso.io') || dbUrl.startsWith('libsql://'))) {
         try {
-            const realClient = createClient({
-                url: dbUrl,
-                authToken: dbToken
-            });
+            if (!cachedRealClient) {
+                cachedRealClient = createClient({
+                    url: dbUrl,
+                    authToken: dbToken
+                });
+                ensureSchema(cachedRealClient).catch(() => {});
+            }
+
             return {
                 execute: async (query) => {
                     try {
-                        return await realClient.execute(query);
+                        return await cachedRealClient.execute(query);
                     } catch (err) {
+                        // Si falta alguna columna, intentem la migració i reintentem la consulta
+                        if (err.message && err.message.includes('no such column')) {
+                            try {
+                                await ensureSchema(cachedRealClient);
+                                return await cachedRealClient.execute(query);
+                            } catch (retryErr) {
+                                console.warn('[Aliat Intel·ligent] Remote database retry failed, falling back to mock memory store:', retryErr.message);
+                                return await mockClient.execute(query);
+                            }
+                        }
                         console.warn('[Aliat Intel·ligent] Remote database query failed, falling back to mock memory store:', err.message);
                         return await mockClient.execute(query);
                     }
@@ -146,7 +206,6 @@ function getDbClient() {
         }
     }
 
-    // In-memory fallback
     return mockClient;
 }
 

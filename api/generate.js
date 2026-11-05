@@ -1,11 +1,232 @@
 const jwt = require('jsonwebtoken');
 const { getDbClient, JWT_SECRET } = require('./db');
 
+function isPlaceholderKey(k) {
+    if (!k || typeof k !== 'string') return true;
+    const clean = k.trim();
+    if (clean.length < 10) return true;
+    if (clean === 'MY_GEMINI_API_KEY' || clean === 'YOUR_API_KEY') return true;
+    if (clean.startsWith('TODO') || clean.includes('EXAMPLE') || clean.includes('INSERT_KEY')) return true;
+    return false;
+}
+
+function extractJson(rawText) {
+    if (!rawText || typeof rawText !== 'string') return null;
+    let text = rawText.trim();
+    
+    // Si està envoltat de blocs de codi markdown tipus ```json ... ```
+    const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+    if (codeBlockMatch) {
+        text = codeBlockMatch[1].trim();
+    }
+    
+    // Trobar el primer { i l'últim }
+    const firstBrace = text.indexOf('{');
+    const lastBrace = text.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        text = text.substring(firstBrace, lastBrace + 1);
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch (e1) {
+        try {
+            const sanitized = text
+                .replace(/,\s*([\]}])/g, '$1')
+                .replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+            return JSON.parse(sanitized);
+        } catch (e2) {
+            return null;
+        }
+    }
+}
+
+function generateLocalStudyPlan(pdfText, totalSessionsToGenerate) {
+    const rawText = (pdfText || "").trim();
+    const cleanText = rawText.replace(/[\r\n]+/g, ' ');
+    const numSessions = Math.max(1, Math.min(parseInt(totalSessionsToGenerate) || 5, 20));
+
+    const lines = rawText.split('\n')
+        .map(l => l.trim().replace(/^[-*•\d.)\s]+/, '').trim())
+        .filter(l => l.length >= 4 && l.length <= 80 && !l.toLowerCase().startsWith('http'));
+
+    const distinctTopics = Array.from(new Set(lines));
+    const calendar = [];
+
+    if (distinctTopics.length >= numSessions) {
+        for (let i = 0; i < numSessions - 1; i++) {
+            calendar.push({ tema: distinctTopics[i] });
+        }
+        calendar.push({ tema: "Repàs General i Simulacre d'Examen" });
+    } else {
+        const baseName = distinctTopics[0] || (cleanText.length > 0 ? cleanText.substring(0, 35) + "..." : "Temari General");
+        const defaultStages = [
+            `Fonaments i Introducció (${baseName})`,
+            `Desenvolupament Teòric i Conceptes Fonamentals`,
+            `Aplicació Pràctica, Fórmules i Resolució`,
+            `Aprofundiment, Casos Pràctics i Anàlisi`,
+            `Consolidació de Conceptes Complexos`,
+            `Repàs General i Simulacre d'Examen`
+        ];
+
+        for (let i = 0; i < numSessions; i++) {
+            if (i === numSessions - 1) {
+                calendar.push({ tema: "Repàs General i Simulacre d'Examen" });
+            } else if (i < defaultStages.length - 1) {
+                calendar.push({ tema: defaultStages[i] });
+            } else {
+                calendar.push({ tema: `Sessió d'aprofundiment ${i + 1}: ${baseName}` });
+            }
+        }
+    }
+
+    const questions = [
+        {
+            pregunta: "Quin és l'objectiu fonamental abans d'abordar els exercicis pràctics d'aquest temari?",
+            opcions: [
+                "A) Comprendre a fons la teoria, definicions i relacions bàsiques",
+                "B) Memoritzar fórmules sense comprendre el seu significat",
+                "C) Passar directament a l'examen sense revisar els fonaments",
+                "D) Resoldre problemes de forma intuïtiva sense seguir un mètode"
+            ],
+            resposta_correcta: "A) Comprendre a fons la teoria, definicions i relacions bàsiques"
+        },
+        {
+            pregunta: "Quina estratègia d'aprenentatge és més eficaç per consolidar la memòria a llarg termini?",
+            opcions: [
+                "A) Pràctica de recuperació activa (flashcards) i repetició espaciada",
+                "B) Llegir de nou el text de forma passiva múltiples vegades",
+                "C) Subratllar pàgines senceres en colors vius",
+                "D) Estudiar totes les hores la nit anterior a la prova"
+            ],
+            resposta_correcta: "A) Pràctica de recuperació activa (flashcards) i repetició espaciada"
+        },
+        {
+            pregunta: "Davant d'un concepte complex d'aquest temari, quin enfocament garanteix el millor domini?",
+            opcions: [
+                "A) Desglossar-lo explicant-lo amb paraules senzilles (Mètode Feynman)",
+                "B) Ignorar-lo i confiar que no apareixerà a la prova",
+                "C) Intentar recordar paraula per paraula la definició del llibre",
+                "D) Copiar el paràgraf sense analitzar els termes desconeguts"
+            ],
+            resposta_correcta: "A) Desglossar-lo explicant-lo amb paraules senzilles (Mètode Feynman)"
+        },
+        {
+            pregunta: "Com s'ha d'estructurar la resolució de problemes o anàlisi en aquest àmbit?",
+            opcions: [
+                "A) Identificar dades, seleccionar fórmules pertinents i verificar el resultat",
+                "B) Començar a calcular directament sense llegir l'enunciat complet",
+                "C) Ometre les unitats de mesura o el context de l'anunciat",
+                "D) Canviar les premisses fins a obtenir un valor enter"
+            ],
+            resposta_correcta: "A) Identificar dades, seleccionar fórmules pertinents i verificar el resultat"
+        },
+        {
+            pregunta: "A l'última sessió del pla d'estudi ('Repàs General'), quina és l'activitat més recomanada?",
+            opcions: [
+                "A) Realitzar un simulacre d'examen cronometrat i repassar punts febles",
+                "B) Aprendre matèria completament nova per primera vegada",
+                "C) Deixar d'estudiar sense verificar el nivell adquirit",
+                "D) Reler resums sense avaluar la capacitat de resposta"
+            ],
+            resposta_correcta: "A) Realitzar un simulacre d'examen cronometrat i repassar punts febles"
+        }
+    ];
+
+    return {
+        calendari_estudi: calendar,
+        preguntes: questions
+    };
+}
+
+function normalizeStudyData(data, totalSessionsToGenerate, pdfText) {
+    if (!data || typeof data !== 'object') {
+        return generateLocalStudyPlan(pdfText, totalSessionsToGenerate);
+    }
+
+    const numSessions = Math.max(1, Math.min(parseInt(totalSessionsToGenerate) || 5, 20));
+    
+    // 1. Calendari
+    let rawCalendar = data.calendari_estudi || data.calendari || data.calendar || data.sessions || data.study_plan || data.plan || [];
+    if (!Array.isArray(rawCalendar)) {
+        if (typeof rawCalendar === 'object') rawCalendar = Object.values(rawCalendar);
+        else rawCalendar = [];
+    }
+
+    const normalizedCalendar = [];
+    rawCalendar.forEach((item) => {
+        let title = "";
+        if (typeof item === 'string') {
+            title = item.trim();
+        } else if (item && typeof item === 'object') {
+            title = item.tema || item.topic || item.title || item.nom || item.name || item.text || item.description || "";
+        }
+        if (title) normalizedCalendar.push({ tema: title });
+    });
+
+    if (normalizedCalendar.length === 0) {
+        return generateLocalStudyPlan(pdfText, numSessions);
+    }
+
+    while (normalizedCalendar.length < numSessions) {
+        normalizedCalendar.push({ tema: `Sessió d'aprofundiment ${normalizedCalendar.length + 1}` });
+    }
+    if (normalizedCalendar.length > numSessions) {
+        normalizedCalendar.splice(numSessions);
+    }
+    if (normalizedCalendar.length > 0) {
+        normalizedCalendar[normalizedCalendar.length - 1].tema = "Repàs General i Simulacre";
+    }
+
+    // 2. Preguntes
+    let rawQuestions = data.preguntes || data.preguntas || data.questions || data.quiz || data.test || [];
+    if (!Array.isArray(rawQuestions)) {
+        if (typeof rawQuestions === 'object') rawQuestions = Object.values(rawQuestions);
+        else rawQuestions = [];
+    }
+
+    const normalizedQuestions = [];
+    rawQuestions.forEach((q, idx) => {
+        if (!q || typeof q !== 'object') return;
+        const pregunta = q.pregunta || q.question || q.text || q.titol || `Pregunta ${idx + 1}`;
+        let opcions = q.opcions || q.options || q.choices || [];
+        if (!Array.isArray(opcions)) opcions = [];
+
+        if (opcions.length < 2) {
+            opcions = ["A) Vertader", "B) Fals"];
+        }
+
+        let resposta = q.resposta_correcta || q.correct_answer || q.correctAnswer || q.resposta || q.correcta || opcions[0];
+        if (typeof resposta === 'number' && opcions[resposta]) {
+            resposta = opcions[resposta];
+        }
+
+        normalizedQuestions.push({
+            pregunta: String(pregunta),
+            opcions: opcions.map(o => String(o)),
+            resposta_correcta: String(resposta)
+        });
+    });
+
+    if (normalizedQuestions.length === 0) {
+        const fallback = generateLocalStudyPlan(pdfText, numSessions);
+        return {
+            calendari_estudi: normalizedCalendar,
+            preguntes: fallback.preguntes
+        };
+    }
+
+    return {
+        calendari_estudi: normalizedCalendar,
+        preguntes: normalizedQuestions
+    };
+}
+
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, x-ai-provider, x-ai-key, x-ai-model');
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
@@ -22,18 +243,9 @@ module.exports = async function handler(req, res) {
         const studentContext = body.studentContext || "";
         const tutorMode = body.tutorMode || "standard";
 
-        // Consultar claus del sistema i configuració personalitzada de l'usuari
-        let geminiApiKey = process.env.GEMINI_API_KEY || process.env.API_KEY || body.geminiApiKey || "";
-        let groqApiKey = process.env.GROQ_API_KEY || body.groqApiKey || "";
-        let openRouterApiKey = process.env.OPENROUTER_API_KEY || body.openRouterApiKey || "";
-        let openAiApiKey = process.env.OPENAI_API_KEY || body.openAiApiKey || "";
-        let deepseekApiKey = process.env.DEEPSEEK_API_KEY || body.deepseekApiKey || "";
-        let mistralApiKey = process.env.MISTRAL_API_KEY || body.mistralApiKey || "";
-        let vercelApiKey = process.env.VERCEL_API_KEY || body.vercelApiKey || "";
-
-        let userPreferredProvider = body.aiProvider || "";
-        let userCustomKey = body.customApiKey || "";
-        let userCustomModel = body.customModel || "";
+        let userPreferredProvider = (body.ai_provider || body.aiProvider || req.headers['x-ai-provider'] || "").trim().toLowerCase();
+        let userCustomKey = (body.ai_api_key || body.customApiKey || req.headers['x-ai-key'] || "").trim();
+        let userCustomModel = (body.ai_model || body.customModel || req.headers['x-ai-model'] || "").trim();
 
         try {
             const authHeader = req.headers.authorization;
@@ -46,23 +258,33 @@ module.exports = async function handler(req, res) {
                 });
                 if (uRes.rows && uRes.rows[0]) {
                     const saved = uRes.rows[0];
-                    if (!userPreferredProvider && saved.ai_provider) userPreferredProvider = saved.ai_provider;
-                    if (!userCustomKey && saved.ai_api_key) userCustomKey = saved.ai_api_key;
-                    if (!userCustomModel && saved.ai_model) userCustomModel = saved.ai_model;
+                    if (!userPreferredProvider && saved.ai_provider) userPreferredProvider = String(saved.ai_provider).trim().toLowerCase();
+                    if (!userCustomKey && saved.ai_api_key) userCustomKey = String(saved.ai_api_key).trim();
+                    if (!userCustomModel && saved.ai_model) userCustomModel = String(saved.ai_model).trim();
                 }
             }
         } catch (e) {
             // Capçalera d'autenticació opcional
         }
 
-        // Assignar clau personalitzada al proveïdor corresponent
-        if (userCustomKey) {
-            const prov = (userPreferredProvider || 'gemini').toLowerCase();
+        let geminiApiKey = (!isPlaceholderKey(process.env.GEMINI_API_KEY) ? process.env.GEMINI_API_KEY : '') ||
+                           (!isPlaceholderKey(process.env.API_KEY) ? process.env.API_KEY : '') ||
+                           body.geminiApiKey || "";
+        let groqApiKey = (!isPlaceholderKey(process.env.GROQ_API_KEY) ? process.env.GROQ_API_KEY : '') || body.groqApiKey || "";
+        let openRouterApiKey = (!isPlaceholderKey(process.env.OPENROUTER_API_KEY) ? process.env.OPENROUTER_API_KEY : '') || body.openRouterApiKey || "";
+        let openAiApiKey = (!isPlaceholderKey(process.env.OPENAI_API_KEY) ? process.env.OPENAI_API_KEY : '') || body.openAiApiKey || "";
+        let deepseekApiKey = (!isPlaceholderKey(process.env.DEEPSEEK_API_KEY) ? process.env.DEEPSEEK_API_KEY : '') || body.deepseekApiKey || "";
+        let mistralApiKey = (!isPlaceholderKey(process.env.MISTRAL_API_KEY) ? process.env.MISTRAL_API_KEY : '') || body.mistralApiKey || "";
+        let vercelApiKey = (!isPlaceholderKey(process.env.VERCEL_API_KEY) ? process.env.VERCEL_API_KEY : '') || body.vercelApiKey || "";
+
+        if (userCustomKey && !isPlaceholderKey(userCustomKey)) {
+            const prov = userPreferredProvider || 'gemini';
             if (prov === 'groq') groqApiKey = userCustomKey;
             else if (prov === 'openrouter') openRouterApiKey = userCustomKey;
             else if (prov === 'openai') openAiApiKey = userCustomKey;
             else if (prov === 'deepseek') deepseekApiKey = userCustomKey;
             else if (prov === 'mistral') mistralApiKey = userCustomKey;
+            else if (prov === 'vercel') vercelApiKey = userCustomKey;
             else if (prov === 'gemini') geminiApiKey = userCustomKey;
         }
 
@@ -73,7 +295,6 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 3. Llenguatge i respecte: Mantindràs un estil comunicatiu respectuós, constructiu i adaptat a un entorn educatiu i de desenvolupament personal.
 4. Privacitat de dades: No sol·licitaràs, ni recordaràs informació personal sensible dels usuaris.`;
 
-        // Funció auxiliar per a cridar APIs d'OpenAI compatibles (Groq, OpenRouter, OpenAI, DeepSeek, Mistral)
         async function callOpenAICompatible({ endpoint, apiKey, model, systemPrompt, contents, jsonMode = false }) {
             const messages = [];
             if (systemPrompt) {
@@ -90,6 +311,13 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
                 if (text) {
                     messages.push({ role, content: text });
+                }
+            }
+
+            if (jsonMode) {
+                const hasJsonWord = messages.some(m => /json/i.test(m.content));
+                if (!hasJsonWord && messages.length > 0) {
+                    messages[messages.length - 1].content += " (Respond in valid JSON format)";
                 }
             }
 
@@ -122,7 +350,6 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             return reply;
         }
 
-        // Funció per cridar Gemini amb fallback
         async function callGeminiModel(modelName, systemPrompt, contents, jsonMode = false, apiKey) {
             const bodyData = {
                 contents: contents
@@ -154,13 +381,11 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             return textContent;
         }
 
-        // MOTOR D'EXECUCIÓ MULTI-PROVEÏDOR RESILIENT
-        async function executeAI({ systemPrompt, contents, jsonMode = false, imageObj = null }) {
+        async function executeAI({ systemPrompt, contents, jsonMode = false }) {
             const runnerList = [];
 
-            // 1. Si l'usuari ha triat un proveïdor específic amb clau, prioritza'l
             if (userPreferredProvider === 'groq' && groqApiKey) {
-                runnerList.push({ type: 'groq', key: groqApiKey, model: userCustomModel || 'llama-3.3-70b-versatile' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: userCustomModel || 'qwen/qwen3.8-27b' });
             } else if (userPreferredProvider === 'openrouter' && openRouterApiKey) {
                 runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: userCustomModel || 'meta-llama/llama-3.3-70b-instruct' });
             } else if (userPreferredProvider === 'openai' && openAiApiKey) {
@@ -169,27 +394,27 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 runnerList.push({ type: 'deepseek', key: deepseekApiKey, model: userCustomModel || 'deepseek-chat' });
             } else if (userPreferredProvider === 'mistral' && mistralApiKey) {
                 runnerList.push({ type: 'mistral', key: mistralApiKey, model: userCustomModel || 'mistral-small-latest' });
+            } else if (userPreferredProvider === 'gemini' && geminiApiKey) {
+                runnerList.push({ type: 'gemini', key: geminiApiKey, model: userCustomModel || 'gemini-3.8-flash' });
             }
 
-            // 2. Models Gemini (diverses versions per esquivar sobrecàrrega puntual)
-            if (geminiApiKey) {
+            if (groqApiKey && userPreferredProvider !== 'groq') {
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'qwen/qwen3.8-27b' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
+            }
+
+            if (geminiApiKey && userPreferredProvider !== 'gemini') {
                 const geminiModels = [
-                    process.env.GEMINI_MODEL || "gemini-2.5-flash",
-                    "gemini-2.0-flash",
-                    "gemini-1.5-flash",
-                    "gemini-1.5-pro",
-                    "gemini-flash-latest"
+                    process.env.GEMINI_MODEL || "gemini-3.8-flash",
+                    "gemini-flash-latest",
+                    "gemini-3.1-flash-lite"
                 ];
                 for (const gm of geminiModels) {
                     runnerList.push({ type: 'gemini', key: geminiApiKey, model: gm });
                 }
             }
 
-            // 3. Fallbacks a altres proveïdors si hi ha claus configurades
-            if (groqApiKey && userPreferredProvider !== 'groq') {
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
-            }
             if (openRouterApiKey && userPreferredProvider !== 'openrouter') {
                 runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: 'meta-llama/llama-3.3-70b-instruct' });
             }
@@ -204,7 +429,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             }
 
             if (runnerList.length === 0) {
-                throw new Error("No hi ha cap clau d'IA configurada. Afegeix GEMINI_API_KEY o configura una clau de Groq, OpenRouter o OpenAI a la Configuració.");
+                throw new Error("No hi ha cap clau d'IA vàlida configurada.");
             }
 
             let lastError = null;
@@ -260,14 +485,13 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                         });
                     }
                 } catch (err) {
-                    console.warn(`[Aliat IA Failover] Fallada a ${runner.type} (${runner.model}): ${err.message}. Provant alternativa següent...`);
+                    console.warn(`[Aliat IA Failover] Intent amb ${runner.type} (${runner.model}) ha fallat: ${err.message}. Provant alternativa...`);
                     lastError = err;
-                    // Pausa breu abans del següent intent per reduir pic de concurrència
-                    await new Promise(r => setTimeout(r, 250));
+                    await new Promise(r => setTimeout(r, 150));
                 }
             }
 
-            throw new Error(`Tots els serveis d'IA estan en alta demanda o han donat error. Detall: ${lastError ? lastError.message : 'Error desconegut'}`);
+            throw new Error(`Tots els serveis d'IA estan en alta demanda o han donat error: ${lastError ? lastError.message : 'Error desconegut'}`);
         }
 
         const formatGeminiHistory = (historyArray) => {
@@ -297,31 +521,43 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
         // ACCIÓ 1: PREPARAR ESTUDI
         if (action === 'prepare_study') {
-            const systemPrompt = "Ets un tutor d'estudi.\n" + safetyRules + "\n\n" +
+            const systemPrompt = "Ets un tutor d'estudi d'alt nivell acadèmic.\n" + safetyRules + "\n\n" +
             "La teva missió és doble:\n" +
-            "1. Crear un pla d'estudi de EXACTAMENT " + totalSessionsToGenerate + " sessions. ELS ÚLTIMS TEMES han de ser EXCLUSIVAMENT 'Repàs General'.\n" +
-            "2. Crear un test de diagnòstic de 5 preguntes tipus test basant-te en els apunts.\n\n" +
-            "Apunts: " + (pdfText || "Temari general") + "\n\n" +
-            "REGLA CRÍTICA: RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID. Utilitza SEMPRE cometes dobles (\").\n\n" +
-            "FORMAT EXACTE OBLIGATORI:\n" +
+            "1. Crear un pla d'estudi de EXACTAMENT " + totalSessionsToGenerate + " sessions. ELS ÚLTIMS TEMES han de ser EXCLUSIVAMENT 'Repàs General i Simulacre'.\n" +
+            "2. Crear un test de diagnòstic de 5 preguntes tipus test basant-te en els apunts de l'alumne.\n\n" +
+            "Apunts de l'alumne: " + (pdfText ? pdfText.substring(0, 12000) : "Temari general d'estudi") + "\n\n" +
+            "REGLA CRÍTICA: RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID (sense text addicional).\n\n" +
+            "FORMAT EXACTE OBLIGATORI EN JSON:\n" +
             "{\n" +
-            "  \"calendari_estudi\": [ { \"tema\": \"Fonaments i introducció\" } ],\n" +
-            "  \"preguntes\": [ { \"pregunta\": \"Text?\", \"opcions\": [\"A) 1\", \"B) 2\", \"C) 3\", \"D) 4\"], \"resposta_correcta\": \"A) 1\" } ]\n" +
+            "  \"calendari_estudi\": [ { \"tema\": \"Nom del tema o sessió\" } ],\n" +
+            "  \"preguntes\": [ { \"pregunta\": \"Enunciat de la pregunta?\", \"opcions\": [\"A) Opció 1\", \"B) Opció 2\", \"C) Opció 3\", \"D) Opció 4\"], \"resposta_correcta\": \"A) Opció 1\" } ]\n" +
             "}";
 
-            const rawContent = await executeAI({
-                systemPrompt,
-                contents: [{ role: "user", parts: [{ text: "Genera el pla d'estudi i el test de diagnòstic basant-te en els meus apunts ara mateix." }] }],
-                jsonMode: true
-            });
-
+            let rawContent = "";
+            let usedFallback = false;
             try {
-                const cleanedContent = rawContent.trim().replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '').trim();
-                let result = JSON.parse(cleanedContent);
-                return res.status(200).json(result);
-            } catch (parseError) {
-                return res.status(200).json({ error: "Error d'estructura JSON: " + parseError.message });
+                rawContent = await executeAI({
+                    systemPrompt,
+                    contents: [{ role: "user", parts: [{ text: "Genera el pla d'estudi de " + totalSessionsToGenerate + " sessions i el test de 5 preguntes en format JSON ara mateix." }] }],
+                    jsonMode: true
+                });
+            } catch (aiErr) {
+                console.warn("[prepare_study] Failover al generador adaptatiu local d'emergència:", aiErr.message);
+                usedFallback = true;
             }
+
+            if (usedFallback || !rawContent) {
+                const fallbackResult = generateLocalStudyPlan(pdfText, totalSessionsToGenerate);
+                return res.status(200).json({
+                    ...fallbackResult,
+                    is_fallback: true,
+                    warning: "S'ha generat el pla amb el motor local adaptatiu de seguretat."
+                });
+            }
+
+            const parsed = extractJson(rawContent);
+            const normalized = normalizeStudyData(parsed, totalSessionsToGenerate, pdfText);
+            return res.status(200).json(normalized);
         }
 
         // ACCIÓ 2: XAT CONTINU AMB MODES

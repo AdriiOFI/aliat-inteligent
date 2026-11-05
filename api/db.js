@@ -24,31 +24,48 @@ const mockClient = {
             return { rows: user ? [user] : [] };
         }
 
-        // 3. Select user name, theme by id
-        if (sql.includes('SELECT name, theme FROM users WHERE id = ?')) {
+        // 3. Select user name, theme and AI settings by id
+        if (sql.includes('FROM users WHERE id = ?')) {
             const id = args[0];
             const user = memoryStore.usersById.get(id);
             if (!user) return { rows: [] };
-            return { rows: [{ name: user.name || '', theme: user.theme || 'light' }] };
+            return {
+                rows: [{
+                    name: user.name || '',
+                    theme: user.theme || 'light',
+                    ai_provider: user.ai_provider || '',
+                    ai_api_key: user.ai_api_key || '',
+                    ai_model: user.ai_model || ''
+                }]
+            };
         }
 
         // 4. Insert user
         if (sql.includes('INSERT INTO users')) {
             const [id, rawEmail, password_hash] = args;
             const email = (rawEmail || '').trim().toLowerCase();
-            const newUser = { id, email, password_hash, name: '', theme: 'light' };
+            const newUser = { id, email, password_hash, name: '', theme: 'light', ai_provider: '', ai_api_key: '', ai_model: '' };
             memoryStore.users.set(email, newUser);
             memoryStore.usersById.set(id, newUser);
             return { rowsAffected: 1 };
         }
 
         // 5. Update user
-        if (sql.includes('UPDATE users SET name = ?, theme = ? WHERE id = ?')) {
-            const [name, theme, id] = args;
-            const user = memoryStore.usersById.get(id);
+        if (sql.includes('UPDATE users SET')) {
+            const user = memoryStore.usersById.get(args[args.length - 1]);
             if (user) {
-                user.name = name;
-                user.theme = theme;
+                if (args.length >= 6) {
+                    const [name, theme, ai_provider, ai_api_key, ai_model] = args;
+                    user.name = name;
+                    user.theme = theme;
+                    user.ai_provider = ai_provider;
+                    user.ai_api_key = ai_api_key;
+                    user.ai_model = ai_model;
+                } else if (args.length >= 3) {
+                    const [name, theme] = args;
+                    user.name = name;
+                    user.theme = theme;
+                }
             }
             return { rowsAffected: user ? 1 : 0 };
         }

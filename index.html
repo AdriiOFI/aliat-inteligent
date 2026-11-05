@@ -87,7 +87,12 @@
             <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-zinc-500/10 to-transparent rounded-bl-full -z-10"></div>
             
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/20 mx-auto mb-4 transform hover:rotate-12 transition-transform">🤖</div>
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 mx-auto mb-4 transform hover:rotate-12 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
+                    </svg>
+                </div>
                 <h1 class="text-2xl font-black text-zinc-900 dark:text-white">Aliat Intel·ligent</h1>
                 <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1 font-medium">Inicia sessió per sincronitzar els teus estudis</p>
             </div>
@@ -201,8 +206,13 @@
             <div id="welcome-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-8 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
                 <div class="w-full max-w-6xl text-center space-y-8 md:space-y-12 pb-10 mt-12 md:mt-0">
                     <div class="space-y-4 md:space-y-6 pt-4 md:pt-10">
-                        <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center text-4xl md:text-5xl shadow-xl shadow-blue-500/20 mx-auto transform hover:rotate-[10deg] transition-all duration-300">🤖</div>
-                        <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-zinc-800 dark:text-white tracking-tight px-2">
+                        <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center shadow-xl shadow-blue-500/20 mx-auto transform hover:rotate-[10deg] transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                                <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-zinc-900 dark:text-white tracking-tight px-2">
                             Benvingut <span id="welcome-user-name" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600"></span>
                         </h1>
                         <p class="text-zinc-600 dark:text-zinc-400 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed px-4">Quin tipus d'ajuda necessites avui?</p>
@@ -214,33 +224,30 @@
                         <button onclick="startStudyMode()" class="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left group flex flex-col h-full relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-blue-50 dark:from-zinc-800/40 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
                             <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-blue-600 dark:text-blue-400 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                                <!-- ICONA ESTUDIS (SVG unificat) -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-8 md:h-8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-bold text-zinc-800 dark:text-zinc-100 mb-2 md:mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Pla d'Estudis</h3>
-                            <p class="text-xs md:text-base text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed mb-4 md:mb-6">Puja el teu PDF i genera un calendari d'estudi amb minijocs.</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 md:mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Pla d'Estudis</h3>
+                            <p class="text-xs md:text-base text-zinc-600 dark:text-zinc-400 flex-1 leading-relaxed mb-4 md:mb-6">Puja el teu PDF i genera un calendari d'estudi amb minijocs.</p>
                         </button>
                         
                         <!-- TARGETA 2: XATBOT -->
                         <button onclick="startFreeChatMode()" class="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left group flex flex-col h-full relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-emerald-50 dark:from-zinc-800/40 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
                             <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-emerald-600 dark:text-emerald-400 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform">
-                                <!-- ICONA XAT (SVG unificat en lloc d'emoji) -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-8 md:h-8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-bold text-zinc-800 dark:text-zinc-100 mb-2 md:mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">XatBot Lliure</h3>
-                            <p class="text-xs md:text-base text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed mb-4 md:mb-6">Conversa directa per fer consultes lliures o investigar temes.</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 md:mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">XatBot Lliure</h3>
+                            <p class="text-xs md:text-base text-zinc-600 dark:text-zinc-400 flex-1 leading-relaxed mb-4 md:mb-6">Conversa directa per fer consultes lliures o investigar temes.</p>
                         </button>
 
-                        <!-- TARGETA 3: ÚS QUOTIDIÀ (Pròximament) -->
-                        <button onclick="return false" class="bg-zinc-50 dark:bg-zinc-900/50 border-2 border-zinc-200/60 dark:border-zinc-800/50 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left flex flex-col h-full relative overflow-hidden cursor-not-allowed group opacity-80">
-                            <div class="absolute top-4 right-4 bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 rounded-full uppercase tracking-widest shadow-sm">Pròximament</div>
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 grayscale opacity-70">
-                                <!-- ICONA EINES (SVG unificat) -->
+                        <!-- TARGETA 3: ÚS QUOTIDIÀ -->
+                        <button onclick="return false" class="bg-zinc-100 dark:bg-zinc-900/80 border-2 border-zinc-300 dark:border-zinc-800 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] text-left flex flex-col h-full relative overflow-hidden cursor-not-allowed group">
+                            <div class="absolute top-4 right-4 bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-[9px] md:text-[10px] font-black px-2.5 md:px-3 py-1 md:py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-zinc-300 dark:border-zinc-700">Pròximament</div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-8 md:h-8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-bold text-zinc-400 dark:text-zinc-500 mb-2 md:mb-3">Ús Quotidià</h3>
-                            <p class="text-xs md:text-base text-zinc-400 dark:text-zinc-500 flex-1 leading-relaxed mb-4 md:mb-6">Eines per simplificar tasques diàries o gestionar rutines.</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-zinc-800 dark:text-zinc-200 mb-2 md:mb-3">Ús Quotidià</h3>
+                            <p class="text-xs md:text-base text-zinc-600 dark:text-zinc-400 flex-1 leading-relaxed mb-4 md:mb-6">Eines per simplificar tasques diàries o gestionar rutines.</p>
                         </button>
 
                     </div>
@@ -259,38 +266,47 @@
                     </div>
                     <div class="space-y-6 md:space-y-8">
                         <div>
-                            <label class="block text-xs md:text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2 uppercase tracking-wide">📅 Data de l'examen</label>
+                            <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                Data de l'examen
+                            </label>
                             <input type="date" id="exam-date" class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm md:text-base font-medium shadow-inner">
                             <div id="days-left-marker" class="text-xs md:text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-2 hidden"></div>
                         </div>
                         <div>
-                            <label class="block text-xs md:text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-3 uppercase tracking-wide">🗓️ Dies disponibles</label>
+                            <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+                                Dies disponibles
+                            </label>
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5" id="available-days">
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="1" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dilluns</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="2" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dimarts</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="3" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dimecres</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="4" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dijous</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="5" class="day-checkbox hidden" checked><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Divendres</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="6" class="day-checkbox hidden"><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Dissabte</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="0" class="day-checkbox hidden"><div class="py-2 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl text-xs md:text-sm transition dark:text-zinc-300 shadow-sm">Diumenge</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="1" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dilluns</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="2" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dimarts</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="3" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dimecres</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="4" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dijous</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="5" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Divendres</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="6" class="day-checkbox hidden"><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dissabte</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="0" class="day-checkbox hidden"><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Diumenge</div></label>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs md:text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2 uppercase tracking-wide">📚 Temari</label>
+                            <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                                Temari i Continguts
+                            </label>
                             <div class="border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl p-5 md:p-6 text-center hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-zinc-800/50 transition-all relative cursor-pointer group">
                                 <input type="file" id="pdf-upload" accept=".pdf" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                                 <div class="flex flex-col items-center gap-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-zinc-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                    <span id="pdf-status" class="text-xs md:text-sm font-semibold text-zinc-600 dark:text-zinc-400">Arrossega o fes clic per pujar PDFs</span>
+                                    <span id="pdf-status" class="text-xs md:text-sm font-semibold text-zinc-700 dark:text-zinc-300">Arrossega o fes clic per pujar PDFs</span>
                                 </div>
                             </div>
                             <ul id="pdf-list" class="mt-3 space-y-2"></ul>
                             <div class="mt-4 md:mt-5">
-                                <p class="text-[11px] md:text-xs text-zinc-500 dark:text-zinc-400 mb-2 font-semibold">O explica manualment de què tracta l'examen:</p>
+                                <p class="text-[11px] md:text-xs text-zinc-600 dark:text-zinc-400 mb-2 font-semibold">O explica manualment de què tracta l'examen:</p>
                                 <textarea id="manual-topic" placeholder="Ex: Tinc un examen sobre biologia cel·lular..." class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm resize-none shadow-inner" rows="3"></textarea>
                             </div>
                         </div>
-                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl transition-all hover:shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 text-base md:text-lg mt-4">
+                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl transition-all hover:shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 text-base md:text-lg mt-4 shadow-md">
                             Planificar Estudi
                         </button>
                     </div>
@@ -301,17 +317,22 @@
             <div id="quiz-view" class="hidden flex-1 overflow-y-auto items-start justify-center p-4 md:p-8 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
                 <div class="w-full max-w-4xl space-y-6 md:space-y-8">
                     <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800 rounded-[2rem] shadow-xl p-6 md:p-8">
-                        <h2 class="text-xl md:text-3xl font-black text-zinc-800 dark:text-white flex items-center gap-3 mb-4 md:mb-8">
-                            <span class="bg-blue-100 dark:bg-zinc-800 border dark:border-zinc-700 p-2.5 rounded-xl text-blue-600 dark:text-blue-400">📅</span> El teu Pla d'Estudi
+                        <h2 class="text-xl md:text-3xl font-black text-zinc-900 dark:text-white flex items-center gap-3 mb-4 md:mb-8">
+                            <span class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md flex items-center justify-center shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </span>
+                            El teu Pla d'Estudi
                         </h2>
                         <div id="calendar-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5"></div>
                     </div>
                     <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800 rounded-[2rem] shadow-xl p-6 md:p-8">
                         <div class="border-b border-zinc-100 dark:border-zinc-800 pb-4 mb-4 md:pb-6 md:mb-8 flex items-center gap-3">
-                            <span class="bg-indigo-100 dark:bg-zinc-800 border dark:border-zinc-700 p-2.5 rounded-xl text-indigo-600 dark:text-indigo-400 text-xl">🎯</span>
+                            <span class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md flex items-center justify-center shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            </span>
                             <div>
-                                <h2 class="text-xl md:text-3xl font-black text-zinc-800 dark:text-white">Test de Diagnòstic</h2>
-                                <p class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm font-medium mt-1">Valora el teu nivell abans de començar.</p>
+                                <h2 class="text-xl md:text-3xl font-black text-zinc-900 dark:text-white">Test de Diagnòstic</h2>
+                                <p class="text-zinc-600 dark:text-zinc-400 text-xs md:text-sm font-medium mt-1">Valora el teu nivell abans de començar.</p>
                             </div>
                         </div>
                         <div id="quiz-container" class="space-y-4 md:space-y-6 mb-6 md:mb-8"></div>
@@ -335,17 +356,21 @@
                     </div>
                     
                     <div class="flex items-center gap-1.5 md:gap-2">
-                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-[10px] md:text-sm bg-zinc-100 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap shadow-sm">
-                            📅 <span class="hidden sm:inline">Pla d'Estudi</span>
+                        <button id="calendar-header-btn" onclick="showCalendarModal()" class="text-xs md:text-sm bg-white dark:bg-zinc-850 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span class="hidden sm:inline">Pla d'Estudi</span>
                         </button>
-                        <button id="tools-header-btn" onclick="showToolsModal()" class="text-[10px] md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-xl hover:opacity-90 transition flex items-center gap-1 md:gap-1.5 whitespace-nowrap shadow-md">
-                            ⚡ <span class="hidden sm:inline">Eines</span>
+                        <button id="tools-header-btn" onclick="showToolsModal()" class="text-xs md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold px-2.5 py-1.5 md:px-3.5 md:py-2 rounded-xl hover:opacity-90 transition flex items-center gap-1.5 whitespace-nowrap shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-amber-300 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <span class="hidden sm:inline">Eines</span>
                         </button>
-                        <button id="memory-header-btn" onclick="showMemoryModal()" class="text-[10px] md:text-sm bg-purple-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-purple-700 dark:text-purple-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-purple-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap">
-                            🧠 <span class="hidden sm:inline">Memòria</span>
+                        <button id="memory-header-btn" onclick="showMemoryModal()" class="text-xs md:text-sm bg-purple-100 dark:bg-purple-950/70 border border-purple-300 dark:border-purple-800 text-purple-950 dark:text-purple-200 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-purple-200 dark:hover:bg-purple-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-purple-700 dark:text-purple-300 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
+                            <span class="hidden sm:inline">Memòria</span>
                         </button>
-                        <button id="history-header-btn" onclick="showHistoryModal()" class="text-[10px] md:text-sm bg-indigo-50 dark:bg-zinc-800 border border-transparent dark:border-zinc-700 text-indigo-700 dark:text-indigo-300 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-zinc-700 transition flex items-center gap-1 whitespace-nowrap">
-                            📊 <span class="hidden sm:inline">Resultats</span>
+                        <button id="history-header-btn" onclick="showHistoryModal()" class="text-xs md:text-sm bg-indigo-100 dark:bg-indigo-950/70 border border-indigo-300 dark:border-indigo-800 text-indigo-950 dark:text-indigo-200 font-bold px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-700 dark:text-indigo-300 shrink-0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                            <span class="hidden sm:inline">Resultats</span>
                         </button>
                     </div>
                 </div>
@@ -364,35 +389,38 @@
                     </div>
                     
                     <div class="max-w-4xl mx-auto flex flex-col gap-2">
-                        <!-- BARRA D'EINES DE MODES A BAIX (NOMÉS EL MÒDUL / MODO DE TUTOR COM SOL·LICITAT) -->
-                        <div id="chat-toolbar-bottom" class="flex items-center gap-2 px-1 text-xs">
-                            <div class="relative inline-flex items-center">
-                                <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem appearance-none text-xs bg-zinc-800 dark:bg-zinc-800 text-white font-bold pl-3.5 pr-8 py-2 rounded-xl border border-zinc-700 outline-none cursor-pointer hover:bg-zinc-700 transition shadow-md">
-                                    <option value="standard">🎓 Tutor Estàndard</option>
-                                    <option value="socratic">🧐 Mode Socràtic</option>
-                                    <option value="feynman">👶 Mode Feynman</option>
-                                    <option value="tribunal">⚖️ Tribunal Examen</option>
+                        <!-- BARRA D'EINES DE MODES A BAIX (Tutor Mode Selector robust que no s'encongeix) -->
+                        <div id="chat-toolbar-bottom" class="flex items-center gap-2 px-1 text-xs sm:text-sm w-full">
+                            <div class="relative inline-flex items-center w-full sm:w-auto min-w-[220px] sm:min-w-[260px] shrink-0">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                </div>
+                                <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem appearance-none w-full text-xs sm:text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold pl-9 pr-9 py-2.5 rounded-xl border-2 border-zinc-300 dark:border-zinc-700 outline-none cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition shadow-sm">
+                                    <option value="standard">Tutor Estàndard (Complet)</option>
+                                    <option value="socratic">Mode Socràtic (Guiat)</option>
+                                    <option value="feynman">Mode Feynman (Simple)</option>
+                                    <option value="tribunal">Simulador Tribunal (Rigorós)</option>
                                 </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-zinc-300">
-                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-500 dark:text-zinc-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
                                 </div>
                             </div>
                         </div>
 
                         <form id="chat-form" class="relative flex items-center gap-1.5 md:gap-2 hidden">
                             <!-- Botó Lector de Fotos / Càmera -->
-                            <button type="button" onclick="openVisionModal()" title="📸 Lector de Fotos i Càmera en Directe" class="p-2 md:p-3 text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
+                            <button type="button" onclick="openVisionModal()" title="Lector de Fotos i Càmera en Directe" class="p-2 md:p-3 text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                             </button>
 
                             <!-- Botó d'Adjuntar Fitxers -->
-                            <label title="Adjuntar Imatge o Document" class="cursor-pointer p-2 md:p-3 text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
+                            <label title="Adjuntar Imatge o Document" class="cursor-pointer p-2 md:p-3 text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn">
                                 <input type="file" id="chat-attachment" accept="image/*,.pdf" class="hidden" onchange="handleAttachment(this)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                             </label>
 
                             <!-- Botó de Dictat per Veu (Micròfon) -->
-                            <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="🎤 Dictat per Veu" class="p-2 md:p-3 text-zinc-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn relative">
+                            <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="Dictat per Veu" class="p-2 md:p-3 text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn relative">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                                 <span id="mic-pulse" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
                             </button>
@@ -414,25 +442,70 @@
     <div id="settings-modal" class="fixed inset-0 bg-zinc-950/80 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-md flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 border border-zinc-200 dark:border-zinc-800" id="settings-modal-box">
             <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50 dark:bg-zinc-950/50">
-                <h3 class="font-black text-zinc-800 dark:text-zinc-100 flex items-center gap-2 text-lg">⚙️ Configuració del Compte</h3>
+                <h3 class="font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2 text-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Configuració del Compte
+                </h3>
                 <button onclick="closeSettings()" class="text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition bg-white dark:bg-zinc-800 p-2 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-700">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="p-6 space-y-6">
+            <div class="p-6 space-y-5 overflow-y-auto max-h-[75vh]">
                 <!-- Nom -->
                 <div>
-                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-2 uppercase tracking-wide">El teu Nom (Públic)</label>
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">El teu Nom (Públic)</label>
                     <input type="text" id="setting-name" placeholder="Com vols que et diguem?" class="w-full px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium shadow-inner">
                 </div>
                 <!-- Aparença -->
                 <div>
-                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-2 uppercase tracking-wide">Aparença de l'App</label>
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">Aparença de l'App</label>
                     <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 hover:border-blue-400 transition-all group">
-                        <span class="text-sm font-bold text-zinc-700 dark:text-zinc-200">Canviar Tema (Clar / Fosc)</span>
+                        <span class="text-sm font-bold text-zinc-800 dark:text-zinc-200">Canviar Tema (Clar / Fosc)</span>
                         <svg id="theme-icon-modal" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500 group-hover:text-blue-500"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                     </button>
                 </div>
+
+                <!-- SECCIÓ DE PROVEÏDORS D'IA I CONTINGÈNCIA PER ALTA DEMANDA -->
+                <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3.5"/></svg>
+                            Motor d'IA & Contingència (Failover)
+                        </label>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800">Alta Disponibilitat</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">
+                        Si Google Gemini té pics de sobrecàrrega o vols connectar una altra companyia (Groq, OpenRouter, OpenAI, DeepSeek), pots configurar-la aquí per a canvi automàtic instantani.
+                    </p>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-zinc-800 dark:text-zinc-200 mb-1">Proveïdor Preferit</label>
+                        <select id="setting-ai-provider" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 font-bold outline-none text-xs">
+                            <option value="gemini">Google Gemini (Per defecte + fallback resilient)</option>
+                            <option value="groq">Groq (Ultra-ràpid - Recomanat per saturació)</option>
+                            <option value="openrouter">OpenRouter (Centenars de models)</option>
+                            <option value="openai">OpenAI (ChatGPT / GPT-4o-mini)</option>
+                            <option value="deepseek">DeepSeek (V3 / R1)</option>
+                            <option value="mistral">Mistral AI (Nemo / Small)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-zinc-800 dark:text-zinc-200 mb-1">Clau API del Proveïdor (Opcional)</label>
+                        <div class="relative">
+                            <input type="password" id="setting-ai-key" placeholder="gsk_... / sk-or-... / sk-..." class="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 outline-none text-xs font-mono pr-10">
+                            <button type="button" onclick="toggleAiKeyVisibility()" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                                <svg id="ai-key-eye" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-zinc-800 dark:text-zinc-200 mb-1">Model Específic (Opcional)</label>
+                        <input type="text" id="setting-ai-model" placeholder="Ex: llama-3.3-70b-versatile, gpt-4o-mini..." class="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 outline-none text-xs font-medium">
+                    </div>
+                </div>
+
                 <!-- Tancar Sessió -->
                 <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800">
                     <button onclick="logout()" class="w-full flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-bold py-3 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition shadow-sm text-sm border border-red-200 dark:border-red-900/50">
@@ -453,7 +526,9 @@
     <div id="game-modal" class="fixed inset-0 bg-zinc-950/80 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-lg flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 border border-zinc-200 dark:border-zinc-800" id="game-modal-box">
             <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50 dark:bg-zinc-950/50">
-                <h3 id="game-modal-title" class="font-black text-zinc-800 dark:text-zinc-100 flex items-center gap-2 text-lg">🎮 Minijoc</h3>
+                <h3 id="game-modal-title" class="font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2 text-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg> Minijoc
+                </h3>
                 <button onclick="closeGameModal()" class="text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition bg-white dark:bg-zinc-800 p-2 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-700">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
@@ -476,7 +551,9 @@
     <!-- TOAST NOTIFICACIÓ BAIX MIG -->
     <div id="bottom-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] pointer-events-none transition-all duration-300 transform translate-y-12 opacity-0">
         <div id="toast-content" class="bg-zinc-900/95 dark:bg-zinc-800/95 text-white px-5 py-3 rounded-2xl shadow-2xl border border-zinc-700/80 backdrop-blur-xl flex items-center gap-3 text-xs md:text-sm font-medium">
-            <span id="toast-icon">✨</span>
+            <span id="toast-icon" class="flex items-center text-emerald-400">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
             <span id="toast-msg">Notificació</span>
         </div>
     </div>
@@ -550,6 +627,9 @@
                         else document.documentElement.classList.remove('dark');
                         updateThemeIcon();
                     }
+                    if (data.ai_provider) localStorage.setItem('aliat_ai_provider', data.ai_provider);
+                    if (data.ai_api_key) localStorage.setItem('aliat_ai_key', data.ai_api_key);
+                    if (data.ai_model) localStorage.setItem('aliat_ai_model', data.ai_model);
                     updateProfileUI();
                 }
             } catch(e) { console.error("Error carregant settings de la nube:", e); }
@@ -698,10 +778,33 @@
         }
 
         // --- SISTEMA DE CONFIGURACIÓ (SETTINGS) ---
+        function toggleAiKeyVisibility() {
+            const input = document.getElementById('setting-ai-key');
+            const icon = document.getElementById('ai-key-eye-icon');
+            if (!input || !icon) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+
         function openSettings() {
             const modal = document.getElementById('settings-modal');
             const box = document.getElementById('settings-modal-box');
             document.getElementById('setting-name').value = localStorage.getItem('aliat_user_name') || '';
+            
+            const provSelect = document.getElementById('setting-ai-provider');
+            if (provSelect) provSelect.value = localStorage.getItem('aliat_ai_provider') || 'gemini';
+            
+            const keyInput = document.getElementById('setting-ai-key');
+            if (keyInput) keyInput.value = localStorage.getItem('aliat_ai_key') || '';
+            
+            const modelInput = document.getElementById('setting-ai-model');
+            if (modelInput) modelInput.value = localStorage.getItem('aliat_ai_model') || '';
+
             modal.classList.remove('hidden');
             setTimeout(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-95'); }, 10);
         }
@@ -718,9 +821,21 @@
             const newName = document.getElementById('setting-name').value.trim();
             const isDark = document.documentElement.classList.contains('dark');
             const themeStr = isDark ? 'dark' : 'light';
+
+            const provSelect = document.getElementById('setting-ai-provider');
+            const aiProvider = provSelect ? provSelect.value : 'gemini';
+            
+            const keyInput = document.getElementById('setting-ai-key');
+            const aiKey = keyInput ? keyInput.value.trim() : '';
+            
+            const modelInput = document.getElementById('setting-ai-model');
+            const aiModel = modelInput ? modelInput.value.trim() : '';
             
             localStorage.setItem('aliat_user_name', newName);
             localStorage.setItem('aliat_theme', themeStr);
+            localStorage.setItem('aliat_ai_provider', aiProvider);
+            localStorage.setItem('aliat_ai_key', aiKey);
+            localStorage.setItem('aliat_ai_model', aiModel);
             updateProfileUI();
             
             // Guardar al núvol immediatament
@@ -729,7 +844,13 @@
                     const res = await fetch('/api/user/settings', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                        body: JSON.stringify({ name: newName, theme: themeStr })
+                        body: JSON.stringify({ 
+                            name: newName, 
+                            theme: themeStr,
+                            ai_provider: aiProvider,
+                            ai_api_key: aiKey,
+                            ai_model: aiModel
+                        })
                     });
                     const data = await res.json();
                     if(data.error) {
@@ -908,23 +1029,23 @@
             let masteryColor = mem.masteryScore >= 70 ? 'bg-emerald-500' : mem.masteryScore >= 40 ? 'bg-amber-500' : 'bg-blue-500';
             
             let strengthsHtml = mem.strengths.length > 0 
-                ? mem.strengths.map(s => `<span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-semibold px-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">✅ ${s}</span>`).join('')
-                : '<p class="text-xs text-zinc-400 italic">Respon a flashcards o exàmens per registrar punts forts.</p>';
+                ? mem.strengths.map(s => `<span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-300 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-emerald-300 dark:border-emerald-800 flex items-center gap-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ${s}</span>`).join('')
+                : '<p class="text-xs text-zinc-500 dark:text-zinc-400 italic">Respon a flashcards o exàmens per registrar punts forts.</p>';
                 
             let weaknessesHtml = mem.weaknesses.length > 0 
-                ? mem.weaknesses.map(w => `<span class="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-xs font-semibold px-2.5 py-1 rounded-lg border border-amber-300 dark:border-amber-800 flex items-center gap-1">🎯 ${w}</span>`).join('')
-                : '<p class="text-xs text-zinc-400 italic">No tens cap punt feble registrat actualment!</p>';
+                ? mem.weaknesses.map(w => `<span class="bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 text-xs font-bold px-2.5 py-1.5 rounded-lg border border-amber-300 dark:border-amber-800 flex items-center gap-1.5"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> ${w}</span>`).join('')
+                : '<p class="text-xs text-zinc-500 dark:text-zinc-400 italic">No tens cap punt feble registrat actualment!</p>';
 
             let htmlContent = `
             <div class="space-y-5 text-left mt-3">
                 <div class="bg-zinc-100 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Estat de l'Alumne</span>
-                        <span class="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-black px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800/50">${mem.level}</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Estat de l'Alumne</span>
+                        <span class="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-black px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800/50">${mem.level}</span>
                     </div>
-                    <div class="flex justify-between items-center text-sm font-bold text-zinc-800 dark:text-zinc-100 mb-1">
+                    <div class="flex justify-between items-center text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-1">
                         <span>Nivell de Mestratge Total</span>
-                        <span>${mem.masteryScore}%</span>
+                        <span class="text-blue-600 dark:text-blue-400">${mem.masteryScore}%</span>
                     </div>
                     <div class="w-full bg-zinc-200 dark:bg-zinc-800 h-3 rounded-full overflow-hidden">
                         <div class="${masteryColor} h-full transition-all duration-500 rounded-full" style="width: ${mem.masteryScore}%"></div>
@@ -934,44 +1055,51 @@
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <div class="bg-zinc-50 dark:bg-zinc-900 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800">
                         <div class="text-lg font-black text-blue-600 dark:text-blue-400">${mem.stats.gamesPlayed}</div>
-                        <div class="text-[10px] font-bold text-zinc-500 uppercase">Jocs Fets</div>
+                        <div class="text-[10px] font-bold text-zinc-700 dark:text-zinc-400 uppercase">Jocs Fets</div>
                     </div>
                     <div class="bg-zinc-50 dark:bg-zinc-900 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800">
                         <div class="text-lg font-black text-emerald-600 dark:text-emerald-400">${mem.stats.gamesWon}</div>
-                        <div class="text-[10px] font-bold text-zinc-500 uppercase">Encerts</div>
+                        <div class="text-[10px] font-bold text-zinc-700 dark:text-zinc-400 uppercase">Encerts</div>
                     </div>
                     <div class="bg-zinc-50 dark:bg-zinc-900 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800">
                         <div class="text-lg font-black text-purple-600 dark:text-purple-400">${mem.stats.flashcardsMastered}</div>
-                        <div class="text-[10px] font-bold text-zinc-500 uppercase">Targetes 🟢</div>
+                        <div class="text-[10px] font-bold text-zinc-700 dark:text-zinc-400 uppercase">Flashcards</div>
                     </div>
                 </div>
 
                 <div>
-                    <h4 class="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-2 flex items-center gap-1">
-                        <span>💪 Punts Forts i Domini</span>
+                    <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span>Punts Forts i Domini</span>
                     </h4>
                     <div class="flex flex-wrap gap-1.5">${strengthsHtml}</div>
                 </div>
 
                 <div>
-                    <h4 class="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-2 flex items-center gap-1">
-                        <span>🎯 Punts a Millorar (Atenció de la IA)</span>
+                    <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>Punts a Millorar (Atenció de la IA)</span>
                     </h4>
                     <div class="flex flex-wrap gap-1.5 mb-3">${weaknessesHtml}</div>
                     ${mem.weaknesses.length > 0 ? `
                         <button onclick="Swal.close(); reviewWeakTopics();" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2">
-                            🎯 Repassar aquests temes amb el tutor IA
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Repassar aquests temes amb el tutor IA
                         </button>
                     ` : ''}
                 </div>
             </div>`;
 
             Swal.fire({
-                title: '🧠 Memòria Adaptativa de l\'Alumne',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.2"><path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-3 3.87A4 4 0 0 0 2 15a4 4 0 0 0 4 4h1a4 4 0 0 0 3.87 3 4 4 0 0 0 4.26-3H16a4 4 0 0 0 4-4 4 4 0 0 0-1-2.87A4 4 0 0 0 22 11a4 4 0 0 0-3-3.87V6a4 4 0 0 0-4-4h-3z"/></svg> Memòria Adaptativa de l\'Alumne</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 confirmButtonText: 'Tancar',
                 confirmButtonColor: '#2563eb',
+                target: 'main',
+                heightAuto: false,
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-900 dark:text-white' }
+            });
+        };
                 target: 'main',
                 heightAuto: false,
                 customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-800 dark:text-white' }
@@ -1099,66 +1227,78 @@
             let htmlContent = `
             <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4 text-left">
                 <button onclick="Swal.close(); openVisionModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-lg mb-3">📸</div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
                     <div>
-                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-blue-600 transition">Lector de Fotos</div>
-                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Analitza llibretes, resol exàmens i transcriu fotos.</div>
+                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-blue-600 transition">Lector de Fotos</div>
+                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Analitza apunts, resol exercicis i transcriu pissarres.</div>
                     </div>
                 </button>
 
                 <button onclick="Swal.close(); openDiagramModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-lg mb-3">🎨</div>
+                    <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="10" y1="6.5" x2="14" y2="6.5"/><line x1="6.5" y1="10" x2="6.5" y2="14"/><line x1="17.5" y1="10" x2="17.5" y2="14"/><line x1="10" y1="17.5" x2="14" y2="17.5"/></svg>
+                    </div>
                     <div>
-                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-indigo-600 transition">Diagrames Visuals</div>
-                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Esquemes visuals per a memòria fotogràfica.</div>
+                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-indigo-600 transition">Diagrames Visuals</div>
+                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Esquemes visuals per a memòria fotogràfica.</div>
                     </div>
                 </button>
 
                 <button onclick="Swal.close(); openAnkiModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-purple-500 dark:hover:border-purple-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-lg mb-3">📇</div>
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h10"/><path d="M7 11h6"/><path d="M7 7h4"/></svg>
+                    </div>
                     <div>
-                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-purple-600 transition">Baralla Anki IA</div>
-                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Genera targetes Anki de repetició espaciada.</div>
+                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-purple-600 transition">Baralla Anki IA</div>
+                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Targetes de repetició espaiada amb active recall.</div>
                     </div>
                 </button>
 
                 <button onclick="Swal.close(); openExamSimulatorModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-emerald-500 dark:hover:border-emerald-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg mb-3">📝</div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    </div>
                     <div>
-                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-emerald-600 transition">Simulador Examen</div>
-                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Test amb puntuació /10 i confetti en aprovar.</div>
+                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-emerald-600 transition">Simulador Examen</div>
+                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Test amb puntuació /10 i correcció explicada.</div>
                     </div>
                 </button>
 
                 <button onclick="Swal.close(); openCheatsheetModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-amber-500 dark:hover:border-amber-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-lg mb-3">⚡</div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
                     <div>
-                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-amber-600 transition">Chuleta & Resums</div>
-                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Extrau fórmules, mapa conceptual i cronologia.</div>
+                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-amber-600 transition">Formulari & Resums</div>
+                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Extracció de fórmules clau, conceptes i cronologia.</div>
                     </div>
                 </button>
 
                 <button onclick="Swal.close(); openPomodoroModal();" class="p-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-rose-500 dark:hover:border-rose-500 transition group flex flex-col justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold text-lg mb-3">⏱️</div>
+                    <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 flex items-center justify-center font-bold text-lg mb-3 shadow-sm">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
                     <div>
-                        <div class="font-bold text-zinc-800 dark:text-zinc-100 text-sm mb-1 group-hover:text-rose-600 transition">Pomodoro & Sons</div>
-                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight">Temporitzador 25/5 min i so de pluja sintetitzada.</div>
+                        <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm mb-1 group-hover:text-rose-600 transition">Pomodoro & Sons</div>
+                        <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">Temporitzador 25/5 min i so de pluja sintetitzada.</div>
                     </div>
                 </button>
             </div>`;
 
             Swal.fire({
-                title: '⚡ Eines d\'Estudi Integrades',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Eines d\'Estudi Integrades</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-2xl', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-2xl', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
-        // --- 📸 MODAL LECTOR DE FOTOS I CÀMERA EN DIRECTE ---
+        // --- MODAL LECTOR DE FOTOS I CÀMERA EN DIRECTE ---
         let currentVisionImageBase64 = null;
 
         window.openVisionModal = function() {
@@ -1166,30 +1306,30 @@
             <div class="space-y-4 text-left mt-2">
                 <!-- Modes d'anàlisi -->
                 <div>
-                    <label class="block text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2">1. Selecciona el Mètode d'Anàlisi</label>
+                    <label class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-2">1. Selecciona el Mètode d'Anàlisi</label>
                     <div class="grid grid-cols-2 gap-2" id="vision-mode-selector">
-                        <button onclick="selectVisionMode('solve', this)" class="v-mode-btn active p-2.5 rounded-xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center gap-2">
-                            🧮 Resolver Exercici
+                        <button onclick="selectVisionMode('solve', this)" class="v-mode-btn active p-2.5 rounded-xl border-2 border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-900 dark:text-blue-200 font-bold text-xs flex items-center gap-2">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg> Resoldre Exercici
                         </button>
-                        <button onclick="selectVisionMode('diagram_breakdown', this)" class="v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 font-bold text-xs flex items-center gap-2">
-                            🧬 Desglosar Esquema
+                        <button onclick="selectVisionMode('diagram_breakdown', this)" class="v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 font-bold text-xs flex items-center gap-2">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M8.5 7.5l7 3"/><path d="M8.5 16.5l7-3"/></svg> Desglossar Esquema
                         </button>
-                        <button onclick="selectVisionMode('transcribe_summarize', this)" class="v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 font-bold text-xs flex items-center gap-2">
-                            ✍️ Transcriure i Resumir
+                        <button onclick="selectVisionMode('transcribe_summarize', this)" class="v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 font-bold text-xs flex items-center gap-2">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Transcriure i Resumir
                         </button>
-                        <button onclick="selectVisionMode('study_pack', this)" class="v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 font-bold text-xs flex items-center gap-2">
-                            📦 Pack d'Estudi
+                        <button onclick="selectVisionMode('study_pack', this)" class="v-mode-btn p-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 font-bold text-xs flex items-center gap-2">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Pack d'Estudi
                         </button>
                     </div>
                 </div>
 
-                <!-- Provar Apunts de Exemple en 1-Clic -->
+                <!-- Provar Apunts d'Exemple en 1-Clic -->
                 <div>
-                    <label class="block text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">O prova amb 3 Apunts de Exemple en 1-Clic:</label>
+                    <label class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5">O prova amb 3 Apunts d'Exemple en 1-Clic:</label>
                     <div class="flex gap-2 overflow-x-auto pb-1">
-                        <button onclick="loadSampleVision('biologia')" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-500 hover:text-white rounded-xl text-xs font-semibold shrink-0 transition border border-zinc-200 dark:border-zinc-700">🧬 Biologia Cel·lular</button>
-                        <button onclick="loadSampleVision('fisica')" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-500 hover:text-white rounded-xl text-xs font-semibold shrink-0 transition border border-zinc-200 dark:border-zinc-700">📐 Física: Pla Inclinat</button>
-                        <button onclick="loadSampleVision('matematices')" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-500 hover:text-white rounded-xl text-xs font-semibold shrink-0 transition border border-zinc-200 dark:border-zinc-700">🔢 Matemàtiques: Integrals</button>
+                        <button onclick="loadSampleVision('biologia')" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-600 hover:text-white text-zinc-800 dark:text-zinc-200 rounded-xl text-xs font-semibold shrink-0 transition border border-zinc-300 dark:border-zinc-700">Biologia Cel·lular</button>
+                        <button onclick="loadSampleVision('fisica')" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-600 hover:text-white text-zinc-800 dark:text-zinc-200 rounded-xl text-xs font-semibold shrink-0 transition border border-zinc-300 dark:border-zinc-700">Física: Pla Inclinat</button>
+                        <button onclick="loadSampleVision('matematices')" class="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-600 hover:text-white text-zinc-800 dark:text-zinc-200 rounded-xl text-xs font-semibold shrink-0 transition border border-zinc-300 dark:border-zinc-700">Matemàtiques: Integrals</button>
                     </div>
                 </div>
 
@@ -1201,19 +1341,21 @@
                     <div id="vision-svg-box" class="hidden mb-3"></div>
                     <input type="file" id="vision-file-input" accept="image/*" class="hidden" onchange="handleVisionFileSelect(this)">
                     <div class="flex items-center justify-center gap-3">
-                        <button onclick="document.getElementById('vision-file-input').click()" class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-100 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2">
-                            📁 Pujar Foto/Apunt
+                        <button onclick="document.getElementById('vision-file-input').click()" class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-100 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2 border border-zinc-300 dark:border-zinc-700">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Pujar Foto/Apunt
                         </button>
-                        <button onclick="startLiveCamera()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2">
-                            📷 Obrir Càmera
+                        <button onclick="startLiveCamera()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2 shadow-sm">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Obrir Càmera
                         </button>
                     </div>
                     <video id="vision-video" class="hidden w-full max-h-48 rounded-xl mt-3 object-cover border border-zinc-700" autoplay playsinline></video>
-                    <button id="vision-snap-btn" onclick="snapCameraPhoto()" class="hidden w-full mt-2 bg-red-600 text-white font-bold py-2 rounded-xl text-xs">📸 Capturar Foto de la Càmera</button>
+                    <button id="vision-snap-btn" onclick="snapCameraPhoto()" class="hidden w-full mt-2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Capturar Foto de la Càmera
+                    </button>
                 </div>
 
-                <button id="btn-process-vision" onclick="processVisionAnalysis()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
-                    🔍 Analitzar Foto amb Gemini 3.8 Flash
+                <button id="btn-process-vision" onclick="processVisionAnalysis()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Analitzar Foto amb IA
                 </button>
             </div>`;
 
@@ -1221,13 +1363,13 @@
             currentVisionImageBase64 = null;
 
             Swal.fire({
-                title: '📸 Lector i Solucionador d\'Apunts',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Lector i Solucionador d\'Apunts</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1307,38 +1449,60 @@
             showToast('📸 Foto capturada!');
         };
 
+        // --- CLIENT DE GENERACIÓ MULTI-PROVEÏDOR IA AMB CONTINGÈNCIA ---
+        window.callGenerateApi = async function(bodyPayload) {
+            const userAiProvider = localStorage.getItem('aliat_ai_provider') || '';
+            const userAiKey = localStorage.getItem('aliat_ai_key') || '';
+            const userAiModel = localStorage.getItem('aliat_ai_model') || '';
+
+            const headers = { 'Content-Type': 'application/json' };
+            if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+            if (userAiProvider) headers['x-ai-provider'] = userAiProvider;
+            if (userAiKey) headers['x-ai-key'] = userAiKey;
+            if (userAiModel) headers['x-ai-model'] = userAiModel;
+
+            const fullPayload = {
+                ...bodyPayload,
+                ai_provider: userAiProvider,
+                ai_api_key: userAiKey,
+                ai_model: userAiModel
+            };
+
+            return await fetch('/api/generate', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(fullPayload)
+            });
+        };
+
         window.processVisionAnalysis = async function() {
             if (!currentVisionImageBase64) {
-                showToast('⚠️ Selecciona o captura una foto d\'apunts primer.', 'error');
+                showToast('Selecciona o captura una foto d\'apunts primer.', 'error');
                 return;
             }
 
             Swal.fire({
                 title: 'Analitzant apunt...',
-                text: 'Gemini 3.8 Flash està processant la imatge.',
+                text: 'Processant imatge amb el motor d\'IA multimodal.',
                 allowOutsideClick: false,
                 target: 'main',
                 didOpen: () => Swal.showLoading()
             });
 
             try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'vision_analyze',
-                        imageBase64: currentVisionImageBase64,
-                        mode: window.selectedVisionMode || 'solve'
-                    })
+                const res = await callGenerateApi({
+                    action: 'vision_analyze',
+                    imageBase64: currentVisionImageBase64,
+                    mode: window.selectedVisionMode || 'solve'
                 });
 
                 const data = await res.json();
                 if (data.error) throw new Error(data.error);
 
                 Swal.close();
-                appendMessage('user', '📸 Anàlisi d\'apunt (' + window.selectedVisionMode + ')');
+                appendMessage('user', 'Anàlisi d\'apunt (' + window.selectedVisionMode + ')');
                 appendMessage('ai', data.analysis);
-                chatHistory.push({ role: 'user', content: '📸 Anàlisi d\'apunt (' + window.selectedVisionMode + ')' });
+                chatHistory.push({ role: 'user', content: 'Anàlisi d\'apunt (' + window.selectedVisionMode + ')' });
                 chatHistory.push({ role: 'assistant', content: data.analysis });
                 saveSession();
 
@@ -1347,35 +1511,35 @@
             }
         };
 
-        // --- 🎨 MODAL GENERADOR VISUAL DE DIAGRAMES ---
+        // --- MODAL GENERADOR VISUAL DE DIAGRAMES ---
         window.openDiagramModal = function() {
             let htmlContent = `
             <div class="space-y-4 text-left mt-2">
                 <div>
-                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Tema del Diagrama</label>
-                    <input type="text" id="diagram-topic" placeholder="Ex: Ciclo de Krebs, Capas de la Tierra, Sinapsis Neuronal, Leyes de Kepler..." class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-medium outline-none">
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-200 mb-1">Tema del Diagrama</label>
+                    <input type="text" id="diagram-topic" placeholder="Ex: Cicle de Krebs, Capes de la Terra, Sinapsi Neuronal, Lleis de Kepler..." class="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-sm font-medium outline-none focus:border-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Estil Visual</label>
-                    <select id="diagram-style" class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-bold outline-none">
-                        <option value="diagrama_cientific">📐 Diagrama Científic amb Etiquetes</option>
-                        <option value="infografia_3d">🎨 Infografia 3D Interactiva</option>
-                        <option value="dibuix_anatomic">🧬 Dibuix Anatòmic Vectorial</option>
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-200 mb-1">Estil Visual</label>
+                    <select id="diagram-style" class="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-sm font-bold outline-none focus:border-indigo-500">
+                        <option value="diagrama_cientific">Diagrama Científic amb Etiquetes</option>
+                        <option value="infografia_3d">Infografia Visual Jeràrquica</option>
+                        <option value="dibuix_anatomic">Dibuix Anatòmic Vectorial</option>
                     </select>
                 </div>
-                <button onclick="processGenerateDiagram()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
-                    ✨ Generar Diagrama Visual
+                <button onclick="processGenerateDiagram()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Generar Diagrama Visual
                 </button>
             </div>`;
 
             Swal.fire({
-                title: '🎨 Generador Visual de Diagrames',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Generador Visual de Diagrames</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1387,45 +1551,41 @@
             Swal.fire({ title: 'Dissenyant Diagrama...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
 
             try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'generate_diagram', topic: topic, style: style })
-                });
+                const res = await callGenerateApi({ action: 'generate_diagram', topic: topic, style: style });
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
                 Swal.close();
-                appendMessage('user', '🎨 Genera un diagrama sobre: ' + topic);
+                appendMessage('user', 'Genera un diagrama sobre: ' + topic);
                 appendMessage('ai', data.diagram);
-                chatHistory.push({ role: 'user', content: '🎨 Genera un diagrama sobre: ' + topic });
+                chatHistory.push({ role: 'user', content: 'Genera un diagrama sobre: ' + topic });
                 chatHistory.push({ role: 'assistant', content: data.diagram });
                 saveSession();
 
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
         };
 
-        // --- 📇 MODAL GENERADOR DE BARAJES ANKI ---
+        // --- MODAL GENERADOR DE BARALLES ANKI ---
         window.openAnkiModal = function() {
             let htmlContent = `
             <div class="space-y-4 text-left mt-2">
                 <div>
-                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Matèria o concepte</label>
-                    <input type="text" id="anki-topic" placeholder="Ex: Vocabulari d'Anglès B2, Taula Periòdica, Història d'Espanya..." class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-medium outline-none">
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-200 mb-1">Matèria o concepte</label>
+                    <input type="text" id="anki-topic" placeholder="Ex: Vocabulari d'Anglès B2, Taula Periòdica, Història d'Espanya..." class="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-sm font-medium outline-none focus:border-purple-500">
                 </div>
-                <button onclick="processGenerateAnki()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
-                    📇 Crear Baralla Anki amb IA
+                <button onclick="processGenerateAnki()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h10"/><path d="M7 11h6"/></svg> Crear Baralla Anki amb IA
                 </button>
             </div>`;
 
             Swal.fire({
-                title: '📇 Flashcards (Métode Anki)',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h10"/><path d="M7 11h6"/><path d="M7 7h4"/></svg> Flashcards (Mètode Anki)</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1436,45 +1596,41 @@
             Swal.fire({ title: 'Generant Baralla Anki...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
 
             try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'generate_anki_deck', topic: topic })
-                });
+                const res = await callGenerateApi({ action: 'generate_anki_deck', topic: topic });
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
                 Swal.close();
-                appendMessage('user', '📇 Crea una baralla Anki de: ' + topic);
+                appendMessage('user', 'Crea una baralla Anki de: ' + topic);
                 appendMessage('ai', data.deck);
-                chatHistory.push({ role: 'user', content: '📇 Crea una baralla Anki de: ' + topic });
+                chatHistory.push({ role: 'user', content: 'Crea una baralla Anki de: ' + topic });
                 chatHistory.push({ role: 'assistant', content: data.deck });
                 saveSession();
 
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
         };
 
-        // --- 📝 MODAL SIMULADOR D'EXAMENS I TEST AMB CONFETTI ---
+        // --- MODAL SIMULADOR D'EXÀMENS I TEST ---
         window.openExamSimulatorModal = function() {
             let htmlContent = `
             <div class="space-y-4 text-left mt-2">
                 <div>
-                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Tema de l'Examen</label>
-                    <input type="text" id="exam-sim-topic" placeholder="Ex: Anatomia del Cor, Dret Constitucional, Liqueus i Fongs..." class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-medium outline-none">
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-200 mb-1">Tema de l'Examen</label>
+                    <input type="text" id="exam-sim-topic" placeholder="Ex: Anatomia del Cor, Dret Constitucional, Líquens i Fongs..." class="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-sm font-medium outline-none focus:border-emerald-500">
                 </div>
-                <button onclick="processGenerateExamSim()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
-                    📝 Començar Examen Puntuat
+                <button onclick="processGenerateExamSim()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Començar Examen Puntuat
                 </button>
             </div>`;
 
             Swal.fire({
-                title: '📝 Simulador de Test i Exàmens',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Simulador de Test i Exàmens</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1485,56 +1641,52 @@
             Swal.fire({ title: 'Dissenyant Examen...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
 
             try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'chat',
-                        chatHistory: [{ role: 'user', content: `Crea un Test d'Examen Kahoot de 5 preguntes realistes amb distractors plausibles sobre el tema: ${topic}. Retorna NOMÉS el bloc kahoot.` }]
-                    })
+                const res = await callGenerateApi({
+                    action: 'chat',
+                    chatHistory: [{ role: 'user', content: `Crea un Test d'Examen Kahoot de 5 preguntes realistes amb distractors plausibles sobre el tema: ${topic}. Retorna NOMÉS el bloc kahoot.` }]
                 });
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
                 Swal.close();
-                appendMessage('user', '📝 Genera un Examen Puntuat de: ' + topic);
+                appendMessage('user', 'Genera un Examen Puntuat de: ' + topic);
                 appendMessage('ai', data.reply);
-                chatHistory.push({ role: 'user', content: '📝 Genera un Examen Puntuat de: ' + topic });
+                chatHistory.push({ role: 'user', content: 'Genera un Examen Puntuat de: ' + topic });
                 chatHistory.push({ role: 'assistant', content: data.reply });
                 saveSession();
 
             } catch(e) { Swal.fire('Error', e.message, 'error'); }
         };
 
-        // --- ⚡ MODAL CHULETES DE FÓRMULES I MAPES CONCEPTUALS ---
+        // --- MODAL FORMULARIS I RESUMS ---
         window.openCheatsheetModal = function() {
             let htmlContent = `
             <div class="space-y-4 text-left mt-2">
                 <div>
-                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Apunts o Text a Extreure</label>
-                    <textarea id="cheatsheet-text" placeholder="Enganxa aquí el teu text o apunts llargs..." class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-medium outline-none h-28 resize-none"></textarea>
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-200 mb-1">Apunts o Text a Extreure</label>
+                    <textarea id="cheatsheet-text" placeholder="Enganxa aquí el teu text o apunts llargs..." class="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-sm font-medium outline-none h-28 resize-none focus:border-amber-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">Tipus de Resum</label>
-                    <select id="cheatsheet-format" class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-bold outline-none">
-                        <option value="formulas">⚡ Chuleta de Fórmules i Equacions</option>
-                        <option value="mindmap">🗺️ Mapa Conceptual Jeràrquic</option>
-                        <option value="timeline">⏳ Línia Cronològica d'Etapes</option>
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-200 mb-1">Tipus de Resum</label>
+                    <select id="cheatsheet-format" class="w-full px-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-sm font-bold outline-none focus:border-amber-500">
+                        <option value="formulas">Formulari de Fórmules i Equacions</option>
+                        <option value="mindmap">Mapa Conceptual Jeràrquic</option>
+                        <option value="timeline">Línia Cronològica d'Etapes</option>
                     </select>
                 </div>
-                <button onclick="processGenerateCheatsheet()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md">
-                    ⚡ Extreure Chuleta
+                <button onclick="processGenerateCheatsheet()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Extreure Formulari
                 </button>
             </div>`;
 
             Swal.fire({
-                title: '⚡ Chuletes de Fórmules i Resúmens',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Formularis i Resums Ràpids</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -1542,21 +1694,17 @@
             const sourceText = document.getElementById('cheatsheet-text').value.trim();
             const formatType = document.getElementById('cheatsheet-format').value;
 
-            Swal.fire({ title: 'Processant Chuleta...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Processant Formulari...', allowOutsideClick: false, target: 'main', didOpen: () => Swal.showLoading() });
 
             try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'generate_cheatsheet', sourceText: sourceText, formatType: formatType })
-                });
+                const res = await callGenerateApi({ action: 'generate_cheatsheet', sourceText: sourceText, formatType: formatType });
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
                 Swal.close();
-                appendMessage('user', '⚡ Genera una Chuleta d\'Estudi (' + formatType + ')');
+                appendMessage('user', 'Genera un Formulari d\'Estudi (' + formatType + ')');
                 appendMessage('ai', data.result);
-                chatHistory.push({ role: 'user', content: '⚡ Genera una Chuleta d\'Estudi (' + formatType + ')' });
+                chatHistory.push({ role: 'user', content: 'Genera un Formulari d\'Estudi (' + formatType + ')' });
                 chatHistory.push({ role: 'assistant', content: data.result });
                 saveSession();
 
@@ -1877,19 +2025,63 @@
             }
         }
         // CARREGA INSTANTÀNIA SENSE RECARREGAR LA PÀGINA
-        window.loadSession = function(id) { 
+        function isSessionEmpty(sessionOrId) {
+            let session = typeof sessionOrId === 'object' && sessionOrId !== null
+                ? sessionOrId 
+                : allSessions.find(s => s.id === sessionOrId);
+                
+            if (!session) {
+                const hasUserMessages = chatHistory && chatHistory.some(m => m.role === 'user');
+                const hasCalendar = generatedCalendarArray && generatedCalendarArray.length > 0;
+                const hasPdfs = uploadedPDFs && uploadedPDFs.length > 0;
+                return !hasUserMessages && !hasCalendar && !hasPdfs;
+            }
+            
+            const history = session.history || session.chat_history || [];
+            const hasUserMessages = history.some(m => m.role === 'user');
+            const hasCalendar = session.calendar && session.calendar.length > 0;
+            return !hasUserMessages && !hasCalendar;
+        }
+
+        async function cleanupCurrentSessionIfEmpty() {
+            if (!currentSessionId) return;
+            const hasUserMessages = chatHistory && chatHistory.some(m => m.role === 'user');
+            const hasCalendar = generatedCalendarArray && generatedCalendarArray.length > 0;
+            const hasPdfs = uploadedPDFs && uploadedPDFs.length > 0;
+            
+            if (!hasUserMessages && !hasCalendar && !hasPdfs) {
+                const idToDelete = currentSessionId;
+                allSessions = allSessions.filter(s => s.id !== idToDelete);
+                localStorage.setItem('aliat_sessions_backup', JSON.stringify(allSessions));
+                localStorage.removeItem('aliat_local_html_' + idToDelete);
+                localStorage.removeItem('aliat_local_context_' + idToDelete);
+                localStorage.removeItem('aliat_local_text_' + idToDelete);
+                localStorage.removeItem('aliat_student_memory_' + idToDelete);
+                if (authToken) {
+                    try {
+                        fetch('/api/sessions/delete', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                            body: JSON.stringify({ id: idToDelete })
+                        }).catch(() => {});
+                    } catch(e) {}
+                }
+            }
+        }
+
+        window.loadSession = async function(id) { 
+            if (currentSessionId && currentSessionId !== id) {
+                await cleanupCurrentSessionIfEmpty();
+            }
             localStorage.setItem('aliat_current_id', id); 
             currentSessionId = id;
             renderSidebarHistory(); 
             loadActiveSessionData();
         }
 
-        window.newSession = function() {
-            // Esborrar xats buits si se'n crea un de nou i l'anterior estava buit
-            if (chatHistory.length <= 1 && uploadedPDFs.length === 0) {
-                allSessions = allSessions.filter(s => s.id !== currentSessionId);
-                localStorage.setItem('aliat_sessions_backup', JSON.stringify(allSessions));
-            }
+        window.newSession = async function() {
+            // Esborrar sessió prèvia si està buida abans de crear-ne una de nova
+            await cleanupCurrentSessionIfEmpty();
 
             currentSessionId = 'sess_' + Date.now();
             localStorage.setItem('aliat_current_id', currentSessionId);
@@ -1933,6 +2125,10 @@
             const list = document.getElementById('history-list');
             list.innerHTML = '';
             
+            // Neteja automàtica de qualsevol sessió buida existent a l'historial
+            allSessions = allSessions.filter(s => !isSessionEmpty(s));
+            localStorage.setItem('aliat_sessions_backup', JSON.stringify(allSessions));
+
             const sortedSessions = [...allSessions].sort((a, b) => b.date - a.date);
             if (sortedSessions.length === 0) {
                 list.innerHTML = '<div class="text-[11px] text-zinc-500 px-3 py-2 italic">Cap conversa guardada</div>';
@@ -1940,9 +2136,7 @@
             }
 
             sortedSessions.forEach(s => {
-                if (!s.history || s.history.length === 0) return;
-                
-                let title = s.title || (s.mode === 'study' ? 'Pla d\'Estudis' : 'XatBot lliure');
+                let title = s.title || (s.mode === 'study' ? 'Pla d\'Estudis' : 'XatBot');
                 let dateStr = new Date(s.date).toLocaleDateString('ca-ES', { day: '2-digit', month: 'short' });
                 
                 let activeClass = (s.id === currentSessionId) 
@@ -1956,7 +2150,7 @@
                             <span class="truncate pr-2">${title}</span>
                             <span class="text-[10px] opacity-60 shrink-0 group-hover:hidden">${dateStr}</span>
                         </button>
-                        <button onclick="deleteSession('${s.id}')" class="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10">
+                        <button onclick="deleteSession('${s.id}')" class="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10" title="Eliminar conversa">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                     </div>
@@ -2054,10 +2248,10 @@
         }
 
         // --- RUTES D'INICI DE L'APP ---
-        function startStudyMode() { 
-            // 1. Si estàvem en un XatBot actiu amb missatges, creem una sessió nova per no barrejar
+        async function startStudyMode() { 
+            await cleanupCurrentSessionIfEmpty();
             if (chatHistory.length > 0 && appMode === 'free') {
-                newSession();
+                await newSession();
             }
 
             appMode = 'study'; 
@@ -2095,11 +2289,10 @@
             }
         }
 
-        function startFreeChatMode() { 
-            // LA CLAU: Si ja teníem un xat obert (sigui d'estudi o un altre XatBot lliure previ),
-            // creem una sessió nova per donar-te un llenç en blanc immediat.
+        async function startFreeChatMode() { 
+            await cleanupCurrentSessionIfEmpty();
             if (chatHistory.length > 0) {
-                newSession();
+                await newSession();
             }
 
             appMode = 'free'; 
@@ -2127,9 +2320,7 @@
             if (chatHistory.length === 0) { 
                 appendMessage('ai', "Hola! Sóc l'Aliat Intel·ligent. T'escolto, de què vols parlar o què necessites investigar avui?"); 
                 chatHistory.push({ role: 'assistant', content: "Hola! Sóc l'Aliat Intel·ligent. T'escolto, de què vols parlar o què necessites investigar avui?" }); 
-                
-                // Forcem el guardat al núvol a l'instant
-                saveSession();
+                // No guardem immediatament per evitar crear xats buits a l'historial
             } 
 
             // Si estàs al mòbil, tanca el menú lateral
@@ -2221,10 +2412,7 @@
             Swal.fire({ title: 'Planificant...', allowOutsideClick: false, target: 'main', heightAuto: false, customClass: { container: 'absolute z-[999]', popup: 'rounded-[2rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }, didOpen: () => Swal.showLoading() });            
             try {
                 let numSessions = validStudyDates.length > 15 ? 15 : validStudyDates.length;
-                const res = await fetch('/api/generate', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'prepare_study', pdfText: finalStudyText.substring(0, 4500), totalSessionsToGenerate: numSessions })
-                });
+                const res = await callGenerateApi({ action: 'prepare_study', pdfText: finalStudyText.substring(0, 4500), totalSessionsToGenerate: numSessions });
                 if (!res.ok) throw new Error("El servidor ha fallat.");
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
@@ -2389,15 +2577,12 @@
             appendLoading(loadingId);
             try {
                 const actionToSend = appMode === 'free' ? 'free_chat' : 'chat';
-                const res = await fetch('/api/generate', { 
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ 
-                        action: actionToSend, 
-                        chatHistory: chatHistory, 
-                        pdfText: finalStudyText, 
-                        studentContext: studentContextStr,
-                        tutorMode: window.currentTutorMode || 'standard' 
-                    }) 
+                const res = await callGenerateApi({ 
+                    action: actionToSend, 
+                    chatHistory: chatHistory, 
+                    pdfText: finalStudyText, 
+                    studentContext: studentContextStr,
+                    tutorMode: window.currentTutorMode || 'standard' 
                 });
                 document.getElementById(loadingId)?.remove();
                 const data = await res.json();
@@ -2407,7 +2592,7 @@
                 saveSession();
             } catch (err) {
                 document.getElementById(loadingId)?.remove();
-                showToast("⚠️ S'ha produït un error al generar la resposta", "error");
+                showToast("S'ha produït un error al generar la resposta", "error");
                 
                 // Missatge d'error amb botó de reintentar elegant
                 const box = document.getElementById('chat-messages');
@@ -2415,10 +2600,10 @@
                 div.className = "flex justify-start gap-2 w-full mb-3 chat-msg-ai";
                 div.innerHTML = `
                 <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md mt-1">!</div>
-                <div class="bg-white dark:bg-zinc-900 border border-red-200 dark:border-red-900/50 text-zinc-800 dark:text-zinc-100 px-4 py-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-md w-full">
+                <div class="bg-white dark:bg-zinc-900 border border-red-200 dark:border-red-900/50 text-zinc-900 dark:text-zinc-100 px-4 py-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-md w-full">
                     <p class="text-sm font-semibold text-red-600 dark:text-red-400 mb-3">No s'ha pogut completar la resposta: ${err.message}</p>
                     <button onclick="retryAiResponse(this)" class="bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-800 dark:hover:bg-zinc-700 text-white font-bold py-2.5 px-4 rounded-xl transition text-xs flex items-center gap-2 border border-transparent dark:border-zinc-700 shadow-sm interactive-btn">
-                        🔄 Reintentar darrer missatge
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Reintentar darrer missatge
                     </button>
                 </div>`;
                 box.appendChild(div);
@@ -2428,7 +2613,7 @@
 
         window.retryAiResponse = function(btn) {
             btn.closest('.flex.justify-start').remove();
-            showToast("🔄 Reintentant connexió amb la IA...", "info");
+            showToast("Reintentant connexió amb la IA...", "info");
             triggerAiResponse();
         };
 
@@ -2439,7 +2624,13 @@
             
             if(!toast) return;
             msgEl.innerText = msg;
-            iconEl.innerText = type === 'error' ? '⚠️' : type === 'info' ? 'ℹ️' : '✨';
+            if (type === 'error') {
+                iconEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+            } else if (type === 'info') {
+                iconEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+            } else {
+                iconEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+            }
             
             toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
             toast.classList.add('translate-y-0', 'opacity-100');
@@ -2525,35 +2716,44 @@
             let htmlContent = '<div class="text-left overflow-y-auto max-h-[65vh] mt-4 space-y-4 pr-1">';
 
             if (generatedCalendarArray.length === 0 && Object.keys(window.interactiveGames).length === 0) {
-                htmlContent += '<div class="p-6 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 text-center rounded-2xl text-sm border border-zinc-200 dark:border-zinc-800">Encara no s\'ha generat cap lliçó o examen en aquesta sessió.</div>';
+                htmlContent += '<div class="p-6 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 text-center rounded-2xl text-sm border border-zinc-200 dark:border-zinc-800">Encara no s\'ha generat cap lliçó o examen en aquesta sessió.</div>';
             } else {
                 if (generatedCalendarArray.length > 0) {
-                    htmlContent += '<div class="text-xs font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider mb-2">📚 Temes i Lliçons Unificades</div>';
+                    htmlContent += '<div class="text-xs font-bold uppercase text-zinc-600 dark:text-zinc-400 tracking-wider mb-2 flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Temes i Lliçons Unificades</div>';
                     generatedCalendarArray.forEach((item, index) => {
                         let gameIdKey = Object.keys(window.interactiveGames)[index];
                         let game = gameIdKey ? window.interactiveGames[gameIdKey] : null;
-                        let testStatus = game ? (game.status === 'completed' ? (game.isWin ? '✅ Test Superat' : '❌ Test Reintentar') : '⏳ Test Pendent') : '🎯 Test No Iniciat';
-                        let testBadgeColor = game && game.status === 'completed' ? (game.isWin ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300') : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300';
+                        
+                        let testStatusHtml = '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Test No Iniciat</span>';
+                        if (game) {
+                            if (game.status === 'completed') {
+                                testStatusHtml = game.isWin 
+                                    ? '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Test Superat</span>'
+                                    : '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-900 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-300 dark:border-rose-800"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Test Reintentar</span>';
+                            } else {
+                                testStatusHtml = '<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-300 dark:border-amber-800"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Test Pendent</span>';
+                            }
+                        }
 
                         htmlContent += `
                         <div class="border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm space-y-3">
                             <div class="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800 pb-2">
                                 <span class="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">Unitat ${item.num} · ${item.dia_real}</span>
-                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border border-transparent dark:border-zinc-700 ${testBadgeColor}">${testStatus}</span>
+                                ${testStatusHtml}
                             </div>
-                            <h4 class="font-bold text-zinc-800 dark:text-zinc-100 text-sm md:text-base leading-snug">${item.tema}</h4>
+                            <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm md:text-base leading-snug">${item.tema}</h4>
                             <div class="grid grid-cols-2 gap-2 text-xs">
-                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
-                                    📖 Teoria i Esquema
+                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Teoria i Esquema
                                 </div>
-                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
-                                    📇 Flashcards 3D
+                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h10"/><path d="M7 11h6"/></svg> Flashcards 3D
                                 </div>
-                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
-                                    💡 Truc Mnemotècnic
+                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Truc Mnemotècnic
                                 </div>
-                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
-                                    🎯 Test i Avaluació
+                                <div class="p-2.5 bg-zinc-50 dark:bg-zinc-950/70 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Test i Avaluació
                                 </div>
                             </div>
                         </div>`;
@@ -2563,32 +2763,32 @@
             htmlContent += '</div>';
 
             Swal.fire({
-                title: '📊 Resultats i Lliçons Unificades',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> Resultats i Lliçons Unificades</div>',
                 html: htmlContent,
                 showCloseButton: true,
                 confirmButtonText: 'Tancar',
                 confirmButtonColor: '#2563eb',
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
         function showCalendarModal() {
             let htmlContent = '<div class="grid grid-cols-1 gap-2 mt-3 text-left overflow-y-auto max-h-[50vh] md:max-h-96">';
             generatedCalendarArray.forEach(item => {
-                htmlContent += `<div class="p-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg flex gap-3 items-center"><div class="bg-blue-100 dark:bg-zinc-800 text-blue-700 dark:text-zinc-200 border border-transparent dark:border-zinc-700 font-bold rounded-full w-6 h-6 flex items-center justify-center shrink-0 text-xs">${item.num}</div><div><div class="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 mb-0.5">${item.dia_real}</div><div class="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200">${item.tema}</div></div></div>`;
+                htmlContent += `<div class="p-2.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl flex gap-3 items-center"><div class="bg-blue-100 dark:bg-zinc-800 text-blue-700 dark:text-zinc-200 border border-transparent dark:border-zinc-700 font-bold rounded-full w-7 h-7 flex items-center justify-center shrink-0 text-xs">${item.num}</div><div><div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-0.5">${item.dia_real}</div><div class="text-[12px] font-bold text-zinc-900 dark:text-zinc-100">${item.tema}</div></div></div>`;
             });
             htmlContent += '</div>';
             Swal.fire({ 
-                title: '📅 Pla d\'Estudi', 
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Pla d\'Estudi</div>', 
                 html: htmlContent, 
                 showCloseButton: true, 
                 confirmButtonText: 'Tancar', 
                 confirmButtonColor: '#2563eb', 
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-800 dark:text-white' } 
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-900 dark:text-white' } 
             });
         }
         
@@ -2607,19 +2807,19 @@
                 let mId = m.id;
                 htmlContent += `
                 <button onclick="Swal.close(); const el = document.getElementById('${mId}').closest('.chat-msg-ai'); el.scrollIntoView({behavior: 'smooth', block: 'start'}); el.classList.add('ring-4', 'ring-blue-400', 'transition-all', 'duration-500'); setTimeout(()=>el.classList.remove('ring-4', 'ring-blue-400'), 2000);" class="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition text-left w-full shadow-sm">
-                    <div class="font-bold text-zinc-700 dark:text-zinc-200 text-sm md:text-base">${type}</div>
+                    <div class="font-bold text-zinc-900 dark:text-zinc-100 text-sm md:text-base">${type}</div>
                 </button>`;
             });
             htmlContent += '</div>';
 
             Swal.fire({ 
-                title: '📖 Índex de Lliçons', 
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Índex de Lliçons</div>', 
                 html: htmlContent, 
                 showCloseButton: true, 
                 showConfirmButton: false,
                 target: 'main',
                 heightAuto: false,
-                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-800 dark:text-white' }
+                customClass: { container: 'absolute z-[999]', popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -2792,12 +2992,12 @@
             const btn = document.getElementById(`modal_btn_${id}`);
 
             if(allCorrect) {
-                game.attemptsLog.push("✅ Correcte: " + currentAttemptWords.join(', '));
+                game.attemptsLog.push("Correcte: " + currentAttemptWords.join(', '));
                 game.status = 'completed';
                 game.isWin = true;
                 
-                btn.className = "w-full bg-green-500 text-white font-bold py-3.5 rounded-xl shadow-md";
-                btn.innerHTML = "✅ Completat!";
+                btn.className = "w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-md flex items-center justify-center gap-2";
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Completat amb èxit!`;
                 btn.disabled = true;
                 
                 updateLaunchButton(id);
@@ -2814,7 +3014,7 @@
                 }, 1500);
             } else {
                 game.attempts = (game.attempts || 0) + 1;
-                game.attemptsLog.push("❌ Fallat: " + currentAttemptWords.join(', '));
+                game.attemptsLog.push("Fallat: " + currentAttemptWords.join(', '));
                 
                 if(game.attempts >= 3) {
                     game.status = 'completed';
@@ -2835,12 +3035,12 @@
                         triggerAiResponse();
                     }, 3000);
                 } else {
-                    btn.innerHTML = `❌ Error. Comprovar de nou (Intent ${game.attempts}/3)`;
-                    btn.classList.add('bg-red-500', 'hover:bg-red-600');
+                    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Comprovar de nou (Intent ${game.attempts}/3)`;
+                    btn.classList.add('bg-red-600', 'hover:bg-red-700');
                     setTimeout(() => {
                         if (btn) {
                             btn.innerHTML = `Comprovar respostes (Intent ${game.attempts}/3)`;
-                            btn.classList.remove('bg-red-500', 'hover:bg-red-600');
+                            btn.classList.remove('bg-red-600', 'hover:bg-red-700');
                         }
                     }, 1500);
                 }
@@ -2852,10 +3052,12 @@
             let game = window.interactiveGames[id];
             if(btn && game) {
                 let isWin = game.type === 'kahoot' ? (game.userPick === game.data.correcta) : game.isWin;
-                btn.innerHTML = isWin ? "✅ Examen Superat (Veure)" : "❌ Examen Fallat (Veure)";
+                btn.innerHTML = isWin 
+                    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Examen Superat (Veure)` 
+                    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Examen Pendent de Repassar (Veure)`;
                 btn.className = isWin 
-                    ? "bg-green-100 dark:bg-green-900/40 border border-green-300 dark:border-green-800/50 text-green-800 dark:text-green-400 font-bold py-3.5 px-4 rounded-xl w-full flex justify-center mt-4 transition hover:bg-green-200 dark:hover:bg-green-900/60" 
-                    : "bg-red-100 dark:bg-red-900/40 border border-red-300 dark:border-red-800/50 text-red-800 dark:text-red-400 font-bold py-3.5 px-4 rounded-xl w-full flex justify-center mt-4 transition hover:bg-red-200 dark:hover:bg-red-900/60";
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/50 text-emerald-900 dark:text-emerald-300 font-bold py-3.5 px-4 rounded-xl w-full flex items-center justify-center gap-2 mt-4 transition hover:bg-emerald-100 dark:hover:bg-emerald-900/60" 
+                    : "bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800/50 text-rose-900 dark:text-rose-300 font-bold py-3.5 px-4 rounded-xl w-full flex items-center justify-center gap-2 mt-4 transition hover:bg-rose-100 dark:hover:bg-rose-900/60";
             }
         }
 
@@ -2973,26 +3175,26 @@
                                     <div class="absolute inset-0 p-6 flex flex-col items-center justify-center text-center fc-front bg-white dark:bg-zinc-900 rounded-[2rem]">
                                         <span class="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 block mb-2 tracking-widest bg-blue-50 dark:bg-blue-950/50 px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-900/50">PREGUNTA</span>
                                         <span id="${block.id}_q" class="text-base md:text-lg font-bold text-zinc-800 dark:text-zinc-100 leading-snug px-2">${block.data[0].q}</span>
-                                        <span class="absolute bottom-3 text-[10px] text-zinc-400 group-hover:text-blue-500 transition-colors font-bold uppercase tracking-widest flex items-center gap-1">
-                                            👆 Clica per veure la resposta
+                                        <span class="absolute bottom-3 text-[10px] text-zinc-500 dark:text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors font-bold uppercase tracking-widest flex items-center gap-1.5">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> Clica per girar la targeta
                                         </span>
                                     </div>
                                     <!-- CARA DARRERE (RESPOSTA + AVALUACIÓ) -->
                                     <div class="absolute inset-0 p-5 flex flex-col items-center justify-between text-center fc-back bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 rounded-[2rem]">
                                         <div class="flex flex-col items-center justify-center flex-1 my-auto">
                                             <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 block mb-1 tracking-widest bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/50">RESPOSTA</span>
-                                            <span id="${block.id}_a" class="text-sm md:text-base font-semibold text-zinc-800 dark:text-zinc-200 leading-snug px-2">${block.data[0].a}</span>
+                                            <span id="${block.id}_a" class="text-sm md:text-base font-semibold text-zinc-900 dark:text-zinc-100 leading-snug px-2">${block.data[0].a}</span>
                                         </div>
                                         <!-- BOTONS D'AVALUACIÓ -->
                                         <div class="w-full pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-center gap-1.5" onclick="event.stopPropagation()">
-                                            <button onclick="rateFC('${block.id}', 'hard')" class="flex-1 py-1.5 px-2 bg-red-100 dark:bg-red-950/50 hover:bg-red-200 dark:hover:bg-red-900/70 text-red-700 dark:text-red-300 rounded-xl text-[11px] font-bold border border-red-200 dark:border-red-900/50 transition interactive-btn">
-                                                🔴 Difícil
+                                            <button onclick="rateFC('${block.id}', 'hard')" class="flex-1 py-1.5 px-2 bg-red-100 dark:bg-red-950/50 hover:bg-red-200 dark:hover:bg-red-900/70 text-red-900 dark:text-red-300 rounded-xl text-[11px] font-bold border border-red-300 dark:border-red-900/50 transition interactive-btn flex items-center justify-center gap-1">
+                                                <span class="w-2 h-2 rounded-full bg-red-500"></span> Difícil
                                             </button>
-                                            <button onclick="rateFC('${block.id}', 'medium')" class="flex-1 py-1.5 px-2 bg-amber-100 dark:bg-amber-950/50 hover:bg-amber-200 dark:hover:bg-amber-900/70 text-amber-700 dark:text-amber-300 rounded-xl text-[11px] font-bold border border-amber-200 dark:border-amber-900/50 transition interactive-btn">
-                                                🟡 Regular
+                                            <button onclick="rateFC('${block.id}', 'medium')" class="flex-1 py-1.5 px-2 bg-amber-100 dark:bg-amber-950/50 hover:bg-amber-200 dark:hover:bg-amber-900/70 text-amber-900 dark:text-amber-300 rounded-xl text-[11px] font-bold border border-amber-300 dark:border-amber-900/50 transition interactive-btn flex items-center justify-center gap-1">
+                                                <span class="w-2 h-2 rounded-full bg-amber-500"></span> Regular
                                             </button>
-                                            <button onclick="rateFC('${block.id}', 'easy')" class="flex-1 py-1.5 px-2 bg-emerald-100 dark:bg-emerald-950/50 hover:bg-emerald-200 dark:hover:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300 rounded-xl text-[11px] font-bold border border-emerald-200 dark:border-emerald-900/50 transition interactive-btn">
-                                                🟢 Dominat
+                                            <button onclick="rateFC('${block.id}', 'easy')" class="flex-1 py-1.5 px-2 bg-emerald-100 dark:bg-emerald-950/50 hover:bg-emerald-200 dark:hover:bg-emerald-900/70 text-emerald-900 dark:text-emerald-300 rounded-xl text-[11px] font-bold border border-emerald-300 dark:border-emerald-900/50 transition interactive-btn flex items-center justify-center gap-1">
+                                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Dominat
                                             </button>
                                         </div>
                                     </div>
@@ -3000,7 +3202,7 @@
                             </div>
 
                             <div class="flex justify-between items-center mt-3 px-2">
-                                <button onclick="prevFC('${block.id}')" class="p-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-all shadow-sm flex items-center gap-1 text-xs font-bold border border-zinc-200 dark:border-zinc-700">
+                                <button onclick="prevFC('${block.id}')" class="p-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition-all shadow-sm flex items-center gap-1 text-xs font-bold border border-zinc-200 dark:border-zinc-700">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg> Anterior
                                 </button>
                                 <button onclick="nextFC('${block.id}')" class="p-2.5 bg-zinc-900 dark:bg-zinc-800 text-white dark:text-zinc-200 rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-700 transition-all shadow-sm flex items-center gap-1 text-xs font-bold border border-transparent dark:border-zinc-700">
@@ -3018,19 +3220,19 @@
                         }
                         
                         let game = window.interactiveGames[block.id];
-                        let btnClass = "bg-indigo-100 dark:bg-zinc-800 border border-indigo-300 dark:border-zinc-700 text-indigo-800 dark:text-zinc-200 hover:bg-indigo-200 dark:hover:bg-zinc-700/80";
-                        let btnText = "🕹️ Obre l'Examen Interactiu";
+                        let btnClass = "bg-indigo-50 dark:bg-zinc-800 border border-indigo-200 dark:border-zinc-700 text-indigo-900 dark:text-zinc-200 hover:bg-indigo-100 dark:hover:bg-zinc-700/80";
+                        let btnText = "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5'><polygon points='5 3 19 12 5 21 5 3'/></svg> Obre l'Examen Interactiu";
                         
                         if (game.status === 'completed') {
                             let isWin = game.type === 'kahoot' ? (game.userPick === game.data.correcta) : game.isWin;
-                            btnClass = isWin ? "bg-green-100 dark:bg-green-900/40 border-green-300 dark:border-green-800/50 text-green-800 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/60" : "bg-red-100 dark:bg-red-900/40 border-red-300 dark:border-red-800/50 text-red-800 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/60";
-                            btnText = isWin ? "✅ Examen Superat (Veure)" : "❌ Examen Fallat (Veure)";
+                            btnClass = isWin ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800/50 text-emerald-900 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60" : "bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800/50 text-rose-900 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/60";
+                            btnText = isWin ? "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3'><polyline points='20 6 9 17 4 12'/></svg> Examen Superat (Veure)" : "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg> Examen Pendent de Repassar (Veure)";
                         }
 
                         uiCode = `<div class="my-4"><button id="launch_btn_${block.id}" onclick="openGameModal('${block.id}')" class="${btnClass} font-bold py-3.5 px-4 rounded-xl transition shadow-sm w-full flex items-center justify-center gap-2 text-sm interactive-btn border">${btnText}</button></div>`;
                     }
                 } catch(e) {
-                    uiCode = `<div class="bg-red-50 text-red-600 p-3 rounded-xl text-center font-bold text-xs">⚠️ Error al generar.</div>`;
+                    uiCode = `<div class="bg-red-50 text-red-600 p-3 rounded-xl text-center font-bold text-xs">Error al generar.</div>`;
                 }
                 
                 htmlContent = htmlContent.replace(`@@@BLOCK_${i}@@@`, uiCode);

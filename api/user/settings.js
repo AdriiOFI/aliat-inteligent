@@ -16,19 +16,43 @@ module.exports = async function handler(req, res) {
         const client = getDbClient();
 
         if (req.method === 'POST') {
-            const { name, theme } = req.body || {};
-            await client.execute({
-                sql: 'UPDATE users SET name = ?, theme = ? WHERE id = ?',
-                args: [name || '', theme || 'light', decoded.id]
-            });
+            const { name, theme, ai_provider, ai_api_key, ai_model } = req.body || {};
+            try {
+                await client.execute({
+                    sql: 'UPDATE users SET name = ?, theme = ?, ai_provider = ?, ai_api_key = ?, ai_model = ? WHERE id = ?',
+                    args: [name || '', theme || 'light', ai_provider || '', ai_api_key || '', ai_model || '', decoded.id]
+                });
+            } catch (updateErr) {
+                // Fallback for older schema without new columns in external database
+                await client.execute({
+                    sql: 'UPDATE users SET name = ?, theme = ? WHERE id = ?',
+                    args: [name || '', theme || 'light', decoded.id]
+                });
+            }
             return res.status(200).json({ success: true });
         } else if (req.method === 'GET') {
-            const result = await client.execute({
-                sql: 'SELECT name, theme FROM users WHERE id = ?',
-                args: [decoded.id]
-            });
+            let result;
+            try {
+                result = await client.execute({
+                    sql: 'SELECT name, theme, ai_provider, ai_api_key, ai_model FROM users WHERE id = ?',
+                    args: [decoded.id]
+                });
+            } catch (selectErr) {
+                result = await client.execute({
+                    sql: 'SELECT name, theme FROM users WHERE id = ?',
+                    args: [decoded.id]
+                });
+            }
             if (result.rows && result.rows.length > 0) {
-                return res.status(200).json({ success: true, name: result.rows[0].name, theme: result.rows[0].theme });
+                const u = result.rows[0];
+                return res.status(200).json({
+                    success: true,
+                    name: u.name || '',
+                    theme: u.theme || 'light',
+                    ai_provider: u.ai_provider || '',
+                    ai_api_key: u.ai_api_key || '',
+                    ai_model: u.ai_model || ''
+                });
             }
             return res.status(404).json({ error: 'Usuari no trobat' });
         }

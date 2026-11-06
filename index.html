@@ -52,27 +52,7 @@
             cursor: pointer !important;
         }
         
-        /* CSS PEL MENÚ LATERAL COL·LAPSABLE, DESPLEGABLE I DISSENY AMB ANIMACIÓ D'APERTURA I TANCAMENT */
-        #sidebar { 
-            transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), 
-                        width 0.38s cubic-bezier(0.16, 1, 0.3, 1), 
-                        box-shadow 0.38s ease,
-                        opacity 0.28s ease !important; 
-            will-change: transform, width, opacity;
-        }
-
-        .sidebar-text {
-            transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
-                        transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-                        max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            opacity: 1;
-            transform: translateX(0);
-            max-width: 220px;
-            white-space: nowrap;
-            overflow: hidden;
-            display: inline-block;
-        }
-
+        /* CSS PEL MENÚ LATERAL COL·LAPSABLE I CENTRAT */
         body.sidebar-collapsed #sidebar { 
             width: 4.5rem !important; 
             cursor: pointer !important; 
@@ -80,48 +60,10 @@
         body.sidebar-collapsed #sidebar * { 
             cursor: pointer !important; 
         }
-        body.sidebar-collapsed .sidebar-text { 
-            opacity: 0 !important; 
-            transform: translateX(-10px) scale(0.95) !important;
-            max-width: 0px !important;
-            pointer-events: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
+        body.sidebar-collapsed .sidebar-text { display: none !important; }
         body.sidebar-collapsed .sidebar-tooltip { display: block; }
         .sidebar-tooltip { display: none; }
-
-        /* ANIMACIONS D'APERTURA I TANCAMENT PER A MENÚS DESPLEGABLES (DROPDOWNS) */
-        .dropdown-animate-open {
-            animation: dropdownOpen 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-            transform-origin: top right;
-        }
-        .dropdown-animate-close {
-            animation: dropdownClose 0.20s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-            transform-origin: top right;
-        }
-
-        @keyframes dropdownOpen {
-            0% {
-                opacity: 0;
-                transform: translateY(10px) scale(0.92);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes dropdownClose {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(10px) scale(0.92);
-            }
-        }
+        #sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
         /* Per defecte (sidebar no contraig): amaguem el botó d'Historial superior */
         #sidebar-nav-history-btn {
@@ -1877,24 +1819,6 @@
             showToast('Activat: ' + (labels[mode] || mode));
         };
 
-        // --- UTILITATS D'ANIMACIÓ DE DESPLEGABLES ---
-        function animateOpenDropdown(menuEl) {
-            if (!menuEl) return;
-            menuEl.classList.remove('hidden', 'dropdown-animate-close');
-            menuEl.classList.add('dropdown-animate-open');
-        }
-
-        function animateCloseDropdown(menuEl, callback) {
-            if (!menuEl || menuEl.classList.contains('hidden')) return;
-            menuEl.classList.remove('dropdown-animate-open');
-            menuEl.classList.add('dropdown-animate-close');
-            setTimeout(() => {
-                menuEl.classList.add('hidden');
-                menuEl.classList.remove('dropdown-animate-close');
-                if (callback) callback();
-            }, 180);
-        }
-
         window.toggleTutorDropdown = function(e) {
             if (e) e.stopPropagation();
             const menu = document.getElementById('tutor-dropdown-menu');
@@ -1902,10 +1826,10 @@
             if (!menu) return;
             const isHidden = menu.classList.contains('hidden');
             if (isHidden) {
-                animateOpenDropdown(menu);
+                menu.classList.remove('hidden');
                 if (arrow) arrow.style.transform = 'rotate(180deg)';
             } else {
-                animateCloseDropdown(menu);
+                menu.classList.add('hidden');
                 if (arrow) arrow.style.transform = 'rotate(0deg)';
             }
         };
@@ -1933,7 +1857,7 @@
 
             const menu = document.getElementById('tutor-dropdown-menu');
             const arrow = document.getElementById('tutor-arrow-icon');
-            if (menu) animateCloseDropdown(menu);
+            if (menu) menu.classList.add('hidden');
             if (arrow) arrow.style.transform = 'rotate(0deg)';
         };
 
@@ -1942,7 +1866,7 @@
             const menu = document.getElementById('tutor-dropdown-menu');
             const arrow = document.getElementById('tutor-arrow-icon');
             if (container && !container.contains(e.target) && menu && !menu.classList.contains('hidden')) {
-                animateCloseDropdown(menu);
+                menu.classList.add('hidden');
                 if (arrow) arrow.style.transform = 'rotate(0deg)';
             }
         });
@@ -3976,24 +3900,19 @@
         window.togglePlusMenu = function(e) {
             if (e) e.stopPropagation();
             const menu = document.getElementById('plus-menu');
-            if (!menu) return;
-            if (menu.classList.contains('hidden')) {
-                animateOpenDropdown(menu);
-            } else {
-                animateCloseDropdown(menu);
-            }
+            if (menu) menu.classList.toggle('hidden');
         };
 
         window.closePlusMenu = function() {
             const menu = document.getElementById('plus-menu');
-            if (menu) animateCloseDropdown(menu);
+            if (menu) menu.classList.add('hidden');
         };
 
         document.addEventListener('click', (e) => {
             const btn = document.getElementById('chat-plus-btn');
             const menu = document.getElementById('plus-menu');
             if (menu && !menu.classList.contains('hidden') && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
-                animateCloseDropdown(menu);
+                menu.classList.add('hidden');
             }
         });
 

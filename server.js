@@ -3,6 +3,8 @@ const path = require('path');
 
 const loginHandler = require('./api/auth/login');
 const registerHandler = require('./api/auth/register');
+const googleHandler = require('./api/auth/google');
+const verifyHandler = require('./api/auth/verify');
 const generateHandler = require('./api/generate');
 const sessionsGetHandler = require('./api/sessions/get');
 const sessionsSaveHandler = require('./api/sessions/save');
@@ -23,6 +25,8 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 // API Routes
 app.all('/api/auth/login', (req, res) => loginHandler(req, res));
 app.all('/api/auth/register', (req, res) => registerHandler(req, res));
+app.all('/api/auth/google', (req, res) => googleHandler(req, res));
+app.all('/api/auth/verify', (req, res) => verifyHandler(req, res));
 app.all('/api/generate', (req, res) => generateHandler(req, res));
 app.all('/api/sessions/get', (req, res) => sessionsGetHandler(req, res));
 app.all('/api/sessions/save', (req, res) => sessionsSaveHandler(req, res));
@@ -30,6 +34,7 @@ app.all('/api/sessions/delete', (req, res) => sessionsDeleteHandler(req, res));
 app.all('/api/user/settings', (req, res) => userSettingsHandler(req, res));
 
 // Static files
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
 // SPA fallback

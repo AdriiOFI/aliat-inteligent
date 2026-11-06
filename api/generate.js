@@ -359,8 +359,14 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             let effectiveModel = (userCustomModel || '').trim();
             if (effectiveModel) {
                 if (userPreferredProvider === 'gemini') {
-                    if (/gemini-3|gemini-4|gemini-flash-latest|gemini-pro-latest/i.test(effectiveModel)) {
+                    if (/gemini-3\.5-flash-lite/i.test(effectiveModel)) {
+                        effectiveModel = 'gemini-3.5-flash-lite';
+                    } else if (/gemini-3\.5-flash/i.test(effectiveModel)) {
+                        effectiveModel = 'gemini-3.5-flash';
+                    } else if (/gemini-2\.5-flash/i.test(effectiveModel)) {
                         effectiveModel = 'gemini-2.5-flash';
+                    } else if (/gemini-2\.5-pro/i.test(effectiveModel)) {
+                        effectiveModel = 'gemini-2.5-pro';
                     }
                 } else if (userPreferredProvider === 'groq') {
                     if (effectiveModel.includes('gpt-oss-20b')) {
@@ -393,8 +399,11 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             } else if (userPreferredProvider === 'mistral' && mistralApiKey) {
                 runnerList.push({ type: 'mistral', key: mistralApiKey, model: effectiveModel || 'mistral-small-latest' });
             } else if (userPreferredProvider === 'gemini' && geminiApiKey) {
-                runnerList.push({ type: 'gemini', key: geminiApiKey, model: effectiveModel || 'gemini-2.5-flash' });
-                runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-1.5-flash' });
+                const primaryGemini = effectiveModel || 'gemini-3.5-flash';
+                runnerList.push({ type: 'gemini', key: geminiApiKey, model: primaryGemini });
+                if (primaryGemini !== 'gemini-3.5-flash-lite') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-3.5-flash-lite' });
+                if (primaryGemini !== 'gemini-3.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-3.5-flash' });
+                if (primaryGemini !== 'gemini-2.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-2.5-flash' });
             }
 
             // Xarxa de seguretat: Fallbacks fiables amb models oficials vigents
@@ -407,9 +416,9 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
             if (geminiApiKey && userPreferredProvider !== 'gemini') {
                 const geminiModels = [
-                    process.env.GEMINI_MODEL || "gemini-2.5-flash",
-                    "gemini-1.5-flash",
-                    "gemini-2.0-flash",
+                    process.env.GEMINI_MODEL || "gemini-3.5-flash",
+                    "gemini-3.5-flash-lite",
+                    "gemini-2.5-flash",
                     "gemini-2.5-pro"
                 ];
                 for (const gm of geminiModels) {

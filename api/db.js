@@ -155,7 +155,7 @@ async function ensureSchema(client) {
                 updated_at TEXT DEFAULT (datetime('now'))
             )
         `);
-        const userCols = ['ai_provider', 'ai_api_key', 'ai_model'];
+        const userCols = ['ai_provider', 'ai_api_key', 'ai_model', 'photo_url'];
         for (const col of userCols) {
             try {
                 await client.execute(`ALTER TABLE users ADD COLUMN ${col} TEXT DEFAULT ''`);

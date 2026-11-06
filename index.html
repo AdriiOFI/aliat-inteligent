@@ -33,10 +33,46 @@
         
         .interactive-btn { transition: all 0.15s ease-in-out; }
         .interactive-btn:active { transform: scale(0.97); }
-        .day-checkbox:checked + div { background-color: #eff6ff; border-color: #3b82f6; color: #2563eb; font-weight: bold; }
-        .dark .day-checkbox:checked + div { background-color: rgba(37, 99, 235, 0.2); border-color: #3b82f6; color: #60a5fa; font-weight: bold; box-shadow: 0 0 12px rgba(59, 130, 246, 0.25); }
+        .day-checkbox:checked + div { background-color: #2563eb; border-color: #3b82f6; color: #ffffff; font-weight: bold; box-shadow: 0 0 14px rgba(37, 99, 235, 0.4); }
+        .dark .day-checkbox:checked + div { background-color: #2563eb; border-color: #60a5fa; color: #ffffff; font-weight: bold; box-shadow: 0 0 16px rgba(59, 130, 246, 0.45); }
         
-        /* CSS PEL MENÚ LATERAL COL·LAPSABLE I CENTRAT */
+        /* ESTILS PEL CALENDARI I ICONA DE DATA SEGONS EL THEME */
+        input[type="date"] {
+            color-scheme: dark;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer !important;
+        }
+        
+        /* CSS PEL MENÚ LATERAL COL·LAPSABLE, DESPLEGABLE I DISSENY AMB ANIMACIÓ D'APERTURA I TANCAMENT */
+        #sidebar { 
+            transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), 
+                        width 0.38s cubic-bezier(0.16, 1, 0.3, 1), 
+                        box-shadow 0.38s ease,
+                        opacity 0.28s ease !important; 
+            will-change: transform, width, opacity;
+        }
+
+        .sidebar-text {
+            transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                        max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 1;
+            transform: translateX(0);
+            max-width: 220px;
+            white-space: nowrap;
+            overflow: hidden;
+            display: inline-block;
+        }
+
         body.sidebar-collapsed #sidebar { 
             width: 4.5rem !important; 
             cursor: pointer !important; 
@@ -44,38 +80,107 @@
         body.sidebar-collapsed #sidebar * { 
             cursor: pointer !important; 
         }
-        body.sidebar-collapsed .sidebar-text { display: none !important; }
+        body.sidebar-collapsed .sidebar-text { 
+            opacity: 0 !important; 
+            transform: translateX(-10px) scale(0.95) !important;
+            max-width: 0px !important;
+            pointer-events: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
         body.sidebar-collapsed .sidebar-tooltip { display: block; }
         .sidebar-tooltip { display: none; }
-        #sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* ANIMACIONS D'APERTURA I TANCAMENT PER A MENÚS DESPLEGABLES (DROPDOWNS) */
+        .dropdown-animate-open {
+            animation: dropdownOpen 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+            transform-origin: top right;
+        }
+        .dropdown-animate-close {
+            animation: dropdownClose 0.20s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+            transform-origin: top right;
+        }
+
+        @keyframes dropdownOpen {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.92);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes dropdownClose {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.92);
+            }
+        }
+
+        /* Per defecte (sidebar no contraig): amaguem el botó d'Historial superior */
+        #sidebar-nav-history-btn {
+            display: none !important;
+        }
+
+        /* Quan el menú lateral està CONTRAIG / COL·LAPSAT: */
+        /* 1. Es mostra el botó d'Historial com a icona centrada per obrir el modal */
+        body.sidebar-collapsed #sidebar-nav-history-btn {
+            display: flex !important;
+        }
+        /* 2. S'amaga completament el contenidor de Recents, h3, botó veure tot i la llista de xats quan el desplegable està contraig */
+        body.sidebar-collapsed #sidebar-history-container,
+        body.sidebar-collapsed #sidebar-history-container *,
+        body.sidebar-collapsed #sidebar-history-container h3,
+        body.sidebar-collapsed #sidebar-history-container button,
+        body.sidebar-collapsed #history-list {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
 
         /* Centrat precís de tots els botons i icones quan la barra està col·lapsada */
         body.sidebar-collapsed #sidebar-toggle-btn { display: none !important; }
-        body.sidebar-collapsed #sidebar-header-box { justify-content: center !important; padding: 1rem 0 !important; width: 100% !important; }
+        body.sidebar-collapsed #sidebar-header-box { justify-content: center !important; padding: 1.25rem 0 !important; width: 100% !important; text-align: center !important; }
         body.sidebar-collapsed #sidebar-brand-box { justify-content: center !important; width: 100% !important; margin: 0 auto !important; }
         body.sidebar-collapsed #sidebar-logo-icon { margin: 0 auto !important; }
-        body.sidebar-collapsed #sidebar .px-3 {
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
+        body.sidebar-collapsed #sidebar .px-3,
+        body.sidebar-collapsed #sidebar .px-3\.5 {
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
         }
         body.sidebar-collapsed #sidebar button {
             justify-content: center !important;
+            align-items: center !important;
             padding: 0.65rem !important;
-            width: 3rem !important;
-            height: 3rem !important;
+            width: 3.25rem !important;
+            height: 3.25rem !important;
             margin: 0.25rem auto !important;
-            border-radius: 1rem !important;
+            border-radius: 1.25rem !important;
         }
-        body.sidebar-collapsed #sidebar button .w-7,
+        body.sidebar-collapsed #sidebar button div,
         body.sidebar-collapsed #sidebar button svg {
             margin: 0 auto !important;
         }
         body.sidebar-collapsed #sidebar .border-t {
             justify-content: center !important;
-            padding: 0.75rem 0.25rem !important;
+            padding: 0.85rem 0.25rem !important;
+            align-items: center !important;
         }
         body.sidebar-collapsed #sidebar #profile-initial {
             margin: 0 auto !important;
@@ -89,6 +194,15 @@
         .fc-back { transform: rotateY(180deg); }
         
         /* DESPLEGABLE TUTOR ESTÀNDARD I SELECTS EN MODE FOSC / CLAR */
+        select.tutor-mode-select-elem {
+            border-radius: 1rem !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        select.tutor-mode-select-elem:hover {
+            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.15) !important;
+            border-color: #3b82f6 !important;
+            transform: translateY(-1px);
+        }
         select.tutor-mode-select-elem, 
         select.tutor-mode-select-elem option {
             background-color: #ffffff !important;
@@ -102,8 +216,20 @@
             color: #f4f4f5 !important;
             border-color: #3f3f46 !important;
         }
+        .dark select.tutor-mode-select-elem:hover {
+            background-color: #27272a !important;
+            box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.4), 0 0 12px 0 rgba(59, 130, 246, 0.25) !important;
+            border-color: #3b82f6 !important;
+        }
 
-        /* Ajustes per SweetAlert en Mode Fosc i Mode Clar (Garantia de Contrast i Llegibilitat) */
+        /* Ajustes per SweetAlert en Mode Fosc i Mode Clar (Garantia de Contrast, Llegibilitat i Prevenció de Salt de Scroll) */
+        html.swal2-height-auto,
+        body.swal2-height-auto,
+        html.swal2-shown,
+        body.swal2-shown {
+            height: 100dvh !important;
+            overflow: hidden !important;
+        }
         .swal2-popup { border-radius: 1.5rem !important; font-family: inherit !important; }
         html:not(.dark) .swal2-popup { background-color: #ffffff !important; color: #18181b !important; border: 1px solid #e4e4e7 !important; }
         html:not(.dark) .swal2-title, html:not(.dark) .swal2-html-container { color: #18181b !important; }
@@ -114,6 +240,20 @@
         .dark .swal2-cancel { background-color: #27272a !important; color: #d4d4d8 !important; }
     </style>
     <script>
+        // Override de SweetAlert2 per evitar que modifiqui l'alçada del body i provoqui salts de scroll al capdamunt
+        if (typeof Swal !== 'undefined') {
+            const _origSwalFire = Swal.fire;
+            Swal.fire = function(...args) {
+                if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) {
+                    args[0].heightAuto = false;
+                } else if (args.length > 0) {
+                    let opts = { title: args[0], text: args[1], icon: args[2], heightAuto: false };
+                    return _origSwalFire.call(Swal, opts);
+                }
+                return _origSwalFire.apply(Swal, args);
+            };
+        }
+
         // Anti-Parpadeig (FOUC): Apliquem classes ABANS de que es dibuixi la web
         if (localStorage.getItem('aliat_theme') === 'dark' || (!localStorage.getItem('aliat_theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -144,45 +284,59 @@
             <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-zinc-500/10 to-transparent rounded-bl-full -z-10"></div>
             
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 mx-auto mb-4 transform hover:rotate-12 transition-transform">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                        <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
-                    </svg>
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-2 ring-cyan-500/30 mx-auto mb-4 transform hover:rotate-12 transition-transform overflow-hidden p-1.5 backdrop-blur-md">
+                    <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150 drop-shadow-[0_0_10px_rgba(56,189,248,0.7)]">
                 </div>
                 <h1 class="text-2xl font-black text-zinc-900 dark:text-white">Aliat Intel·ligent</h1>
                 <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1 font-medium">Inicia sessió per sincronitzar els teus estudis</p>
             </div>
 
+            <!-- Botó d'Autenticació Real de Google -->
+            <div class="mb-5 space-y-3">
+                <button type="button" onclick="handleGoogleLogin()" class="w-full bg-white dark:bg-zinc-800/90 text-zinc-800 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700/80 hover:bg-zinc-50 dark:hover:bg-zinc-700/80 font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm hover:shadow flex items-center justify-center gap-3 cursor-pointer group">
+                    <svg width="20" height="20" viewBox="0 0 24 24" class="shrink-0"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                    <span>Continuar amb Google</span>
+                </button>
+            </div>
+
+            <div class="relative flex items-center justify-center my-4">
+                <div class="border-t border-zinc-200 dark:border-zinc-800 w-full"></div>
+                <span class="bg-white dark:bg-zinc-900 px-3 text-[10px] uppercase tracking-widest text-zinc-400 font-bold shrink-0">O amb correu / contrasenya</span>
+            </div>
+
             <!-- Tabs -->
-            <div class="flex p-1 bg-zinc-100 dark:bg-zinc-950/70 rounded-xl mb-6">
+            <div class="flex p-1 bg-zinc-100 dark:bg-zinc-950/70 rounded-xl mb-5">
                 <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-bold bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all">Iniciar Sessió</button>
                 <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-bold text-zinc-500 dark:text-zinc-400 rounded-lg hover:text-zinc-700 dark:hover:text-zinc-300 transition-all">Crear Compte</button>
             </div>
 
             <form id="auth-form" onsubmit="handleAuth(event)">
-                <div class="space-y-4">
+                <div class="space-y-3.5">
                     <div>
-                        <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5 uppercase tracking-wide">Correu Electrònic</label>
-                        <input type="email" id="auth-email" required placeholder="tu@email.com" class="w-full px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
+                        <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1 uppercase tracking-wide">Correu Electrònic / Usuari</label>
+                        <input type="email" id="auth-email" required placeholder="tu@email.com" class="w-full px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
                     </div>
                     <div class="relative">
-                        <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1.5 uppercase tracking-wide">Contrasenya</label>
+                        <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1 uppercase tracking-wide">Contrasenya</label>
                         <div class="relative">
-                            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner pr-12">
+                            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner pr-12">
                             <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition outline-none">
                                 <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             </button>
                         </div>
                     </div>
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1 uppercase tracking-wide">Telèfon (Verificació Opcional)</label>
+                        <input type="tel" id="auth-phone" placeholder="+34 600 000 000" class="w-full px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
+                    </div>
                 </div>
-                <button type="submit" id="auth-submit-btn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all hover:shadow-lg hover:shadow-blue-500/25 mt-6 flex items-center justify-center gap-2">
+                <button type="submit" id="auth-submit-btn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all hover:shadow-lg hover:shadow-blue-500/25 mt-5 flex items-center justify-center gap-2 cursor-pointer">
                     Accedir
                 </button>
-                <div class="mt-5 flex items-start gap-2 p-3 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl">
+                <div class="mt-4 flex items-start gap-2 p-3 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-500 shrink-0 mt-0.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium leading-tight">
-                        Privadesa garantida: No necessites posar un correu. Pots utilitzar un usuari i una contrasenya per entrar.
+                        Privadesa i Seguretat: Pots fer servir l'inici segur amb compte oficial de Google o utilitzar correu i contrasenya.
                     </p>
                 </div>
             </form>
@@ -197,66 +351,83 @@
         
         <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm transition-opacity opacity-0 md:hidden"></div>
 
-        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[85%] max-w-[280px] md:w-72 h-full md:h-[calc(100dvh-1.5rem)] md:my-3 md:ml-3 bg-[#111113] text-zinc-300 flex flex-col shrink-0 transition-all duration-300 ease-in-out -translate-x-full md:translate-x-0 border-r md:border border-zinc-800/80 shadow-2xl md:shadow-xl rounded-r-[2rem] md:rounded-3xl overflow-hidden">
-            <div id="sidebar-header-box" class="p-4 flex items-center justify-between gap-3">
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[88%] max-w-[320px] md:w-80 h-full md:h-[calc(100dvh-1.5rem)] md:my-3 md:ml-3 bg-gradient-to-b from-[#16161c] via-[#121217] to-[#0d0d11] text-zinc-300 flex flex-col shrink-0 transition-all duration-300 ease-in-out -translate-x-full md:translate-x-0 border-r md:border border-zinc-800/90 shadow-2xl md:shadow-2xl shadow-black/80 rounded-r-[2rem] md:rounded-3xl overflow-hidden relative">
+            <!-- Glowing ambient backdrop orb -->
+            <div class="absolute -top-12 -right-12 w-44 h-44 bg-gradient-to-br from-blue-600/15 via-indigo-600/10 to-purple-600/0 rounded-full blur-2xl pointer-events-none -z-0"></div>
+            
+            <div id="sidebar-header-box" class="p-4 flex items-center justify-between gap-3 relative z-10">
                 <div id="sidebar-brand-box" class="flex items-center gap-3 min-w-0">
-                    <div id="sidebar-logo-icon" onclick="if(document.body.classList.contains('sidebar-collapsed')) toggleSidebar()" class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20 cursor-pointer" title="Aliat Intel·ligent">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3.5"/></svg>
+                    <div id="sidebar-logo-icon" onclick="if(document.body.classList.contains('sidebar-collapsed')) toggleSidebar()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20 text-white flex items-center justify-center shrink-0 shadow-lg shadow-cyan-500/20 ring-2 ring-cyan-500/30 cursor-pointer hover:scale-105 transition-transform overflow-hidden p-0.5 backdrop-blur-md" title="Aliat Intel·ligent">
+                        <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]">
                     </div>
-                    <span class="font-bold text-white text-base sidebar-text tracking-tight truncate">Aliat Intel·ligent</span>
+                    <span class="font-extrabold text-white text-base sidebar-text tracking-tight truncate">Aliat Intel·ligent</span>
                 </div>
-                <button id="sidebar-toggle-btn" onclick="event.stopPropagation(); toggleSidebar();" class="p-2 hover:bg-zinc-800 rounded-xl transition text-zinc-400 hover:text-white shrink-0 cursor-pointer" aria-label="Tancar o col·lapsar menú" title="Col·lapsar menú">
+                <button id="sidebar-toggle-btn" onclick="event.stopPropagation(); toggleSidebar();" class="p-2 hover:bg-zinc-800/80 rounded-xl transition text-zinc-400 hover:text-white shrink-0 cursor-pointer" aria-label="Tancar o col·lapsar menú" title="Col·lapsar menú">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
 
-            <div class="px-3 mt-1 mb-3">
-                <button onclick="newSession()" class="flex items-center gap-3 w-full p-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-2xl transition-all text-sm text-white group relative shadow-md shadow-blue-600/20 font-bold active:scale-[0.98] cursor-pointer">
+            <div class="px-3.5 mt-1 mb-3 relative z-10">
+                <button onclick="newSession()" class="flex items-center gap-3 w-full p-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 rounded-2xl transition-all text-sm text-white group relative shadow-lg shadow-blue-600/25 font-bold active:scale-[0.98] cursor-pointer ring-1 ring-white/10">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                     <span class="sidebar-text truncate">Nova conversa</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Nova conversa</span>
                 </button>
             </div>
 
-            <div class="px-3 space-y-1">
-                <button onclick="startStudyMode()" class="flex items-center gap-3 w-full p-2.5 hover:bg-blue-600/10 hover:text-blue-300 rounded-2xl transition text-sm text-zinc-300 group relative font-medium cursor-pointer">
-                    <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
+            <div class="px-3.5 space-y-1.5 relative z-10">
+                <button type="button" onclick="startStudyMode()" class="flex items-center gap-3 w-full p-2.5 hover:bg-blue-600/15 hover:text-blue-300 border border-transparent hover:border-blue-500/20 rounded-2xl transition-all text-sm text-zinc-300 group relative font-semibold cursor-pointer">
+                    <div class="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                     </div>
                     <span class="sidebar-text truncate">Pla d'Estudis</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Pla d'Estudis</span>
                 </button>
-                <button onclick="startFreeChatMode()" class="flex items-center gap-3 w-full p-2.5 hover:bg-emerald-600/10 hover:text-emerald-300 rounded-2xl transition text-sm text-zinc-300 group relative font-medium cursor-pointer">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                <button type="button" onclick="startFreeChatMode()" class="flex items-center gap-3 w-full p-2.5 hover:bg-emerald-600/15 hover:text-emerald-300 border border-transparent hover:border-emerald-500/20 rounded-2xl transition-all text-sm text-zinc-300 group relative font-semibold cursor-pointer">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
                     <span class="sidebar-text truncate">XatBot</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">XatBot</span>
                 </button>
+                <button type="button" onclick="showDailyUseBlockedModal()" class="flex items-center gap-3 w-full p-2.5 hover:bg-red-600/15 hover:text-red-300 border border-transparent hover:border-red-500/20 rounded-2xl transition-all text-sm text-zinc-300 group relative font-semibold cursor-pointer">
+                    <div class="w-8 h-8 rounded-xl bg-red-500/15 text-red-400 flex items-center justify-center shrink-0 border border-red-500/20 group-hover:scale-105 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <span class="sidebar-text truncate">Ús Quotidià</span>
+                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Ús Quotidià (Bloquejat)</span>
+                </button>
+                <button id="sidebar-nav-history-btn" type="button" onclick="openChatHistoryModal()" class="flex items-center gap-3 w-full p-2.5 hover:bg-indigo-600/15 hover:text-indigo-300 border border-transparent hover:border-indigo-500/20 rounded-2xl transition-all text-sm text-zinc-300 group relative font-semibold cursor-pointer">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/20 group-hover:scale-105 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <span class="sidebar-text truncate">Historial</span>
+                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Historial de Converses</span>
+                </button>
             </div>
 
-            <div class="mt-4 flex-1 overflow-y-auto px-3 sidebar-text">
-                <h3 class="text-[11px] font-bold text-zinc-500 mb-2.5 px-3 uppercase tracking-wider">Historial al Núvol</h3>
+            <div id="sidebar-history-container" class="mt-4 flex-1 overflow-y-auto px-3.5 sidebar-text relative z-10">
+                <div class="flex items-center justify-between mb-2 px-2">
+                    <div class="flex items-center gap-1.5">
+                        <h3 class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Recents</h3>
+                    </div>
+                    <button type="button" onclick="openChatHistoryModal()" class="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 transition cursor-pointer">Veure tot</button>
+                </div>
                 <div id="history-list" class="space-y-1"></div>
             </div>
-            
-            <button onclick="toggleSidebar()" class="hidden sidebar-tooltip flex items-center gap-3 w-full p-3 mx-3 hover:bg-zinc-800 rounded-2xl transition text-zinc-400 group relative cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
-                <span class="absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Obre Historial</span>
-            </button>
 
             <!-- PERFIL AMB CONFIGURACIÓ I LOGOUT -->
-            <div class="p-3 border-t border-zinc-800/80 mt-auto flex items-center justify-between bg-[#0e0e10]">
-                <div class="flex items-center gap-3 text-sm sidebar-text overflow-hidden flex-1 cursor-pointer hover:opacity-80 transition p-1.5 rounded-2xl hover:bg-zinc-850" onclick="openSettings()">
-                    <div id="profile-initial" class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shrink-0 shadow-md text-sm">U</div>
+            <div class="p-3.5 border-t border-zinc-800/40 mt-auto flex items-center justify-between bg-transparent relative z-10">
+                <div class="flex items-center gap-3 text-sm sidebar-text overflow-hidden flex-1 cursor-pointer hover:opacity-90 transition p-1.5 rounded-2xl hover:bg-zinc-800/50" onclick="openSettings()">
+                    <div id="profile-initial" class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-extrabold shrink-0 shadow-md text-sm ring-2 ring-indigo-500/20">U</div>
                     <div class="flex flex-col truncate">
                         <span id="profile-email" class="font-bold text-zinc-200 truncate text-[12px] tracking-wide">Usuari</span>
-                        <span class="text-[10px] text-emerald-400 font-medium flex items-center gap-1.5 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_5px_#34d399]"></span> En línia</span>
+                        <span class="text-[10px] text-emerald-400 font-medium flex items-center gap-1.5 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_6px_#34d399]"></span> En línia</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-1">
-                    <button onclick="openSettings()" class="p-2 hover:bg-zinc-800 rounded-xl transition text-zinc-400 hover:text-white group relative shrink-0 cursor-pointer" title="Configuració">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <button onclick="openSettings()" class="w-9 h-9 rounded-xl bg-zinc-800/60 hover:bg-zinc-700/80 text-zinc-400 hover:text-white flex items-center justify-center transition border border-zinc-700/40 shrink-0 cursor-pointer group relative" title="Configuració">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-45 transition-transform"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Configuració</span>
                     </button>
                 </div>
@@ -269,27 +440,29 @@
             </button>
 
             <!-- BENVINGUDA -->
-            <div id="welcome-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-8 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
-                <div class="w-full max-w-6xl text-center space-y-8 md:space-y-12 pb-10 mt-12 md:mt-0">
+            <div id="welcome-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-8 bg-zinc-50 dark:bg-[#09090d] relative overflow-hidden transition-colors duration-300">
+                <!-- Ambient Glowing Backdrop Orbs for Decorated Home Background -->
+                <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-gradient-to-tr from-blue-600/15 via-indigo-600/10 to-purple-600/0 rounded-full blur-[130px] pointer-events-none -z-0"></div>
+                <div class="absolute -bottom-24 -right-24 w-[450px] h-[450px] bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent rounded-full blur-[110px] pointer-events-none -z-0"></div>
+                <div class="absolute -top-20 -left-20 w-[400px] h-[400px] bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-transparent rounded-full blur-[100px] pointer-events-none -z-0"></div>
+
+                <div class="w-full max-w-6xl text-center space-y-8 md:space-y-12 pb-10 mt-12 md:mt-0 relative z-10">
                     <div class="space-y-4 md:space-y-6 pt-4 md:pt-10">
-                        <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center shadow-xl shadow-blue-500/20 mx-auto transform hover:rotate-[10deg] transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                                <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
-                            </svg>
+                        <div class="w-24 h-24 md:w-28 md:h-28 bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 text-white rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center shadow-2xl shadow-cyan-500/30 ring-4 ring-cyan-500/30 mx-auto transform hover:rotate-[10deg] hover:scale-105 transition-all duration-300 overflow-hidden p-2 backdrop-blur-md cursor-pointer select-none">
+                            <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150 drop-shadow-[0_0_16px_rgba(56,189,248,0.8)]">
                         </div>
                         <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-zinc-900 dark:text-white tracking-tight px-2">
-                            Benvingut <span id="welcome-user-name" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600"></span>
+                            Benvingut <span id="welcome-user-name" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"></span>
                         </h1>
-                        <p class="text-zinc-600 dark:text-zinc-400 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed px-4">Quin tipus d'ajuda necessites avui?</p>
+                        <p id="welcome-subtext" class="text-zinc-600 dark:text-zinc-400 text-sm md:text-xl max-w-2xl mx-auto font-medium leading-relaxed px-4 transition-all duration-500 transform scale-100">El teu aliat està aquí! En què et puc ajudar?</p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 max-w-5xl mx-auto px-2">
                         
                         <!-- TARGETA 1: PLA D'ESTUDIS -->
-                        <button onclick="startStudyMode()" class="bg-white dark:bg-zinc-900/90 border-2 border-zinc-200 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 p-6 md:p-8 rounded-3xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-sm">
-                            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-blue-100/60 dark:from-blue-600/10 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-100 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform shadow-sm">
+                        <button onclick="startStudyMode()" class="bg-white/90 dark:bg-[#14141a]/90 border-2 border-zinc-200/80 dark:border-zinc-800/80 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 p-6 md:p-8 rounded-3xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
+                            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-blue-100/60 dark:from-blue-600/15 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-100 dark:bg-zinc-800/90 border border-blue-200 dark:border-zinc-700/80 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-8 md:h-8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                             </div>
                             <h3 class="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 md:mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Pla d'Estudis</h3>
@@ -297,9 +470,9 @@
                         </button>
                         
                         <!-- TARGETA 2: XATBOT -->
-                        <button onclick="startFreeChatMode()" class="bg-white dark:bg-zinc-900/90 border-2 border-zinc-200 dark:border-zinc-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 p-6 md:p-8 rounded-3xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-sm">
-                            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-emerald-100/60 dark:from-emerald-600/10 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-100 dark:bg-zinc-800 border border-emerald-200 dark:border-zinc-700 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform shadow-sm">
+                        <button onclick="startFreeChatMode()" class="bg-white/90 dark:bg-[#14141a]/90 border-2 border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 p-6 md:p-8 rounded-3xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
+                            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-emerald-100/60 dark:from-emerald-600/15 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-100 dark:bg-zinc-800/90 border border-emerald-200 dark:border-zinc-700/80 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-8 md:h-8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                             </div>
                             <h3 class="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 md:mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">XatBot Lliure</h3>
@@ -307,12 +480,16 @@
                         </button>
 
                         <!-- TARGETA 3: ÚS QUOTIDIÀ -->
-                        <button onclick="return false" class="bg-zinc-100 dark:bg-zinc-900/40 border-2 border-zinc-200 dark:border-zinc-800 p-6 md:p-8 rounded-3xl text-left flex flex-col h-full relative overflow-hidden cursor-not-allowed group opacity-80">
-                            <div class="absolute top-4 right-4 bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-[9px] md:text-[10px] font-black px-2.5 md:px-3 py-1 md:py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-zinc-300 dark:border-zinc-700">Pròximament</div>
-                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-sm">
+                        <button type="button" onclick="showDailyUseBlockedModal()" class="bg-white/90 dark:bg-[#14141a]/90 border-2 border-zinc-200/80 dark:border-zinc-800/80 hover:border-red-500 dark:hover:border-red-500 hover:shadow-2xl hover:shadow-red-500/20 transition-all duration-300 p-6 md:p-8 rounded-3xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
+                            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-bl from-red-100/60 dark:from-red-600/15 to-transparent rounded-bl-full -z-10 group-hover:scale-125 transition-transform duration-500"></div>
+                            <div class="absolute top-4 right-4 bg-red-100 dark:bg-red-950/80 text-red-700 dark:text-red-300 text-[9px] md:text-[10px] font-black px-2.5 md:px-3 py-1 md:py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-red-200 dark:border-red-900/60 flex items-center gap-1">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <span>Bloquejat</span>
+                            </div>
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-red-100 dark:bg-zinc-800/90 border border-red-200 dark:border-zinc-700/80 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-8 md:h-8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                             </div>
-                            <h3 class="text-xl md:text-2xl font-bold text-zinc-800 dark:text-zinc-200 mb-2 md:mb-3">Ús Quotidià</h3>
+                            <h3 class="text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2 md:mb-3 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Ús Quotidià</h3>
                             <p class="text-xs md:text-base text-zinc-600 dark:text-zinc-400 flex-1 leading-relaxed mb-4 md:mb-6">Eines per simplificar tasques diàries o gestionar rutines.</p>
                         </button>
 
@@ -321,59 +498,77 @@
             </div>
 
             <!-- CONFIGURACIÓ PLA -->
-            <div id="setup-view" class="hidden flex-1 overflow-y-auto items-center justify-center p-4 md:p-8 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
-                <div class="w-full max-w-2xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800 rounded-[2rem] shadow-2xl shadow-blue-500/5 p-6 md:p-10 relative mt-10 md:mt-0">
-                    <button onclick="backToHome()" class="absolute top-5 left-5 md:top-6 md:left-6 text-zinc-400 dark:text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400 transition bg-zinc-100 dark:bg-zinc-800 hover:bg-blue-50 dark:hover:bg-zinc-700 p-2.5 rounded-full">
+            <div id="setup-view" class="hidden flex-1 overflow-y-auto items-center justify-center p-4 md:p-8 bg-zinc-50 dark:bg-[#09090d] relative overflow-hidden transition-colors duration-300">
+                <!-- Ambient Glowing Backdrop Orbs for Aesthetic Alignment -->
+                <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-blue-600/15 via-indigo-600/10 to-purple-600/0 rounded-full blur-[120px] pointer-events-none -z-0"></div>
+                <div class="absolute -bottom-20 -right-20 w-[400px] h-[400px] bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-transparent rounded-full blur-[100px] pointer-events-none -z-0"></div>
+
+                <div class="w-full max-w-2xl bg-white/95 dark:bg-[#121217] backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/90 rounded-[2.5rem] shadow-2xl shadow-black/60 p-6 md:p-10 relative mt-10 md:mt-0 z-10">
+                    <button onclick="backToHome()" class="absolute top-5 left-5 md:top-6 md:left-6 text-zinc-400 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 transition bg-zinc-100 dark:bg-zinc-800/80 hover:bg-blue-50 dark:hover:bg-zinc-700/80 p-2.5 rounded-full cursor-pointer" title="Enrere">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
                     <div class="text-center mb-8 md:mb-10 mt-6 md:mt-0">
-                        <h1 class="text-2xl md:text-4xl font-black text-zinc-800 dark:text-white mb-2">Preparació de l'Estudi</h1>
+                        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 mx-auto mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        </div>
+                        <h1 class="text-2xl md:text-4xl font-black text-zinc-800 dark:text-white mb-2 tracking-tight">Preparació de l'Estudi</h1>
                         <p class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base font-medium">Configura el teu pla estratègic i adapta els dies.</p>
                     </div>
+
                     <div class="space-y-6 md:space-y-8">
                         <div>
-                            <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2.5 uppercase tracking-wide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 Data de l'examen
                             </label>
-                            <input type="date" id="exam-date" class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm md:text-base font-medium shadow-inner">
+                            <div class="relative w-full">
+                                <input type="date" id="exam-date" onclick="if(this.showPicker) this.showPicker();" class="w-full px-4 py-3.5 md:py-4 pr-12 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm md:text-base font-medium shadow-inner cursor-pointer">
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-blue-500 dark:text-blue-400 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                </div>
+                            </div>
                             <div id="days-left-marker" class="text-xs md:text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-2 hidden"></div>
                         </div>
+
                         <div>
                             <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wide">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
                                 Dies disponibles
                             </label>
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5" id="available-days">
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="1" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dilluns</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="2" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dimarts</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="3" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dimecres</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="4" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dijous</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="5" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Divendres</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="6" class="day-checkbox hidden"><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Dissabte</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="0" class="day-checkbox hidden"><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-700 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm">Diumenge</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="1" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dilluns</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="2" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dimarts</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="3" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dimecres</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="4" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dijous</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="5" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Divendres</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="6" class="day-checkbox hidden"><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dissabte</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="0" class="day-checkbox hidden"><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Diumenge</div></label>
                             </div>
                         </div>
+
                         <div>
                             <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                                 Temari i Continguts
                             </label>
-                            <div class="border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl p-5 md:p-6 text-center hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-zinc-800/50 transition-all relative cursor-pointer group">
+                            <div class="border-2 border-dashed border-zinc-300 dark:border-zinc-700/80 rounded-2xl p-5 md:p-6 text-center hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-zinc-900/50 transition-all relative cursor-pointer group">
                                 <input type="file" id="pdf-upload" accept=".pdf" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                                 <div class="flex flex-col items-center gap-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-zinc-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-zinc-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
                                     <span id="pdf-status" class="text-xs md:text-sm font-semibold text-zinc-700 dark:text-zinc-300">Arrossega o fes clic per pujar PDFs</span>
                                 </div>
                             </div>
                             <ul id="pdf-list" class="mt-3 space-y-2"></ul>
                             <div class="mt-4 md:mt-5">
                                 <p class="text-[11px] md:text-xs text-zinc-600 dark:text-zinc-400 mb-2 font-semibold">O explica manualment de què tracta l'examen:</p>
-                                <textarea id="manual-topic" placeholder="Ex: Tinc un examen sobre biologia cel·lular..." class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm resize-none shadow-inner" rows="3"></textarea>
+                                <textarea id="manual-topic" placeholder="Ex: Tinc un examen sobre biologia cel·lular..." class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm resize-none shadow-inner" rows="3"></textarea>
                             </div>
                         </div>
-                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl transition-all hover:shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2 text-base md:text-lg mt-4 shadow-md">
-                            Planificar Estudi
+
+                        <!-- Botó d'acció més clar i d'alta visibilitat -->
+                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-400 hover:from-blue-400 hover:to-indigo-300 text-white font-extrabold py-4 rounded-2xl transition-all shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center justify-center gap-2 text-base md:text-lg mt-6 cursor-pointer border border-blue-300/30 hover:scale-[1.01] active:scale-[0.98]">
+                            <span>Planificar Estudi</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
                     </div>
                 </div>
@@ -416,94 +611,161 @@
 
             <!-- XAT VIEW -->
             <div id="chat-view" class="hidden flex-1 flex-col h-full bg-zinc-50 dark:bg-zinc-950 relative">
-                <div class="p-2.5 sm:p-3 md:p-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center shadow-sm z-30 gap-1.5 sm:gap-2">
-                    <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
-                        <button onclick="toggleSidebar()" class="p-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition md:hidden shrink-0" aria-label="Menú">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-                        </button>
-                        <div class="font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 text-xs sm:text-sm md:text-base min-w-0 truncate">
-                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0"></span> 
-                            <span id="chat-mode-label" class="truncate max-w-[90px] xs:max-w-[130px] sm:max-w-xs">Classe Activa</span>
+                <!-- 1. HEADER BAR (Color del chat uniforme) -->
+                <div class="p-2.5 sm:p-3 md:p-4 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200/80 dark:border-zinc-800/80 shadow-sm z-30">
+                    <div class="max-w-5xl mx-auto w-full flex justify-between items-center gap-1.5 sm:gap-2">
+                        <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+                            <button onclick="toggleSidebar()" class="p-2 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition md:hidden shrink-0 border border-zinc-200 dark:border-zinc-800" aria-label="Menú">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                            </button>
+                            <div class="font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 text-xs sm:text-sm md:text-base min-w-0 truncate">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0"></span> 
+                                <span id="chat-mode-label" class="truncate max-w-[90px] xs:max-w-[130px] sm:max-w-xs">Classe Activa</span>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
-                        <button id="calendar-header-btn" onclick="showCalendarModal()" title="Pla d'Estudi" class="text-xs md:text-sm bg-blue-50 hover:bg-blue-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 border border-blue-200 dark:border-zinc-700 text-blue-700 dark:text-blue-300 font-bold p-2 sm:px-3.5 sm:py-2 rounded-2xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            <span class="hidden sm:inline">Pla d'Estudi</span>
-                        </button>
-                        <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold p-2 sm:px-3.5 sm:py-2 rounded-2xl transition flex items-center gap-1.5 whitespace-nowrap shadow-md cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-amber-300 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                            <span class="hidden sm:inline">Eines</span>
-                        </button>
-                        <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria" class="text-xs md:text-sm bg-purple-50 hover:bg-purple-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 border border-purple-200 dark:border-zinc-700 text-purple-700 dark:text-purple-300 font-bold p-2 sm:px-3.5 sm:py-2 rounded-2xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-purple-600 dark:text-purple-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
-                            <span class="hidden sm:inline">Memòria</span>
-                        </button>
-                        <button id="history-header-btn" onclick="showHistoryModal()" title="Resultats" class="text-xs md:text-sm bg-indigo-50 hover:bg-indigo-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 border border-indigo-200 dark:border-zinc-700 text-indigo-700 dark:text-indigo-300 font-bold p-2 sm:px-3.5 sm:py-2 rounded-2xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-600 dark:text-indigo-400 shrink-0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                            <span class="hidden sm:inline">Resultats</span>
-                        </button>
+                        
+                        <div class="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
+                            <button id="calendar-header-btn" onclick="showCalendarModal()" title="Pla d'Estudi" class="text-xs md:text-sm bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200 dark:border-zinc-800 text-blue-700 dark:text-blue-300 font-bold p-2 sm:px-3.5 sm:py-2 rounded-2xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <span class="hidden sm:inline">Pla d'Estudi</span>
+                            </button>
+                            <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold p-2 sm:px-3.5 sm:py-2 rounded-2xl transition flex items-center gap-1.5 whitespace-nowrap shadow-md cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-amber-300 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                <span class="hidden sm:inline">Eines</span>
+                            </button>
+                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria" class="text-xs md:text-sm bg-purple-50 hover:bg-purple-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-purple-200 dark:border-zinc-800 text-purple-700 dark:text-purple-300 font-bold p-2 sm:px-3.5 sm:py-2 rounded-2xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-purple-600 dark:text-purple-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
+                                <span class="hidden sm:inline">Memòria</span>
+                            </button>
+                            <button id="history-header-btn" onclick="showHistoryModal()" title="Resultats" class="text-xs md:text-sm bg-indigo-50 hover:bg-indigo-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-indigo-200 dark:border-zinc-800 text-indigo-700 dark:text-indigo-300 font-bold p-2 sm:px-3.5 sm:py-2 rounded-2xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-600 dark:text-indigo-400 shrink-0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                <span class="hidden sm:inline">Resultats</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
-                <div id="chat-messages" class="flex-1 overflow-y-auto p-2.5 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6 pb-2 scroll-smooth"></div>
+                <!-- 2. MESSAGES CONTAINER -->
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-2.5 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6 pb-2 scroll-smooth max-w-5xl mx-auto w-full"></div>
                 
-                <div class="p-2 sm:p-3 md:p-4 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 relative z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.02)] pb-safe md:pb-4 transition-colors duration-300">
-                    <!-- Contenidor per previsualitzar la imatge adjunta -->
-                    <div id="attachment-preview" class="hidden mx-auto max-w-4xl mb-2 px-1">
-                        <div class="relative inline-block bg-zinc-100 dark:bg-zinc-800 p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700">
-                            <img id="preview-img" src="" class="h-14 sm:h-16 w-auto rounded-lg object-cover">
-                            <button type="button" onclick="removeAttachment()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="max-w-4xl mx-auto flex flex-col gap-1.5 sm:gap-2">
-                        <!-- BARRA D'EINES DE MODES A BAIX -->
-                        <div id="chat-toolbar-bottom" class="flex items-center gap-2 px-0.5 text-xs sm:text-sm w-full">
-                            <div class="relative inline-flex items-center w-full sm:w-auto min-w-[200px] sm:min-w-[260px] shrink-0">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                                </div>
-                                <select onchange="setTutorMode(this.value)" class="tutor-mode-select-elem appearance-none w-full text-xs sm:text-sm bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-bold pl-9 pr-9 py-2.5 rounded-2xl border-2 border-zinc-300 dark:border-zinc-700 outline-none cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition shadow-sm">
-                                    <option value="standard" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">🎓 Tutor Estàndard (Complet)</option>
-                                    <option value="socratic" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">🧐 Mode Socràtic (Guiat)</option>
-                                    <option value="feynman" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">👶 Mode Feynman (Simple)</option>
-                                    <option value="tribunal" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">⚖️ Simulador Tribunal (Rigorós)</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-500 dark:text-zinc-400">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <form id="chat-form" class="relative flex items-center gap-1 sm:gap-2 hidden">
-                            <!-- Botó Lector de Fotos / Càmera -->
-                            <button type="button" onclick="openVisionModal()" title="Lector de Fotos i Càmera en Directe" class="p-2 sm:p-2.5 text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-white dark:bg-zinc-950 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                            </button>
-
-                            <!-- Botó d'Adjuntar Fitxers -->
-                            <label title="Adjuntar Imatge o Document" class="cursor-pointer p-2 sm:p-2.5 text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 bg-white dark:bg-zinc-950 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
-                                <input type="file" id="chat-attachment" accept="image/*,.pdf" class="hidden" onchange="handleAttachment(this)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                            </label>
-
-                            <!-- Botó de Dictat per Veu (Micròfon) -->
-                            <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="Dictat per Veu" class="p-2 sm:p-2.5 text-zinc-600 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 bg-white dark:bg-zinc-950 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 transition shadow-sm shrink-0 interactive-btn relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                                <span id="mic-pulse" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
-                            </button>
+                <!-- 3. INPUT CONTAINER (Continúa con el color del chat) -->
+                <div class="p-3 sm:p-4 md:p-5 bg-zinc-50 dark:bg-zinc-950 relative z-20 pb-safe md:pb-6 transition-colors duration-300">
+                    <div class="max-w-5xl mx-auto w-full">
+                        <!-- TARJETA UNIFICADA ESTILO GEMINI / CHATGPT -->
+                        <form id="chat-form" onsubmit="event.preventDefault();" class="relative bg-white dark:bg-[#18181b] border-2 border-zinc-200 dark:border-zinc-800/90 rounded-[2rem] p-3 sm:p-4 shadow-xl flex flex-col gap-2.5 focus-within:border-blue-500/60 dark:focus-within:border-blue-500/60 transition-all duration-200">
                             
-                            <div class="relative flex-1 min-w-0">
-                                <textarea id="chat-input" rows="1" placeholder="Escriu, dicti o adjunta apunts..." class="w-full pl-3.5 pr-11 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-zinc-900 outline-none transition shadow-sm text-[16px] md:text-sm resize-none overflow-y-auto min-h-[42px] sm:min-h-[46px] max-h-[140px]" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 140) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
-                                <button type="submit" aria-label="Enviar" class="absolute right-1.5 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white w-8 h-8 rounded-lg sm:rounded-xl transition shadow-md flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                                </button>
+                            <!-- Previsualització d'Imatge adjunta -->
+                            <div id="attachment-preview" class="hidden mb-1">
+                                <div class="relative inline-block bg-zinc-100 dark:bg-zinc-800/80 p-1.5 rounded-2xl border border-zinc-200 dark:border-zinc-700">
+                                    <img id="preview-img" src="" class="h-16 sm:h-20 w-auto rounded-xl object-cover">
+                                    <button type="button" onclick="removeAttachment()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 shadow-md transition">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                    </button>
+                                </div>
                             </div>
+
+                            <!-- TEXTAREA PRINCIPAL (Se expande hacia arriba al escribir) -->
+                            <div class="w-full relative min-h-[44px]">
+                                <textarea id="chat-input" rows="1" placeholder="Escriu, dicti o adjunta apunts..." class="w-full bg-transparent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 text-sm md:text-base outline-none ring-0 focus:ring-0 border-none resize-none overflow-y-auto min-h-[44px] max-h-[220px] px-1 py-1 font-medium leading-relaxed" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 220) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
+                            </div>
+
+                            <!-- FILA INFERIOR D'OPCIONS I ACCIONS -->
+                            <div class="flex items-center justify-between gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-800/50">
+                                
+                                <!-- BOTÓ MAS (+) AMB DESPLEGABLE D'OPCIONS -->
+                                <div class="relative">
+                                    <button type="button" id="chat-plus-btn" onclick="togglePlusMenu(event)" title="Més opcions (Càmera, Imatges, PDFs)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer font-bold text-xl active:scale-95">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    </button>
+
+                                    <!-- MENU DESPLEGABLE DEL (+) -->
+                                    <div id="plus-menu" class="hidden absolute left-0 bottom-12 z-50 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 w-60 flex flex-col gap-1 backdrop-blur-md">
+                                        <button type="button" onclick="openVisionModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
+                                            <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                                            </div>
+                                            <span>Càmera / Lector de Fotos</span>
+                                        </button>
+                                        <label class="flex items-center gap-3 w-full p-2.5 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer text-left">
+                                            <input type="file" id="chat-attachment" accept="image/*,.pdf" class="hidden" onchange="handleAttachment(this); closePlusMenu();">
+                                            <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                            </div>
+                                            <span>Adjuntar Imatge o PDF</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- PART DRETA: SELECTOR DE MODE + MICRÒFON + BOTÓ ENVIAR -->
+                                <div class="flex items-center gap-1.5 sm:gap-2">
+                                    
+                                    <!-- SELECTOR DE MODE D'IA / TUTOR -->
+                                    <div class="relative inline-block text-left z-30" id="tutor-dropdown-container">
+                                        <button type="button" id="tutor-dropdown-btn" onclick="toggleTutorDropdown(event)" class="tutor-mode-select-elem flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800/90 text-zinc-800 dark:text-zinc-200 text-xs font-bold px-3.5 py-2 rounded-2xl border border-zinc-200 dark:border-zinc-700/80 transition-all duration-200 shadow-sm hover:shadow-lg hover:border-blue-500/60 dark:hover:border-blue-500/60 active:scale-[0.98] cursor-pointer group">
+                                            <span id="selected-tutor-icon" class="text-blue-500 shrink-0 flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                            </span>
+                                            <span id="selected-tutor-label" class="truncate max-w-[110px] xs:max-w-none">Tutor Estàndard</span>
+                                            <svg id="tutor-arrow-icon" class="w-3.5 h-3.5 text-zinc-400 group-hover:text-blue-500 transition-transform duration-300 ml-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+                                        </button>
+
+                                        <!-- DESPLEGABLE PERSONALITZAT -->
+                                        <div id="tutor-dropdown-menu" class="hidden absolute right-0 bottom-12 z-50 bg-white/95 dark:bg-[#18181b]/95 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 w-60 flex flex-col gap-1 backdrop-blur-xl transition-all">
+                                            <button type="button" onclick="selectTutorOption('standard')" class="tutor-opt-btn flex items-center gap-2.5 w-full p-2.5 hover:bg-blue-50 dark:hover:bg-zinc-800/80 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
+                                                <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                                </div>
+                                                <div class="flex flex-col min-w-0">
+                                                    <span class="font-bold text-xs">Tutor Estàndard</span>
+                                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-normal truncate">Explicació clara i guiada</span>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="selectTutorOption('socratic')" class="tutor-opt-btn flex items-center gap-2.5 w-full p-2.5 hover:bg-purple-50 dark:hover:bg-zinc-800/80 hover:text-purple-600 dark:hover:text-purple-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
+                                                <div class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                                </div>
+                                                <div class="flex flex-col min-w-0">
+                                                    <span class="font-bold text-xs">Mode Socràtic</span>
+                                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-normal truncate">Aprende fent preguntes</span>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="selectTutorOption('feynman')" class="tutor-opt-btn flex items-center gap-2.5 w-full p-2.5 hover:bg-amber-50 dark:hover:bg-zinc-800/80 hover:text-amber-600 dark:hover:text-amber-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
+                                                <div class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                                                </div>
+                                                <div class="flex flex-col min-w-0">
+                                                    <span class="font-bold text-xs">Mode Feynman</span>
+                                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-normal truncate">Llenguatge ultra senzill</span>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="selectTutorOption('tribunal')" class="tutor-opt-btn flex items-center gap-2.5 w-full p-2.5 hover:bg-red-50 dark:hover:bg-zinc-800/80 hover:text-red-600 dark:hover:text-red-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
+                                                <div class="w-7 h-7 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>
+                                                </div>
+                                                <div class="flex flex-col min-w-0">
+                                                    <span class="font-bold text-xs">Tribunal Examen</span>
+                                                    <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-normal truncate">Avaluació rigorosa</span>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- MICRÒFON EN LA PART DRETA (DENTRO DEL CHAT) -->
+                                    <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="Dictat per Veu" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer relative shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                        <span id="mic-pulse" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
+                                    </button>
+
+                                    <!-- BOTÓ D'ENVIAR (CIRCULAR AZUL CON FLECHA APUNTANDO ARRIBA ↑) -->
+                                    <button type="submit" aria-label="Enviar" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white flex items-center justify-center transition shadow-md shrink-0 font-bold">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+
                         </form>
                     </div>
                 </div>
@@ -512,90 +774,140 @@
     </div>
 
     <!-- MODAL CONFIGURACIÓ -->
-    <div id="settings-modal" class="fixed inset-0 bg-zinc-950/80 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-        <div class="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-md flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 border border-zinc-200 dark:border-zinc-800" id="settings-modal-box">
-            <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50 dark:bg-zinc-950/50">
-                <h3 class="font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2 text-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                    Configuració del Compte
-                </h3>
-                <button onclick="closeSettings()" class="text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition bg-white dark:bg-zinc-800 p-2 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-700">
+    <div id="settings-modal" class="fixed inset-0 bg-zinc-950/70 dark:bg-zinc-950/85 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-md opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-[#121217] text-zinc-900 dark:text-zinc-100 rounded-[2.25rem] w-full max-w-lg flex flex-col overflow-hidden shadow-2xl shadow-blue-950/10 dark:shadow-black/80 transform scale-95 transition-transform duration-300 border border-zinc-200/90 dark:border-zinc-800/90" id="settings-modal-box">
+            <!-- Header -->
+            <div class="p-5 sm:p-6 border-b border-zinc-200/80 dark:border-zinc-800/80 flex justify-between items-center bg-zinc-50/80 dark:bg-zinc-900/40">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-zinc-900 dark:text-zinc-100 text-lg leading-tight">Configuració del Compte</h3>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Personalitza l'aparença i el motor d'IA</p>
+                    </div>
+                </div>
+                <button onclick="closeSettings()" class="w-9 h-9 flex items-center justify-center rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-100 bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/60 hover:border-zinc-300 dark:hover:border-zinc-600 shadow-sm transition-all cursor-pointer">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="p-6 space-y-5 overflow-y-auto max-h-[75vh]">
+
+            <!-- Body Content -->
+            <div class="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
                 <!-- Nom -->
-                <div>
-                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">El teu Nom (Públic)</label>
-                    <input type="text" id="setting-name" placeholder="Com vols que et diguem?" class="w-full px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium shadow-inner">
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">El teu Nom (Públic)</label>
+                    <input type="text" id="setting-name" placeholder="Com vols que et diguem?" class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all text-sm font-medium shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600">
                 </div>
+
                 <!-- Aparença -->
-                <div>
-                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">Aparença de l'App</label>
-                    <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 hover:border-blue-400 transition-all group">
-                        <span class="text-sm font-bold text-zinc-800 dark:text-zinc-200">Canviar Tema (Clar / Fosc)</span>
-                        <svg id="theme-icon-modal" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500 group-hover:text-blue-500"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Aparença de l'App</label>
+                    <button type="button" onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 hover:border-blue-500/40 transition-all cursor-pointer group shadow-sm">
+                        <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-500"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Canviar Tema (Clar / Fosc)
+                        </span>
+                        <div class="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 bg-white dark:bg-zinc-800 px-3 py-1 rounded-lg border border-zinc-200 dark:border-zinc-700/60 group-hover:border-blue-500/40 transition">
+                            <span>Alternar</span>
+                            <svg id="theme-icon-modal" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500 dark:text-zinc-400 group-hover:text-blue-500"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                        </div>
                     </button>
                 </div>
 
-                <!-- SECCIÓ DE PROVEÏDORS D'IA I CONTINGÈNCIA PER ALTA DEMANDA -->
-                <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-3">
+                <!-- SECCIÓ DE PROVEÏDORS D'IA -->
+                <div class="p-4 sm:p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-900/40 space-y-4">
                     <div class="flex items-center justify-between">
-                        <label class="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wide flex items-center gap-1.5">
+                        <label class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3.5"/></svg>
-                            Motor d'IA & Contingència (Failover)
+                            Motor d'IA & Contingència
                         </label>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800">Alta Disponibilitat</span>
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Alta Disponibilitat</span>
                     </div>
-                    <p class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight">
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
                         Si Google Gemini té pics de sobrecàrrega o vols connectar una altra companyia (Groq, OpenRouter, OpenAI, DeepSeek), pots configurar-la aquí per a canvi automàtic instantani.
                     </p>
 
-                    <div>
-                        <label class="block text-[11px] font-bold text-zinc-800 dark:text-zinc-200 mb-1">Proveïdor Preferit</label>
-                        <select id="setting-ai-provider" onchange="updateModelSuggestions()" class="w-full px-4 py-2.5 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 font-bold outline-none text-xs cursor-pointer hover:border-blue-400 transition shadow-sm">
-                            <option value="gemini">Google Gemini (Per defecte + fallback resilient)</option>
-                            <option value="groq">Groq (Ultra-ràpid - Recomanat per saturació)</option>
-                            <option value="openrouter">OpenRouter (Centenars de models)</option>
-                            <option value="openai">OpenAI (ChatGPT / GPT-4o-mini)</option>
-                            <option value="deepseek">DeepSeek (V3 / R1)</option>
-                            <option value="mistral">Mistral AI (Nemo / Small)</option>
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-zinc-800 dark:text-zinc-200">Proveïdor Preferit</label>
+                        <select id="setting-ai-provider" onchange="updateModelSuggestions()" class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-bold outline-none text-xs cursor-pointer hover:border-blue-500/50 focus:border-blue-500 transition shadow-sm">
+                            <option value="gemini" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Google Gemini (Per defecte + fallback resilient)</option>
+                            <option value="groq" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Groq (Ultra-ràpid - Recomanat per saturació)</option>
+                            <option value="openrouter" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">OpenRouter (Centenars de models)</option>
+                            <option value="openai" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">OpenAI (ChatGPT / GPT-4o-mini)</option>
+                            <option value="deepseek" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">DeepSeek (V3 / R1)</option>
+                            <option value="mistral" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Mistral AI (Nemo / Small)</option>
                         </select>
                     </div>
 
-                    <div>
-                        <label class="block text-[11px] font-bold text-zinc-800 dark:text-zinc-200 mb-1">Clau API del Proveïdor (Opcional)</label>
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-zinc-800 dark:text-zinc-200">Clau API del Proveïdor (Opcional)</label>
                         <div class="relative">
-                            <input type="password" id="setting-ai-key" placeholder="gsk_... / sk-or-... / sk-..." class="w-full px-4 py-2.5 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 outline-none text-xs font-mono pr-10">
-                            <button type="button" onclick="toggleAiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
-                                <svg id="ai-key-eye" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            <input type="password" id="setting-ai-key" placeholder="gsk_... / sk-or-... / sk-..." class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 outline-none text-xs font-mono pr-10 focus:border-blue-500 transition shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600">
+                            <button type="button" onclick="toggleAiKeyVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer">
+                                <svg id="ai-key-eye" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             </button>
                         </div>
                     </div>
 
-                    <div>
-                        <div class="flex items-center justify-between mb-1">
-                            <label class="block text-[11px] font-bold text-zinc-800 dark:text-zinc-200">Model Específic (Opcional)</label>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-bold text-zinc-800 dark:text-zinc-200">Model Específic (Opcional)</label>
                             <span id="setting-model-hint" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">Recomanats:</span>
                         </div>
-                        <input type="text" id="setting-ai-model" list="model-suggestions" placeholder="Ex: gemini-2.5-flash..." class="w-full px-4 py-2.5 rounded-2xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 outline-none text-xs font-mono">
+                        <input type="text" id="setting-ai-model" list="model-suggestions" placeholder="Ex: gemini-3.5-flash..." class="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 outline-none text-xs font-mono focus:border-blue-500 transition shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600">
                         <datalist id="model-suggestions"></datalist>
                         <div id="model-quick-pills" class="flex flex-wrap gap-1.5 mt-2"></div>
                     </div>
                 </div>
-
-                <!-- Tancar Sessió -->
-                <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                    <button onclick="logout()" class="w-full flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-bold py-3 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/40 transition shadow-sm text-sm border border-red-200 dark:border-red-900/50 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                        Tancar Sessió Segura
-                    </button>
-                </div>
             </div>
-            <div class="p-5 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50">
-                <button onclick="saveSettings()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-2xl transition-all shadow-md text-sm cursor-pointer">
-                    Guardar Canvis
+
+            <!-- Bottom Unified Action Bar -->
+            <div class="p-4 sm:p-5 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/40 flex items-center justify-between gap-3">
+                <button type="button" onclick="logout()" class="px-3.5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 font-bold text-xs sm:text-sm border border-red-500/20 hover:border-red-500/40 transition-all flex items-center gap-2 cursor-pointer shadow-sm active:scale-95">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Tancar Sessió</span>
                 </button>
+
+                <button type="button" onclick="saveSettings()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs sm:text-sm transition-all shadow-md shadow-blue-500/20 flex items-center gap-2 cursor-pointer active:scale-95">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    <span>Guardar Canvis</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL HISTORIAL DE CONVERSES -->
+    <div id="chat-history-modal" class="fixed inset-0 bg-zinc-950/80 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-zinc-900 rounded-[2rem] w-full max-w-xl flex flex-col overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 border border-zinc-200 dark:border-zinc-800" id="chat-history-modal-box">
+            <div class="p-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50 dark:bg-zinc-950/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 font-bold border border-indigo-200 dark:border-indigo-900/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-zinc-900 dark:text-zinc-100 text-lg leading-tight">Historial de Converses</h3>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Tots els teus xats i plans d'estudi guardats al núvol</p>
+                    </div>
+                </div>
+                <button onclick="closeChatHistoryModal()" class="text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition bg-white dark:bg-zinc-800 p-2 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-700 cursor-pointer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            
+            <div class="p-4 border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center gap-2">
+                <div class="relative flex-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="chat-history-search" oninput="filterChatHistoryModal(this.value)" placeholder="Cerca converses per nom..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 outline-none text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                </div>
+                <button onclick="newSession(); closeChatHistoryModal();" class="px-3.5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition shrink-0 flex items-center gap-1.5 cursor-pointer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                    <span>Nou Xat</span>
+                </button>
+            </div>
+
+            <div id="chat-history-modal-list" class="p-4 overflow-y-auto max-h-[60vh] space-y-2">
+                <!-- Content dynamically rendered -->
             </div>
         </div>
     </div>
@@ -623,6 +935,37 @@
             <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white bg-zinc-800 hover:bg-zinc-700 p-2.5 rounded-full transition shadow-lg">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
+    <!-- MODAL VERIFICACIÓ DE CODI DE SEGURETAT -->
+    <div id="email-verify-modal" class="fixed inset-0 bg-zinc-950/70 dark:bg-zinc-950/85 z-[115] hidden flex items-center justify-center p-4 backdrop-blur-md opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-[#121217] text-zinc-900 dark:text-zinc-100 rounded-[2.25rem] w-full max-w-md flex flex-col overflow-hidden shadow-2xl border border-zinc-200/90 dark:border-zinc-800/90" id="email-verify-modal-box">
+            <div class="p-5 border-b border-zinc-200/80 dark:border-zinc-800/80 flex justify-between items-center bg-zinc-50/80 dark:bg-zinc-900/40">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20 shadow-sm">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-zinc-900 dark:text-zinc-100 text-lg leading-tight">Verificació de Seguretat</h3>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Comprova el teu correu electrònic</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeVerifyModal()" class="w-9 h-9 flex items-center justify-center rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-100 bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/60 shadow-sm transition-all cursor-pointer">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                    S'ha generat un codi de seguretat de 6 dígits per al teu compte <strong id="verify-email-display" class="text-blue-600 dark:text-blue-400"></strong>.
+                </p>
+                <div>
+                    <label class="block text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-1.5 uppercase tracking-wider">Codi de 6 dígits</label>
+                    <input type="text" id="verify-code-input" maxlength="6" placeholder="123456" class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/80 text-zinc-900 dark:text-zinc-100 text-center tracking-[0.5em] font-mono text-lg font-black outline-none focus:border-blue-500 transition shadow-inner">
+                </div>
+                <button type="button" onclick="sendEmailVerificationCode()" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer block">Reenviar codi al meu correu</button>
+            </div>
+            <div class="p-4 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/40 flex items-center justify-end gap-3">
+                <button type="button" onclick="closeVerifyModal()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 text-zinc-600 dark:text-zinc-400 font-bold text-xs cursor-pointer">Cancel·lar</button>
+                <button type="button" onclick="confirmEmailVerificationCode()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 cursor-pointer">Verificar i Continuar</button>
+            </div>
         </div>
     </div>
 
@@ -713,8 +1056,27 @@
             } catch(e) { console.error("Error carregant settings de la nube:", e); }
         }
 
+        let welcomePhraseIndex = 0;
+        function rotateWelcomeSubtext() {
+            const subtextEl = document.getElementById('welcome-subtext');
+            if (!subtextEl) return;
+
+            const phrases = [
+                "El teu aliat està aquí! En què et puc ajudar?",
+                "Quin tipus d'ajuda necessites avui?",
+                "Organitza el teu pla d'estudis o resol dubtes a l'instant!",
+                "Tria un minijoc, obre el xatbot o prepara la teva activitat diària.",
+                "Preparat per assolir els teus objectius acadèmics?"
+            ];
+
+            subtextEl.innerText = phrases[welcomePhraseIndex];
+            welcomePhraseIndex = (welcomePhraseIndex + 1) % phrases.length;
+        }
+        window.rotateWelcomeSubtext = rotateWelcomeSubtext;
+
         window.onload = () => {
             initPreferences();
+            rotateWelcomeSubtext();
             if (!authToken) {
                 document.getElementById('auth-view').classList.remove('hidden');
                 document.getElementById('app-container').classList.add('hidden');
@@ -740,7 +1102,192 @@
             }
         };
 
-        // --- SISTEMA D'AUTENTICACIÓ (NOU) ---
+        // --- SISTEMA D'AUTENTICACIÓ (NOU & GOOGLE FIREBASE) ---
+        let firebaseApp = null;
+        let firebaseAuth = null;
+
+        async function initFirebaseSDK() {
+            if (firebaseAuth) return;
+            try {
+                const response = await fetch('/firebase-applet-config.json');
+                if (!response.ok) return;
+                const config = await response.json();
+                
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+                const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+
+                firebaseApp = initializeApp(config);
+                firebaseAuth = getAuth(firebaseApp);
+            } catch(e) {
+                console.warn("Firebase config notice:", e);
+            }
+        }
+
+        async function handleGoogleLogin() {
+            try {
+                await initFirebaseSDK();
+                if (!firebaseAuth) {
+                    showToast("Carregant servei de seguretat de Google...", "info");
+                    await initFirebaseSDK();
+                }
+                const { GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+                const provider = new GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                
+                showToast("Obrint inici de sessió segur de Google...", "info");
+                const result = await signInWithPopup(firebaseAuth, provider);
+                const user = result.user;
+                const phoneInput = document.getElementById('auth-phone');
+                const userPhone = phoneInput ? phoneInput.value.trim() : (user.phoneNumber || '');
+
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || user.email.split('@')[0],
+                    photoURL: user.photoURL || '',
+                    phoneNumber: userPhone
+                };
+
+                const res = await fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    authToken = data.token;
+                    authUser = data.user;
+                    localStorage.setItem('aliat_token', authToken);
+                    localStorage.setItem('aliat_user', JSON.stringify(authUser));
+                    if (data.user.name) localStorage.setItem('aliat_user_name', data.user.name);
+                    if (data.user.photoURL) localStorage.setItem('aliat_user_photo', data.user.photoURL);
+
+                    if (data.linkedAccount) {
+                        Swal.fire({
+                            title: "Compte Vinculat amb Èxit!",
+                            text: data.message,
+                            icon: "info",
+                            confirmButtonText: "Entendre",
+                            customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }
+                        });
+                    } else {
+                        showToast("Sessió iniciada amb Google exitosament!", "success");
+                    }
+
+                    document.getElementById('auth-view').classList.add('hidden');
+                    document.getElementById('app-container').classList.remove('hidden');
+                    setTimeout(() => document.getElementById('app-container').classList.remove('opacity-0'), 50);
+
+                    updateProfileUI();
+                    syncUserSettings();
+                    syncCloudSessions();
+                } else {
+                    showToast(data.error || "Error d'inici de sessió amb Google", "error");
+                }
+            } catch(e) {
+                console.error("Error Google Auth:", e);
+                showToast("Accés cancel·lat o no autoritzat amb Google", "error");
+            }
+        }
+        window.handleGoogleLogin = handleGoogleLogin;
+
+        // --- SISTEMA DE VERIFICACIÓ PER CORREU I CODI ---
+        let activeVerificationEmail = '';
+
+        function openVerifyModal(email) {
+            activeVerificationEmail = email || (authUser ? authUser.email : '');
+            const displayEl = document.getElementById('verify-email-display');
+            if (displayEl) displayEl.innerText = activeVerificationEmail;
+
+            const modal = document.getElementById('email-verify-modal');
+            const box = document.getElementById('email-verify-modal-box');
+            if (modal && box) {
+                modal.classList.remove('hidden');
+                setTimeout(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-95'); }, 10);
+                sendEmailVerificationCode();
+            }
+        }
+
+        function closeVerifyModal() {
+            const modal = document.getElementById('email-verify-modal');
+            const box = document.getElementById('email-verify-modal-box');
+            if (modal && box) {
+                modal.classList.add('opacity-0');
+                box.classList.add('scale-95');
+                setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            }
+        }
+
+        async function sendEmailVerificationCode() {
+            if (!activeVerificationEmail) return;
+            try {
+                const res = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'send', email: activeVerificationEmail })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message || `Codi enviat a ${activeVerificationEmail}`, 'info');
+                    if (data.demoCode) {
+                        Swal.fire({
+                            title: "Codi de Verificació Enviat!",
+                            text: `S'ha simulat l'enviament del codi de 6 dígits al teu Gmail: ${data.demoCode}`,
+                            icon: "info",
+                            confirmButtonText: "Utilitzar Codi",
+                            customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }
+                        }).then(() => {
+                            const input = document.getElementById('verify-code-input');
+                            if (input) input.value = data.demoCode;
+                        });
+                    }
+                } else {
+                    showToast(data.error || "No s'ha pogut enviar el codi", "error");
+                }
+            } catch(e) {
+                console.error("Error sending verification code:", e);
+            }
+        }
+
+        async function confirmEmailVerificationCode() {
+            const input = document.getElementById('verify-code-input');
+            const code = input ? input.value.trim() : '';
+            if (!code || code.length !== 6) {
+                showToast("Introdueix un codi vàlid de 6 dígits", "warning");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'verify', email: activeVerificationEmail, code: code })
+                });
+                const data = await res.json();
+                if (data.success && data.verified) {
+                    closeVerifyModal();
+                    Swal.fire({
+                        title: "Verificació Completada!",
+                        text: "El teu correu s'ha verificat satisfactòriament.",
+                        icon: "success",
+                        timer: 2000,
+                        showConfirmButton: false,
+                        customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }
+                    });
+                } else {
+                    showToast(data.error || "Codi de verificació incorrecte", "error");
+                }
+            } catch(e) {
+                showToast("Error durant la comprovació del codi", "error");
+            }
+        }
+
+        window.openVerifyModal = openVerifyModal;
+        window.closeVerifyModal = closeVerifyModal;
+        window.sendEmailVerificationCode = sendEmailVerificationCode;
+        window.confirmEmailVerificationCode = confirmEmailVerificationCode;
+
         let authMode = 'login';
         
         function switchAuthTab(mode) {
@@ -833,8 +1380,9 @@
 
         const RECOMMENDED_AI_MODELS = {
             'gemini': [
-                { id: 'gemini-2.5-flash', label: '2.5 Flash (Recomanat)', badge: 'Ràpid & Eficient' },
-                { id: 'gemini-1.5-flash', label: '1.5 Flash', badge: 'Estable' },
+                { id: 'gemini-3.5-flash', label: '3.5 Flash (Recomanat)', badge: 'Ultra-Ràpid' },
+                { id: 'gemini-3.5-flash-lite', label: '3.5 Flash-Lite', badge: 'Lleuger & Eficient' },
+                { id: 'gemini-2.5-flash', label: '2.5 Flash', badge: 'Estable' },
                 { id: 'gemini-2.5-pro', label: '2.5 Pro', badge: 'Màxim Raonament' }
             ],
             'groq': [
@@ -875,7 +1423,7 @@
 
             if (pillsContainer) {
                 pillsContainer.innerHTML = models.map(m => `
-                    <button type="button" onclick="selectQuickModel('${m.id}')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-zinc-100 hover:bg-blue-50 dark:bg-zinc-850 dark:hover:bg-blue-950/60 text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 border border-zinc-200 dark:border-zinc-700 transition flex items-center gap-1 cursor-pointer">
+                    <button type="button" onclick="selectQuickModel('${m.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-zinc-100/80 hover:bg-blue-50 dark:bg-zinc-800/80 dark:hover:bg-blue-950/60 text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 border border-zinc-200/80 dark:border-zinc-700/80 transition flex items-center gap-1 cursor-pointer">
                         <span>${m.id}</span>
                         <span class="text-[9px] opacity-70 font-normal">(${m.badge})</span>
                     </button>
@@ -977,10 +1525,20 @@
         function updateProfileUI() {
             if (!authUser) return;
             let savedName = localStorage.getItem('aliat_user_name');
-            let displayName = savedName ? savedName : authUser.email.split('@')[0];
+            let displayName = savedName ? savedName : (authUser.name || authUser.email.split('@')[0]);
+            let photoUrl = (authUser && (authUser.photoURL || authUser.photo_url)) || localStorage.getItem('aliat_user_photo') || '';
             
             document.getElementById('profile-email').innerText = displayName;
-            document.getElementById('profile-initial').innerText = displayName.charAt(0).toUpperCase();
+            const initialEl = document.getElementById('profile-initial');
+            if (initialEl) {
+                if (photoUrl) {
+                    initialEl.innerHTML = `<img src="${photoUrl}" referrerpolicy="no-referrer" class="w-full h-full object-cover rounded-xl shadow-md" alt="Avatar" onerror="this.onerror=null;this.parentNode.innerText='${displayName.charAt(0).toUpperCase()}';" />`;
+                    initialEl.className = "w-9 h-9 rounded-xl overflow-hidden shrink-0 shadow-md ring-2 ring-blue-500/40";
+                } else {
+                    initialEl.innerText = displayName.charAt(0).toUpperCase();
+                    initialEl.className = "w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-extrabold shrink-0 shadow-md text-sm ring-2 ring-indigo-500/20";
+                }
+            }
             
             const welcomeNameEl = document.getElementById('welcome-user-name');
             if(welcomeNameEl) welcomeNameEl.innerText = displayName;
@@ -1318,6 +1876,76 @@
             };
             showToast('Activat: ' + (labels[mode] || mode));
         };
+
+        // --- UTILITATS D'ANIMACIÓ DE DESPLEGABLES ---
+        function animateOpenDropdown(menuEl) {
+            if (!menuEl) return;
+            menuEl.classList.remove('hidden', 'dropdown-animate-close');
+            menuEl.classList.add('dropdown-animate-open');
+        }
+
+        function animateCloseDropdown(menuEl, callback) {
+            if (!menuEl || menuEl.classList.contains('hidden')) return;
+            menuEl.classList.remove('dropdown-animate-open');
+            menuEl.classList.add('dropdown-animate-close');
+            setTimeout(() => {
+                menuEl.classList.add('hidden');
+                menuEl.classList.remove('dropdown-animate-close');
+                if (callback) callback();
+            }, 180);
+        }
+
+        window.toggleTutorDropdown = function(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('tutor-dropdown-menu');
+            const arrow = document.getElementById('tutor-arrow-icon');
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                animateOpenDropdown(menu);
+                if (arrow) arrow.style.transform = 'rotate(180deg)';
+            } else {
+                animateCloseDropdown(menu);
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+            }
+        };
+
+        window.selectTutorOption = function(mode) {
+            const icons = {
+                'standard': `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+                'socratic': `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+                'feynman': `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`,
+                'tribunal': `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>`
+            };
+            const labels = {
+                'standard': 'Tutor Estàndard',
+                'socratic': 'Mode Socràtic',
+                'feynman': 'Mode Feynman',
+                'tribunal': 'Tribunal Examen'
+            };
+
+            const iconEl = document.getElementById('selected-tutor-icon');
+            const labelEl = document.getElementById('selected-tutor-label');
+            if (iconEl && icons[mode]) iconEl.innerHTML = icons[mode];
+            if (labelEl && labels[mode]) labelEl.innerText = labels[mode];
+
+            window.setTutorMode(mode);
+
+            const menu = document.getElementById('tutor-dropdown-menu');
+            const arrow = document.getElementById('tutor-arrow-icon');
+            if (menu) animateCloseDropdown(menu);
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+        };
+
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('tutor-dropdown-container');
+            const menu = document.getElementById('tutor-dropdown-menu');
+            const arrow = document.getElementById('tutor-arrow-icon');
+            if (container && !container.contains(e.target) && menu && !menu.classList.contains('hidden')) {
+                animateCloseDropdown(menu);
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+            }
+        });
 
         window.speakMessageText = function(text) {
             if (!('speechSynthesis' in window)) {
@@ -1708,25 +2336,25 @@
                 <!-- Àrea de càmera o pujar foto -->
                 <div class="border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl p-4 text-center relative bg-zinc-50 dark:bg-zinc-950/50" id="vision-dropzone">
                     <div id="vision-preview-box" class="hidden mb-3">
-                        <img id="vision-img-element" class="max-h-48 mx-auto rounded-xl shadow-md border border-zinc-700">
+                        <img id="vision-img-element" class="max-h-80 sm:max-h-96 md:max-h-[500px] w-full object-contain mx-auto rounded-2xl shadow-xl border border-zinc-700 bg-black">
                     </div>
                     <div id="vision-svg-box" class="hidden mb-3"></div>
                     <input type="file" id="vision-file-input" accept="image/*" class="hidden" onchange="handleVisionFileSelect(this)">
                     <div class="flex items-center justify-center gap-3">
-                        <button onclick="document.getElementById('vision-file-input').click()" class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-100 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2 border border-zinc-300 dark:border-zinc-700">
+                        <button type="button" onclick="document.getElementById('vision-file-input').click()" class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-100 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2 border border-zinc-300 dark:border-zinc-700 cursor-pointer">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Pujar Foto/Apunt
                         </button>
-                        <button onclick="startLiveCamera()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2 shadow-sm">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Obrir Càmera
+                        <button type="button" onclick="startLiveCamera()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center gap-2 shadow-sm cursor-pointer">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Obrir Càmera Gran
                         </button>
                     </div>
-                    <video id="vision-video" class="hidden w-full max-h-48 rounded-xl mt-3 object-cover border border-zinc-700" autoplay playsinline></video>
-                    <button id="vision-snap-btn" onclick="snapCameraPhoto()" class="hidden w-full mt-2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Capturar Foto de la Càmera
+                    <video id="vision-video" class="hidden w-full h-72 sm:h-96 md:h-[450px] rounded-2xl mt-3 object-cover border-2 border-indigo-500 shadow-2xl bg-black" autoplay playsinline></video>
+                    <button type="button" id="vision-snap-btn" onclick="snapCameraPhoto()" class="hidden w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg cursor-pointer">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Capturar Foto de la Càmera
                     </button>
                 </div>
 
-                <button id="btn-process-vision" onclick="processVisionAnalysis()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                <button type="button" id="btn-process-vision" onclick="processVisionAnalysis()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-2xl text-sm transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Analitzar Foto amb IA
                 </button>
             </div>`;
@@ -1739,7 +2367,7 @@
                 html: htmlContent,
                 showCloseButton: true,
                 showConfirmButton: false,
-                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl w-full', title: 'font-black text-zinc-900 dark:text-white' }
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-3xl md:max-w-4xl w-full', title: 'font-black text-zinc-900 dark:text-white' }
             });
         };
 
@@ -2444,17 +3072,49 @@
         }
         window.generateSmartTitle = generateSmartTitle;
 
+        function safeLocalStorageSet(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (e) {
+                console.warn(`LocalStorage quota exceeded for ${key}, trimming backups...`);
+                try {
+                    if (key === 'aliat_sessions_backup' && Array.isArray(allSessions)) {
+                        const slimSessions = allSessions.map(s => {
+                            const copy = { ...s };
+                            delete copy.html; // HTML is saved individually / stored in cloud
+                            return copy;
+                        });
+                        localStorage.setItem('aliat_sessions_backup', JSON.stringify(slimSessions));
+                    }
+                } catch (e2) {}
+            }
+        }
+
+        window.showDailyUseBlockedModal = function() {
+            Swal.fire({
+                title: '<div class="flex items-center justify-center gap-2 text-red-600 dark:text-red-400"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Ús Quotidià Bloquejat</div>',
+                text: 'Aquesta secció està en desenvolupament i estarà disponible pròximament en la següent actualització.',
+                icon: 'info',
+                confirmButtonText: 'Entesos',
+                confirmButtonColor: '#ef4444',
+                background: document.documentElement.classList.contains('dark') ? '#18181b' : '#fff',
+                color: document.documentElement.classList.contains('dark') ? '#f4f4f5' : '#18181b',
+                customClass: { popup: 'rounded-3xl border dark:border-zinc-800' }
+            });
+        };
+
         function saveSession() {
             // Assegurem que el xat té un ID abans d'enviar-lo al servidor
             if (!currentSessionId || currentSessionId === 'null') {
                 currentSessionId = 'sess_' + Date.now();
-                localStorage.setItem('aliat_current_id', currentSessionId);
+                safeLocalStorageSet('aliat_current_id', currentSessionId);
             }
 
             const activeSession = allSessions.find(s => s.id === currentSessionId);
             const currentTitle = generateSmartTitle(activeSession);
             
-            document.getElementById('chat-mode-label').innerText = currentTitle;
+            const chatLabel = document.getElementById('chat-mode-label');
+            if (chatLabel) chatLabel.innerText = currentTitle;
             
             const sessionData = { 
                 id: currentSessionId, 
@@ -2465,7 +3125,7 @@
                 calendar: generatedCalendarArray, 
                 games: window.interactiveGames, 
                 initial_quiz: window.initialQuizResults || null,
-                html: document.getElementById('chat-messages').innerHTML, 
+                html: document.getElementById('chat-messages')?.innerHTML || '', 
                 context: studentContextStr, 
                 pdf_text: finalStudyText, 
                 date: new Date().getTime() 
@@ -2474,15 +3134,15 @@
             const idx = allSessions.findIndex(s => s.id === currentSessionId);
             if(idx >= 0) allSessions[idx] = sessionData; else allSessions.push(sessionData);
             
-            localStorage.setItem('aliat_sessions_backup', JSON.stringify(allSessions));
+            safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
             renderSidebarHistory(); 
             saveSessionToCloud(sessionData);
             
-            localStorage.setItem('aliat_local_html_' + currentSessionId, sessionData.html); 
-            localStorage.setItem('aliat_local_context_' + currentSessionId, studentContextStr); 
-            localStorage.setItem('aliat_local_text_' + currentSessionId, finalStudyText);
+            safeLocalStorageSet('aliat_local_html_' + currentSessionId, sessionData.html); 
+            safeLocalStorageSet('aliat_local_context_' + currentSessionId, studentContextStr); 
+            safeLocalStorageSet('aliat_local_text_' + currentSessionId, finalStudyText);
             if (window.initialQuizResults) {
-                localStorage.setItem('aliat_initial_quiz_' + currentSessionId, JSON.stringify(window.initialQuizResults));
+                safeLocalStorageSet('aliat_initial_quiz_' + currentSessionId, JSON.stringify(window.initialQuizResults));
             }
         }
 
@@ -2691,6 +3351,7 @@
             
             document.getElementById('welcome-view').classList.remove('hidden');
             document.getElementById('global-menu-btn').classList.remove('hidden');
+            rotateWelcomeSubtext();
 
             if(window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
@@ -2704,19 +3365,23 @@
 
         function renderSidebarHistory() {
             const list = document.getElementById('history-list');
+            if (!list) return;
             list.innerHTML = '';
             
             // Neteja automàtica de qualsevol sessió buida existent a l'historial
             allSessions = allSessions.filter(s => !isSessionEmpty(s));
             localStorage.setItem('aliat_sessions_backup', JSON.stringify(allSessions));
 
-            const sortedSessions = [...allSessions].sort((a, b) => b.date - a.date);
+            const sortedSessions = [...allSessions].sort((a, b) => (b.date || 0) - (a.date || 0));
             if (sortedSessions.length === 0) {
                 list.innerHTML = '<div class="text-[11px] text-zinc-500 px-3 py-3 italic rounded-2xl bg-zinc-900/40 border border-zinc-800/40 text-center">Cap conversa guardada</div>';
                 return;
             }
 
-            sortedSessions.forEach(s => {
+            // Mostrem només les 4 més recents al menú desplegable per no saturar la vista
+            const recentSessions = sortedSessions.slice(0, 4);
+
+            recentSessions.forEach(s => {
                 const isStudy = (s.mode === 'study') || 
                                 (s.calendar && s.calendar.length > 0) || 
                                 (s.pdf_text && s.pdf_text.length > 0) ||
@@ -2727,7 +3392,7 @@
                     const label = document.getElementById('chat-mode-label');
                     if (label) label.innerText = title;
                 }
-                let dateStr = new Date(s.date).toLocaleDateString('ca-ES', { day: '2-digit', month: 'short' });
+                let dateStr = s.date ? new Date(s.date).toLocaleDateString('ca-ES', { day: '2-digit', month: 'short' }) : '';
                 
                 const iconSvg = isStudy 
                     ? `<span class="w-6 h-6 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0 shadow-sm"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>`
@@ -2737,7 +3402,6 @@
                     ? "bg-zinc-800 text-white font-bold ring-1 ring-zinc-700/80 shadow-sm" 
                     : "text-zinc-400 hover:bg-zinc-800/80 hover:text-zinc-200 font-medium";
 
-                // Botó modern amb estil arrodonit (rounded-2xl) i paperera integrada
                 list.innerHTML += `
                     <div class="relative group mb-1.5">
                         <button onclick="loadSession('${s.id}')" class="w-full text-left p-2.5 rounded-2xl text-[13px] truncate transition-all duration-200 ${activeClass} flex items-center gap-2.5 pr-8 cursor-pointer">
@@ -2748,6 +3412,117 @@
                         <button onclick="deleteSession('${s.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/15 rounded-xl opacity-0 group-hover:opacity-100 transition-all z-10 cursor-pointer" title="Eliminar conversa">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
+                    </div>
+                `;
+            });
+
+            if (sortedSessions.length > 4) {
+                list.innerHTML += `
+                    <button onclick="openChatHistoryModal()" class="w-full py-2 px-3 text-xs font-bold text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 rounded-xl transition flex items-center justify-center gap-1.5 mt-2 cursor-pointer border border-indigo-500/20">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>Veure tot l'historial (${sortedSessions.length})</span>
+                    </button>
+                `;
+            }
+        }
+
+        window.openChatHistoryModal = function() {
+            const modal = document.getElementById('chat-history-modal');
+            if (!modal) return;
+            const searchInput = document.getElementById('chat-history-search');
+            if (searchInput) searchInput.value = '';
+            renderChatHistoryModalList(allSessions);
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                document.getElementById('chat-history-modal-box')?.classList.remove('scale-95');
+            }, 10);
+        };
+
+        window.closeChatHistoryModal = function() {
+            const modal = document.getElementById('chat-history-modal');
+            if (!modal) return;
+            modal.classList.add('opacity-0');
+            document.getElementById('chat-history-modal-box')?.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        };
+
+        window.filterChatHistoryModal = function(query) {
+            const q = (query || '').toLowerCase().trim();
+            if (!q) {
+                renderChatHistoryModalList(allSessions);
+                return;
+            }
+            const filtered = allSessions.filter(s => {
+                const title = (s.title || generateSmartTitle(s)).toLowerCase();
+                const text = (s.pdf_text || '').toLowerCase();
+                return title.includes(q) || text.includes(q);
+            });
+            renderChatHistoryModalList(filtered);
+        };
+
+        function renderChatHistoryModalList(sessionsList) {
+            const container = document.getElementById('chat-history-modal-list');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const sorted = [...(sessionsList || [])].sort((a, b) => (b.date || 0) - (a.date || 0));
+            
+            if (sorted.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 px-4">
+                        <div class="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 flex items-center justify-center mx-auto mb-3">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <p class="text-sm font-bold text-zinc-700 dark:text-zinc-300">Cap conversa trobada</p>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Navega o inicia un nou xat amb el botó superior.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            sorted.forEach(s => {
+                const isStudy = (s.mode === 'study') || (s.calendar && s.calendar.length > 0) || (s.pdf_text && s.pdf_text.length > 0) || (s.initial_quiz);
+                const title = s.title || generateSmartTitle(s);
+                const dateStr = s.date ? new Date(s.date).toLocaleDateString('ca-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent';
+                const isActive = (s.id === currentSessionId);
+                
+                const badgeMode = isStudy 
+                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Pla d'Estudis</span>`
+                    : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> XatBot Lliure</span>`;
+
+                const activeRing = isActive ? 'border-2 border-indigo-500 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20' : 'border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-indigo-300 dark:hover:border-zinc-700';
+
+                container.innerHTML += `
+                    <div class="p-3.5 rounded-2xl transition-all duration-200 ${activeRing} flex items-center justify-between gap-3 group">
+                        <div onclick="loadSession('${s.id}'); closeChatHistoryModal();" class="flex items-start gap-3 flex-1 min-w-0 cursor-pointer">
+                            <div class="w-10 h-10 rounded-xl ${isStudy ? 'bg-blue-600/10 text-blue-600 dark:text-blue-400' : 'bg-emerald-600/10 text-emerald-600 dark:text-emerald-400'} flex items-center justify-center shrink-0 font-bold border ${isStudy ? 'border-blue-200 dark:border-blue-900/50' : 'border-emerald-200 dark:border-emerald-900/50'}">
+                                ${isStudy 
+                                    ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`
+                                    : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm truncate max-w-[240px] sm:max-w-xs">${title}</h4>
+                                    ${badgeMode}
+                                    ${isActive ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-600 text-white">ACTIU</span>` : ''}
+                                </div>
+                                <p class="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 font-medium">
+                                    <span>${dateStr}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button onclick="loadSession('${s.id}'); closeChatHistoryModal();" class="p-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-1">
+                                <span>Obrir</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                            </button>
+                            <button onclick="deleteSession('${s.id}')" class="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition cursor-pointer" title="Eliminar conversa">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
                     </div>
                 `;
             });
@@ -2779,6 +3554,9 @@
                         renderSidebarHistory();
                     }
                     
+                    const searchVal = document.getElementById('chat-history-search')?.value || '';
+                    filterChatHistoryModal(searchVal);
+
                     // 3. Esborrar de Turso
                     try {
                         await fetch('/api/sessions/delete', {
@@ -2926,6 +3704,7 @@
             document.getElementById('setup-view').classList.remove('flex');
             document.getElementById('welcome-view').classList.remove('hidden');
             document.getElementById('global-menu-btn').classList.remove('hidden');
+            rotateWelcomeSubtext();
         }
 
         // --- SISTEMA PDF I ESTUDI ---
@@ -3193,6 +3972,30 @@
             chatHistory.push({ role: 'user', content: prompt });
             triggerAiResponse();
         };
+
+        window.togglePlusMenu = function(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('plus-menu');
+            if (!menu) return;
+            if (menu.classList.contains('hidden')) {
+                animateOpenDropdown(menu);
+            } else {
+                animateCloseDropdown(menu);
+            }
+        };
+
+        window.closePlusMenu = function() {
+            const menu = document.getElementById('plus-menu');
+            if (menu) animateCloseDropdown(menu);
+        };
+
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('chat-plus-btn');
+            const menu = document.getElementById('plus-menu');
+            if (menu && !menu.classList.contains('hidden') && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+                animateCloseDropdown(menu);
+            }
+        });
 
         let currentAttachmentBase64 = null;
 
@@ -3677,38 +4480,55 @@
         }
 
         function buildKahootUI(id, game) {
-            let k = game.data;
-            let isDone = game.status === 'completed';
-            let colors = ['bg-indigo-500 hover:bg-indigo-600', 'bg-emerald-500 hover:bg-emerald-600', 'bg-amber-500 hover:bg-amber-600', 'bg-rose-500 hover:bg-rose-600'];
+            if (!game || !game.data) {
+                return `<div class="p-4 text-center text-zinc-500 font-bold text-xs">No hi ha dades disponibles per aquest examen.</div>`;
+            }
             
-            let buttonsHtml = k.opcions.map((opt, idx) => {
-                let safeOpt = typeof opt === 'string' ? opt.replace(/'/g, "\\'").replace(/"/g, '&quot;') : opt;
-                let btnClass = `w-full text-left text-white font-bold p-3 md:p-4 rounded-xl shadow-sm transition flex items-center text-xs md:text-base focus:outline-none ${colors[idx % 4]}`;
+            let rawData = game.data;
+            let k = Array.isArray(rawData) ? (rawData[game.currentQIndex || 0] || rawData[0]) : rawData;
+            if (!k) k = rawData;
+
+            let options = k.opcions || k.options || k.choices || k.respostes || [];
+            if (!Array.isArray(options) && typeof options === 'object' && options !== null) {
+                options = Object.values(options);
+            }
+            if (!Array.isArray(options) || options.length === 0) {
+                options = ["Opció A", "Opció B", "Opció C", "Opció D"];
+            }
+
+            let isDone = (game.status === 'completed') && (typeof game.userPick !== 'undefined');
+            let correctIdx = (typeof k.correcta !== 'undefined') ? k.correcta : (typeof k.correct === 'number' ? k.correct : 0);
+            let colors = ['bg-indigo-600 hover:bg-indigo-700', 'bg-emerald-600 hover:bg-emerald-700', 'bg-amber-600 hover:bg-amber-700', 'bg-rose-600 hover:bg-rose-700'];
+            
+            let buttonsHtml = options.map((opt, idx) => {
+                let optText = (typeof opt === 'object' && opt !== null) ? (opt.text || opt.resposta || JSON.stringify(opt)) : String(opt);
+                let safeOpt = optText.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                let btnClass = `w-full text-left text-white font-bold p-3.5 md:p-4 rounded-xl shadow-sm transition flex items-center text-xs md:text-sm focus:outline-none ${colors[idx % colors.length]}`;
                 
                 if (isDone) {
-                    btnClass += " opacity-50 cursor-default";
-                    if (idx === game.userPick && idx === k.correcta) {
-                        btnClass = btnClass.replace("opacity-50", "ring-4 ring-green-500 opacity-100");
-                    } else if (idx === game.userPick && idx !== k.correcta) {
-                        btnClass = btnClass.replace("opacity-50", "ring-4 ring-red-500 opacity-100");
-                    } else if (idx === k.correcta) {
-                        btnClass = btnClass.replace("opacity-50", "border-4 border-green-500 opacity-100");
+                    btnClass += " opacity-60 cursor-default";
+                    if (typeof game.userPick !== 'undefined' && idx === game.userPick && idx === correctIdx) {
+                        btnClass = btnClass.replace("opacity-60", "ring-4 ring-emerald-500 opacity-100 font-black");
+                    } else if (typeof game.userPick !== 'undefined' && idx === game.userPick && idx !== correctIdx) {
+                        btnClass = btnClass.replace("opacity-60", "ring-4 ring-rose-500 opacity-100 font-black");
+                    } else if (idx === correctIdx) {
+                        btnClass = btnClass.replace("opacity-60", "border-4 border-emerald-500 opacity-100 font-bold");
                     }
-                    return `<button class="${btnClass}">${opt}</button>`;
+                    return `<button type="button" class="${btnClass}">${optText}</button>`;
                 } else {
-                    return `<button onclick="playKahoot('${id}', ${idx}, '${safeOpt}')" class="${btnClass} interactive-btn">${opt}</button>`;
+                    return `<button type="button" onclick="event.preventDefault(); event.stopPropagation(); playKahoot('${id}', ${idx}, '${safeOpt}')" class="${btnClass} interactive-btn">${optText}</button>`;
                 }
             }).join('');
             
             let resultHtml = "";
             if (isDone) {
-                let isWin = game.userPick === k.correcta;
-                resultHtml = `<div class="mt-6 p-4 rounded-xl font-bold text-center ${isWin ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'}">${isWin ? '✅ Correcte!' : '❌ Incorrecte'}</div>`;
+                let isWin = (game.userPick === correctIdx);
+                resultHtml = `<div class="mt-5 p-4 rounded-xl font-bold text-center ${isWin ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' : 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800'}">${isWin ? '✅ Correcte! Enhorabona.' : '❌ Incorrecte. Torna a repassar la teoria.'}</div>`;
             }
 
             return `
-                <div class="text-zinc-800 dark:text-zinc-100 font-bold text-sm md:text-lg mb-6 text-center">${k.pregunta || 'Pregunta:'}</div>
-                <div class="grid grid-cols-1 gap-3">${buttonsHtml}</div>
+                <div class="text-zinc-800 dark:text-zinc-100 font-bold text-sm md:text-base mb-5 text-center">${k.pregunta || k.question || 'Pregunta:'}</div>
+                <div class="grid grid-cols-1 gap-2.5">${buttonsHtml}</div>
                 ${resultHtml}
             `;
         }
@@ -3965,17 +4785,17 @@
 
             htmlContent = htmlContent.replace(/\[BOTON_FLASHCARDS\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="📖 Teoria General"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'Molt bé, teoria entesa. Ara dóna\\'m les Flashcards i l\\'Esquema visual d\\'aquest tema.')" class="bg-blue-50 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 text-blue-700 dark:text-zinc-200 font-bold py-2.5 px-5 rounded-xl hover:bg-blue-100 dark:hover:bg-zinc-700/80 transition shadow-sm flex items-center gap-2 text-sm">Següent: Esquema i Flashcards ➔</button></div>`;
+                return `<div id="${mId}" class="theory-marker hidden" data-type="📖 Teoria General"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'Molt bé, teoria entesa. Ara dóna\\'m les Flashcards i l\\'Esquema visual d\\'aquest tema.')" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-5 rounded-2xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Esquema i Flashcards</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
             });
 
             htmlContent = htmlContent.replace(/\[BOTON_MNEMOTECNIA\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="🗂️ Esquema i Flashcards"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'Perfecte. Ara explica\\'m un truc de mnemotècnia per recordar això fàcilment.')" class="bg-purple-50 dark:bg-zinc-800 border border-purple-200 dark:border-zinc-700 text-purple-700 dark:text-zinc-200 font-bold py-2.5 px-5 rounded-xl hover:bg-purple-100 dark:hover:bg-zinc-700/80 transition shadow-sm flex items-center gap-2 text-sm">Següent: Truc de Memòria ➔</button></div>`;
+                return `<div id="${mId}" class="theory-marker hidden" data-type="🗂️ Esquema i Flashcards"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'Perfecte. Ara explica\\'m un truc de mnemotècnia per recordar això fàcilment.')" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-5 rounded-2xl transition-all shadow-md shadow-purple-500/20 flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Truc de Memòria</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
             });
 
             htmlContent = htmlContent.replace(/\[BOTON_ENTENDIDO\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="🧠 Mnemotècnia"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestMinigame(this)" class="bg-emerald-50 dark:bg-zinc-800 border border-emerald-200 dark:border-zinc-700 text-emerald-700 dark:text-zinc-200 font-bold py-2.5 px-5 rounded-xl hover:bg-emerald-100 dark:hover:bg-zinc-700/80 transition shadow-sm flex items-center gap-2 text-sm">✅ Posar-me a prova</button></div>`;
+                return `<div id="${mId}" class="theory-marker hidden" data-type="🧠 Mnemotècnia"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestMinigame(this)" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-3 px-5 rounded-2xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Posar-me a prova amb Minijocs</span></button></div>`;
             });
 
             for (let i = 0; i < interactiveBlocks.length; i++) {
@@ -4067,24 +4887,27 @@
 
         function appendMessage(sender, text) {
             const box = document.getElementById('chat-messages');
+            if (!box) return;
             const div = document.createElement('div');
             if (sender === 'user') {
-                div.className = "flex justify-end w-full mb-3";
-                div.innerHTML = `<div class="bg-zinc-900 dark:bg-zinc-800 text-white border border-transparent dark:border-zinc-700 px-4 py-3 rounded-2xl rounded-tr-sm max-w-[90%] text-[13px] shadow-sm break-words">${formatMessage(text)}</div>`;
+                div.className = "flex justify-end w-full mb-4.5";
+                div.innerHTML = `<div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white border border-blue-400/20 px-5 sm:px-6 py-3.5 sm:py-4 rounded-[2rem] rounded-tr-md max-w-[88%] sm:max-w-[78%] text-[13.5px] md:text-sm font-medium shadow-lg shadow-blue-600/15 break-words leading-relaxed">${formatMessage(text)}</div>`;
             } else {
-                div.className = "flex justify-start gap-2 w-full mb-3 chat-msg-ai transition-all duration-500";
+                div.className = "flex justify-start gap-3 sm:gap-3.5 w-full mb-6 chat-msg-ai transition-all duration-300";
                 div.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md mt-1">AI</div>
-                <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-100 px-4 py-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-md w-full overflow-hidden relative group">
-                    <div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                        <button onclick="speakMessageText(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="🔊 Escoltar amb veu" class="p-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg transition">
+                <div class="relative shrink-0 mt-1">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center font-black text-xs shadow-lg shadow-blue-500/25 ring-2 ring-blue-500/20 border border-white/20 hover:scale-105 transition-transform cursor-default">AI</div>
+                </div>
+                <div class="bg-white/95 dark:bg-[#18181b]/95 backdrop-blur-xl border border-zinc-200/90 dark:border-zinc-800/90 text-zinc-900 dark:text-zinc-100 p-4.5 sm:p-6 rounded-[2rem] rounded-tl-md max-w-[92%] sm:max-w-[85%] shadow-md hover:shadow-xl transition-all duration-300 w-full overflow-hidden relative group">
+                    <div class="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md p-1 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 shadow-md">
+                        <button onclick="speakMessageText(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="🔊 Escoltar amb veu" class="p-1.5 text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                         </button>
-                        <button onclick="navigator.clipboard.writeText(this.closest('.chat-msg-ai').querySelector('.prose').innerText); Swal.fire({toast:true, position:'top-end', icon:'success', title:'Copiat!', showConfirmButton:false, timer:1500, background: '#18181b', color: '#f4f4f5'});" title="Copiar text" class="p-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition">
+                        <button onclick="navigator.clipboard.writeText(this.closest('.chat-msg-ai').querySelector('.prose').innerText); Swal.fire({toast:true, position:'top-end', icon:'success', title:'Copiat!', showConfirmButton:false, timer:1500, background: '#18181b', color: '#f4f4f5'});" title="Copiar text" class="p-1.5 text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         </button>
                     </div>
-                    <div class="prose prose-sm dark:prose-invert max-w-none text-[13px] break-words overflow-x-auto">${formatMessage(text)}</div>
+                    <div class="prose prose-sm dark:prose-invert max-w-none text-[13.5px] md:text-sm leading-relaxed break-words overflow-x-auto">${formatMessage(text)}</div>
                 </div>`;
             }
             box.appendChild(div);
@@ -4093,17 +4916,26 @@
 
         function appendLoading(id) {
             const box = document.getElementById('chat-messages');
+            if (!box) return;
             const div = document.createElement('div');
             div.id = id;
-            div.className = "flex justify-start gap-2 w-full mb-3";
-            div.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md mt-1">AI</div><div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-4 py-3.5 rounded-2xl rounded-tl-sm flex gap-1 shadow-md items-center h-10"><div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"></div><div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div><div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div></div>`;
+            div.className = "flex justify-start gap-3 sm:gap-3.5 w-full mb-5";
+            div.innerHTML = `
+            <div class="relative shrink-0 mt-1">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center font-black text-xs shadow-lg shadow-blue-500/25 ring-2 ring-blue-500/20 border border-white/20">AI</div>
+            </div>
+            <div class="bg-white/95 dark:bg-[#18181b]/95 border border-zinc-200/90 dark:border-zinc-800/90 px-4.5 py-3.5 rounded-[1.75rem] rounded-tl-md flex gap-1.5 shadow-md items-center h-11">
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                <div class="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+            </div>`;
             box.appendChild(div);
             box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
         }
 
-        // Si la barra lateral està col·lapsada, clicar a qualsevol part la fa gran (expandir)
+        // Si la barra lateral està col·lapsada, clicar a fons buit la fa gran, però clicar a botons executa l'acció directament
         document.getElementById('sidebar')?.addEventListener('click', (e) => {
-            if (e.target && e.target.closest('#sidebar-toggle-btn')) return;
+            if (e.target && (e.target.closest('button') || e.target.closest('a') || e.target.closest('#sidebar-toggle-btn'))) return;
             if (document.body.classList.contains('sidebar-collapsed')) {
                 toggleSidebar();
             }

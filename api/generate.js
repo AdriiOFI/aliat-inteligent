@@ -363,8 +363,12 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                         effectiveModel = 'gemini-2.5-flash';
                     }
                 } else if (userPreferredProvider === 'groq') {
-                    if (/qwen|gpt-oss|llama-3-8b|llama3/i.test(effectiveModel) && !/llama-3\.[13]/i.test(effectiveModel)) {
-                        effectiveModel = 'llama-3.3-70b-versatile';
+                    if (effectiveModel.includes('gpt-oss-20b')) {
+                        effectiveModel = 'openai/gpt-oss-20b';
+                    } else if (effectiveModel.includes('gpt-oss-120b')) {
+                        effectiveModel = 'openai/gpt-oss-120b';
+                    } else if (/qwen|llama3/i.test(effectiveModel) && !/llama-3\.[13]/i.test(effectiveModel)) {
+                        effectiveModel = 'openai/gpt-oss-120b';
                     }
                 } else if (userPreferredProvider === 'openai') {
                     if (/gpt-5|chatgpt/i.test(effectiveModel)) {
@@ -374,8 +378,12 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             }
 
             if (userPreferredProvider === 'groq' && groqApiKey) {
-                runnerList.push({ type: 'groq', key: groqApiKey, model: effectiveModel || 'llama-3.3-70b-versatile' });
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.1-8b-instant' });
+                const primaryGroq = effectiveModel || 'openai/gpt-oss-120b';
+                runnerList.push({ type: 'groq', key: groqApiKey, model: primaryGroq });
+                if (primaryGroq !== 'openai/gpt-oss-20b') runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
+                if (primaryGroq !== 'openai/gpt-oss-120b') runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
+                if (primaryGroq !== 'llama-3.3-70b-versatile') runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.3-70b-versatile' });
+                if (primaryGroq !== 'llama-3.1-8b-instant') runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.1-8b-instant' });
             } else if (userPreferredProvider === 'openrouter' && openRouterApiKey) {
                 runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: effectiveModel || 'meta-llama/llama-3.3-70b-instruct' });
             } else if (userPreferredProvider === 'openai' && openAiApiKey) {
@@ -391,6 +399,8 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
             // Xarxa de seguretat: Fallbacks fiables amb models oficials vigents
             if (groqApiKey && userPreferredProvider !== 'groq') {
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
                 runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.3-70b-versatile' });
                 runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.1-8b-instant' });
             }
@@ -583,15 +593,15 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 modeInstruction = "\nSIMULADOR DE TRIBUNAL D'EXAMEN ACTIU: Actua com un tribunal d'examen universitari estricte però just. Fes preguntes incisives directes, avalua les respostes de l'alumne i demana rigor conceptual.";
             }
 
-            const systemPromptChat = "Ets Aliat Intel·ligent, un tutor d'estudi personalitzat i adaptatiu d'alt nivell acadèmic.\n\n" + safetyRules + modeInstruction + "\n\n" +
-            "REGLA D'OR I PRIORITAT ABSOLUTA (FIDELITAT AL TEMARI):\n" +
+            const systemPromptChat = "Ets Aliat Intel·ligent, un tutor d'estudi personalitzat, rigorós i adaptatiu d'alt nivell acadèmic.\n\n" + safetyRules + modeInstruction + "\n\n" +
+            "REGLA D'OR I PRIORITAT ABSOLUTA (FIDELITAT AL TEMARI I CONTINUÏTAT TOTAL):\n" +
             "1. L'alumne està estudiant EXCLUSIVAMENT el següent temari / document:\n" +
-            (pdfText && pdfText.trim().length > 0 ? "'''\n" + pdfText.substring(0, 20000) + "\n'''" : "Temari definit per l'alumne a la conversa.") + "\n\n" +
+            (pdfText && pdfText.trim().length > 0 ? "'''\n" + pdfText.substring(0, 20000) + "\n'''" : "Temari acadèmic establert i tractat al llarg de la conversa.") + "\n\n" +
             "2. TOTES les teves explicacions, teories, preguntes, flashcards, càlculs i analogies han de girar 100% al voltant d'aquest temari. " +
-            "NO parlis mai de matèries alienes (per exemple, si el temari és de funcions matemàtiques, NO parlis de física, ni de química, ni d'altres assignatures no relacionades). " +
-            "3. MANTINGUES SEMPRE EL FIL DE L'HISTORIAL: Llegeix amb atenció tots els missatges anteriors. Si l'alumne et fa preguntes sobre el que esteu parlant (com les funcions, exercicis o dubtes), respon directament seguint la conversa sense reiniciar de zero.\n" +
-            "4. Si la memòria de l'alumne conté referències a matèries antigues que no tenen res a veure amb aquests apunts, ignora-les completament i centra't en els apunts actuals.\n\n" +
-            "MEMÒRIA ADAPTATIVA DE L'ALUMNE:\n" + (studentContext || "Sense historial previ.") + "\n\n" +
+            "NO canviïs mai de matèria ni barregis assignatures (per exemple: si la conversa o temari tracta de funcions matemàtiques, NO parlis de física, ni de química, ni de pel·lícules, ni de protocols de xarxa). " +
+            "3. CONTINUÏTAT DEL FIL DE CONVERSA: Llegeix amb atenció TOT l'historial anterior (tant el que diu l'alumne com les explicacions prèvies de la IA). Respon directament seguint el fil lògic, aprofundint o resolent dubtes sense reiniciar la classe de zero.\n" +
+            "4. FORMATS ACADÈMICS I ESQUEMES: Utilitza explicacions estructurades amb títols en negreta, llistes clares, exemples pràctics i blocs ben delimitats.\n\n" +
+            "MEMÒRIA ADAPTATIVA DE L'ALUMNE (Punts febles i forts de la sessió actual):\n" + (studentContext || "Sense historial previ.") + "\n\n" +
             "MÈTODE D'ENSENYAMENT PER FASES (quan s'explica un tema nou):\n" +
             "▶ FASE 1 (Teoria): Dóna NOMÉS la teoria de la lliçó de forma clara i acadèmica. Acaba amb [BOTON_FLASHCARDS].\n" +
             "▶ FASE 2 (Flashcards i Esquema):\n" +
@@ -639,7 +649,8 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 } catch(e) {}
             }
 
-            const systemPromptFree = "Ets Aliat Intel·ligent, el XatBot i assistent personal.\n" + safetyRules + "\n\nRespon amagablement en català." + searchContext;
+            const systemPromptFree = "Ets Aliat Intel·ligent, el XatBot acadèmic i assistent personal.\n" + safetyRules + "\n\n" +
+                "CONTINUÏTAT TOTAL DE LA CONVERSA: Llegeix tot l'historial de missatges anteriors amb atenció. Mantingues sempre el fil i el context del tema que l'usuari està tractant (per exemple, si s'està parlant de funcions, de xarxes o d'un tema concret, continua estrictament sobre aquest tema sense canviar arbitràriament de matèria). Respon sempre amb excel·lència en català, estructurant bé els conceptes, fórmules i esquemes." + searchContext;
             
             const replyText = await executeAI({
                 systemPrompt: systemPromptFree,

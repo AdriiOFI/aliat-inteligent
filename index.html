@@ -34,7 +34,7 @@
         .interactive-btn { transition: all 0.15s ease-in-out; }
         .interactive-btn:active { transform: scale(0.97); }
         .day-checkbox:checked + div { background-color: #eff6ff; border-color: #3b82f6; color: #2563eb; font-weight: bold; }
-        .dark .day-checkbox:checked + div { background-color: #27272a; border-color: #52525b; color: #f4f4f5; font-weight: bold; }
+        .dark .day-checkbox:checked + div { background-color: rgba(37, 99, 235, 0.2); border-color: #3b82f6; color: #60a5fa; font-weight: bold; box-shadow: 0 0 12px rgba(59, 130, 246, 0.25); }
         
         /* CSS PEL MENÚ LATERAL COL·LAPSABLE */
         body.sidebar-collapsed #sidebar { width: 4.5rem; }
@@ -191,7 +191,7 @@
                 <div class="flex items-center gap-1">
                     <button onclick="openSettings()" class="p-2 hover:bg-zinc-800 rounded-xl transition text-zinc-400 hover:text-white group relative shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        <span class="sidebar-tooltip absolute left-[3rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Configuració</span>
+                        <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Configuració</span>
                     </button>
                 </div>
             </div>
@@ -336,8 +336,13 @@
                             </div>
                         </div>
                         <div id="quiz-container" class="space-y-4 md:space-y-6 mb-6 md:mb-8"></div>
-                        <button onclick="evaluateQuiz()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl transition-all hover:shadow-lg hover:shadow-blue-500/25 text-base md:text-lg mt-2">
+                        <button onclick="evaluateQuiz()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 md:py-4 rounded-2xl transition-all hover:shadow-lg hover:shadow-blue-500/25 text-sm md:text-base mt-2 flex items-center justify-center gap-2 cursor-pointer">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                             Avaluar i Començar la Lliçó
+                        </button>
+                        <button onclick="startChatPhase(3, 'Nivell Estàndard')" class="w-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold py-3 rounded-2xl transition text-xs md:text-sm mt-2.5 flex items-center justify-center gap-2 cursor-pointer border border-zinc-200 dark:border-zinc-700">
+                            Saltar el Test i Començar Directament la Classe
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
                     </div>
                 </div>
@@ -357,20 +362,20 @@
                     </div>
                     
                     <div class="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
-                        <button id="calendar-header-btn" onclick="showCalendarModal()" title="Pla d'Estudi" class="text-xs md:text-sm bg-blue-100 dark:bg-blue-950/70 border border-blue-300 dark:border-blue-800 text-blue-950 dark:text-blue-200 font-bold p-2 sm:px-3 sm:py-2 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-700 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <button id="calendar-header-btn" onclick="showCalendarModal()" title="Pla d'Estudi" class="text-xs md:text-sm bg-blue-50 hover:bg-blue-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 border border-blue-200 dark:border-zinc-700 text-blue-700 dark:text-blue-300 font-bold p-2 sm:px-3 sm:py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             <span class="hidden sm:inline">Pla d'Estudi</span>
                         </button>
-                        <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold p-2 sm:px-3 sm:py-2 rounded-xl hover:opacity-90 transition flex items-center gap-1.5 whitespace-nowrap shadow-md">
+                        <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs md:text-sm bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold p-2 sm:px-3 sm:py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-md">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-amber-300 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                             <span class="hidden sm:inline">Eines</span>
                         </button>
-                        <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria" class="text-xs md:text-sm bg-purple-100 dark:bg-purple-950/70 border border-purple-300 dark:border-purple-800 text-purple-950 dark:text-purple-200 font-bold p-2 sm:px-3 sm:py-2 rounded-xl hover:bg-purple-200 dark:hover:bg-purple-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-purple-700 dark:text-purple-300 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
+                        <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria" class="text-xs md:text-sm bg-purple-50 hover:bg-purple-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 border border-purple-200 dark:border-zinc-700 text-purple-700 dark:text-purple-300 font-bold p-2 sm:px-3 sm:py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-purple-600 dark:text-purple-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
                             <span class="hidden sm:inline">Memòria</span>
                         </button>
-                        <button id="history-header-btn" onclick="showHistoryModal()" title="Resultats" class="text-xs md:text-sm bg-indigo-100 dark:bg-indigo-950/70 border border-indigo-300 dark:border-indigo-800 text-indigo-950 dark:text-indigo-200 font-bold p-2 sm:px-3 sm:py-2 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/80 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-700 dark:text-indigo-300 shrink-0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        <button id="history-header-btn" onclick="showHistoryModal()" title="Resultats" class="text-xs md:text-sm bg-indigo-50 hover:bg-indigo-100 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 border border-indigo-200 dark:border-zinc-700 text-indigo-700 dark:text-indigo-300 font-bold p-2 sm:px-3 sm:py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-600 dark:text-indigo-400 shrink-0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                             <span class="hidden sm:inline">Resultats</span>
                         </button>
                     </div>
@@ -481,7 +486,7 @@
 
                     <div>
                         <label class="block text-[11px] font-bold text-zinc-800 dark:text-zinc-200 mb-1">Proveïdor Preferit</label>
-                        <select id="setting-ai-provider" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 font-bold outline-none text-xs">
+                        <select id="setting-ai-provider" onchange="updateModelSuggestions()" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 font-bold outline-none text-xs cursor-pointer hover:border-blue-400 transition">
                             <option value="gemini">Google Gemini (Per defecte + fallback resilient)</option>
                             <option value="groq">Groq (Ultra-ràpid - Recomanat per saturació)</option>
                             <option value="openrouter">OpenRouter (Centenars de models)</option>
@@ -502,8 +507,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-bold text-zinc-800 dark:text-zinc-200 mb-1">Model Específic (Opcional)</label>
-                        <input type="text" id="setting-ai-model" placeholder="Ex: llama-3.3-70b-versatile, gpt-4o-mini..." class="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 outline-none text-xs font-medium">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold text-zinc-800 dark:text-zinc-200">Model Específic (Opcional)</label>
+                            <span id="setting-model-hint" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">Recomanats:</span>
+                        </div>
+                        <input type="text" id="setting-ai-model" list="model-suggestions" placeholder="Ex: gemini-2.5-flash..." class="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 outline-none text-xs font-mono">
+                        <datalist id="model-suggestions"></datalist>
+                        <div id="model-quick-pills" class="flex flex-wrap gap-1.5 mt-2"></div>
                     </div>
                 </div>
 
@@ -754,6 +764,70 @@
             }
         }
 
+        const RECOMMENDED_AI_MODELS = {
+            'gemini': [
+                { id: 'gemini-2.5-flash', label: '2.5 Flash (Recomanat)', badge: 'Ràpid & Eficient' },
+                { id: 'gemini-1.5-flash', label: '1.5 Flash', badge: 'Estable' },
+                { id: 'gemini-2.5-pro', label: '2.5 Pro', badge: 'Màxim Raonament' }
+            ],
+            'groq': [
+                { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B (Recomanat)', badge: 'Ultra-ràpid' },
+                { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B', badge: 'Instantani' }
+            ],
+            'openai': [
+                { id: 'gpt-4o-mini', label: 'GPT-4o Mini (Recomanat)', badge: 'Equilibrat' },
+                { id: 'gpt-4o', label: 'GPT-4o', badge: 'Capdavanter' }
+            ],
+            'openrouter': [
+                { id: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B', badge: 'Obert' },
+                { id: 'deepseek/deepseek-chat', label: 'DeepSeek Chat', badge: 'Economia' }
+            ],
+            'deepseek': [
+                { id: 'deepseek-chat', label: 'DeepSeek-V3', badge: 'General' },
+                { id: 'deepseek-reasoner', label: 'DeepSeek-R1', badge: 'Raonament' }
+            ],
+            'mistral': [
+                { id: 'mistral-small-latest', label: 'Mistral Small', badge: 'Ràpid' },
+                { id: 'open-mistral-nemo', label: 'Mistral Nemo', badge: 'Compacte' }
+            ]
+        };
+
+        function updateModelSuggestions() {
+            const provSelect = document.getElementById('setting-ai-provider');
+            const provider = provSelect ? provSelect.value : 'gemini';
+            const datalist = document.getElementById('model-suggestions');
+            const pillsContainer = document.getElementById('model-quick-pills');
+            const modelInput = document.getElementById('setting-ai-model');
+            const models = RECOMMENDED_AI_MODELS[provider] || RECOMMENDED_AI_MODELS['gemini'];
+
+            if (datalist) {
+                datalist.innerHTML = models.map(m => `<option value="${m.id}">${m.label}</option>`).join('');
+            }
+
+            if (pillsContainer) {
+                pillsContainer.innerHTML = models.map(m => `
+                    <button type="button" onclick="selectQuickModel('${m.id}')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-zinc-100 hover:bg-blue-50 dark:bg-zinc-850 dark:hover:bg-blue-950/60 text-zinc-700 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 border border-zinc-200 dark:border-zinc-700 transition flex items-center gap-1 cursor-pointer">
+                        <span>${m.id}</span>
+                        <span class="text-[9px] opacity-70 font-normal">(${m.badge})</span>
+                    </button>
+                `).join('');
+            }
+
+            if (modelInput && !modelInput.value) {
+                modelInput.placeholder = `Per defecte: ${models[0]?.id || ''}`;
+            }
+        }
+        window.updateModelSuggestions = updateModelSuggestions;
+
+        function selectQuickModel(modelId) {
+            const modelInput = document.getElementById('setting-ai-model');
+            if (modelInput) {
+                modelInput.value = modelId;
+                showToast(`Model seleccionat: ${modelId}`, 'info');
+            }
+        }
+        window.selectQuickModel = selectQuickModel;
+
         function openSettings() {
             const modal = document.getElementById('settings-modal');
             const box = document.getElementById('settings-modal-box');
@@ -767,6 +841,8 @@
             
             const modelInput = document.getElementById('setting-ai-model');
             if (modelInput) modelInput.value = localStorage.getItem('aliat_ai_model') || '';
+
+            updateModelSuggestions();
 
             modal.classList.remove('hidden');
             setTimeout(() => { modal.classList.remove('opacity-0'); box.classList.remove('scale-95'); }, 10);
@@ -1181,93 +1257,179 @@
             }
         };
 
-        // --- HUB D'EINES BASADES EN EL XAT I HISTORIAL ---
-        function getCurrentChatTopic() {
-            if (chatHistory && chatHistory.length > 0) {
-                for (let i = chatHistory.length - 1; i >= 0; i--) {
-                    const c = typeof chatHistory[i].content === 'string' ? chatHistory[i].content : '';
-                    if (chatHistory[i].role === 'user' && c && c.length > 3) {
-                        const clean = c.replace(/^(Hola|Crea|Genera|Explica|Vull|Fes|Quin|Quina|Quins|Quines|Demano|Comencem|Posa'm a prova)\s+/i, '').trim();
-                        if (clean.length > 3) return clean.substring(0, 45);
+        // --- HUB D'EINES I CONTEXT PEDAGÒGIC COMPLET DEL XAT ---
+        function getFullChatContext() {
+            if (!Array.isArray(chatHistory) || chatHistory.length === 0) {
+                if (finalStudyText && finalStudyText.trim()) {
+                    return "APUNTS DE LA MATÈRIA:\n" + finalStudyText.trim().substring(0, 10000);
+                }
+                return "";
+            }
+
+            const cleanEntries = [];
+            const automatedPromptPatterns = [
+                /Comencem la primera sessió/i,
+                /Comencem la sessió/i,
+                /Hola tutor!? Estic preparat/i,
+                /Comença explicant-me el primer tema/i,
+                /Crea una baralla Anki de/i,
+                /Crea un esquema o diagrama visual sobre/i,
+                /Prepara un simulacre d'examen/i,
+                /Extreu un formulari i resum/i
+            ];
+
+            for (const item of chatHistory) {
+                if (!item || !item.content) continue;
+                let text = typeof item.content === 'string' ? item.content : String(item.content);
+                
+                // Netejar marcadors de botons interns de la interfície
+                text = text.replace(/\[BOTON_[A-Z_]+\]/g, '').trim();
+                if (!text) continue;
+
+                if (item.role === 'user') {
+                    const isAutomated = automatedPromptPatterns.some(rx => rx.test(text));
+                    if (!isAutomated) {
+                        cleanEntries.push("Pregunta de l'Alumne: " + text);
+                    }
+                } else if (item.role === 'assistant' || item.role === 'model') {
+                    // Mantenir la teoria, definicions, fórmules i explicacions
+                    let cleanedAssistant = text.replace(/```html[\s\S]*?```/gi, '[Diagrama / Esquema Visual generat]');
+                    cleanedAssistant = cleanedAssistant.replace(/```flashcards[\s\S]*?```/gi, '[Targetes de Repàs generades]');
+                    cleanedAssistant = cleanedAssistant.replace(/```kahoot[\s\S]*?```/gi, '[Test Kahoot generat]');
+                    cleanedAssistant = cleanedAssistant.trim();
+                    if (cleanedAssistant.length > 0) {
+                        cleanEntries.push("Teoria i Explicació del Tutor (IA):\n" + cleanedAssistant);
                     }
                 }
             }
+
+            let result = cleanEntries.join("\n\n---\n\n");
+            
+            // Si l'historial del xat és curt, afegim els apunts originals com a base acadèmica
+            if (result.length < 500 && finalStudyText && finalStudyText.trim()) {
+                result += (result ? "\n\n---\nAPUNTS DEL TEMARI ORIGINAL:\n" : "APUNTS DEL TEMARI ORIGINAL:\n") + finalStudyText.trim().substring(0, 8000);
+            }
+
+            return result.substring(0, 12000);
+        }
+        window.getFullChatContext = getFullChatContext;
+
+        function getCurrentChatTopic() {
+            // 1. Si tenim un calendari d'estudi actiu, agafem el tema concret de la sessió
+            if (Array.isArray(generatedCalendarArray) && generatedCalendarArray.length > 0) {
+                const calItem = generatedCalendarArray.find(c => c && c.tema && !c.tema.toLowerCase().includes('sessió 1: repàs')) || generatedCalendarArray[0];
+                if (calItem && calItem.tema && calItem.tema.trim().length > 2) {
+                    return calItem.tema.trim().replace(/^Sessió \d+:\s*/i, '').substring(0, 50);
+                }
+            }
+
+            // 2. Revisem les explicacions de la IA a l'historial (on sol posar el títol del tema o concepte)
+            if (Array.isArray(chatHistory) && chatHistory.length > 0) {
+                for (let i = 0; i < chatHistory.length; i++) {
+                    const msg = chatHistory[i];
+                    if ((msg.role === 'assistant' || msg.role === 'model') && typeof msg.content === 'string') {
+                        const titleMatch = msg.content.match(/(?:###|\*\*|Tema:|Concepte:)\s*([^\n\*\#]{4,50})/i);
+                        if (titleMatch && titleMatch[1]) {
+                            const candidate = titleMatch[1].trim();
+                            if (!/comencem|primera sessió|hola/i.test(candidate)) {
+                                return candidate.substring(0, 50);
+                            }
+                        }
+                    }
+                }
+
+                // 3. Revisem missatges genuïns de l'usuari (sense missatges automàtics)
+                for (let i = chatHistory.length - 1; i >= 0; i--) {
+                    const c = typeof chatHistory[i].content === 'string' ? chatHistory[i].content : '';
+                    if (chatHistory[i].role === 'user' && c && c.length > 3) {
+                        if (!/comencem|primera sessió|estic preparat|crea una baralla|diagrama|simulacre/i.test(c)) {
+                            const clean = c.replace(/^(Hola|Crea|Genera|Explica'm|Explica|Vull saber|Fes|Quin|Quina|Quins|Quines|Demano|Tinc un dubte sobre|Quina és)\s+/i, '').trim();
+                            if (clean.length > 3) return clean.substring(0, 45);
+                        }
+                    }
+                }
+            }
+
+            // 4. Sessió activa guardada si té títol vàlid
             const activeSession = allSessions.find(s => s.id === currentSessionId);
-            if (activeSession && activeSession.title && activeSession.title !== 'Nova Conversa' && activeSession.title !== 'Classe Activa') {
+            if (activeSession && activeSession.title && !['Nova Conversa', 'Classe Activa', 'XatBot'].includes(activeSession.title) && !activeSession.title.toLowerCase().includes('primera sessió')) {
                 return activeSession.title.substring(0, 45);
             }
-            if (generatedCalendarArray.length > 0 && generatedCalendarArray[0].tema) {
-                return generatedCalendarArray[0].tema.substring(0, 45);
-            }
+
+            // 5. Notes del document / PDF
             if (finalStudyText && finalStudyText.trim().length > 0) {
-                return finalStudyText.trim().split('\n')[0].substring(0, 40);
+                const firstLine = finalStudyText.trim().split('\n')[0].replace(/^[\#\*\-\s]+/, '').trim();
+                if (firstLine.length > 3) return firstLine.substring(0, 45);
             }
-            return "Temari de la conversa actual";
+
+            return "Temari d'Estudi";
         }
+        window.getCurrentChatTopic = getCurrentChatTopic;
 
         window.showToolsModal = function() {
             const currentTopic = getCurrentChatTopic();
             let htmlContent = `
             <div class="mt-2 text-left space-y-3">
-                <div class="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 rounded-xl flex items-center justify-between text-xs">
-                    <span class="font-bold text-blue-900 dark:text-blue-200 truncate flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> Context del xat: <span class="underline">${currentTopic}</span>
-                    </span>
-                    <span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold uppercase shrink-0">Automàtic</span>
+                <div class="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 rounded-xl flex items-center justify-between text-xs shadow-sm">
+                    <div class="font-bold text-blue-950 dark:text-blue-100 truncate flex items-center gap-1.5 min-w-0 pr-2">
+                        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0"></span>
+                        <span class="truncate">Context del xat: <b class="underline decoration-blue-400">${currentTopic}</b></span>
+                    </div>
+                    <span class="text-[10px] text-blue-700 dark:text-blue-300 font-bold uppercase shrink-0 bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">Amb Teoria de la IA</span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <!-- 1. DIAGRAMA VISUAL -->
-                    <button onclick="Swal.close(); triggerToolFromChat('diagram');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-500 transition group flex items-start gap-3 text-left">
-                        <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold shrink-0">
+                    <button onclick="Swal.close(); triggerToolFromChat('diagram');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-400 hover:shadow-md hover:bg-white dark:hover:bg-zinc-900 transition-all group flex items-start gap-3 text-left cursor-pointer">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold shrink-0 shadow-sm">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-indigo-600 transition">Esquema / Diagrama Visual</div>
-                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Genera un diagrama interactiu del que hem parlat.</div>
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">Esquema / Diagrama Visual</div>
+                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Genera un diagrama vectorial interactiu del que hem tractat.</div>
                         </div>
                     </button>
 
                     <!-- 2. FLASHCARDS ANKI -->
-                    <button onclick="Swal.close(); triggerToolFromChat('anki');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-purple-500 dark:hover:border-purple-500 transition group flex items-start gap-3 text-left">
-                        <div class="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold shrink-0">
+                    <button onclick="Swal.close(); triggerToolFromChat('anki');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-purple-500 dark:hover:border-purple-400 hover:shadow-md hover:bg-white dark:hover:bg-zinc-900 transition-all group flex items-start gap-3 text-left cursor-pointer">
+                        <div class="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold shrink-0 shadow-sm">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h10"/><path d="M7 11h6"/></svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-purple-600 transition">Baralla Anki (Flashcards)</div>
-                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Targetes 3D d'estudi amb els conceptes actuals.</div>
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-purple-600 dark:group-hover:text-purple-400 transition">Baralla Anki (Flashcards)</div>
+                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Targetes 3D basades en les explicacions del xat.</div>
                         </div>
                     </button>
 
                     <!-- 3. SIMULADOR TEST / EXAMEN -->
-                    <button onclick="Swal.close(); triggerToolFromChat('exam');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-emerald-500 dark:hover:border-emerald-500 transition group flex items-start gap-3 text-left">
-                        <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold shrink-0">
+                    <button onclick="Swal.close(); triggerToolFromChat('exam');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-md hover:bg-white dark:hover:bg-zinc-900 transition-all group flex items-start gap-3 text-left cursor-pointer">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold shrink-0 shadow-sm">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-emerald-600 transition">Test d'Examen Kahoot</div>
-                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">5 preguntes puntuades amb correcció del tema.</div>
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">Test d'Examen Kahoot</div>
+                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">5 preguntes puntuades sobre els conceptes explicats.</div>
                         </div>
                     </button>
 
                     <!-- 4. CHULETA & FORMULARI -->
-                    <button onclick="Swal.close(); triggerToolFromChat('cheatsheet');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-amber-500 dark:hover:border-amber-500 transition group flex items-start gap-3 text-left">
-                        <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold shrink-0">
+                    <button onclick="Swal.close(); triggerToolFromChat('cheatsheet');" class="p-3.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-md hover:bg-white dark:hover:bg-zinc-900 transition-all group flex items-start gap-3 text-left cursor-pointer">
+                        <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 flex items-center justify-center font-bold shrink-0 shadow-sm">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-amber-600 transition">Formulari & Resum Clau</div>
-                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Chuleta resumida de fórmules i conceptes clau.</div>
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">Formulari & Resum Clau</div>
+                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Fórmules, conceptes i definicions de la lliçó.</div>
                         </div>
                     </button>
                 </div>
 
                 <!-- EINES AUXILIARS -->
                 <div class="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex gap-2">
-                    <button onclick="Swal.close(); openVisionModal();" class="flex-1 py-2.5 px-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-center gap-1.5 transition">
+                    <button onclick="Swal.close(); openVisionModal();" class="flex-1 py-2.5 px-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-750 rounded-xl text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-center gap-1.5 transition cursor-pointer">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Lector de Fotos
                     </button>
-                    <button onclick="Swal.close(); openPomodoroModal();" class="flex-1 py-2.5 px-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-center gap-1.5 transition">
+                    <button onclick="Swal.close(); openPomodoroModal();" class="flex-1 py-2.5 px-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-750 rounded-xl text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-center gap-1.5 transition cursor-pointer">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pomodoro & Sons
                     </button>
                 </div>
@@ -1302,24 +1464,30 @@
             if (chatForm) chatForm.classList.remove('hidden');
 
             const topic = getCurrentChatTopic();
+            const fullContext = getFullChatContext();
             let userPromptText = '';
             let apiPayload = null;
 
             if (toolType === 'diagram') {
                 userPromptText = 'Crea un esquema o diagrama visual sobre: ' + topic;
-                apiPayload = { action: 'generate_diagram', topic: topic, style: 'diagrama_cientific' };
+                apiPayload = { action: 'generate_diagram', topic: topic, style: 'diagrama_cientific', context: fullContext };
             } else if (toolType === 'anki') {
                 userPromptText = 'Crea una baralla de Flashcards 3D (Anki) sobre: ' + topic;
-                apiPayload = { action: 'generate_anki_deck', topic: topic };
+                apiPayload = { action: 'generate_anki_deck', topic: topic, context: fullContext };
             } else if (toolType === 'exam') {
                 userPromptText = 'Prepara un simulacre d\'examen test sobre: ' + topic;
                 apiPayload = {
                     action: 'chat',
-                    chatHistory: [{ role: 'user', content: `Crea un Test d'Examen Kahoot de 5 preguntes realistes amb distractors plausibles sobre el tema: ${topic}. Retorna NOMÉS el bloc kahoot.` }]
+                    chatHistory: [
+                        ...chatHistory.filter(m => m && (m.role === 'user' || m.role === 'assistant')),
+                        { role: 'user', content: `Basant-te estrictament en tota la teoria i explicacions que hem tractat a la classe sobre "${topic}", prepara un Test d'Examen Kahoot de 5 preguntes realistes amb 4 opcions i distractors plausibles. Retorna NOMÉS el bloc kahoot.` }
+                    ],
+                    pdfText: finalStudyText,
+                    studentContext: studentContextStr
                 };
             } else if (toolType === 'cheatsheet') {
                 userPromptText = 'Extreu un formulari i resum essencial sobre: ' + topic;
-                apiPayload = { action: 'generate_cheatsheet', sourceText: topic, formatType: 'formulas' };
+                apiPayload = { action: 'generate_cheatsheet', sourceText: fullContext || topic, topic: topic, formatType: 'formulas' };
             }
 
             if (!apiPayload) return;
@@ -1615,7 +1783,7 @@
             appendLoading(loadingId);
 
             try {
-                const res = await callGenerateApi({ action: 'generate_diagram', topic: topic, style: style });
+                const res = await callGenerateApi({ action: 'generate_diagram', topic: topic, style: style, context: getFullChatContext() });
                 document.getElementById(loadingId)?.remove();
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
@@ -1672,7 +1840,7 @@
             appendLoading(loadingId);
 
             try {
-                const res = await callGenerateApi({ action: 'generate_anki_deck', topic: topic });
+                const res = await callGenerateApi({ action: 'generate_anki_deck', topic: topic, context: getFullChatContext() });
                 document.getElementById(loadingId)?.remove();
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
@@ -1731,7 +1899,12 @@
             try {
                 const res = await callGenerateApi({
                     action: 'chat',
-                    chatHistory: [{ role: 'user', content: `Crea un Test d'Examen Kahoot de 5 preguntes realistes amb distractors plausibles sobre el tema: ${topic}. Retorna NOMÉS el bloc kahoot.` }]
+                    chatHistory: [
+                        ...chatHistory.filter(m => m && (m.role === 'user' || m.role === 'assistant')),
+                        { role: 'user', content: `Crea un Test d'Examen Kahoot de 5 preguntes realistes amb distractors plausibles sobre el tema: ${topic}. Retorna NOMÉS el bloc kahoot.` }
+                    ],
+                    pdfText: finalStudyText,
+                    studentContext: studentContextStr
                 });
                 document.getElementById(loadingId)?.remove();
                 const data = await res.json();
@@ -1778,7 +1951,7 @@
         };
 
         window.processGenerateCheatsheet = async function() {
-            const sourceText = document.getElementById('cheatsheet-text')?.value?.trim() || getCurrentChatTopic();
+            const sourceText = document.getElementById('cheatsheet-text')?.value?.trim() || getFullChatContext() || getCurrentChatTopic();
             const formatType = document.getElementById('cheatsheet-format')?.value || 'formulas';
 
             Swal.close();
@@ -1797,7 +1970,7 @@
             appendLoading(loadingId);
 
             try {
-                const res = await callGenerateApi({ action: 'generate_cheatsheet', sourceText: sourceText, formatType: formatType });
+                const res = await callGenerateApi({ action: 'generate_cheatsheet', sourceText: sourceText, topic: getCurrentChatTopic(), formatType: formatType });
                 document.getElementById(loadingId)?.remove();
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
@@ -2570,11 +2743,16 @@
                 }
                 
                 renderCalendar();
-                renderQuiz();
-                document.getElementById('setup-view').classList.add('hidden');
-                document.getElementById('quiz-view').classList.remove('hidden');
-                document.getElementById('quiz-view').classList.add('flex');
-                Swal.close();
+                if (!currentQuizData || currentQuizData.length === 0) {
+                    Swal.close();
+                    startChatPhase(5, "Nivell General");
+                } else {
+                    renderQuiz();
+                    document.getElementById('setup-view').classList.add('hidden');
+                    document.getElementById('quiz-view').classList.remove('hidden');
+                    document.getElementById('quiz-view').classList.add('flex');
+                    Swal.close();
+                }
 
                 if (data.warning || data.is_fallback) {
                     showToast(data.warning || "Pla generat correctament!", "info");

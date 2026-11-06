@@ -355,31 +355,52 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
         async function executeAI({ systemPrompt, contents, jsonMode = false }) {
             const runnerList = [];
 
-            if (userPreferredProvider === 'groq' && groqApiKey) {
-                runnerList.push({ type: 'groq', key: groqApiKey, model: userCustomModel || 'qwen/qwen3.8-27b' });
-            } else if (userPreferredProvider === 'openrouter' && openRouterApiKey) {
-                runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: userCustomModel || 'meta-llama/llama-3.3-70b-instruct' });
-            } else if (userPreferredProvider === 'openai' && openAiApiKey) {
-                runnerList.push({ type: 'openai', key: openAiApiKey, model: userCustomModel || 'gpt-4o-mini' });
-            } else if (userPreferredProvider === 'deepseek' && deepseekApiKey) {
-                runnerList.push({ type: 'deepseek', key: deepseekApiKey, model: userCustomModel || 'deepseek-chat' });
-            } else if (userPreferredProvider === 'mistral' && mistralApiKey) {
-                runnerList.push({ type: 'mistral', key: mistralApiKey, model: userCustomModel || 'mistral-small-latest' });
-            } else if (userPreferredProvider === 'gemini' && geminiApiKey) {
-                runnerList.push({ type: 'gemini', key: geminiApiKey, model: userCustomModel || 'gemini-3.8-flash' });
+            // Sanititzar el model del client per si passa noms invàlids o no suportats
+            let effectiveModel = (userCustomModel || '').trim();
+            if (effectiveModel) {
+                if (userPreferredProvider === 'gemini') {
+                    if (/gemini-3|gemini-4|gemini-flash-latest|gemini-pro-latest/i.test(effectiveModel)) {
+                        effectiveModel = 'gemini-2.5-flash';
+                    }
+                } else if (userPreferredProvider === 'groq') {
+                    if (/qwen|gpt-oss|llama-3-8b|llama3/i.test(effectiveModel) && !/llama-3\.[13]/i.test(effectiveModel)) {
+                        effectiveModel = 'llama-3.3-70b-versatile';
+                    }
+                } else if (userPreferredProvider === 'openai') {
+                    if (/gpt-5|chatgpt/i.test(effectiveModel)) {
+                        effectiveModel = 'gpt-4o-mini';
+                    }
+                }
             }
 
+            if (userPreferredProvider === 'groq' && groqApiKey) {
+                runnerList.push({ type: 'groq', key: groqApiKey, model: effectiveModel || 'llama-3.3-70b-versatile' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.1-8b-instant' });
+            } else if (userPreferredProvider === 'openrouter' && openRouterApiKey) {
+                runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: effectiveModel || 'meta-llama/llama-3.3-70b-instruct' });
+            } else if (userPreferredProvider === 'openai' && openAiApiKey) {
+                runnerList.push({ type: 'openai', key: openAiApiKey, model: effectiveModel || 'gpt-4o-mini' });
+            } else if (userPreferredProvider === 'deepseek' && deepseekApiKey) {
+                runnerList.push({ type: 'deepseek', key: deepseekApiKey, model: effectiveModel || 'deepseek-chat' });
+            } else if (userPreferredProvider === 'mistral' && mistralApiKey) {
+                runnerList.push({ type: 'mistral', key: mistralApiKey, model: effectiveModel || 'mistral-small-latest' });
+            } else if (userPreferredProvider === 'gemini' && geminiApiKey) {
+                runnerList.push({ type: 'gemini', key: geminiApiKey, model: effectiveModel || 'gemini-2.5-flash' });
+                runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-1.5-flash' });
+            }
+
+            // Xarxa de seguretat: Fallbacks fiables amb models oficials vigents
             if (groqApiKey && userPreferredProvider !== 'groq') {
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'qwen/qwen3.8-27b' });
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.3-70b-versatile' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.1-8b-instant' });
             }
 
             if (geminiApiKey && userPreferredProvider !== 'gemini') {
                 const geminiModels = [
-                    process.env.GEMINI_MODEL || "gemini-3.8-flash",
-                    "gemini-flash-latest",
-                    "gemini-3.1-flash-lite"
+                    process.env.GEMINI_MODEL || "gemini-2.5-flash",
+                    "gemini-1.5-flash",
+                    "gemini-2.0-flash",
+                    "gemini-2.5-pro"
                 ];
                 for (const gm of geminiModels) {
                     runnerList.push({ type: 'gemini', key: geminiApiKey, model: gm });
@@ -669,11 +690,12 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
         // ACCIÓ 5: GENERADOR VISUAL DE DIAGRAMES I IL·LUSTRACIONS
         if (action === 'generate_diagram') {
-            const { topic, style } = body;
-            const systemPromptDiagram = "Ets un dissenyador de diagrames i esquemes educatius visuals.\n" + safetyRules + "\n\n" +
-            "La teva missió és generar un esquema/diagrama visual vectorial interactiu en format HTML/SVG per al concepte demanat.\n" +
-            "Tema: " + (topic || "Ciclo de Krebs") + "\n" +
+            const { topic, style, context } = body;
+            const systemPromptDiagram = "Ets un dissenyador de diagrames i esquemes educatius visuals d'alt nivell acadèmic.\n" + safetyRules + "\n\n" +
+            "La teva missió és generar un esquema/diagrama visual vectorial interactiu en format HTML/SVG basat en els conceptes reals tractats a la classe.\n" +
+            "Tema: " + (topic || "Temari d'Estudi") + "\n" +
             "Estil: " + (style || "diagrama_cientific") + "\n\n" +
+            (context ? "CONTINGUT I EXPLICACIONS DE LA CLASSE (FONT PRIMÀRIA):\n'''\n" + context.substring(0, 10000) + "\n'''\n\n" : "") +
             "REGLA CRÍTICA: Retorna DINS d'un bloc ```html ... ``` un disseny SVG/HTML modern, net, amb fons fosc/clar adaptable (classes Tailwind), etiquetes en colors contrastats, nodes clarament explicats i una llegenda visual.\n" +
             "Afegeix una breu explicació del diagrama en text descriptiu a continuació del bloc HTML.";
 
@@ -687,21 +709,23 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
         // ACCIÓ 6: CHULETES DE FÓRMULES I RESÚMENS
         if (action === 'generate_cheatsheet') {
-            const { sourceText, formatType } = body;
+            const { sourceText, formatType, topic } = body;
             let formatPrompt = "";
             if (formatType === 'formulas') {
-                formatPrompt = "Crea una CHULETA DE FÓRMULES completa. Llista totes les equacions, explica cada variable, unitats de mesura en el Sistema Internacional i un consell d'aplicació per a cadascuna.";
+                formatPrompt = "Crea una CHULETA DE FÓRMULES completa i rigorosa. Llista totes les equacions, explica cada variable, unitats de mesura en el Sistema Internacional i un consell d'aplicació per a cadascuna.";
             } else if (formatType === 'mindmap') {
                 formatPrompt = "Crea un MAPA CONCEPTUAL JERÀRQUIC net utilitzant estructures HTML de llistes desglossables i caixes vectorials visuals (bloc ```html ... ```).";
             } else if (formatType === 'timeline') {
                 formatPrompt = "Crea una LÍNIA CRONOLÒGICA / SEQÜÈNCIA D'ETAPES pas a pas amb dates, fases i esdeveniments clau en format de línia de temps visual.";
             }
 
-            const systemPromptCheatsheet = "Ets un especialista en resums d'alta eficiència per a exàmens.\n" + safetyRules + "\n\n" + formatPrompt + "\n\nText d'origen:\n" + (sourceText || "");
+            const systemPromptCheatsheet = "Ets un especialista en resums d'alta eficiència per a exàmens.\n" + safetyRules + "\n\n" + formatPrompt + "\n\n" +
+            (topic ? "Tema principal: " + topic + "\n\n" : "") +
+            "Contingut complet de la classe i apunts:\n'''\n" + (sourceText || "Temari general").substring(0, 12000) + "\n'''";
 
             const resultOutput = await executeAI({
                 systemPrompt: systemPromptCheatsheet,
-                contents: [{ role: "user", parts: [{ text: "Genera la chuleta d'estudi ara mateix." }] }]
+                contents: [{ role: "user", parts: [{ text: "Genera el resum/formulari d'estudi ara mateix." }] }]
             });
 
             return res.status(200).json({ result: resultOutput });
@@ -709,9 +733,10 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
         // ACCIÓ 7: GENERADOR DE BARAJES ANKI
         if (action === 'generate_anki_deck') {
-            const { topic } = body;
-            const systemPromptAnki = "Ets un creador de barajes de repetició espaciada estil Anki.\n" + safetyRules + "\n\n" +
-            "Genera una baralla de EXACTAMENT 8-10 Flashcards sobre el tema: " + (topic || "General") + ".\n" +
+            const { topic, context } = body;
+            const systemPromptAnki = "Ets un creador expert de baralles de repetició espaiada estil Anki.\n" + safetyRules + "\n\n" +
+            "Genera una baralla de EXACTAMENT 8-10 Flashcards profundes i pedagògiques sobre el tema: " + (topic || "General") + ".\n" +
+            (context ? "CONTINGUT I CONCEPTES REALS EXPLICATS A LA CLASSE (UTILITZA'LS PER CREAR LES TARGETES):\n'''\n" + context.substring(0, 10000) + "\n'''\n\n" : "") +
             "REGLA CRÍTICA: Retorna ÚNICAMENT un bloc de codi ```flashcards ... ``` amb la següent estructura JSON vàlida:\n" +
             "```flashcards\n" +
             "[\n" +
@@ -722,7 +747,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
             const ankiOutput = await executeAI({
                 systemPrompt: systemPromptAnki,
-                contents: [{ role: "user", parts: [{ text: `Crea la baralla Anki per a: ${topic}` }] }]
+                contents: [{ role: "user", parts: [{ text: `Crea la baralla Anki de 8-10 targetes per a: ${topic}` }] }]
             });
 
             return res.status(200).json({ deck: ankiOutput });

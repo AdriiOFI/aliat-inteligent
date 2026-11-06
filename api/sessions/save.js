@@ -28,10 +28,14 @@ module.exports = async function handler(req, res) {
             gamesObj.__initial_quiz = initial_quiz;
         }
 
+        const hasCalendar = (Array.isArray(calendar) && calendar.length > 0) || (typeof calendar === 'string' && calendar.length > 10);
+        const detectedMode = hasCalendar ? 'study' : (mode || 'study');
+
         await client.execute({
             sql: `INSERT INTO sessions (id, user_id, mode, title, chat_history, calendar, games, html, context, pdf_text, updated_at) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
                   ON CONFLICT(id) DO UPDATE SET 
+                  mode = excluded.mode,
                   title = excluded.title,
                   chat_history = excluded.chat_history,
                   calendar = excluded.calendar,
@@ -43,7 +47,7 @@ module.exports = async function handler(req, res) {
             args: [
                 id,
                 decoded.id, 
-                mode || 'free', 
+                detectedMode, 
                 title || 'Nova Conversa',
                 typeof chat_history === 'string' ? chat_history : JSON.stringify(chat_history || []), 
                 typeof calendar === 'string' ? calendar : JSON.stringify(calendar || []), 

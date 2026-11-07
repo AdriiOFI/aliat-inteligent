@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const { getDbClient, JWT_SECRET } = require('./db');
 
+const quotaExceededKeys = new Set();
+
 function isPlaceholderKey(k) {
     if (!k || typeof k !== 'string') return true;
     const clean = k.trim();
@@ -360,9 +362,9 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             if (effectiveModel) {
                 if (userPreferredProvider === 'gemini') {
                     if (/gemini-3\.5-flash-lite/i.test(effectiveModel)) {
-                        effectiveModel = 'gemini-3.5-flash-lite';
+                        effectiveModel = 'gemini-2.5-flash';
                     } else if (/gemini-3\.5-flash/i.test(effectiveModel)) {
-                        effectiveModel = 'gemini-3.5-flash';
+                        effectiveModel = 'gemini-2.5-flash';
                     } else if (/gemini-2\.5-flash/i.test(effectiveModel)) {
                         effectiveModel = 'gemini-2.5-flash';
                     } else if (/gemini-2\.5-pro/i.test(effectiveModel)) {
@@ -383,64 +385,61 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
             }
 
-            if (userPreferredProvider === 'groq' && groqApiKey) {
+            if (userPreferredProvider === 'groq' && groqApiKey && !quotaExceededKeys.has(groqApiKey)) {
                 const primaryGroq = effectiveModel || 'openai/gpt-oss-120b';
                 runnerList.push({ type: 'groq', key: groqApiKey, model: primaryGroq });
                 if (primaryGroq !== 'openai/gpt-oss-20b') runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
                 if (primaryGroq !== 'openai/gpt-oss-120b') runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
                 if (primaryGroq !== 'llama-3.3-70b-versatile') runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.3-70b-versatile' });
-                if (primaryGroq !== 'llama-3.1-8b-instant') runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.1-8b-instant' });
-            } else if (userPreferredProvider === 'openrouter' && openRouterApiKey) {
+            } else if (userPreferredProvider === 'openrouter' && openRouterApiKey && !quotaExceededKeys.has(openRouterApiKey)) {
                 runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: effectiveModel || 'meta-llama/llama-3.3-70b-instruct' });
-            } else if (userPreferredProvider === 'openai' && openAiApiKey) {
+            } else if (userPreferredProvider === 'openai' && openAiApiKey && !quotaExceededKeys.has(openAiApiKey)) {
                 runnerList.push({ type: 'openai', key: openAiApiKey, model: effectiveModel || 'gpt-4o-mini' });
-            } else if (userPreferredProvider === 'deepseek' && deepseekApiKey) {
+            } else if (userPreferredProvider === 'deepseek' && deepseekApiKey && !quotaExceededKeys.has(deepseekApiKey)) {
                 runnerList.push({ type: 'deepseek', key: deepseekApiKey, model: effectiveModel || 'deepseek-chat' });
-            } else if (userPreferredProvider === 'mistral' && mistralApiKey) {
+            } else if (userPreferredProvider === 'mistral' && mistralApiKey && !quotaExceededKeys.has(mistralApiKey)) {
                 runnerList.push({ type: 'mistral', key: mistralApiKey, model: effectiveModel || 'mistral-small-latest' });
-            } else if (userPreferredProvider === 'gemini' && geminiApiKey) {
-                const primaryGemini = effectiveModel || 'gemini-3.5-flash';
+            } else if (userPreferredProvider === 'gemini' && geminiApiKey && !quotaExceededKeys.has(geminiApiKey)) {
+                const primaryGemini = effectiveModel || 'gemini-2.5-flash';
                 runnerList.push({ type: 'gemini', key: geminiApiKey, model: primaryGemini });
-                if (primaryGemini !== 'gemini-3.5-flash-lite') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-3.5-flash-lite' });
-                if (primaryGemini !== 'gemini-3.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-3.5-flash' });
                 if (primaryGemini !== 'gemini-2.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-2.5-flash' });
+                if (primaryGemini !== 'gemini-2.5-pro') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-2.5-pro' });
+                if (primaryGemini !== 'gemini-1.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-1.5-flash' });
             }
 
-            // Xarxa de seguretat: Fallbacks fiables amb models oficials vigents
-            if (groqApiKey && userPreferredProvider !== 'groq') {
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.3-70b-versatile' });
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.1-8b-instant' });
-            }
-
-            if (geminiApiKey && userPreferredProvider !== 'gemini') {
+            // Xarxa de seguretat: Sempre provar Gemini API si està disponible i no quota-depleted
+            if (geminiApiKey && !quotaExceededKeys.has(geminiApiKey) && userPreferredProvider !== 'gemini') {
                 const geminiModels = [
-                    process.env.GEMINI_MODEL || "gemini-3.5-flash",
-                    "gemini-3.5-flash-lite",
-                    "gemini-2.5-flash",
-                    "gemini-2.5-pro"
+                    process.env.GEMINI_MODEL || "gemini-2.5-flash",
+                    "gemini-2.5-pro",
+                    "gemini-1.5-flash"
                 ];
                 for (const gm of geminiModels) {
                     runnerList.push({ type: 'gemini', key: geminiApiKey, model: gm });
                 }
             }
 
-            if (openRouterApiKey && userPreferredProvider !== 'openrouter') {
+            if (groqApiKey && !quotaExceededKeys.has(groqApiKey) && userPreferredProvider !== 'groq') {
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
+                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.3-70b-versatile' });
+            }
+
+            if (openRouterApiKey && !quotaExceededKeys.has(openRouterApiKey) && userPreferredProvider !== 'openrouter') {
                 runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: 'meta-llama/llama-3.3-70b-instruct' });
             }
-            if (openAiApiKey && userPreferredProvider !== 'openai') {
+            if (openAiApiKey && !quotaExceededKeys.has(openAiApiKey) && userPreferredProvider !== 'openai') {
                 runnerList.push({ type: 'openai', key: openAiApiKey, model: 'gpt-4o-mini' });
             }
-            if (deepseekApiKey && userPreferredProvider !== 'deepseek') {
+            if (deepseekApiKey && !quotaExceededKeys.has(deepseekApiKey) && userPreferredProvider !== 'deepseek') {
                 runnerList.push({ type: 'deepseek', key: deepseekApiKey, model: 'deepseek-chat' });
             }
-            if (mistralApiKey && userPreferredProvider !== 'mistral') {
+            if (mistralApiKey && !quotaExceededKeys.has(mistralApiKey) && userPreferredProvider !== 'mistral') {
                 runnerList.push({ type: 'mistral', key: mistralApiKey, model: 'mistral-small-latest' });
             }
 
             if (runnerList.length === 0) {
-                throw new Error("No hi ha cap clau d'IA vàlida configurada.");
+                throw new Error("No hi ha cap clau d'IA vàlida configurada o totes les claus configurades tenen límit excedit.");
             }
 
             let lastError = null;
@@ -496,9 +495,12 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                         });
                     }
                 } catch (err) {
+                    if (err.message && (err.message.includes('403') || err.message.includes('Key limit exceeded') || err.message.includes('quota'))) {
+                        if (runner.key) quotaExceededKeys.add(runner.key);
+                    }
                     console.warn(`[Aliat IA Failover] Intent amb ${runner.type} (${runner.model}) ha fallat: ${err.message}. Provant alternativa...`);
                     lastError = err;
-                    await new Promise(r => setTimeout(r, 150));
+                    await new Promise(r => setTimeout(r, 100));
                 }
             }
 
@@ -521,6 +523,16 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 if (msg.image && typeof msg.image === 'string' && msg.image.includes('base64,')) {
                     const mimeType = msg.image.split(';')[0].split(':')[1] || 'image/png';
                     const base64Data = msg.image.split(',')[1];
+                    if (base64Data) {
+                        parts.push({
+                            inlineData: { mimeType: mimeType, data: base64Data }
+                        });
+                    }
+                }
+
+                if (msg.audio && typeof msg.audio === 'string' && msg.audio.includes('base64,')) {
+                    const mimeType = msg.audio.split(';')[0].split(':')[1] || 'audio/webm';
+                    const base64Data = msg.audio.split(',')[1];
                     if (base64Data) {
                         parts.push({
                             inlineData: { mimeType: mimeType, data: base64Data }

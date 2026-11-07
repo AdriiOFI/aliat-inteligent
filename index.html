@@ -61,12 +61,16 @@
             cursor: pointer !important; 
         }
         body.sidebar-collapsed .sidebar-text { 
+            display: none !important;
+            visibility: hidden !important;
             opacity: 0 !important;
+            width: 0 !important;
             max-width: 0 !important;
-            transform: translateX(-14px) scale(0.94) !important;
+            transform: none !important;
             pointer-events: none !important;
             margin: 0 !important;
             padding: 0 !important;
+            position: absolute !important;
         }
         body.sidebar-collapsed .sidebar-tooltip { display: block; }
         .sidebar-tooltip { display: none; }
@@ -174,33 +178,42 @@
             overflow: hidden !important;
         }
 
-        /* Centrat precís de tots els botons i icones quan la barra està col·lapsada (estil Google Gemini rail) */
+        /* Centrat i proporcions quan la barra està col·lapsada (estil Google Gemini navigation rail) */
+        body.sidebar-collapsed #sidebar {
+            width: 4.5rem !important;
+        }
         body.sidebar-collapsed #sidebar-header-box { 
             display: flex !important; 
             flex-direction: column !important; 
             justify-content: center !important; 
             align-items: center !important; 
-            padding: 0.65rem 0.25rem !important; 
+            padding: 0.75rem 0.25rem 0.5rem !important; 
             width: 100% !important; 
-            gap: 0.35rem !important; 
+            gap: 0.5rem !important; 
             text-align: center !important; 
         }
         body.sidebar-collapsed #sidebar-brand-box { 
             display: flex !important; 
             justify-content: center !important; 
+            align-items: center !important;
             width: 100% !important; 
             margin: 0 auto !important; 
+            padding-left: 3px !important; /* Centrat una mica més cap a la dreta */
         }
         body.sidebar-collapsed #sidebar-logo-icon { 
-            margin: 0 auto !important; 
+            margin: 0 auto !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transform: translateX(2px) !important; /* Desplaçat cap a la dreta com demana l'usuari */
         }
         body.sidebar-collapsed #sidebar-toggle-btn { 
             display: flex !important; 
             justify-content: center !important; 
             align-items: center !important; 
-            width: 1.85rem !important; 
-            height: 1.85rem !important; 
-            margin: 0.15rem auto !important; 
+            width: 2rem !important; 
+            height: 2rem !important; 
+            margin: 0 auto !important; 
             border-radius: 0.5rem !important; 
         }
         body.sidebar-collapsed #sidebar .px-3,
@@ -213,27 +226,77 @@
             justify-content: center !important;
             width: 100% !important;
         }
-        body.sidebar-collapsed #sidebar button {
-            justify-content: center !important;
-            align-items: center !important;
-            padding: 0.45rem !important;
+        /* Botó Nova Conversa quan està col·lapsat: icona + perfectament centrada i format cuidat */
+        body.sidebar-collapsed #sidebar-new-session-btn {
             width: 2.5rem !important;
             height: 2.5rem !important;
+            min-width: 2.5rem !important;
+            min-height: 2.5rem !important;
+            padding: 0 !important;
             margin: 0.25rem auto !important;
-            border-radius: 0.75rem !important;
+            border-radius: 0.85rem !important;
             display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0 !important;
+            box-shadow: 0 4px 12px -2px rgba(79, 70, 229, 0.4) !important;
+            text-align: center !important;
         }
-        body.sidebar-collapsed #sidebar button div,
+        body.sidebar-collapsed #sidebar-new-session-btn svg {
+            width: 1.2rem !important;
+            height: 1.2rem !important;
+            margin: auto !important;
+            display: block !important;
+            flex-shrink: 0 !important;
+            position: static !important;
+            transform: none !important;
+        }
+        /* Botons de navegació (Pla d'estudis, xatbot, ús quotidià, historial) */
+        /* El button s'ajusta exactament al div interior de 2.5rem perquè concordin al 100% */
+        body.sidebar-collapsed #sidebar button:not(#sidebar-toggle-btn):not(#sidebar-new-session-btn) {
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0 !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-width: 2.5rem !important;
+            min-height: 2.5rem !important;
+            margin: 0.2rem auto !important;
+            border-radius: 0.85rem !important;
+            display: flex !important;
+            background: transparent !important;
+            border: none !important;
+            gap: 0 !important;
+        }
+        body.sidebar-collapsed #sidebar button:not(#sidebar-toggle-btn):not(#sidebar-new-session-btn) > div {
+            margin: 0 auto !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            min-width: 2.5rem !important;
+            min-height: 2.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 0.85rem !important;
+            flex-shrink: 0 !important;
+        }
         body.sidebar-collapsed #sidebar button svg {
             margin: 0 auto !important;
+            display: block !important;
         }
         body.sidebar-collapsed #sidebar .border-t {
             justify-content: center !important;
             padding: 0.75rem 0.25rem !important;
             align-items: center !important;
+            display: flex !important;
         }
         body.sidebar-collapsed #sidebar #profile-initial {
             margin: 0 auto !important;
+            width: 2.25rem !important;
+            height: 2.25rem !important;
+        }
+        body.sidebar-collapsed #sidebar .border-t > button {
+            display: none !important;
         }
 
         /* TIPOGRAFIA I BLOCS DE CODI ESTIL GOOGLE GEMINI */
@@ -450,82 +513,78 @@
             <!-- Glowing ambient backdrop orb -->
             <div class="absolute -top-12 -right-12 w-44 h-44 bg-gradient-to-br from-blue-600/15 via-indigo-600/10 to-purple-600/0 rounded-full blur-2xl pointer-events-none -z-0"></div>
             
-            <div id="sidebar-header-box" class="p-2.5 pb-2 flex flex-col items-center justify-center gap-1.5 relative z-10 border-b border-zinc-100 dark:border-zinc-800/50">
-                <div id="sidebar-brand-box" class="flex items-center justify-center gap-2 w-full">
+            <div id="sidebar-header-box" class="p-3 pb-2 flex items-center justify-between relative z-10 border-b border-zinc-100 dark:border-zinc-800/50">
+                <div id="sidebar-brand-box" class="flex items-center gap-2.5 min-w-0">
                     <div id="sidebar-logo-icon" onclick="toggleSidebar()" class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20 text-white flex items-center justify-center shrink-0 shadow-md shadow-cyan-500/20 ring-1.5 ring-cyan-500/30 cursor-pointer hover:scale-105 transition-transform overflow-hidden p-0.5 backdrop-blur-md" title="Aliat Intel·ligent">
                         <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]">
                     </div>
                     <span class="font-bold text-zinc-900 dark:text-white text-sm sidebar-text tracking-tight truncate">Aliat Intel·ligent</span>
                 </div>
-                <button id="sidebar-toggle-btn" onclick="event.stopPropagation(); toggleSidebar();" class="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 rounded-lg transition text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 shrink-0 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700/60 shadow-none hover:shadow-xs flex items-center justify-center w-7 h-7 mx-auto" aria-label="Tancar o col·lapsar menú" title="Col·lapsar menú">
+                <button id="sidebar-toggle-btn" onclick="event.stopPropagation(); toggleSidebar();" class="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 rounded-lg transition text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 shrink-0 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700/60 shadow-none hover:shadow-xs flex items-center justify-center w-7 h-7" aria-label="Tancar o col·lapsar menú" title="Col·lapsar menú">
                     <svg id="sidebar-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
             </div>
 
-            <div class="px-3 mt-2 mb-2 relative z-10 flex justify-center items-center w-full">
-                <button onclick="newSession()" class="flex items-center justify-center gap-2 w-full mx-auto py-2 px-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 rounded-xl transition-all text-xs font-semibold text-white group relative shadow-sm active:scale-[0.98] cursor-pointer ring-1 ring-white/10 text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 flex items-center justify-center"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            <div class="px-3 mt-2.5 mb-2 relative z-10 w-full">
+                <button id="sidebar-new-session-btn" onclick="newSession()" class="flex items-center justify-start gap-2.5 w-full py-2 px-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 rounded-xl transition-all text-xs font-semibold text-white group relative shadow-sm active:scale-[0.98] cursor-pointer ring-1 ring-white/10 text-left">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                     <span class="sidebar-text truncate">Nova conversa</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Nova conversa</span>
                 </button>
             </div>
 
-            <div class="px-3 space-y-1 relative z-10">
-                <button type="button" onclick="startStudyMode()" class="flex items-center gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer">
+            <div class="px-3 space-y-1 relative z-10 w-full">
+                <button type="button" onclick="startStudyMode()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
                     <div class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                     </div>
-                    <span class="sidebar-text truncate">Pla d'Estudis</span>
+                    <span class="sidebar-text truncate font-medium">Pla d'Estudis</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Pla d'Estudis</span>
                 </button>
-                <button type="button" onclick="startFreeChatMode()" class="flex items-center gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer">
+                <button type="button" onclick="startFreeChatMode()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
                     <div class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
-                    <span class="sidebar-text truncate">XatBot</span>
+                    <span class="sidebar-text truncate font-medium">XatBot</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">XatBot</span>
                 </button>
-                <button type="button" onclick="showDailyUseBlockedModal()" class="flex items-center gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer">
+                <button type="button" onclick="showDailyUseBlockedModal()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
                     <div class="w-7 h-7 rounded-lg bg-red-500/15 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 border border-red-500/20 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                     </div>
-                    <span class="sidebar-text truncate">Ús Quotidià</span>
+                    <span class="sidebar-text truncate font-medium">Ús Quotidià</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Ús Quotidià (Bloquejat)</span>
                 </button>
-                <button id="sidebar-nav-history-btn" type="button" onclick="openChatHistoryModal()" class="flex items-center gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer">
+                <button id="sidebar-nav-history-btn" type="button" onclick="openChatHistoryModal()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
                     <div class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/20 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     </div>
-                    <span class="sidebar-text truncate">Historial</span>
+                    <span class="sidebar-text truncate font-medium">Historial</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Historial de Converses</span>
                 </button>
             </div>
 
             <div id="sidebar-history-container" class="mt-2.5 flex-1 overflow-y-auto px-3 w-full block relative z-10">
                 <div class="flex items-center justify-between mb-1.5 px-1 w-full">
-                    <div class="flex items-center gap-1.5">
-                        <h3 class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Recents</h3>
-                    </div>
+                    <h3 class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Recents</h3>
                     <button type="button" onclick="openChatHistoryModal()" class="text-[11px] font-semibold text-indigo-500 dark:text-indigo-400 hover:underline transition cursor-pointer">Veure tot</button>
                 </div>
                 <div id="history-list" class="space-y-1 w-full"></div>
             </div>
 
             <!-- PERFIL AMB CONFIGURACIÓ I LOGOUT -->
-            <div class="p-2.5 border-t border-zinc-200/80 dark:border-zinc-800/60 mt-auto flex items-center justify-between bg-zinc-50/70 dark:bg-zinc-950/40 relative z-10">
-                <div class="flex items-center gap-2 text-xs sidebar-text overflow-hidden flex-1 cursor-pointer hover:opacity-90 transition p-1 rounded-xl hover:bg-zinc-200/60 dark:hover:bg-zinc-800/50" onclick="openSettings()">
+            <div class="p-2.5 border-t border-zinc-200/80 dark:border-zinc-800/60 mt-auto flex items-center justify-between gap-2 bg-zinc-50/70 dark:bg-zinc-950/40 relative z-10 w-full">
+                <div class="flex items-center gap-2.5 text-xs sidebar-text overflow-hidden cursor-pointer hover:opacity-90 transition p-1 rounded-xl hover:bg-zinc-200/60 dark:hover:bg-zinc-800/50 flex-1 min-w-0" onclick="openSettings()">
                     <div id="profile-initial" class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shrink-0 shadow-xs text-xs ring-1 ring-white/20">U</div>
-                    <div class="flex flex-col truncate min-w-0">
+                    <div class="flex flex-col truncate min-w-0 text-left">
                         <span id="profile-email" class="font-semibold text-zinc-900 dark:text-zinc-200 truncate text-xs tracking-tight">Usuari</span>
                         <span class="text-[9px] text-emerald-500 font-medium flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span> En línia</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-1 shrink-0">
-                    <button onclick="openSettings()" class="w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 flex items-center justify-center transition shrink-0 cursor-pointer group relative" title="Configuració">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-45 transition-transform"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Configuració</span>
-                    </button>
-                </div>
+                <button onclick="openSettings()" class="w-7 h-7 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 flex items-center justify-center transition shrink-0 cursor-pointer group relative" title="Configuració">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-45 transition-transform"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Configuració</span>
+                </button>
             </div>
         </aside>
 
@@ -554,34 +613,61 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 max-w-3xl mx-auto px-2">
                         
                         <!-- TARGETA 1: PLA D'ESTUDIS -->
-                        <button onclick="startStudyMode()" class="bg-white/80 dark:bg-[#14141a]/90 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-200 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
-                            <div class="w-9 h-9 bg-blue-100 dark:bg-zinc-800/90 border border-blue-200 dark:border-zinc-700/80 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-xs">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        <button onclick="startStudyMode()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-blue-500/80 dark:hover:border-blue-400/80 hover:ring-2 hover:ring-blue-500/20 hover:shadow-xl hover:shadow-blue-500/15 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
+                            <!-- Animated top light beam -->
+                            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            <!-- Ambient glowing colored orb -->
+                            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-blue-500/20 dark:bg-blue-500/30 rounded-full blur-2xl group-hover:scale-150 group-hover:opacity-100 opacity-0 transition-all duration-500 pointer-events-none"></div>
+                            
+                            <div class="flex items-center justify-between w-full mb-3 relative z-10">
+                                <div class="w-10 h-10 bg-blue-100/80 dark:bg-zinc-800/90 border border-blue-200 dark:border-zinc-700/80 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:shadow-md group-hover:shadow-blue-500/30 group-hover:border-blue-400 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                </div>
+                                <div class="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 text-blue-600 dark:text-blue-400 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                </div>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Pla d'Estudis</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed">Puja el teu temari i genera un calendari adaptat amb minijocs.</p>
+                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">Pla d'Estudis</h3>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Puja el teu temari i genera un calendari adaptat amb minijocs.</p>
                         </button>
                         
                         <!-- TARGETA 2: XATBOT -->
-                        <button onclick="startFreeChatMode()" class="bg-white/80 dark:bg-[#14141a]/90 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-200 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
-                            <div class="w-9 h-9 bg-emerald-100 dark:bg-zinc-800/90 border border-emerald-200 dark:border-zinc-700/80 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-xs">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <button onclick="startFreeChatMode()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-emerald-500/80 dark:hover:border-emerald-400/80 hover:ring-2 hover:ring-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/15 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
+                            <!-- Animated top light beam -->
+                            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            <!-- Ambient glowing colored orb -->
+                            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-emerald-500/20 dark:bg-emerald-500/30 rounded-full blur-2xl group-hover:scale-150 group-hover:opacity-100 opacity-0 transition-all duration-500 pointer-events-none"></div>
+                            
+                            <div class="flex items-center justify-between w-full mb-3 relative z-10">
+                                <div class="w-10 h-10 bg-emerald-100/80 dark:bg-zinc-800/90 border border-emerald-200 dark:border-zinc-700/80 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:shadow-md group-hover:shadow-emerald-500/30 group-hover:border-emerald-400 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                </div>
+                                <div class="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                </div>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">XatBot Lliure</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed">Conversa directa per resoldre dubtes i practicar exercicis.</p>
+                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors relative z-10">XatBot Lliure</h3>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Conversa directa per resoldre dubtes i practicar exercicis.</p>
                         </button>
 
                         <!-- TARGETA 3: ÚS QUOTIDIÀ -->
-                        <button type="button" onclick="showDailyUseBlockedModal()" class="bg-white/80 dark:bg-[#14141a]/90 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-red-500 dark:hover:border-red-500 hover:shadow-lg hover:shadow-red-500/10 transition-all duration-200 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
-                            <div class="absolute top-3 right-3 bg-red-100 dark:bg-red-950/80 text-red-700 dark:text-red-300 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs border border-red-200 dark:border-red-900/60 flex items-center gap-1">
+                        <button type="button" onclick="showDailyUseBlockedModal()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-red-500/80 dark:hover:border-red-400/80 hover:ring-2 hover:ring-red-500/20 hover:shadow-xl hover:shadow-red-500/15 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
+                            <!-- Animated top light beam -->
+                            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            <!-- Ambient glowing colored orb -->
+                            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-red-500/20 dark:bg-red-500/30 rounded-full blur-2xl group-hover:scale-150 group-hover:opacity-100 opacity-0 transition-all duration-500 pointer-events-none"></div>
+                            
+                            <div class="absolute top-3 right-3 bg-red-100 dark:bg-red-950/80 text-red-700 dark:text-red-300 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs border border-red-200 dark:border-red-900/60 flex items-center gap-1 z-20">
                                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                                 <span>Bloquejat</span>
                             </div>
-                            <div class="w-9 h-9 bg-red-100 dark:bg-zinc-800/90 border border-red-200 dark:border-zinc-700/80 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-xs">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                            <div class="flex items-center justify-between w-full mb-3 relative z-10">
+                                <div class="w-10 h-10 bg-red-100/80 dark:bg-zinc-800/90 border border-red-200 dark:border-zinc-700/80 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:shadow-md group-hover:shadow-red-500/30 group-hover:border-red-400 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                </div>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Ús Quotidià</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed">Eines per simplificar tasques diàries o gestionar rutines.</p>
+                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors relative z-10">Ús Quotidià</h3>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Eines per simplificar tasques diàries o gestionar rutines.</p>
                         </button>
 
                     </div>
@@ -4245,10 +4331,10 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 hover:text-zinc-950 dark:hover:text-white font-medium border border-transparent";
 
                 list.innerHTML += `
-                    <div class="relative group mb-1 w-full">
-                        <button onclick="loadSession('${s.id}')" class="w-full text-left py-2 px-2.5 rounded-xl text-xs truncate transition-all duration-200 ${activeClass} flex items-center gap-2.5 pr-8 cursor-pointer">
+                    <div class="relative group mb-1 w-full flex justify-center">
+                        <button onclick="loadSession('${s.id}')" class="w-full py-2 px-2.5 rounded-xl text-xs truncate transition-all duration-200 ${activeClass} flex items-center justify-start gap-2.5 pr-8 cursor-pointer">
                             ${iconSvg}
-                            <span class="truncate flex-1 tracking-tight font-medium text-zinc-900 dark:text-zinc-100">${title}</span>
+                            <span class="truncate flex-1 tracking-tight font-medium text-zinc-900 dark:text-zinc-100 text-left">${title}</span>
                             <span class="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0 group-hover:hidden">${dateStr}</span>
                         </button>
                         <button onclick="deleteSession('${s.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-500/15 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10 cursor-pointer" title="Eliminar conversa">

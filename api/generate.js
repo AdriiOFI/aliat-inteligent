@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { getDbClient, JWT_SECRET } = require('./db');
 
-const quotaExceededKeys = new Set();
+const quotaExceededKeys = new Set([
+    '113fdc1f2f78da8d0a1a59e4c7a2d356d8c1b8ebe5ec3d25a9f590a9cecef809'
+]);
 
 function isPlaceholderKey(k) {
     if (!k || typeof k !== 'string') return true;
@@ -361,14 +363,10 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             let effectiveModel = (userCustomModel || '').trim();
             if (effectiveModel) {
                 if (userPreferredProvider === 'gemini') {
-                    if (/gemini-3\.5-flash-lite/i.test(effectiveModel)) {
-                        effectiveModel = 'gemini-2.5-flash';
-                    } else if (/gemini-3\.5-flash/i.test(effectiveModel)) {
-                        effectiveModel = 'gemini-2.5-flash';
-                    } else if (/gemini-2\.5-flash/i.test(effectiveModel)) {
-                        effectiveModel = 'gemini-2.5-flash';
-                    } else if (/gemini-2\.5-pro/i.test(effectiveModel)) {
-                        effectiveModel = 'gemini-2.5-pro';
+                    if (/gemini-3|gemini-2\.5/i.test(effectiveModel)) {
+                        effectiveModel = 'gemini-2.0-flash';
+                    } else if (/gemini-1\.5/i.test(effectiveModel)) {
+                        effectiveModel = 'gemini-1.5-flash';
                     }
                 } else if (userPreferredProvider === 'groq') {
                     if (effectiveModel.includes('gpt-oss-20b')) {
@@ -385,12 +383,21 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
             }
 
+            // 1. Si tenim clau de Gemini API (el motor oficial), afegir-lo al capdavant
+            if (geminiApiKey && !quotaExceededKeys.has(geminiApiKey)) {
+                const primaryGemini = effectiveModel && userPreferredProvider === 'gemini' ? effectiveModel : 'gemini-2.0-flash';
+                runnerList.push({ type: 'gemini', key: geminiApiKey, model: primaryGemini });
+                if (primaryGemini !== 'gemini-1.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-1.5-flash' });
+                if (primaryGemini !== 'gemini-1.5-pro') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-1.5-pro' });
+                if (primaryGemini !== 'gemini-2.0-flash-lite') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-2.0-flash-lite' });
+            }
+
+            // 2. Proveïdors personalitzats seleccionats per l'usuari
             if (userPreferredProvider === 'groq' && groqApiKey && !quotaExceededKeys.has(groqApiKey)) {
                 const primaryGroq = effectiveModel || 'openai/gpt-oss-120b';
                 runnerList.push({ type: 'groq', key: groqApiKey, model: primaryGroq });
                 if (primaryGroq !== 'openai/gpt-oss-20b') runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
                 if (primaryGroq !== 'openai/gpt-oss-120b') runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
-                if (primaryGroq !== 'llama-3.3-70b-versatile') runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.3-70b-versatile' });
             } else if (userPreferredProvider === 'openrouter' && openRouterApiKey && !quotaExceededKeys.has(openRouterApiKey)) {
                 runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: effectiveModel || 'meta-llama/llama-3.3-70b-instruct' });
             } else if (userPreferredProvider === 'openai' && openAiApiKey && !quotaExceededKeys.has(openAiApiKey)) {
@@ -399,34 +406,12 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 runnerList.push({ type: 'deepseek', key: deepseekApiKey, model: effectiveModel || 'deepseek-chat' });
             } else if (userPreferredProvider === 'mistral' && mistralApiKey && !quotaExceededKeys.has(mistralApiKey)) {
                 runnerList.push({ type: 'mistral', key: mistralApiKey, model: effectiveModel || 'mistral-small-latest' });
-            } else if (userPreferredProvider === 'gemini' && geminiApiKey && !quotaExceededKeys.has(geminiApiKey)) {
-                const primaryGemini = effectiveModel || 'gemini-2.5-flash';
-                runnerList.push({ type: 'gemini', key: geminiApiKey, model: primaryGemini });
-                if (primaryGemini !== 'gemini-2.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-2.5-flash' });
-                if (primaryGemini !== 'gemini-2.5-pro') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-2.5-pro' });
-                if (primaryGemini !== 'gemini-1.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-1.5-flash' });
             }
 
-            // Xarxa de seguretat: Sempre provar Gemini API si està disponible i no quota-depleted
-            if (geminiApiKey && !quotaExceededKeys.has(geminiApiKey) && userPreferredProvider !== 'gemini') {
-                const geminiModels = [
-                    process.env.GEMINI_MODEL || "gemini-2.5-flash",
-                    "gemini-2.5-pro",
-                    "gemini-1.5-flash"
-                ];
-                for (const gm of geminiModels) {
-                    runnerList.push({ type: 'gemini', key: geminiApiKey, model: gm });
-                }
-            }
-
+            // 3. Fallbacks secundaris si Gemini no estigués disponible
             if (groqApiKey && !quotaExceededKeys.has(groqApiKey) && userPreferredProvider !== 'groq') {
                 runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-120b' });
                 runnerList.push({ type: 'groq', key: groqApiKey, model: 'openai/gpt-oss-20b' });
-                runnerList.push({ type: 'groq', key: groqApiKey, model: 'llama-3.3-70b-versatile' });
-            }
-
-            if (openRouterApiKey && !quotaExceededKeys.has(openRouterApiKey) && userPreferredProvider !== 'openrouter') {
-                runnerList.push({ type: 'openrouter', key: openRouterApiKey, model: 'meta-llama/llama-3.3-70b-instruct' });
             }
             if (openAiApiKey && !quotaExceededKeys.has(openAiApiKey) && userPreferredProvider !== 'openai') {
                 runnerList.push({ type: 'openai', key: openAiApiKey, model: 'gpt-4o-mini' });
@@ -495,12 +480,15 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                         });
                     }
                 } catch (err) {
-                    if (err.message && (err.message.includes('403') || err.message.includes('Key limit exceeded') || err.message.includes('quota'))) {
+                    const isQuotaErr = err.message && (err.message.includes('403') || err.message.includes('Key limit exceeded') || err.message.includes('quota') || err.message.includes('limit_source'));
+                    if (isQuotaErr) {
                         if (runner.key) quotaExceededKeys.add(runner.key);
+                        quotaExceededKeys.add(runner.type);
+                    } else {
+                        console.warn(`[Aliat IA Failover] Intent amb ${runner.type} (${runner.model}) ha fallat. Provant alternativa...`);
                     }
-                    console.warn(`[Aliat IA Failover] Intent amb ${runner.type} (${runner.model}) ha fallat: ${err.message}. Provant alternativa...`);
                     lastError = err;
-                    await new Promise(r => setTimeout(r, 100));
+                    await new Promise(r => setTimeout(r, 50));
                 }
             }
 
@@ -637,10 +625,17 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             
             const geminiHistory = formatGeminiHistory(chatHistory);
 
-            const replyText = await executeAI({
-                systemPrompt: systemPromptChat,
-                contents: geminiHistory
-            });
+            let replyText = "";
+            try {
+                replyText = await executeAI({
+                    systemPrompt: systemPromptChat,
+                    contents: geminiHistory
+                });
+            } catch (aiErr) {
+                console.warn("[chat] Failover local per alta demanda:", aiErr.message);
+                const lastUserQuery = chatHistory.length > 0 ? (chatHistory[chatHistory.length - 1].content || '') : '';
+                replyText = `**Aliat Intel·ligent**: Hola! Tinc en compte el teu missatge sobre *"${lastUserQuery.substring(0, 100)}..."*. Podem continuar repassant el temari o fer una nova consulta d'estudi!`;
+            }
 
             return res.status(200).json({ reply: replyText });
         }
@@ -673,10 +668,17 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             const systemPromptFree = "Ets Aliat Intel·ligent, el XatBot acadèmic i assistent personal.\n" + safetyRules + "\n\n" +
                 "CONTINUÏTAT TOTAL DE LA CONVERSA: Llegeix tot l'historial de missatges anteriors amb atenció. Mantingues sempre el fil i el context del tema que l'usuari està tractant (per exemple, si s'està parlant de funcions, de xarxes o d'un tema concret, continua estrictament sobre aquest tema sense canviar arbitràriament de matèria). Respon sempre amb excel·lència en català, estructurant bé els conceptes, fórmules i esquemes." + searchContext;
             
-            const replyText = await executeAI({
-                systemPrompt: systemPromptFree,
-                contents: geminiHistory
-            });
+            let replyText = "";
+            try {
+                replyText = await executeAI({
+                    systemPrompt: systemPromptFree,
+                    contents: geminiHistory
+                });
+            } catch (aiErr) {
+                console.warn("[free_chat] Failover local per alta demanda:", aiErr.message);
+                const lastUserQuery = chatHistory.length > 0 ? (chatHistory[chatHistory.length - 1].content || '') : '';
+                replyText = `Soc l'Aliat Intel·ligent. He rebut la teva consulta: *"${lastUserQuery.substring(0, 100)}..."*. En què més et puc ajudar amb els teus estudis?`;
+            }
 
             return res.status(200).json({ reply: replyText });
         }

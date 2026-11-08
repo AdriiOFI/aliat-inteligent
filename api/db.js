@@ -1,11 +1,63 @@
 const { createClient } = require('@libsql/client/web');
 
-// In-memory store for fallback when TURSO credentials are not configured or unreachable
+const fs = require('fs');
+const path = require('path');
+const STORE_FILE = path.join(__dirname, '../data/local_db_store.json');
+
+// In-memory store with disk persistence fallback when TURSO credentials are not configured
 const memoryStore = {
     users: new Map(),       // email -> { id, email, password_hash, name, theme }
     usersById: new Map(),   // id -> user
-    sessions: new Map()     // id -> session
+    sessions: new Map(),    // id -> session
+    shares: new Map()       // id -> shared snapshot
 };
+
+function loadStoreFromDisk() {
+    try {
+        const dir = path.dirname(STORE_FILE);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        if (fs.existsSync(STORE_FILE)) {
+            const raw = fs.readFileSync(STORE_FILE, 'utf8');
+            const data = JSON.parse(raw);
+            if (data.users && Array.isArray(data.users)) {
+                for (const u of data.users) {
+                    if (u && u.email) memoryStore.users.set(u.email, u);
+                    if (u && u.id) memoryStore.usersById.set(u.id, u);
+                }
+            }
+            if (data.sessions && Array.isArray(data.sessions)) {
+                for (const s of data.sessions) {
+                    if (s && s.id) memoryStore.sessions.set(s.id, s);
+                }
+            }
+            if (data.shares && Array.isArray(data.shares)) {
+                for (const sh of data.shares) {
+                    if (sh && sh.id) memoryStore.shares.set(sh.id, sh);
+                }
+            }
+            console.log(`[Aliat DB] Loaded ${memoryStore.sessions.size} sessions, ${memoryStore.shares.size} shares and ${memoryStore.users.size} users from disk.`);
+        }
+    } catch (e) {
+        console.error('[Aliat DB] Error loading store from disk:', e.message);
+    }
+}
+
+function saveStoreToDisk() {
+    try {
+        const dir = path.dirname(STORE_FILE);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        const users = Array.from(memoryStore.usersById.values());
+        const sessions = Array.from(memoryStore.sessions.values());
+        const shares = Array.from(memoryStore.shares.values());
+        const data = { users, sessions, shares, saved_at: new Date().toISOString() };
+        fs.writeFileSync(STORE_FILE, JSON.stringify(data), 'utf8');
+    } catch (e) {
+        console.error('[Aliat DB] Error saving store to disk:', e.message);
+    }
+}
+
+// Initialize from disk
+loadStoreFromDisk();
 
 const mockClient = {
     execute: async (query) => {
@@ -47,6 +99,7 @@ const mockClient = {
             const newUser = { id, email, password_hash, name: '', theme: 'light', ai_provider: '', ai_api_key: '', ai_model: '' };
             memoryStore.users.set(email, newUser);
             memoryStore.usersById.set(id, newUser);
+            saveStoreToDisk();
             return { rowsAffected: 1 };
         }
 
@@ -66,6 +119,7 @@ const mockClient = {
                     user.name = name;
                     user.theme = theme;
                 }
+                saveStoreToDisk();
             }
             return { rowsAffected: user ? 1 : 0 };
         }
@@ -102,6 +156,7 @@ const mockClient = {
                 updated_at: new Date().toISOString()
             };
             memoryStore.sessions.set(id, session);
+            saveStoreToDisk();
             return { rowsAffected: 1 };
         }
 
@@ -111,6 +166,7 @@ const mockClient = {
             const session = memoryStore.sessions.get(id);
             if (session && session.user_id === userId) {
                 memoryStore.sessions.delete(id);
+                saveStoreToDisk();
                 return { rowsAffected: 1 };
             }
             return { rowsAffected: 0 };
@@ -214,5 +270,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'aliat-intelligent-secret-key-ai-st
 module.exports = {
     getDbClient,
     JWT_SECRET,
-    mockClient
+    mockClient,
+    memoryStore,
+    saveStoreToDisk
 };

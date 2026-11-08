@@ -9,6 +9,7 @@ const generateHandler = require('./api/generate');
 const sessionsGetHandler = require('./api/sessions/get');
 const sessionsSaveHandler = require('./api/sessions/save');
 const sessionsDeleteHandler = require('./api/sessions/delete');
+const sessionsShareHandler = require('./api/sessions/share');
 const userSettingsHandler = require('./api/user/settings');
 
 const app = express();
@@ -31,6 +32,7 @@ app.all('/api/generate', (req, res) => generateHandler(req, res));
 app.all('/api/sessions/get', (req, res) => sessionsGetHandler(req, res));
 app.all('/api/sessions/save', (req, res) => sessionsSaveHandler(req, res));
 app.all('/api/sessions/delete', (req, res) => sessionsDeleteHandler(req, res));
+app.all('/api/sessions/share', (req, res) => sessionsShareHandler(req, res));
 app.all('/api/user/settings', (req, res) => userSettingsHandler(req, res));
 
 // Static files

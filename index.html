@@ -15,6 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
         
@@ -24,6 +25,23 @@
         }
     </script>
     <style>
+        @media print {
+            #sidebar, #chat-toolbar-bottom, #chat-form, #chat-header-menu-btn, #history-header-btn, #memory-header-btn,
+            #voice-call-trigger-btn, #shared-chat-banner, #voice-call-modal, .swal2-container, #plus-menu, #chat-files-modal {
+                display: none !important;
+            }
+            body, #app-container, #chat-view, #chat-messages {
+                background: white !important;
+                color: #0f172a !important;
+                overflow: visible !important;
+                height: auto !important;
+                display: block !important;
+            }
+            #chat-messages {
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+        }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 10px; }
@@ -1307,38 +1325,34 @@
                 <svg id="voice-call-speaker-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
             </button>
         </div>
-    <!-- MODAL / DRAWER D'ARXIUS I IMATGES EN AQUEST XAT (MATCHING REFERENCE IMAGE) -->
-    <div id="chat-files-modal" onclick="if(event.target === this) closeChatFilesModal();" class="fixed inset-0 bg-zinc-950/80 z-[130] hidden flex items-center justify-end sm:justify-center p-0 sm:p-4 backdrop-blur-md opacity-0 transition-opacity duration-300">
-        <div id="chat-files-modal-box" class="bg-[#121217] border-l sm:border border-zinc-800/90 text-white w-full sm:max-w-md h-full sm:h-auto sm:max-h-[88vh] sm:rounded-[2rem] flex flex-col overflow-hidden shadow-2xl transform translate-x-full sm:translate-x-0 sm:scale-95 transition-all duration-300">
+    </div>
+
+    <div id="chat-files-modal" onclick="if(event.target === this) closeChatFilesModal();" class="fixed inset-0 bg-zinc-950/70 z-[160] hidden flex items-center justify-end p-2 sm:p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div id="chat-files-modal-box" class="bg-[#121216] border border-zinc-800/80 text-white w-full max-w-sm sm:max-w-md h-full sm:h-[92vh] rounded-3xl flex flex-col overflow-hidden shadow-2xl transform translate-x-full transition-transform duration-300 ease-out">
             
-            <!-- Header -->
-            <div class="p-4 sm:p-5 border-b border-zinc-800/80 flex items-center justify-between bg-zinc-950/70 shrink-0">
-                <h3 class="font-bold text-lg text-zinc-100 flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18"/><path d="M10 12h4"/></svg>
-                    </div>
-                    <span>Arxius</span>
-                </h3>
-                <button onclick="closeChatFilesModal()" class="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer" title="Tancar">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <!-- Header matching screenshot -->
+            <div class="px-5 py-4 border-b border-zinc-800/70 flex items-center justify-between bg-[#121216] shrink-0">
+                <h3 class="font-bold text-lg text-zinc-100 tracking-tight">Archivos</h3>
+                <button onclick="closeChatFilesModal()" class="w-8 h-8 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer" title="Cerrar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
 
             <!-- Scrollable List Content matching uploaded image -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-6 text-xs sm:text-sm">
+            <div class="flex-1 overflow-y-auto px-5 py-4 space-y-6 text-xs sm:text-sm custom-scrollbar">
                 
-                <!-- SECCIÓ 1: CREAT (Created by AI) -->
+                <!-- SECCIÓ 1: CREADO -->
                 <div>
-                    <h4 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2.5 px-1">Creat</h4>
-                    <div id="chat-files-created-list" class="space-y-2">
+                    <h4 class="text-xs font-semibold text-zinc-300 tracking-tight mb-2">Creado</h4>
+                    <div id="chat-files-created-list">
                         <!-- Rendered dynamically -->
                     </div>
                 </div>
 
-                <!-- SECCIÓ 2: AFEGIT (Added / Uploaded images & files in this chat) -->
+                <!-- SECCIÓ 2: AÑADIDO (Uploaded images & files in this specific chat) -->
                 <div>
-                    <h4 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2.5 px-1">Afegit</h4>
-                    <div id="chat-files-added-list" class="space-y-2">
+                    <h4 class="text-xs font-semibold text-zinc-300 tracking-tight mb-2">Añadido</h4>
+                    <div id="chat-files-added-list" class="space-y-1">
                         <!-- Rendered dynamically -->
                     </div>
                 </div>
@@ -1567,11 +1581,103 @@
             if (typeof updateHeaderPomodoroDisplay === 'function') updateHeaderPomodoroDisplay();
         }
 
+        async function checkAndHandleSharedChat() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const shareId = urlParams.get('share');
+            if (!shareId) return false;
+
+            try {
+                document.getElementById('auth-view')?.classList.add('hidden');
+                document.getElementById('welcome-view')?.classList.add('hidden');
+                document.getElementById('setup-view')?.classList.add('hidden');
+                document.getElementById('quiz-view')?.classList.add('hidden');
+                document.getElementById('app-container')?.classList.remove('hidden', 'opacity-0');
+                document.getElementById('chat-view')?.classList.remove('hidden');
+                document.getElementById('chat-view')?.classList.add('flex');
+
+                const res = await fetch(`/api/sessions/share?id=${encodeURIComponent(shareId)}`);
+                if (!res.ok) {
+                    throw new Error('La conversa compartida no s\'ha trobat o ha caducat.');
+                }
+                const data = await res.json();
+                if (!data || !Array.isArray(data.history)) {
+                    throw new Error('Format de conversa no vàlid.');
+                }
+
+                const label = document.getElementById('chat-mode-label');
+                if (label) label.innerText = data.title || 'Conversa Compartida';
+
+                const messagesContainer = document.getElementById('chat-messages');
+                if (messagesContainer) {
+                    messagesContainer.innerHTML = '';
+                    
+                    const banner = document.createElement('div');
+                    banner.id = 'shared-chat-banner';
+                    banner.className = 'w-full mb-6 p-4 bg-indigo-50/90 dark:bg-indigo-950/70 border border-indigo-200 dark:border-indigo-800/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs';
+                    banner.innerHTML = `
+                        <div class="flex items-center gap-3 text-xs sm:text-sm text-indigo-950 dark:text-indigo-100 font-medium">
+                            <span class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                            </span>
+                            <div>
+                                <p class="font-bold text-indigo-900 dark:text-indigo-200">Conversa Compartida (Mode Lectura)</p>
+                                <p class="text-[11px] text-indigo-700 dark:text-indigo-300">Aquesta visualització mostra el xat tal com estava en el moment de compartir-lo.</p>
+                            </div>
+                        </div>
+                        <a href="/" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-sm transition shrink-0 flex items-center gap-1.5 cursor-pointer">
+                            <span>Obrir el meu Aliat</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </a>
+                    `;
+                    messagesContainer.appendChild(banner);
+
+                    data.history.forEach(msg => {
+                        let text = msg.content || '';
+                        let sender = msg.role === 'user' ? 'user' : 'ai';
+                        if (msg.image) {
+                            text = `<img src="${msg.image}" onclick="openLightbox(this.src)" class="max-w-[220px] rounded-xl mb-2 cursor-zoom-in hover:opacity-90 transition shadow-md border border-zinc-700/50"><br>` + text;
+                        }
+                        appendMessage(sender, text);
+                    });
+                }
+
+                document.getElementById('chat-toolbar-bottom')?.classList.add('hidden');
+                const chatForm = document.getElementById('chat-form');
+                if (chatForm) {
+                    chatForm.innerHTML = `
+                        <div class="w-full max-w-3xl mx-auto p-4 text-center bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+                            <span class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 font-medium">Vols estudiar o investigar amb la teva pròpia IA?</span>
+                            <a href="/" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition shadow cursor-pointer">Començar de franc</a>
+                        </div>
+                    `;
+                }
+
+                return true;
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Conversa no disponible',
+                    text: err.message || 'No s\'ha pogut trobar la conversa compartida.',
+                    confirmButtonText: 'Tornar a l\'Aliat',
+                    confirmButtonColor: '#4f46e5'
+                }).then(() => {
+                    window.location.href = '/';
+                });
+                return true;
+            }
+        }
+
         window.onload = () => {
             initPreferences();
             initWelcomeSubtextOnReload();
             initPomodoroGlobal();
             if (typeof updateVoiceSpeakBtnUI === 'function') updateVoiceSpeakBtnUI();
+
+            if (window.location.search.includes('share=')) {
+                checkAndHandleSharedChat();
+                return;
+            }
+
             if (!authToken) {
                 document.getElementById('auth-view').classList.remove('hidden');
                 document.getElementById('app-container').classList.add('hidden');
@@ -3403,18 +3509,83 @@
             }
         });
 
-        window.handleHeaderMenuShare = function() {
+        window.handleHeaderMenuShare = async function() {
             closeChatHeaderMenu();
+            if (!Array.isArray(chatHistory) || chatHistory.length === 0) {
+                showToast('No hi ha missatges en aquest xat per compartir encara.', 'info');
+                return;
+            }
+
+            const activeSession = allSessions.find(s => s.id === currentSessionId);
+            const chatTitle = (activeSession && activeSession.title) || generateSmartTitle(activeSession);
+
+            Swal.fire({
+                title: 'Generant enllaç...',
+                text: 'Creant còpia pública d\'aquesta conversa.',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
             try {
-                const shareUrl = window.location.href;
+                const res = await fetch('/api/sessions/share', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: chatTitle,
+                        history: chatHistory,
+                        calendar: generatedCalendarArray || [],
+                        initial_quiz: window.initialQuizResults || null,
+                        date: Date.now()
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok || data.error) throw new Error(data.error || 'Error al generar enllaç');
+
+                const shareUrl = `${window.location.origin}/?share=${data.shareId}`;
+
                 if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(shareUrl);
-                    showToast('Enllaç de la conversa copiat al portapapers!');
-                } else {
-                    showToast('Sessió preparada per compartir.');
+                    navigator.clipboard.writeText(shareUrl).catch(() => {});
                 }
-            } catch(e) {
-                showToast('Enllaç de la conversa copiat!');
+
+                Swal.fire({
+                    title: '<div class="flex items-center justify-center gap-2 text-indigo-500"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Conversa Compartida!</div>',
+                    html: `
+                        <p class="text-xs sm:text-sm text-zinc-400 mb-3 text-center">Qualsevol persona amb aquest enllaç podrà veure el xat des d'aquest mateix moment:</p>
+                        <div class="flex items-center gap-2 p-2 bg-zinc-900 border border-zinc-700 rounded-xl mb-4 text-left">
+                            <input id="shared-link-input" type="text" readonly value="${shareUrl}" class="flex-1 bg-transparent text-xs text-indigo-300 font-mono outline-none px-2 select-all">
+                            <button onclick="navigator.clipboard.writeText('${shareUrl}'); showToast('Enllaç copiat!');" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition shrink-0 cursor-pointer">Copiar</button>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    cancelButtonText: 'Tancar',
+                    confirmButtonText: 'Compartir',
+                    confirmButtonColor: '#4f46e5',
+                    background: document.documentElement.classList.contains('dark') ? '#18181b' : '#fff',
+                    color: document.documentElement.classList.contains('dark') ? '#f4f4f5' : '#18181b',
+                    customClass: { popup: 'rounded-3xl border dark:border-zinc-800' }
+                }).then((r) => {
+                    if (r.isConfirmed) {
+                        if (navigator.share) {
+                            navigator.share({
+                                title: chatTitle,
+                                text: `Conversa d'estudi amb Aliat Intel·ligent: ${chatTitle}`,
+                                url: shareUrl
+                            }).catch(() => {});
+                        } else {
+                            navigator.clipboard.writeText(shareUrl);
+                            showToast('Enllaç copiat al portapapers!');
+                        }
+                    }
+                });
+
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'No s\'ha pogut compartir',
+                    text: err.message,
+                    confirmButtonColor: '#ef4444'
+                });
             }
         };
 
@@ -3434,138 +3605,150 @@
             const addedFiles = [];
             const createdItems = [];
 
-            // 1. Scan chatHistory for user-uploaded images and documents
-            if (Array.isArray(chatHistory)) {
-                chatHistory.forEach((msg, idx) => {
-                    if (!msg) return;
-                    
-                    // Check direct image property
-                    if (msg.image && typeof msg.image === 'string') {
-                        const imgHash = (idx + 1).toString().padStart(2, '0') + '_' + Math.random().toString(36).substring(2, 6);
-                        const fileType = msg.image.includes('data:image/jpeg') || msg.image.includes('.jpg') ? 'JPG' : 'PNG';
+            // 1. Resolve strictly the active session's data
+            const activeSession = allSessions.find(s => s.id === currentSessionId);
+            const activeHistory = (activeSession && Array.isArray(activeSession.history) && activeSession.history.length > 0)
+                ? activeSession.history
+                : (Array.isArray(chatHistory) ? chatHistory : []);
+
+            // Check explicit files registered in this session
+            if (activeSession && Array.isArray(activeSession.files)) {
+                activeSession.files.forEach(f => {
+                    if (f && (f.src || f.name) && !addedFiles.some(existing => existing.src === f.src)) {
+                        addedFiles.push(f);
+                    }
+                });
+            }
+
+            // 2. Scan activeHistory for user-uploaded images and documents in this chat ONLY
+            activeHistory.forEach((msg, idx) => {
+                if (!msg) return;
+                
+                // Check direct image property
+                if (msg.image && typeof msg.image === 'string') {
+                    if (!addedFiles.some(f => f.src === msg.image)) {
+                        let hash = (idx + 1).toString(16).padStart(2, '0') + Math.random().toString(16).substring(2, 6);
+                        const fileType = (msg.fileExt || (msg.image.includes('data:image/jpeg') ? 'JPG' : 'PNG')).toUpperCase();
+                        const fileName = msg.fileName || `image_${hash}`;
                         addedFiles.push({
-                            id: imgHash,
-                            name: `image_${imgHash}`,
+                            id: 'img_' + idx,
+                            name: fileName,
                             ext: fileType,
                             src: msg.image,
                             type: 'image'
                         });
                     }
-                    
-                    // Check inline <img> tags in content HTML
-                    if (typeof msg.content === 'string') {
-                        const imgMatches = msg.content.match(/<img[^>]+src=["']([^"']+)["']/gi);
-                        if (imgMatches) {
-                            imgMatches.forEach((match, mIdx) => {
-                                const srcMatch = match.match(/src=["']([^"']+)["']/i);
-                                if (srcMatch && srcMatch[1]) {
-                                    const imgSrc = srcMatch[1];
-                                    if (!addedFiles.some(f => f.src === imgSrc)) {
-                                        const imgHash = `${idx + 1}_${mIdx + 1}`;
-                                        const fileType = imgSrc.includes('data:image/jpeg') ? 'JPG' : 'PNG';
-                                        addedFiles.push({
-                                            id: imgHash,
-                                            name: `image_${imgHash}`,
-                                            ext: fileType,
-                                            src: imgSrc,
-                                            type: 'image'
-                                        });
-                                    }
+                }
+                
+                // Check inline <img> tags in content HTML
+                if (typeof msg.content === 'string') {
+                    const imgMatches = msg.content.match(/<img[^>]+src=["']([^"']+)["']/gi);
+                    if (imgMatches) {
+                        imgMatches.forEach((match, mIdx) => {
+                            const srcMatch = match.match(/src=["']([^"']+)["']/i);
+                            if (srcMatch && srcMatch[1]) {
+                                const imgSrc = srcMatch[1];
+                                if (!addedFiles.some(f => f.src === imgSrc)) {
+                                    const hash = `${(idx + 1).toString(16)}${mIdx.toString(16)}${Math.random().toString(16).substring(2, 5)}`;
+                                    const fileType = imgSrc.includes('data:image/jpeg') ? 'JPG' : 'PNG';
+                                    addedFiles.push({
+                                        id: `img_${idx}_${mIdx}`,
+                                        name: `image_${hash}`,
+                                        ext: fileType,
+                                        src: imgSrc,
+                                        type: 'image'
+                                    });
                                 }
+                            }
+                        });
+                    }
+
+                    // AI created artifacts in this chat
+                    if (msg.role === 'assistant' || msg.role === 'model') {
+                        if (msg.content.includes('```html') || msg.content.includes('<svg')) {
+                            createdItems.push({
+                                name: `Esquema Visual #${createdItems.length + 1}`,
+                                type: 'SVG / HTML',
+                                icon: `<svg class="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+                            });
+                        } else if (msg.content.includes('```flashcards')) {
+                            createdItems.push({
+                                name: `Flashcards #${createdItems.length + 1}`,
+                                type: 'ANKI JSON',
+                                icon: `<svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`
                             });
                         }
-
-                        // AI created artifacts in this chat
-                        if (msg.role === 'assistant' || msg.role === 'model') {
-                            if (msg.content.includes('```html') || msg.content.includes('<svg')) {
-                                createdItems.push({
-                                    name: `Esquema Visual #${createdItems.length + 1}`,
-                                    type: 'SVG / HTML',
-                                    icon: `<svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
-                                });
-                            } else if (msg.content.includes('```flashcards')) {
-                                createdItems.push({
-                                    name: `Baralla Flashcards #${createdItems.length + 1}`,
-                                    type: 'ANKI JSON',
-                                    icon: `<svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`
-                                });
-                            }
-                        }
                     }
-                });
+                }
+            });
+
+            // Check active uploaded PDF document in this session
+            const sessionPdf = (activeSession && activeSession.pdf_text) || (typeof finalStudyText !== 'undefined' ? finalStudyText : '');
+            if (sessionPdf && sessionPdf.trim()) {
+                const pdfName = (activeSession && activeSession.pdf_name) || 'apunts_estudi.pdf';
+                if (!addedFiles.some(f => f.id === 'study_pdf')) {
+                    addedFiles.push({
+                        id: 'study_pdf',
+                        name: pdfName,
+                        ext: 'PDF',
+                        src: null,
+                        type: 'document',
+                        size: `${(sessionPdf.length / 1024).toFixed(1)} KB`
+                    });
+                }
             }
 
-            // Check active uploaded PDF document
-            if (typeof finalStudyText !== 'undefined' && finalStudyText && finalStudyText.trim()) {
-                addedFiles.push({
-                    id: 'study_pdf',
-                    name: 'apunts_estudi_carregats.pdf',
-                    ext: 'PDF',
-                    src: null,
-                    type: 'document',
-                    size: `${(finalStudyText.length / 1024).toFixed(1)} KB`
-                });
-            }
-
-            // Render "Creat" (Created) section
+            // Render "Creado" section matching screenshot
             if (createdItems.length === 0) {
                 createdContainer.innerHTML = `
-                    <div class="p-4 text-center text-zinc-500 font-medium bg-zinc-950/40 rounded-xl border border-zinc-800/60 text-xs">
-                        Encara no has creat res
+                    <div class="py-4 text-center text-zinc-400 font-normal text-xs sm:text-sm">
+                        Todavía no has creado nada
                     </div>
                 `;
             } else {
                 createdContainer.innerHTML = createdItems.map(item => `
-                    <div class="flex items-center justify-between p-2.5 bg-zinc-950/60 hover:bg-zinc-800/80 border border-zinc-800 rounded-xl transition cursor-pointer">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-700/80 flex items-center justify-center shrink-0">
-                                ${item.icon}
-                            </div>
-                            <div class="truncate">
-                                <p class="font-bold text-zinc-200 truncate text-xs sm:text-sm">${escapeHtml(item.name)}</p>
-                                <p class="text-[10px] text-zinc-400 font-mono">${escapeHtml(item.type)}</p>
-                            </div>
+                    <div class="flex items-center gap-3 py-2 px-2 hover:bg-zinc-800/60 rounded-xl transition cursor-pointer">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center shrink-0">
+                            ${item.icon}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-normal text-zinc-100 text-xs sm:text-sm tracking-tight truncate">${escapeHtml(item.name)}</p>
+                            <p class="text-[11px] text-zinc-400 font-normal leading-tight">${escapeHtml(item.type)}</p>
                         </div>
                     </div>
                 `).join('');
             }
 
-            // Render "Afegit" (Added) section matching screenshot
+            // Render "Añadido" section exactly matching user reference screenshot
             if (addedFiles.length === 0) {
                 addedContainer.innerHTML = `
-                    <div class="p-4 text-center text-zinc-500 font-medium bg-zinc-950/40 rounded-xl border border-zinc-800/60 text-xs">
-                        Encara no has afegit cap imatge o arxiu
+                    <div class="py-4 text-center text-zinc-400 font-normal text-xs sm:text-sm">
+                        Todavía no has añadido nada
                     </div>
                 `;
             } else {
                 addedContainer.innerHTML = addedFiles.map(file => {
                     if (file.type === 'image') {
                         return `
-                            <div onclick="closeChatFilesModal(); openLightbox('${file.src}');" class="flex items-center justify-between p-2.5 bg-zinc-950/60 hover:bg-zinc-800/80 border border-zinc-800 rounded-xl transition cursor-pointer group">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-9 h-9 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-500 shrink-0 flex items-center justify-center overflow-hidden">
-                                        <img src="${file.src}" class="w-full h-full object-cover group-hover:scale-110 transition-transform" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <svg class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5" fill="#121217"/><path d="M21 15l-5-5L5 21h16z" fill="#121217"/></svg>
-                                    </div>
-                                    <div class="truncate">
-                                        <p class="font-semibold text-zinc-200 truncate text-xs sm:text-sm tracking-tight">${escapeHtml(file.name)}</p>
-                                        <p class="text-[10px] text-zinc-400 font-mono font-medium">${escapeHtml(file.ext)}</p>
-                                    </div>
+                            <div onclick="closeChatFilesModal(); openLightbox('${file.src}');" class="flex items-center gap-3 py-2 px-1 hover:bg-zinc-800/60 rounded-xl transition cursor-pointer group">
+                                <div class="w-8 h-8 rounded-lg bg-[#ef4444] text-white flex items-center justify-center shrink-0 shadow-sm">
+                                    <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-zinc-500 group-hover:text-zinc-300 shrink-0"><polyline points="9 18 15 12 9 6"/></svg>
+                                <div class="min-w-0 flex-1">
+                                    <p class="font-normal text-zinc-100 text-xs sm:text-sm tracking-tight truncate">${escapeHtml(file.name)}</p>
+                                    <p class="text-[11px] text-zinc-400 font-normal leading-tight">${escapeHtml(file.ext)}</p>
+                                </div>
                             </div>
                         `;
                     } else {
                         return `
-                            <div class="flex items-center justify-between p-2.5 bg-zinc-950/60 hover:bg-zinc-800/80 border border-zinc-800 rounded-xl transition cursor-pointer group">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-9 h-9 rounded-lg bg-blue-500/20 border border-blue-500/40 text-blue-400 shrink-0 flex items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                    </div>
-                                    <div class="truncate">
-                                        <p class="font-semibold text-zinc-200 truncate text-xs sm:text-sm tracking-tight">${escapeHtml(file.name)}</p>
-                                        <p class="text-[10px] text-zinc-400 font-mono font-medium">${escapeHtml(file.ext)} • ${file.size}</p>
-                                    </div>
+                            <div class="flex items-center gap-3 py-2 px-1 hover:bg-zinc-800/60 rounded-xl transition cursor-pointer group">
+                                <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="font-normal text-zinc-100 text-xs sm:text-sm tracking-tight truncate">${escapeHtml(file.name)}</p>
+                                    <p class="text-[11px] text-zinc-400 font-normal leading-tight">${escapeHtml(file.ext)}${file.size ? ` • ${file.size}` : ''}</p>
                                 </div>
                             </div>
                         `;
@@ -3577,8 +3760,8 @@
             requestAnimationFrame(() => {
                 modal.classList.remove('opacity-0');
                 if (box) {
-                    box.classList.remove('translate-x-full', 'scale-95');
-                    box.classList.add('translate-x-0', 'scale-100');
+                    box.classList.remove('translate-x-full');
+                    box.classList.add('translate-x-0');
                 }
             });
         };
@@ -3588,8 +3771,8 @@
             const box = document.getElementById('chat-files-modal-box');
             if (!modal) return;
             if (box) {
-                box.classList.remove('translate-x-0', 'scale-100');
-                box.classList.add('translate-x-full', 'scale-95');
+                box.classList.remove('translate-x-0');
+                box.classList.add('translate-x-full');
             }
             modal.classList.add('opacity-0');
             setTimeout(() => {
@@ -3600,16 +3783,31 @@
         let isCurrentChatPinned = false;
         window.handleHeaderMenuPin = function() {
             closeChatHeaderMenu();
-            isCurrentChatPinned = !isCurrentChatPinned;
+            let activeSession = allSessions.find(s => s.id === currentSessionId);
+            if (!activeSession) {
+                activeSession = {
+                    id: currentSessionId,
+                    title: 'Conversa',
+                    date: Date.now(),
+                    history: chatHistory || [],
+                    calendar: generatedCalendarArray || []
+                };
+                allSessions.push(activeSession);
+            }
+            activeSession.pinned = !activeSession.pinned;
+            isCurrentChatPinned = !!activeSession.pinned;
             const label = document.getElementById('header-menu-pin-label');
             if (label) label.innerText = isCurrentChatPinned ? 'Desfixar conversa' : 'Fixar conversa';
+            saveSession();
+            renderSidebarHistory();
             showToast(isCurrentChatPinned ? 'Conversa fixada a la part superior' : 'Conversa desfixada');
         };
 
         window.handleHeaderMenuRename = function() {
             closeChatHeaderMenu();
+            let activeSession = allSessions.find(s => s.id === currentSessionId);
             const labelEl = document.getElementById('chat-mode-label');
-            const currentName = labelEl ? labelEl.innerText : 'Classe Activa';
+            const currentName = (activeSession && activeSession.title) || (labelEl ? labelEl.innerText : 'Classe Activa');
             Swal.fire({
                 title: 'Canviar nom de la conversa',
                 input: 'text',
@@ -3618,6 +3816,10 @@
                 showCancelButton: true,
                 confirmButtonText: 'Guardar',
                 cancelButtonText: 'Cancel·lar',
+                confirmButtonColor: '#4f46e5',
+                background: document.documentElement.classList.contains('dark') ? '#18181b' : '#fff',
+                color: document.documentElement.classList.contains('dark') ? '#f4f4f5' : '#18181b',
+                customClass: { popup: 'rounded-3xl border dark:border-zinc-800' },
                 inputValidator: (value) => {
                     if (!value || !value.trim()) {
                         return 'Has d\'escriure un nom vàlid!';
@@ -3627,6 +3829,11 @@
                 if (result.isConfirmed && result.value) {
                     const newName = result.value.trim();
                     if (labelEl) labelEl.innerText = newName;
+                    if (activeSession) {
+                        activeSession.title = newName;
+                    }
+                    saveSession();
+                    renderSidebarHistory();
                     showToast('Nom de la conversa actualitzat!');
                 }
             });
@@ -3638,22 +3845,122 @@
                 showToast('No hi ha cap missatge a la conversa per descarregar.', 'error');
                 return;
             }
-            let content = "=== TRANSCIPCIÓ DE LA CONVERSA (ALIAT INTEL·LIGENT) ===\n\n";
-            chatHistory.forEach(msg => {
-                const sender = msg.role === 'user' ? 'TU' : 'ALIAT';
-                content += `[${sender}]\n${msg.content}\n\n-------------------------\n\n`;
-            });
-            
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `conversa_aliat_${Date.now()}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast('Conversa descarregada correctament!');
+
+            try {
+                const activeSession = allSessions.find(s => s.id === currentSessionId);
+                const title = (activeSession && activeSession.title) || 'Conversa_Aliat';
+                const sanitizedTitle = title.replace(/[^a-zA-Z0-9_\-]/g, '_').substring(0, 30);
+                
+                const { jsPDF } = window.jspdf || {};
+                if (!jsPDF) {
+                    throw new Error('La llibreria PDF no està disponible.');
+                }
+
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 16;
+                const maxLineWidth = pageWidth - (margin * 2);
+
+                // Header banner
+                doc.setFillColor(37, 99, 235);
+                doc.rect(0, 0, pageWidth, 22, 'F');
+                
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.setTextColor(255, 255, 255);
+                doc.text("Aliat Intel·ligent — Tutor Virtual", margin, 11);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8.5);
+                doc.text(new Date().toLocaleDateString('ca-ES', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }), margin, 17);
+
+                let y = 32;
+
+                // Title
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(15);
+                doc.setTextColor(15, 23, 42);
+                const splitHeader = doc.splitTextToSize(title, maxLineWidth);
+                doc.text(splitHeader, margin, y);
+                y += (splitHeader.length * 6.5) + 3;
+
+                doc.setDrawColor(226, 232, 240);
+                doc.setLineWidth(0.4);
+                doc.line(margin, y, pageWidth - margin, y);
+                y += 8;
+
+                chatHistory.forEach((msg, idx) => {
+                    const isUser = msg.role === 'user';
+                    const roleLabel = isUser ? 'Tu (Estudiant)' : 'Aliat Intel·ligent';
+
+                    let cleanText = (msg.content || '')
+                        .replace(/<img[^>]*>/gi, '[Imatge adjunta]')
+                        .replace(/<[^>]+>/g, '')
+                        .replace(/```[a-z]*\n?/gi, '')
+                        .trim();
+
+                    if (!cleanText && msg.image) cleanText = '[Imatge adjunta]';
+
+                    if (y > pageHeight - 24) {
+                        doc.addPage();
+                        y = 20;
+                    }
+
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(10);
+                    if (isUser) {
+                        doc.setTextColor(37, 99, 235);
+                    } else {
+                        doc.setTextColor(79, 70, 229);
+                    }
+                    doc.text(roleLabel, margin, y);
+                    y += 5;
+
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9.5);
+                    doc.setTextColor(51, 65, 85);
+
+                    const lines = doc.splitTextToSize(cleanText, maxLineWidth);
+                    lines.forEach(line => {
+                        if (y > pageHeight - 16) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        doc.text(line, margin, y);
+                        y += 4.6;
+                    });
+
+                    y += 4.5;
+                    if (idx < chatHistory.length - 1) {
+                        doc.setDrawColor(241, 245, 249);
+                        doc.setLineWidth(0.2);
+                        doc.line(margin, y, pageWidth - margin, y);
+                        y += 5;
+                    }
+                });
+
+                // Add page footers
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(8);
+                    doc.setTextColor(148, 163, 184);
+                    doc.text(`Pàgina ${i} de ${totalPages} • Aliat Intel·ligent`, margin, pageHeight - 7);
+                }
+
+                doc.save(`conversa_${sanitizedTitle}_${Date.now()}.pdf`);
+                showToast('PDF descarregat correctament!');
+            } catch (err) {
+                console.error('Error generating PDF:', err);
+                showToast('Error en generar el PDF: ' + err.message, 'error');
+            }
         };
 
         window.handleHeaderMenuExportDocs = function() {
@@ -3662,22 +3969,94 @@
                 showToast('No hi ha cap missatge per exportar.', 'error');
                 return;
             }
-            let md = `# Conversa amb l'Aliat Intel·ligent\n\n*Data d'exportació: ${new Date().toLocaleDateString()}*\n\n---\n\n`;
-            chatHistory.forEach(msg => {
-                const sender = msg.role === 'user' ? '**Usuari**' : '**Aliat Intel·ligent**';
-                md += `${sender}:\n${msg.content}\n\n`;
+
+            const activeSession = allSessions.find(s => s.id === currentSessionId);
+            const title = (activeSession && activeSession.title) || 'Conversa d\'estudi';
+
+            Swal.fire({
+                title: 'Exportar conversa',
+                text: 'Com vols descarregar o exportar aquesta conversa?',
+                icon: 'question',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: 'Microsoft Word (.doc)',
+                denyButtonText: 'Imprimir / PDF',
+                cancelButtonText: 'Cancel·lar',
+                confirmButtonColor: '#2563eb',
+                denyButtonColor: '#4f46e5',
+                background: document.documentElement.classList.contains('dark') ? '#18181b' : '#fff',
+                color: document.documentElement.classList.contains('dark') ? '#f4f4f5' : '#18181b',
+                customClass: { popup: 'rounded-3xl border dark:border-zinc-800' }
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    exportToWordDocument(title);
+                } else if (res.isDenied) {
+                    window.print();
+                }
             });
-            const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        };
+
+        function exportToWordDocument(title) {
+            let messagesHtml = '';
+            chatHistory.forEach(msg => {
+                const isUser = msg.role === 'user';
+                const senderName = isUser ? 'Tu (Estudiant)' : 'Aliat Intel·ligent';
+                const cardClass = isUser ? 'user-msg' : 'ai-msg';
+                const senderClass = isUser ? 'user-sender' : 'ai-sender';
+                
+                let bodyContent = msg.content || '';
+                if (typeof marked !== 'undefined' && marked.parse) {
+                    bodyContent = marked.parse(bodyContent);
+                } else {
+                    bodyContent = `<p>${bodyContent.replace(/\n/g, '<br>')}</p>`;
+                }
+
+                messagesHtml += `
+                    <div class="${cardClass}">
+                        <div class="sender ${senderClass}">${senderName}</div>
+                        <div class="content">${bodyContent}</div>
+                    </div>
+                `;
+            });
+
+            const wordTemplate = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>${escapeHtml(title)}</title>
+                    <style>
+                        body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #1e293b; margin: 2.5cm; }
+                        h1 { color: #1e40af; font-size: 20pt; border-bottom: 2pt solid #3b82f6; padding-bottom: 6pt; margin-bottom: 8pt; font-family: 'Calibri', Arial, sans-serif; }
+                        .meta { color: #64748b; font-size: 9pt; margin-bottom: 20pt; }
+                        .user-msg { background-color: #f0f7ff; border-left: 4.5pt solid #2563eb; padding: 12pt; margin: 12pt 0; border-radius: 4pt; }
+                        .ai-msg { background-color: #f8fafc; border-left: 4.5pt solid #4f46e5; padding: 12pt; margin: 12pt 0; border-radius: 4pt; }
+                        .sender { font-weight: bold; font-size: 10pt; text-transform: uppercase; margin-bottom: 6pt; letter-spacing: 0.5pt; }
+                        .user-sender { color: #1d4ed8; }
+                        .ai-sender { color: #4338ca; }
+                        .content { font-size: 11pt; }
+                        p { margin: 0 0 6pt 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${escapeHtml(title)}</h1>
+                    <div class='meta'>Document generat amb <strong>Aliat Intel·ligent</strong> • Data: ${new Date().toLocaleDateString('ca-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+                    ${messagesHtml}
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', wordTemplate], { type: 'application/msword;charset=utf-8' });
+            const sanitizedTitle = title.replace(/[^a-zA-Z0-9_\-]/g, '_').substring(0, 30);
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `document_estudi_aliat_${Date.now()}.md`;
+            a.download = `conversa_${sanitizedTitle}_${Date.now()}.doc`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast('Exportat a Document Markdown!');
-        };
+            showToast('Document Word (.doc) descarregat correctament!');
+        }
 
         window.handleHeaderMenuDelete = function() {
             closeChatHeaderMenu();
@@ -5257,36 +5636,6 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             triggerAiResponse();
             logStudentActivity('tactic', 'Format Cornell generat', topic);
         };
-        // --- SISTEMA DE SESSIONS AL NÚVOL (NOU) ---
-        async function syncCloudSessions() {
-            try {
-                const res = await fetch('/api/sessions/get', {
-                    headers: { 'Authorization': 'Bearer ' + authToken }
-                });
-                const data = await res.json();
-                
-                if (data.success) {
-                    allSessions = data.sessions;
-                    
-                    // Recuperar la ID actual o assignar-ne una
-                    currentSessionId = localStorage.getItem('aliat_current_id');
-                    if (!currentSessionId && allSessions.length > 0) {
-                        currentSessionId = allSessions[0].id; // Si no hi ha id, carrega la més recent
-                        localStorage.setItem('aliat_current_id', currentSessionId);
-                    } else if (!currentSessionId) {
-                        currentSessionId = 'sess_' + Date.now();
-                        localStorage.setItem('aliat_current_id', currentSessionId);
-                    }
-
-                    renderSidebarHistory();
-                    loadActiveSessionData();
-                } else {
-                    if (res.status === 401) logout(); // Token caducat
-                }
-            } catch(e) {
-                console.error("Error sincronitzant: ", e);
-            }
-        }
 
         function cleanTopicTitle(raw) {
             if (!raw) return "";
@@ -5481,12 +5830,30 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     if (key === 'aliat_sessions_backup' && Array.isArray(allSessions)) {
                         const slimSessions = allSessions.map(s => {
                             const copy = { ...s };
-                            delete copy.html; // HTML is saved individually / stored in cloud
+                            delete copy.html; // HTML can be restored from history
+                            if (Array.isArray(copy.history)) {
+                                copy.history = copy.history.map(m => {
+                                    if (m && m.image && m.image.length > 300) {
+                                        return { ...m, image: '[ATTACHMENT]' };
+                                    }
+                                    return m;
+                                });
+                            }
+                            if (Array.isArray(copy.files)) {
+                                copy.files = copy.files.map(f => {
+                                    if (f && f.src && f.src.length > 300) {
+                                        return { ...f, src: '' };
+                                    }
+                                    return f;
+                                });
+                            }
                             return copy;
                         });
                         localStorage.setItem('aliat_sessions_backup', JSON.stringify(slimSessions));
                     }
-                } catch (e2) {}
+                } catch (e2) {
+                    console.warn('Failed to save slim backup to localStorage:', e2);
+                }
             }
         }
 
@@ -5516,12 +5883,15 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             const chatLabel = document.getElementById('chat-mode-label');
             if (chatLabel) chatLabel.innerText = currentTitle;
             
+            const existingFiles = (activeSession && Array.isArray(activeSession.files)) ? activeSession.files : [];
+
             const sessionData = { 
                 id: currentSessionId, 
                 mode: appMode, 
                 title: currentTitle, 
                 history: chatHistory, 
                 chat_history: chatHistory, 
+                files: existingFiles,
                 calendar: generatedCalendarArray, 
                 games: window.interactiveGames, 
                 initial_quiz: window.initialQuizResults || null,
@@ -5532,7 +5902,11 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             };
             
             const idx = allSessions.findIndex(s => s.id === currentSessionId);
-            if(idx >= 0) allSessions[idx] = sessionData; else allSessions.push(sessionData);
+            if (idx >= 0) {
+                allSessions[idx] = { ...allSessions[idx], ...sessionData };
+            } else {
+                allSessions.push(sessionData);
+            }
             
             safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
             renderSidebarHistory(); 
@@ -5547,35 +5921,84 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         }
 
         async function syncCloudSessions(isBackground = false) {
+            if (!authToken) return;
             try {
-                const res = await fetch('/api/sessions/get?t=' + Date.now(), { headers: { 'Authorization': 'Bearer ' + authToken } });
+                const res = await fetch('/api/sessions/get?t=' + Date.now(), { 
+                    headers: { 'Authorization': 'Bearer ' + authToken } 
+                });
                 
                 if (!res.ok) {
-                    if (!isBackground) Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Error Servidor (Get): ' + res.status, showConfirmButton: false, timer: 6000 });
+                    if (res.status === 401) return logout();
                     return;
                 }
 
                 const data = await res.json();
                 
-                if (data.success) {
-                    allSessions = data.sessions;
-                    localStorage.setItem('aliat_sessions_backup', JSON.stringify(allSessions));
+                if (data.success && Array.isArray(data.sessions)) {
+                    const cloudSessions = data.sessions;
+                    
+                    // Estratègia de combinació segura: Mai esborrar converses locals si el núvol en té menys o està buit
+                    const sessionMap = new Map();
+                    
+                    // 1. Guardar les sessions locals primer
+                    if (Array.isArray(allSessions)) {
+                        allSessions.forEach(s => {
+                            if (s && s.id) sessionMap.set(s.id, s);
+                        });
+                    }
+
+                    // 2. Fusionar amb les del núvol respectant canvis recents
+                    cloudSessions.forEach(cs => {
+                        if (!cs || !cs.id) return;
+                        const local = sessionMap.get(cs.id);
+                        if (!local) {
+                            sessionMap.set(cs.id, cs);
+                        } else {
+                            const localDate = local.date || (local.updated_at ? new Date(local.updated_at).getTime() : 0);
+                            const cloudDate = cs.date || (cs.updated_at ? new Date(cs.updated_at).getTime() : 0);
+                            
+                            // Si el local té canvis més recents o fitxers addicionals, conservar-los
+                            if (localDate > cloudDate + 2000) {
+                                const merged = { ...cs, ...local };
+                                if (Array.isArray(local.files) && local.files.length > 0) merged.files = local.files;
+                                sessionMap.set(cs.id, merged);
+                                saveSessionToCloud(merged);
+                            } else {
+                                const merged = { ...local, ...cs };
+                                if (Array.isArray(local.files) && local.files.length > 0 && (!merged.files || merged.files.length === 0)) {
+                                    merged.files = local.files;
+                                }
+                                sessionMap.set(cs.id, merged);
+                            }
+                        }
+                    });
+
+                    // 3. Si hi ha alguna sessió local amb contingut que encara no és al núvol, pujar-la
+                    sessionMap.forEach(s => {
+                        const inCloud = cloudSessions.some(cs => cs.id === s.id);
+                        if (!inCloud && ((s.history && s.history.length > 0) || (s.calendar && s.calendar.length > 0) || (s.pdf_text && s.pdf_text.length > 0))) {
+                            saveSessionToCloud(s);
+                        }
+                    });
+
+                    allSessions = Array.from(sessionMap.values());
+                    safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
                     
                     let sessionExists = allSessions.find(s => s.id === currentSessionId);
                     if (!sessionExists && allSessions.length > 0 && chatHistory.length === 0) { 
                         currentSessionId = allSessions[0].id; 
-                        localStorage.setItem('aliat_current_id', currentSessionId); 
+                        safeLocalStorageSet('aliat_current_id', currentSessionId); 
                         if (!isBackground) loadActiveSessionData(); 
                     }
                     renderSidebarHistory(); 
-                } else {
-                    if (res.status === 401) return logout();
-                    if (!isBackground) Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Error DB (Get): ' + data.error, showConfirmButton: false, timer: 5000 });
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.warn('Sync cloud error:', e);
+            }
         }
 
         async function saveSessionToCloud(sessionData) {
+            if (!authToken || !sessionData || !sessionData.id) return;
             try {
                 const res = await fetch('/api/sessions/save', {
                     method: 'POST', 
@@ -5584,19 +6007,15 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 });
                 
                 if (!res.ok) {
-                    const data = await res.json().catch(() => ({}));
-                    Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Error de Vercel (Save): ' + (data.error || res.status), showConfirmButton: false, timer: 6000, customClass: { popup: 'dark:bg-zinc-900 dark:text-white border border-red-500' } });
                     return;
                 }
 
                 const data = await res.json();
-                if (data.error) {
-                    Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Error Turso: ' + data.error, showConfirmButton: false, timer: 6000, customClass: { popup: 'dark:bg-zinc-900 dark:text-white border border-red-500' } });
-                } else {
-                    syncCloudSessions(true);
+                if (data.success) {
+                    // Sync silent
                 }
             } catch (e) { 
-                Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Error de connexió al guardar', showConfirmButton: false, timer: 3000 });
+                console.warn('Error guardant al núvol:', e);
             }
         }
 
@@ -5648,6 +6067,10 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 activeSession.title = displayTitle;
                 document.getElementById('chat-mode-label').innerText = displayTitle;
 
+                isCurrentChatPinned = !!activeSession.pinned;
+                const pinLabel = document.getElementById('header-menu-pin-label');
+                if (pinLabel) pinLabel.innerText = isCurrentChatPinned ? 'Desfixar conversa' : 'Fixar conversa';
+
                 updateHeaderButtonsVisibility();
                 document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
                 
@@ -5678,14 +6101,19 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
 
         async function cleanupCurrentSessionIfEmpty() {
             if (!currentSessionId) return;
-            const hasUserMessages = chatHistory && chatHistory.some(m => m.role === 'user');
-            const hasCalendar = generatedCalendarArray && generatedCalendarArray.length > 0;
-            const hasPdfs = uploadedPDFs && uploadedPDFs.length > 0;
-            
-            if (!hasUserMessages && !hasCalendar && !hasPdfs) {
+            const activeSession = allSessions.find(s => s.id === currentSessionId);
+            const history = (activeSession && activeSession.history) || chatHistory || [];
+            const hasAnyMessages = Array.isArray(history) && history.length > 0;
+            const hasCalendar = (activeSession && activeSession.calendar && activeSession.calendar.length > 0) || (generatedCalendarArray && generatedCalendarArray.length > 0);
+            const hasPdfs = (activeSession && activeSession.pdf_text && activeSession.pdf_text.length > 0) || (uploadedPDFs && uploadedPDFs.length > 0);
+            const hasHtml = activeSession && activeSession.html && activeSession.html.length > 100;
+            const hasCustomTitle = activeSession && activeSession.title && !['Nova Conversa', "Pla d'Estudis", 'XatBot Lliure'].includes(activeSession.title);
+
+            // Only delete if truly completely empty with no interaction whatsoever
+            if (!hasAnyMessages && !hasCalendar && !hasPdfs && !hasHtml && !hasCustomTitle) {
                 const idToDelete = currentSessionId;
                 allSessions = allSessions.filter(s => s.id !== idToDelete);
-                localStorage.setItem('aliat_sessions_backup', JSON.stringify(allSessions));
+                safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
                 localStorage.removeItem('aliat_local_html_' + idToDelete);
                 localStorage.removeItem('aliat_local_context_' + idToDelete);
                 localStorage.removeItem('aliat_local_text_' + idToDelete);
@@ -5706,7 +6134,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (currentSessionId && currentSessionId !== id) {
                 await cleanupCurrentSessionIfEmpty();
             }
-            localStorage.setItem('aliat_current_id', id); 
+            safeLocalStorageSet('aliat_current_id', id); 
             currentSessionId = id;
             renderSidebarHistory(); 
             loadActiveSessionData();
@@ -5720,11 +6148,11 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         }
 
         window.newSession = async function() {
-            // Esborrar sessió prèvia si està buida abans de crear-ne una de nova
+            // Esborrar sessió prèvia només si era completament buida abans de crear-ne una de nova
             await cleanupCurrentSessionIfEmpty();
 
             currentSessionId = 'sess_' + Date.now();
-            localStorage.setItem('aliat_current_id', currentSessionId);
+            safeLocalStorageSet('aliat_current_id', currentSessionId);
             
             chatHistory = [];
             generatedCalendarArray = [];
@@ -5767,11 +6195,14 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (!list) return;
             list.innerHTML = '';
             
-            // Neteja automàtica de qualsevol sessió buida existent a l'historial
-            allSessions = allSessions.filter(s => !isSessionEmpty(s));
-            localStorage.setItem('aliat_sessions_backup', JSON.stringify(allSessions));
+            // Conservem totes les sessions vàlides: ordenem primer les fixades (pinned) i després per data
+            const sortedSessions = [...allSessions].filter(s => s && s.id).sort((a, b) => {
+                if (Boolean(b.pinned) !== Boolean(a.pinned)) {
+                    return b.pinned ? 1 : -1;
+                }
+                return (b.date || 0) - (a.date || 0);
+            });
 
-            const sortedSessions = [...allSessions].sort((a, b) => (b.date || 0) - (a.date || 0));
             if (sortedSessions.length === 0) {
                 list.innerHTML = '<div class="text-xs text-zinc-500 dark:text-zinc-400 px-3 py-3.5 italic rounded-2xl bg-zinc-100/70 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/60 text-center">Cap conversa guardada</div>';
                 return;
@@ -5801,11 +6232,16 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     ? "bg-blue-50 text-blue-900 dark:bg-zinc-800 dark:text-white font-semibold border border-blue-200/90 dark:border-zinc-700" 
                     : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 hover:text-zinc-950 dark:hover:text-white font-medium border border-transparent";
 
+                const pinIconHtml = s.pinned ? `<svg class="w-3.5 h-3.5 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Conversa fixada"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-6H6.5L5 17z" fill="currentColor"/><path d="M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7" fill="currentColor"/></svg>` : '';
+
                 list.innerHTML += `
                     <div class="relative group mb-1 w-full flex justify-center">
                         <button onclick="loadSession('${s.id}')" class="w-full py-2 px-2.5 rounded-xl text-xs truncate transition-all duration-200 ${activeClass} flex items-center justify-start gap-2.5 pr-8 cursor-pointer">
                             ${iconSvg}
-                            <span class="truncate flex-1 tracking-tight font-medium text-zinc-900 dark:text-zinc-100 text-left">${title}</span>
+                            <span class="truncate flex-1 tracking-tight font-medium text-zinc-900 dark:text-zinc-100 text-left flex items-center gap-1.5 min-w-0">
+                                ${pinIconHtml}
+                                <span class="truncate">${title}</span>
+                            </span>
                             <span class="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0 group-hover:hidden">${dateStr}</span>
                         </button>
                         <button onclick="deleteSession('${s.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-500/15 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10 cursor-pointer" title="Eliminar conversa">
@@ -5867,7 +6303,12 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (!container) return;
             container.innerHTML = '';
             
-            const sorted = [...(sessionsList || [])].sort((a, b) => (b.date || 0) - (a.date || 0));
+            const sorted = [...(sessionsList || [])].sort((a, b) => {
+                if (Boolean(b.pinned) !== Boolean(a.pinned)) {
+                    return b.pinned ? 1 : -1;
+                }
+                return (b.date || 0) - (a.date || 0);
+            });
             
             if (sorted.length === 0) {
                 container.innerHTML = `
@@ -5892,6 +6333,10 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Pla d'Estudis</span>`
                     : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> XatBot Lliure</span>`;
 
+                const badgePinned = s.pinned 
+                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-6H6.5L5 17z" fill="currentColor"/><path d="M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7" fill="currentColor"/></svg> Fixada</span>` 
+                    : '';
+
                 const activeRing = isActive ? 'border-2 border-indigo-500 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20' : 'border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-indigo-300 dark:hover:border-zinc-700';
 
                 container.innerHTML += `
@@ -5905,6 +6350,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-center gap-2 mb-1 flex-wrap">
                                     <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm truncate max-w-[240px] sm:max-w-xs">${title}</h4>
+                                    ${badgePinned}
                                     ${badgeMode}
                                     ${isActive ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-600 text-white">ACTIU</span>` : ''}
                                 </div>
@@ -5944,7 +6390,11 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 if (result.isConfirmed) {
                     // 1. Esborrar localment
                     allSessions = allSessions.filter(s => s.id !== id);
-                    localStorage.setItem('aliat_sessions_backup', JSON.stringify(allSessions));
+                    safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
+                    localStorage.removeItem('aliat_local_html_' + id);
+                    localStorage.removeItem('aliat_local_context_' + id);
+                    localStorage.removeItem('aliat_local_text_' + id);
+                    localStorage.removeItem('aliat_student_memory_' + id);
                     
                     // 2. Si esborres el xat on estàs ara mateix, crear un de nou
                     if (currentSessionId === id) {
@@ -6402,6 +6852,8 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         });
 
         let currentAttachmentBase64 = null;
+        let currentAttachmentName = '';
+        let currentAttachmentExt = 'PNG';
 
         function handleAttachment(input) {
             const file = input.files[0];
@@ -6409,6 +6861,10 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             
             // Si és una imatge, la convertim a Base64 per enviar-la a la IA
             if (file.type.startsWith('image/')) {
+                const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                currentAttachmentName = nameWithoutExt.replace(/[^a-zA-Z0-9_\-]/g, '_');
+                currentAttachmentExt = (file.name.split('.').pop() || 'PNG').toUpperCase();
+                
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     currentAttachmentBase64 = e.target.result;
@@ -6417,13 +6873,15 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 };
                 reader.readAsDataURL(file);
             } else {
-                Swal.fire('Atenció', 'De moment només es poden adjuntar imatges al xat ràpid.', 'info');
+                Swal.fire('Atenció', 'De moment només es poden adjuntar imatges al xat.', 'info');
             }
             input.value = ''; // Resetejar input
         }
 
         function removeAttachment() {
             currentAttachmentBase64 = null;
+            currentAttachmentName = '';
+            currentAttachmentExt = 'PNG';
             document.getElementById('attachment-preview').classList.add('hidden');
             document.getElementById('preview-img').src = '';
         }
@@ -6433,8 +6891,10 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (!msg && !currentAttachmentBase64) return;
             
             let displayMsg = msg; 
-            let payloadContent = msg || "Si us plau, analitza aquesta imatge i explica'm què hi veus relacionat com a tutor d'estudis.";
+            let payloadContent = msg || "Si us plau, analitza aquesta imatge i explica'm què hi veus.";
             let payloadImage = null;
+            const attachedName = currentAttachmentName || `image_${Math.random().toString(16).substring(2, 8)}`;
+            const attachedExt = currentAttachmentExt || 'PNG';
 
             if (currentAttachmentBase64) { 
                 displayMsg = `<img src="${currentAttachmentBase64}" onclick="openLightbox(this.src)" class="max-w-[220px] rounded-xl mb-2 cursor-zoom-in hover:opacity-90 transition shadow-md border border-zinc-700/50"><br>` + msg; 
@@ -6446,7 +6906,27 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             input.style.height = 'auto'; 
             
             // Guardem el text I la imatge real a l'historial per enviar-la a Gemini
-            chatHistory.push({ role: 'user', content: payloadContent, image: payloadImage }); 
+            chatHistory.push({ 
+                role: 'user', 
+                content: payloadContent, 
+                image: payloadImage,
+                fileName: attachedName,
+                fileExt: attachedExt
+            }); 
+
+            // Registrar l'arxiu a la sessió activa
+            let activeSession = allSessions.find(s => s.id === currentSessionId);
+            if (activeSession && payloadImage) {
+                if (!Array.isArray(activeSession.files)) activeSession.files = [];
+                activeSession.files.push({
+                    id: 'img_' + Date.now(),
+                    name: attachedName,
+                    ext: attachedExt,
+                    src: payloadImage,
+                    type: 'image',
+                    date: Date.now()
+                });
+            }
             
             removeAttachment(); 
             saveSession(); 

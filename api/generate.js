@@ -278,14 +278,28 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
             for (const item of contents) {
                 const role = item.role === 'model' || item.role === 'assistant' ? 'assistant' : 'user';
-                let text = '';
+                const parts = [];
                 if (Array.isArray(item.parts)) {
-                    text = item.parts.map(p => p.text || '').filter(Boolean).join('\n');
+                    for (const p of item.parts) {
+                        if (p.text) {
+                            parts.push({ type: 'text', text: p.text });
+                        }
+                        if (p.inlineData && p.inlineData.data) {
+                            const mime = p.inlineData.mimeType || 'image/png';
+                            parts.push({
+                                type: 'image_url',
+                                image_url: { url: `data:${mime};base64,${p.inlineData.data}` }
+                            });
+                        }
+                    }
                 } else if (typeof item.content === 'string') {
-                    text = item.content;
+                    parts.push({ type: 'text', text: item.content });
                 }
-                if (text) {
-                    messages.push({ role, content: text });
+
+                if (parts.length === 1 && parts[0].type === 'text') {
+                    messages.push({ role, content: parts[0].text });
+                } else if (parts.length > 0) {
+                    messages.push({ role, content: parts });
                 }
             }
 
@@ -508,9 +522,14 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                     parts.push({ text: msg.content.trim() });
                 }
                 
-                if (msg.image && typeof msg.image === 'string' && msg.image.includes('base64,')) {
-                    const mimeType = msg.image.split(';')[0].split(':')[1] || 'image/png';
-                    const base64Data = msg.image.split(',')[1];
+                let rawImg = msg.image;
+                if (!rawImg && typeof msg.content === 'string' && msg.content.includes('<img')) {
+                    const match = msg.content.match(/src=["'](data:image\/[^;]+;base64,[^"']+)["']/i);
+                    if (match && match[1]) rawImg = match[1];
+                }
+                if (rawImg && typeof rawImg === 'string' && rawImg.includes('base64,')) {
+                    const mimeType = rawImg.split(';')[0].split(':')[1] || 'image/png';
+                    const base64Data = rawImg.split(',')[1];
                     if (base64Data) {
                         parts.push({
                             inlineData: { mimeType: mimeType, data: base64Data }
@@ -624,11 +643,19 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             "OPCIÓ 4 (Esquema buit):\n```schema\n{\"titol\": \"...\", \"buits\": [{\"context\": \"...\", \"resposta\": \"...\"}]}\n```\n";
             
             const geminiHistory = formatGeminiHistory(chatHistory);
-
+            const hasImageInChat = geminiHistory.some(m => m.parts && m.parts.some(p => p.inlineData || p.type === 'image_url'));
+            const imageInstruction = hasImageInChat
+                ? "\n\n⚠️ INSTRUCCIÓ MULTIMODAL PRIORITÀRIA (IMATGE ADJUNTADA):\n" +
+                  "L'alumne ha adjuntat una IMATGE / FOTO al xat. EL TEU CONTEXT PRINCIPAL I ABSOLUTAMENT PRIORITARI ÉS AQUESTA IMATGE.\n" +
+                  "- Analitza exhaustivament tot el contingut visual: textos manuscrits o impresos, diagrames, exercicis, fórmules, problemes o gràfics de la imatge.\n" +
+                  "- Respon directament resolent, analitzant o explicant el que es veu a la imatge, guiant l'alumne pas a pas.\n" +
+                  "- No ignoris la imatge ni et desviïs a un temari general si la imatge conté la consulta o tasca de l'alumne.\n"
+                : "";
+            
             let replyText = "";
             try {
                 replyText = await executeAI({
-                    systemPrompt: systemPromptChat,
+                    systemPrompt: systemPromptChat + imageInstruction,
                     contents: geminiHistory
                 });
             } catch (aiErr) {
@@ -665,8 +692,16 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 } catch(e) {}
             }
 
+            const hasImageInFreeChat = geminiHistory.some(m => m.parts && m.parts.some(p => p.inlineData || p.type === 'image_url'));
+            const imageInstructionFree = hasImageInFreeChat
+                ? "\n\n⚠️ INSTRUCCIÓ MULTIMODAL PRIORITÀRIA (IMATGE ADJUNTADA):\n" +
+                  "L'usuari ha adjuntat una IMATGE / FOTO al xat. EL TEU CONTEXT PRINCIPAL ÉS AQUESTA IMATGE.\n" +
+                  "- Analitza en detall el que apareix a la imatge (textos, exercicis, fórmules, esquemes o fotos).\n" +
+                  "- Respon explicant o resolent el contingut de la imatge de forma directa, detallada i estructurada.\n"
+                : "";
+
             const systemPromptFree = "Ets Aliat Intel·ligent, el XatBot acadèmic i assistent personal.\n" + safetyRules + "\n\n" +
-                "CONTINUÏTAT TOTAL DE LA CONVERSA: Llegeix tot l'historial de missatges anteriors amb atenció. Mantingues sempre el fil i el context del tema que l'usuari està tractant (per exemple, si s'està parlant de funcions, de xarxes o d'un tema concret, continua estrictament sobre aquest tema sense canviar arbitràriament de matèria). Respon sempre amb excel·lència en català, estructurant bé els conceptes, fórmules i esquemes." + searchContext;
+                "CONTINUÏTAT TOTAL DE LA CONVERSA: Llegeix tot l'historial de missatges anteriors amb atenció. Mantingues sempre el fil i el context del tema que l'usuari està tractant (per exemple, si s'està parlant de funcions, de xarxes o d'un tema concret, continua estrictament sobre aquest tema sense canviar arbitràriament de matèria). Respon sempre amb excel·lència en català, estructurant bé els conceptes, fórmules i esquemes." + searchContext + imageInstructionFree;
             
             let replyText = "";
             try {

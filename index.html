@@ -566,6 +566,13 @@
                     <span class="sidebar-text truncate font-medium">XatBot</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">XatBot</span>
                 </button>
+                <button type="button" onclick="openVoiceCallModal()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
+                    <div class="w-7 h-7 rounded-lg bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/20 group-hover:scale-105 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    </div>
+                    <span class="sidebar-text truncate font-medium">Chat de Veu</span>
+                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Chat de Veu en Directe</span>
+                </button>
                 <button type="button" onclick="showDailyUseBlockedModal()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
                     <div class="w-7 h-7 rounded-lg bg-red-500/15 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 border border-red-500/20 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
@@ -628,7 +635,7 @@
                         <p id="welcome-subtext" class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm max-w-lg mx-auto font-normal leading-relaxed px-4 transition-all duration-500">El teu aliat d'estudi intel·ligent. En què et puc ajudar avui?</p>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 max-w-3xl mx-auto px-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 max-w-5xl mx-auto px-2">
                         
                         <!-- TARGETA 1: PLA D'ESTUDIS -->
                         <button onclick="startStudyMode()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-blue-500/80 dark:hover:border-blue-400/80 hover:ring-2 hover:ring-blue-500/20 hover:shadow-xl hover:shadow-blue-500/15 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
@@ -666,6 +673,27 @@
                             </div>
                             <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors relative z-10">XatBot Lliure</h3>
                             <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Conversa directa per resoldre dubtes i practicar exercicis.</p>
+                        </button>
+
+                        <!-- TARGETA 3: XAT DE VEU (TRUCADA) -->
+                        <button onclick="openVoiceCallModal()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-cyan-500/80 dark:hover:border-cyan-400/80 hover:ring-2 hover:ring-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/15 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
+                            <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-cyan-500/20 dark:bg-cyan-500/30 rounded-full blur-2xl group-hover:scale-150 group-hover:opacity-100 opacity-0 transition-all duration-500 pointer-events-none"></div>
+                            
+                            <div class="flex items-center justify-between w-full mb-3 relative z-10">
+                                <div class="w-10 h-10 bg-cyan-100/80 dark:bg-zinc-800/90 border border-cyan-200 dark:border-zinc-700/80 text-cyan-600 dark:text-cyan-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:shadow-md group-hover:shadow-cyan-500/30 group-hover:border-cyan-400 transition-all duration-300 shadow-xs">
+                                    <div class="flex items-center gap-0.5 shrink-0 h-4">
+                                        <span class="w-0.5 h-3 bg-cyan-500 rounded-full transition-all group-hover:animate-bounce [animation-delay:-0.3s]"></span>
+                                        <span class="w-0.5 h-4 bg-cyan-500 rounded-full transition-all group-hover:animate-bounce [animation-delay:-0.15s]"></span>
+                                        <span class="w-0.5 h-2.5 bg-cyan-500 rounded-full transition-all group-hover:animate-bounce"></span>
+                                    </div>
+                                </div>
+                                <div class="w-7 h-7 rounded-full bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200/60 dark:border-cyan-800/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                </div>
+                            </div>
+                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors relative z-10">Chat de Veu</h3>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Trucada de veu en directe per parlar amb fluïdesa i veus naturals.</p>
                         </button>
 
                         <!-- TARGETA 3: ÚS QUOTIDIÀ -->
@@ -974,6 +1002,12 @@
                                         </div>
                                         <span>Adjuntar Imatge o PDF</span>
                                     </label>
+                                    <button type="button" onclick="openVoiceCallModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-cyan-50 dark:hover:bg-cyan-950/40 hover:text-cyan-600 dark:hover:text-cyan-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
+                                        <div class="w-7 h-7 rounded-lg bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                        </div>
+                                        <span>Chat de Veu en Directe (Trucada)</span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -1213,117 +1247,128 @@
             </div>
         </div>
 
-        <!-- Center AI Orb Visualizer - Centered -->
-        <div class="relative z-10 flex flex-col items-center justify-center my-auto py-3 text-center mx-auto w-full">
-            <div id="voice-call-orb-wrapper" class="relative w-40 h-40 md:w-52 md:h-52 flex items-center justify-center mx-auto mb-6">
+        <!-- Center AI Orb Visualizer - Pure Minimal & Elegant -->
+        <div class="relative z-10 flex flex-col items-center justify-center my-auto py-6 text-center mx-auto w-full">
+            <div id="voice-call-orb-wrapper" class="relative w-44 h-44 md:w-56 md:h-56 flex items-center justify-center mx-auto mb-6">
                 <!-- Outer Pulse Rings -->
                 <div id="voice-call-ring1" class="absolute inset-0 rounded-full border-2 border-cyan-500/40 animate-ping opacity-75"></div>
                 <div id="voice-call-ring2" class="absolute -inset-4 rounded-full border border-blue-500/30 animate-pulse opacity-60"></div>
                 
-                <!-- Main Glowing Orb Sphere (Clickable to send voice immediately) -->
-                <div id="voice-call-orb" onclick="triggerVoiceCallSend()" class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-[0_0_60px_rgba(6,182,212,0.6)] flex items-center justify-center transition-all duration-500 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105 active:scale-95" title="Toca l'Orbe per enviar la teva veu ara mateix">
+                <!-- Main Glowing Orb Sphere (Clickable to interrupt/send voice immediately) -->
+                <div id="voice-call-orb" onclick="triggerVoiceCallSend()" class="w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-[0_0_70px_rgba(6,182,212,0.65)] flex items-center justify-center transition-all duration-500 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105 active:scale-95" title="Prem per enviar la teva veu ara mateix">
                     <div class="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-black/40 mix-blend-overlay"></div>
-                    <div id="voice-call-orb-inner" class="w-16 h-16 rounded-full bg-white/20 blur-md animate-pulse"></div>
-                    <svg id="voice-call-status-icon" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white relative z-10 drop-shadow-md"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    <div id="voice-call-orb-inner" class="w-20 h-20 rounded-full bg-white/20 blur-md animate-pulse"></div>
+                    <svg id="voice-call-status-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white relative z-10 drop-shadow-md"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                 </div>
             </div>
 
-            <!-- Status Label Pill & Quick Mic Action Bar - Centered -->
-            <div class="text-center space-y-3 flex flex-col items-center justify-center w-full mx-auto">
-                <!-- Botons d'Acció Ràpida i Idioma de Veu -->
-                <div class="flex items-center gap-2 flex-wrap justify-center my-1">
-                    <button type="button" onclick="triggerVoiceCallSend()" class="px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs transition shadow-lg flex items-center justify-center gap-1.5 cursor-pointer border border-white/20 active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                        <span>Prem per Enviar Veu</span>
+            <!-- Single Minimal Status Pill -->
+            <div class="flex items-center justify-center">
+                <span id="voice-call-status-pill" class="inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span id="voice-call-status-text">Escoltant...</span>
+                </span>
+            </div>
+
+            <!-- Permission Warning (Only shown if mic permission is blocked) -->
+            <div id="voice-call-permission-banner" class="hidden mt-4 mx-auto max-w-sm bg-amber-950/80 border border-amber-500/50 p-3 rounded-2xl text-amber-200 text-xs text-center flex flex-col items-center gap-2 shadow-xl backdrop-blur-md">
+                <p>El micròfon necessita permís per escoltar:</p>
+                <button type="button" onclick="requestVoiceCallMicPermission()" class="px-4 py-1.5 rounded-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs transition shadow active:scale-95 cursor-pointer">
+                    Activar Micròfon
+                </button>
+            </div>
+        </div>
+
+        <!-- Clean Floating Control Bar -->
+        <div class="relative z-10 w-full max-w-md mx-auto flex items-center justify-center gap-4 md:gap-6 pb-6 text-center">
+            <!-- Mute/Unmute Mic Button -->
+            <button type="button" id="voice-call-mic-btn" onclick="toggleVoiceCallMic()" class="w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-white flex flex-col items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Silenciar / Activar Micròfon">
+                <svg id="voice-call-mic-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+            </button>
+
+            <!-- Veu i Idioma Button (Opens Settings Modal) -->
+            <button type="button" id="voice-call-settings-btn" onclick="openVoiceCallSettingsModal()" class="w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-indigo-400 flex flex-col items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Configuració de Veu i Idioma">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+
+            <!-- Transcripció Button (Opens Drawer) -->
+            <button type="button" id="voice-call-transcript-btn" onclick="toggleVoiceCallTranscript()" class="w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-cyan-400 flex flex-col items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Veure Transcripció">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </button>
+
+            <!-- Penjar Trucada Button (Red) -->
+            <button type="button" onclick="endVoiceCall()" class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white flex items-center justify-center transition-all shadow-xl shadow-red-600/40 border border-red-400/50 active:scale-95 cursor-pointer shrink-0" title="Penjar trucada">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="rotate-[135deg]"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </button>
+        </div>
+
+        <!-- POPUP 1: MODAL CONFIGURACIÓ DE VEU I IDIOMA (On Demand) -->
+        <div id="voice-call-settings-sheet" class="hidden absolute inset-0 z-40 bg-zinc-950/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="bg-zinc-900 border border-zinc-700/80 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-5 text-left text-white">
+                <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-400"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <h3 class="font-bold text-base">Veu i Idioma de la Trucada</h3>
+                    </div>
+                    <button type="button" onclick="closeVoiceCallSettingsModal()" class="w-8 h-8 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
-                    <button type="button" id="voice-call-perm-btn" onclick="requestVoiceCallMicPermission()" class="px-3.5 py-1.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs transition shadow flex items-center justify-center gap-1.5 cursor-pointer border border-zinc-700 active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                        <span>Permís Micròfon</span>
-                    </button>
-                    <!-- Selector d'idioma de reconeixement -->
-                    <div class="flex items-center bg-zinc-900/90 border border-zinc-700/80 rounded-full p-0.5 text-xs font-semibold">
-                        <button type="button" id="voice-lang-ca" onclick="switchVoiceCallLanguage('ca-ES')" class="px-2.5 py-1 rounded-full bg-indigo-600 text-white transition">Català</button>
-                        <button type="button" id="voice-lang-es" onclick="switchVoiceCallLanguage('es-ES')" class="px-2.5 py-1 rounded-full text-zinc-400 hover:text-white transition">Español</button>
+                </div>
+
+                <!-- Selector d'Idioma -->
+                <div class="space-y-2">
+                    <label class="text-xs font-semibold text-zinc-300 block">Idioma de conversa:</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" id="voice-sheet-lang-ca" onclick="selectVoiceCallLanguage('ca-ES')" class="py-2 px-3 rounded-xl border border-indigo-500 bg-indigo-600/30 text-indigo-200 font-bold text-xs text-center transition cursor-pointer">Català</button>
+                        <button type="button" id="voice-sheet-lang-es" onclick="selectVoiceCallLanguage('es-ES')" class="py-2 px-3 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 hover:text-white font-medium text-xs text-center transition cursor-pointer">Español</button>
+                        <button type="button" id="voice-sheet-lang-en" onclick="selectVoiceCallLanguage('en-US')" class="py-2 px-3 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 hover:text-white font-medium text-xs text-center transition cursor-pointer">English</button>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-center gap-3">
-                    <span id="voice-call-status-pill" class="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold tracking-wide shadow-xs mx-auto">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span id="voice-call-status-text">Escoltant...</span>
-                    </span>
-                    <button type="button" onclick="showVoiceCallHelpModal()" class="text-[11px] text-zinc-400 hover:text-zinc-200 transition font-medium cursor-pointer flex items-center gap-1.5 bg-zinc-900/60 px-2.5 py-1 rounded-full border border-zinc-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-indigo-400"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                        <span>Diagnòstic</span>
-                    </button>
+                <!-- Selector de Veu de la IA -->
+                <div class="space-y-2">
+                    <label class="text-xs font-semibold text-zinc-300 block">Veu de la IA (Síntesi de Veu):</label>
+                    <select id="voice-call-voice-select" onchange="changeVoiceCallVoice(this.value)" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white outline-none cursor-pointer">
+                        <option value="">Carregant veus del sistema...</option>
+                    </select>
                 </div>
-                
-                <!-- Permission Banner (Shown only if mic permission is blocked/denied) -->
-                <div id="voice-call-permission-banner" class="hidden my-2 mx-auto max-w-lg bg-amber-950/90 border border-amber-500/50 p-3.5 rounded-2xl text-amber-200 text-xs text-center flex flex-col items-center gap-2 shadow-2xl backdrop-blur-md">
-                    <div class="flex items-center gap-2 font-bold text-amber-300 text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-amber-400"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        <span>Accés al Micròfon Requerit</span>
-                    </div>
-                    <p class="text-amber-200/90">Si el teu navegador requereix permís manual, prem el botó per activar-lo:</p>
-                    <button type="button" onclick="requestVoiceCallMicPermission()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-zinc-950 font-extrabold text-xs transition shadow-lg active:scale-95 cursor-pointer flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                        <span>Activar Micròfon Ara</span>
+
+                <div class="flex items-center justify-between pt-2">
+                    <button type="button" onclick="testCurrentVoice()" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <span>Provar Veu</span>
+                    </button>
+                    <button type="button" onclick="closeVoiceCallSettingsModal()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition cursor-pointer shadow">
+                        Acceptar
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Live Transcript Log Screen Area (Collapsible Drawer, hidden by default) -->
-        <div id="voice-call-transcript-container" class="hidden relative z-10 w-full max-w-2xl mx-auto flex-1 max-h-[32vh] bg-zinc-900/90 border border-zinc-800/90 rounded-2xl p-4 flex flex-col shadow-2xl backdrop-blur-xl mb-4 text-center transition-all duration-300">
-            <div class="flex items-center justify-between pb-2 mb-2 border-b border-zinc-800/80 w-full">
-                <span class="text-xs font-extrabold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+        <!-- POPUP 2: SHEET TRANCRIPCIÓ I TEXT (On Demand) -->
+        <div id="voice-call-transcript-sheet" class="hidden absolute inset-x-0 bottom-0 z-40 bg-zinc-950/95 border-t border-zinc-800 rounded-t-3xl max-h-[60vh] flex flex-col p-4 shadow-2xl backdrop-blur-xl transition-all duration-300">
+            <div class="flex items-center justify-between pb-3 border-b border-zinc-800/80 w-full mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    Transcripció en directe
+                    Transcripció de la Trucada
                 </span>
-                <button type="button" onclick="toggleVoiceCallTranscript()" class="text-zinc-400 hover:text-white p-1 transition" title="Tancar transcripció">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                <button type="button" onclick="toggleVoiceCallTranscript()" class="w-7 h-7 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
 
-            <div id="voice-call-transcript" class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs md:text-sm flex flex-col items-center w-full">
-                <!-- User and AI Transcript messages dynamically rendered here centered -->
+            <!-- Scrollable Messages -->
+            <div id="voice-call-transcript" class="flex-1 overflow-y-auto space-y-2.5 pr-1 text-xs md:text-sm flex flex-col w-full min-h-[160px] max-h-[36vh]">
             </div>
-        </div>
 
-        <!-- Fallback Quick Text Entry Bar for Voice Call -->
-        <div class="relative z-10 w-full max-w-xl mx-auto mb-3">
-            <form id="voice-call-text-form" onsubmit="event.preventDefault(); submitVoiceCallText();" class="flex items-center gap-2 bg-zinc-900/90 border border-zinc-700/80 rounded-full px-3 py-1.5 shadow-lg backdrop-blur-xl">
-                <input type="text" id="voice-call-text-input" placeholder="O escriu aquí el que vols dir..." class="flex-1 bg-transparent border-none text-xs md:text-sm text-white placeholder-zinc-500 outline-none px-2 py-1 font-medium">
-                <button type="submit" class="px-4 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition shadow cursor-pointer active:scale-95 flex items-center gap-1 shrink-0">
+            <!-- Optional text input at bottom of transcript -->
+            <form id="voice-call-text-form" onsubmit="event.preventDefault(); submitVoiceCallText();" class="mt-3 flex items-center gap-2 bg-zinc-900 border border-zinc-700/80 rounded-full px-3 py-1.5 shadow-lg">
+                <input type="text" id="voice-call-text-input" placeholder="O escriu aquí si no pots parlar..." class="flex-1 bg-transparent border-none text-xs md:text-sm text-white placeholder-zinc-500 outline-none px-2 py-1 font-medium">
+                <button type="submit" class="px-4 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition shadow cursor-pointer active:scale-95 flex items-center gap-1 shrink-0">
                     <span>Enviar</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
                 </button>
             </form>
-        </div>
-
-        <!-- Call Control Action Bar - Centered -->
-        <div class="relative z-10 w-full max-w-lg mx-auto flex items-center justify-center gap-4 md:gap-5 pb-2 text-center">
-            <!-- Mute/Unmute Mic Button -->
-            <button type="button" id="voice-call-mic-btn" onclick="toggleVoiceCallMic()" class="w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer group shrink-0" title="Silenciar / Activar Micròfon">
-                <svg id="voice-call-mic-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-            </button>
-
-            <!-- Toggle Transcript Button (Dedicated Transcripció Button) -->
-            <button type="button" id="voice-call-transcript-btn" onclick="toggleVoiceCallTranscript()" class="px-4 py-3.5 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 font-bold text-xs transition-all shadow-lg flex items-center gap-2 cursor-pointer active:scale-95 shrink-0" title="Mostrar o amagar la transcripció en directe">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                <span>Transcripció</span>
-            </button>
-
-            <!-- Red End Call Button (Penjar Trucada) -->
-            <button type="button" onclick="endVoiceCall()" class="px-6 md:px-7 py-3.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-sm transition-all shadow-xl shadow-red-600/35 flex items-center gap-2 cursor-pointer active:scale-95 border border-red-400/40 shrink-0" title="Penjar Trucada">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="rotate-[135deg]"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                <span>Penjar trucada</span>
-            </button>
-
-            <!-- Speaker Sound Toggle Button -->
-            <button type="button" id="voice-call-speaker-btn" onclick="toggleVoiceCallSpeaker()" class="w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-emerald-400 flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer group shrink-0" title="Activar / Desactivar Altaveu">
-                <svg id="voice-call-speaker-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-            </button>
         </div>
     </div>
 
@@ -2657,45 +2702,15 @@
             }
         });
 
-        let autoVoiceEnabled = localStorage.getItem('aliat_auto_voice_enabled') === 'true';
+        let autoVoiceEnabled = false;
+        try { localStorage.removeItem('aliat_auto_voice_enabled'); } catch(e){}
 
         function updateVoiceSpeakBtnUI() {
-            const btn = document.getElementById('voice-speak-btn');
-            const badge = document.getElementById('voice-speak-badge');
-            if (btn) {
-                if (autoVoiceEnabled) {
-                    btn.className = "w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/80 shadow-xs flex items-center justify-center transition cursor-pointer relative shrink-0 active:scale-95";
-                } else {
-                    btn.className = "w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer relative shrink-0 active:scale-95 border border-transparent";
-                }
-            }
-            if (badge) {
-                if (autoVoiceEnabled) badge.classList.remove('hidden');
-                else badge.classList.add('hidden');
-            }
+            // S'utilitza per a la trucada de veu directa
         }
 
         window.toggleAutoVoiceResponse = function() {
-            autoVoiceEnabled = !autoVoiceEnabled;
-            localStorage.setItem('aliat_auto_voice_enabled', autoVoiceEnabled.toString());
-            updateVoiceSpeakBtnUI();
-
-            if (autoVoiceEnabled) {
-                showToast('🔊 Mode Parlar activat! L\'Aliat et respondrà en veu alta.');
-                const lastAiMsg = document.querySelector('.chat-msg-ai:last-of-type .prose');
-                if (lastAiMsg && lastAiMsg.innerText) {
-                    speakMessageText(lastAiMsg.innerText);
-                }
-            } else {
-                if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
-                    window.speechSynthesis.cancel();
-                }
-                const wave = document.getElementById('voice-speak-wave-svg');
-                const bars = document.getElementById('voice-speak-wave-bars');
-                if (wave) wave.classList.add('hidden');
-                if (bars) bars.classList.add('hidden');
-                showToast('🔇 Mode Parlar desactivat.');
-            }
+            openVoiceCallModal();
         };
 
         window.speakMessageText = function(text) {
@@ -2817,11 +2832,15 @@
         let isVoiceCallAiSpeaking = false;
         let isVoiceCallMicPermissionDenied = false;
         let voiceCallCurrentInterimBubble = null;
-        let voiceCallSelectedLang = 'ca-ES';
+        let voiceCallSelectedLang = localStorage.getItem('aliat_selected_voice_lang') || 'ca-ES';
+        let voiceCallSelectedVoiceURI = localStorage.getItem('aliat_selected_voice_uri') || '';
         let voiceAudioContext = null;
         let voiceAudioAnalyser = null;
         let voiceAudioAnimFrame = null;
         let voiceCallActiveStream = null;
+        let voiceCallSilenceTimer = null;
+        let voiceCallLastUserText = '';
+        let voiceCallHistory = [];
 
         window.triggerVoiceCallSend = function() {
             if (isVoiceCallAiProcessing || isVoiceCallAiSpeaking) return;
@@ -2840,59 +2859,179 @@
                 if (input && input.value.trim()) {
                     submitVoiceCallText();
                 } else {
-                    showToast('🎙️ Escoltant... Parla o escriu a baix per enviar!', 'info');
+                    showToast('🎙️ Escoltant... Parla de qualsevol cosa!', 'info');
                 }
             }
         };
 
-        window.switchVoiceCallLanguage = function(lang) {
+        // --- GESTIÓ DE VEU I IDIOMA (POPUP CONFIGURACIÓ) ---
+        window.openVoiceCallSettingsModal = function() {
+            const sheet = document.getElementById('voice-call-settings-sheet');
+            if (!sheet) return;
+            updateVoiceLangButtonsUI();
+            populateVoiceSelect();
+            sheet.classList.remove('hidden');
+        };
+
+        window.closeVoiceCallSettingsModal = function() {
+            const sheet = document.getElementById('voice-call-settings-sheet');
+            if (sheet) sheet.classList.add('hidden');
+        };
+
+        window.selectVoiceCallLanguage = function(lang) {
             voiceCallSelectedLang = lang;
-            const btnCa = document.getElementById('voice-lang-ca');
-            const btnEs = document.getElementById('voice-lang-es');
-            if (btnCa && btnEs) {
-                if (lang === 'ca-ES') {
-                    btnCa.className = "px-2.5 py-1 rounded-full bg-indigo-600 text-white transition";
-                    btnEs.className = "px-2.5 py-1 rounded-full text-zinc-400 hover:text-white transition";
-                } else {
-                    btnEs.className = "px-2.5 py-1 rounded-full bg-indigo-600 text-white transition";
-                    btnCa.className = "px-2.5 py-1 rounded-full text-zinc-400 hover:text-white transition";
-                }
-            }
-            showToast(`🌐 Idioma de veu canviat a ${lang === 'ca-ES' ? 'Català' : 'Español'}`);
-            if (isVoiceCallActive && !isVoiceCallAiProcessing && !isVoiceCallAiSpeaking) {
+            localStorage.setItem('aliat_selected_voice_lang', lang);
+            voiceCallSelectedVoiceURI = ''; // Resetejar per agafar la millor veu del nou idioma
+            localStorage.removeItem('aliat_selected_voice_uri');
+
+            updateVoiceLangButtonsUI();
+            populateVoiceSelect();
+
+            if (voiceCallRecognition && isVoiceCallActive) {
+                try {
+                    voiceCallRecognition.stop();
+                } catch(e){}
                 startVoiceCallRecognition();
             }
+
+            const langLabel = lang === 'ca-ES' ? 'Català' : (lang === 'es-ES' ? 'Español' : 'English');
+            showToast(`🌐 Idioma de veu: ${langLabel}`);
         };
 
-        window.showVoiceCallHelpModal = function() {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: '🔎 Diagnòstic i Solució de Veu',
-                    html: `
-                        <div class="text-left space-y-3 text-xs md:text-sm text-zinc-700 dark:text-zinc-300">
-                            <p class="font-semibold text-indigo-600 dark:text-indigo-400">Si has donat permís però l'IA no detecta la teva veu, segueix aquests 3 passos ràpids:</p>
-                            
-                            <div class="p-3 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl space-y-2 border border-zinc-200 dark:border-zinc-700">
-                                <strong class="text-zinc-900 dark:text-white block font-bold">1. Canvia l'idioma a Español (es-ES):</strong>
-                                <p class="text-xs">Alguns navegadors (especialment Chrome en Windows/Android) no tenen instal·lat el paquet de veu en Català. Fes clic a <b>"Español"</b> al selector superior.</p>
-                            </div>
+        function updateVoiceLangButtonsUI() {
+            const btnCa = document.getElementById('voice-sheet-lang-ca');
+            const btnEs = document.getElementById('voice-sheet-lang-es');
+            const btnEn = document.getElementById('voice-sheet-lang-en');
 
-                            <div class="p-3 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl space-y-2 border border-zinc-200 dark:border-zinc-700">
-                                <strong class="text-zinc-900 dark:text-white block font-bold">2. Prem el botó blau "🎙️ Activar / Permetre Micròfon":</strong>
-                                <p class="text-xs">En mòbils (Safari / Chrome), el micròfon requereix un clic físic directe de l'usuari per desbloquejar el flux d'àudio.</p>
-                            </div>
+            const activeCls = "py-2 px-3 rounded-xl border border-indigo-500 bg-indigo-600/30 text-indigo-200 font-bold text-xs text-center transition cursor-pointer";
+            const inactiveCls = "py-2 px-3 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 hover:text-white font-medium text-xs text-center transition cursor-pointer";
 
-                            <div class="p-3 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl space-y-2 border border-zinc-200 dark:border-zinc-700">
-                                <strong class="text-zinc-900 dark:text-white block font-bold">3. Escriptura de suport directament al xat:</strong>
-                                <p class="text-xs">Si el reconeixement de veu del teu sistema està deshabilitat, pots escriure directament al quadre inferior i l'Aliat et respondrà <b>parlant en veu alta</b>!</p>
-                            </div>
-                        </div>
-                    `,
-                    icon: 'question',
-                    confirmButtonText: 'Entès'
+            if (btnCa) btnCa.className = (voiceCallSelectedLang === 'ca-ES') ? activeCls : inactiveCls;
+            if (btnEs) btnEs.className = (voiceCallSelectedLang === 'es-ES') ? activeCls : inactiveCls;
+            if (btnEn) btnEn.className = (voiceCallSelectedLang === 'en-US') ? activeCls : inactiveCls;
+        }
+
+        window.populateVoiceSelect = function() {
+            const select = document.getElementById('voice-call-voice-select');
+            if (!select || !('speechSynthesis' in window)) return;
+
+            const voices = window.speechSynthesis.getVoices();
+            if (!voices || voices.length === 0) {
+                select.innerHTML = '<option value="">Veus per defecte del navegador</option>';
+                return;
+            }
+
+            const currentVoice = getBestAvailableVoice();
+            const currentPrefix = (voiceCallSelectedLang || 'ca-ES').substring(0, 2).toLowerCase();
+
+            const primaryVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(currentPrefix));
+            const spanishFallback = currentPrefix === 'ca' ? voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('es')) : [];
+            const otherVoices = voices.filter(v => !primaryVoices.includes(v) && !spanishFallback.includes(v));
+
+            let html = '';
+            if (primaryVoices.length > 0) {
+                html += `<optgroup label="Recomanades (${voiceCallSelectedLang})">`;
+                primaryVoices.forEach(v => {
+                    const isSel = currentVoice && (v.voiceURI === currentVoice.voiceURI || v.name === currentVoice.name);
+                    html += `<option value="${escapeHtml(v.voiceURI || v.name)}" ${isSel ? 'selected' : ''}>${escapeHtml(v.name)} (${v.lang})</option>`;
                 });
+                html += `</optgroup>`;
+            } else if (currentPrefix === 'ca') {
+                html += `<optgroup label="Veus compatibles en Català / Fonètica">`;
+                spanishFallback.forEach(v => {
+                    const isSel = currentVoice && (v.voiceURI === currentVoice.voiceURI || v.name === currentVoice.name);
+                    html += `<option value="${escapeHtml(v.voiceURI || v.name)}" ${isSel ? 'selected' : ''}>${escapeHtml(v.name)} (Compatible Català)</option>`;
+                });
+                html += `</optgroup>`;
+            }
+
+            if (otherVoices.length > 0) {
+                html += `<optgroup label="Altres veus disponibles">`;
+                otherVoices.slice(0, 15).forEach(v => {
+                    const isSel = currentVoice && (v.voiceURI === currentVoice.voiceURI || v.name === currentVoice.name);
+                    html += `<option value="${escapeHtml(v.voiceURI || v.name)}" ${isSel ? 'selected' : ''}>${escapeHtml(v.name)} (${v.lang})</option>`;
+                });
+                html += `</optgroup>`;
+            }
+
+            select.innerHTML = html;
+        };
+
+        window.changeVoiceCallVoice = function(voiceURI) {
+            voiceCallSelectedVoiceURI = voiceURI;
+            localStorage.setItem('aliat_selected_voice_uri', voiceURI);
+            showToast("Veu de la IA actualitzada");
+        };
+
+        window.testCurrentVoice = function() {
+            let testMsg = "Hola! Sóc l'Aliat Intel·ligent, parlem amb total naturalitat en català.";
+            if (voiceCallSelectedLang === 'es-ES') {
+                testMsg = "¡Hola! Soy tu Aliat Inteligente, hablamos con total naturalidad en español.";
+            } else if (voiceCallSelectedLang === 'en-US') {
+                testMsg = "Hello! I am your AI Ally, speaking naturally with you.";
+            }
+            speakVoiceCallResponse(testMsg);
+        };
+
+        window.toggleVoiceCallTranscript = function() {
+            const sheet = document.getElementById('voice-call-transcript-sheet');
+            const btn = document.getElementById('voice-call-transcript-btn');
+            if (!sheet) return;
+
+            const isHidden = sheet.classList.contains('hidden');
+            if (isHidden) {
+                sheet.classList.remove('hidden');
+                if (btn) {
+                    btn.classList.add('border-cyan-400', 'text-cyan-300', 'bg-zinc-700');
+                    btn.classList.remove('border-zinc-700/80', 'text-cyan-400', 'bg-zinc-800/90');
+                }
+                const box = document.getElementById('voice-call-transcript');
+                if (box) box.scrollTop = box.scrollHeight;
+            } else {
+                sheet.classList.add('hidden');
+                if (btn) {
+                    btn.classList.remove('border-cyan-400', 'text-cyan-300', 'bg-zinc-700');
+                    btn.classList.add('border-zinc-700/80', 'text-cyan-400', 'bg-zinc-800/90');
+                }
             }
         };
+
+        function getBestAvailableVoice() {
+            if (!('speechSynthesis' in window)) return null;
+            const voices = window.speechSynthesis.getVoices();
+            if (!voices || voices.length === 0) return null;
+
+            if (voiceCallSelectedVoiceURI) {
+                const picked = voices.find(v => v.voiceURI === voiceCallSelectedVoiceURI || v.name === voiceCallSelectedVoiceURI);
+                if (picked) return picked;
+            }
+
+            const langCode = (voiceCallSelectedLang || 'ca-ES').toLowerCase();
+
+            if (langCode.startsWith('ca')) {
+                const catalanVoice = voices.find(v => (v.lang && v.lang.toLowerCase().startsWith('ca')) ||
+                                                      (v.name && /catal[aà]|valenci[aà]|montse|jordi|pau/i.test(v.name)));
+                if (catalanVoice) return catalanVoice;
+
+                const spanishFallback = voices.find(v => (v.lang && v.lang.toLowerCase().startsWith('es')) ||
+                                                         (v.name && /spanish|español|castellano/i.test(v.name)));
+                if (spanishFallback) return spanishFallback;
+            } else if (langCode.startsWith('es')) {
+                const spanishVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es'));
+                if (spanishVoice) return spanishVoice;
+            } else if (langCode.startsWith('en')) {
+                const englishVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+                if (englishVoice) return englishVoice;
+            }
+
+            return voices.find(v => v.lang && v.lang.toLowerCase().startsWith(langCode.substring(0, 2))) || voices[0];
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                populateVoiceSelect();
+            };
+        }
 
         function setupVoiceCallAudioMeter(stream) {
             try {
@@ -2923,7 +3062,7 @@
                         sum += dataArray[i];
                     }
                     const average = sum / dataArray.length;
-                    
+
                     const orb = document.getElementById('voice-call-orb');
                     const ring1 = document.getElementById('voice-call-ring1');
                     const ring2 = document.getElementById('voice-call-ring2');
@@ -2936,13 +3075,13 @@
                             if (ring1) ring1.style.transform = `scale(${scale + 0.15})`;
                             if (ring2) ring2.style.transform = `scale(${scale + 0.25})`;
                             if (statusText && !statusText.innerText.includes('parlant')) {
-                                statusText.innerText = "🎙️ Escoltant la teva veu (So detectat)...";
+                                statusText.innerText = "Escoltant la teva veu...";
                             }
                         } else {
                             orb.style.transform = 'scale(1)';
                             if (ring1) ring1.style.transform = 'scale(1)';
                             if (ring2) ring2.style.transform = 'scale(1)';
-                            if (statusText && statusText.innerText.includes('So detectat')) {
+                            if (statusText && statusText.innerText.includes('la teva veu')) {
                                 statusText.innerText = "Escoltant...";
                             }
                         }
@@ -2953,19 +3092,6 @@
             } catch(e) {
                 console.log("Audio meter init error:", e);
             }
-        }
-
-        function getBestAvailableVoice() {
-            if (!('speechSynthesis' in window)) return null;
-            const voices = window.speechSynthesis.getVoices();
-            if (!voices || voices.length === 0) return null;
-            return voices.find(v => v.lang.includes('ca')) || 
-                   voices.find(v => v.lang.includes('es')) || 
-                   voices[0];
-        }
-
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => { getBestAvailableVoice(); };
         }
 
         window.submitVoiceCallText = function() {
@@ -2995,7 +3121,6 @@
                 console.log("Mic permission status info:", err ? err.name || err : "denied");
                 isVoiceCallMicPermissionDenied = true;
                 setVoiceCallOrbState('permission_denied');
-                showVoiceCallHelpModal();
             }
         };
 
@@ -3024,13 +3149,14 @@
             isVoiceCallAiSpeaking = false;
             isVoiceCallMicPermissionDenied = false;
             voiceCallCurrentInterimBubble = null;
+            voiceCallHistory = [];
 
             modal.classList.remove('hidden');
             requestAnimationFrame(() => {
                 modal.classList.remove('opacity-0');
             });
 
-            // Sol·licitar permís de micròfon de forma proactiva al navegador i activar mesurador de volum
+            // Demanar flux de micròfon per l'analitzador visual
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -3051,20 +3177,28 @@
                 updateVoiceCallTimerUI();
             }, 1000);
 
+            // Salutació inicial càlida, humana i directa segons l'idioma seleccionat
+            let greeting = "Hola! Sóc l'Aliat. T'estic escoltant en directe. Com et va el dia? De què et ve de gust parlar?";
+            if (voiceCallSelectedLang === 'es-ES') {
+                greeting = "¡Hola! Soy Aliat. Te escucho en directo, ¿de qué te apetece hablar hoy?";
+            } else if (voiceCallSelectedLang === 'en-US') {
+                greeting = "Hello! I'm Aliat. I'm listening live, what would you like to talk about today?";
+            }
+
             const transcriptBox = document.getElementById('voice-call-transcript');
             if (transcriptBox) {
                 transcriptBox.innerHTML = `
                     <div class="w-full max-w-xl mx-auto flex items-center justify-center gap-2 text-emerald-300 bg-emerald-950/60 border border-emerald-500/30 p-2.5 rounded-xl font-medium animate-fadeIn text-center">
                         <span class="font-bold text-emerald-400 shrink-0">Aliat:</span>
-                        <span>Hola! Sóc l'Aliat Intel·ligent. T'estic escoltant en directe, parla'm de qualsevol tema o dubte d'estudi.</span>
+                        <span>${escapeHtml(greeting)}</span>
                     </div>
                 `;
             }
 
-            speakVoiceCallResponse("Hola! Sóc l'Aliat Intel·ligent. T'estic escoltant en directe. De què vols parlar avui?");
-
+            speakVoiceCallResponse(greeting);
             startVoiceCallRecognition();
             updateVoiceCallControlsUI();
+            populateVoiceSelect();
         };
 
         function updateVoiceCallTimerUI() {
@@ -3091,45 +3225,42 @@
             }
 
             if (state === 'listening') {
-                orb.className = "w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-[0_0_60px_rgba(6,182,212,0.6)] flex items-center justify-center transition-all duration-500 scale-100 relative overflow-hidden mx-auto cursor-pointer";
-                orb.onclick = null;
+                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-[0_0_70px_rgba(6,182,212,0.65)] flex items-center justify-center transition-all duration-500 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105 active:scale-95";
+                orb.onclick = window.triggerVoiceCallSend;
                 statusText.innerText = "Escoltant...";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold tracking-wide shadow-xs mx-auto";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
                 if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-cyan-500/40 animate-ping opacity-75";
                 if (ring2) ring2.className = "absolute -inset-4 rounded-full border border-blue-500/30 animate-pulse opacity-60";
             } else if (state === 'speaking') {
                 orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-cyan-500 shadow-[0_0_80px_rgba(16,185,129,0.8)] flex items-center justify-center transition-all duration-500 scale-105 relative overflow-hidden animate-pulse mx-auto cursor-pointer";
                 orb.onclick = null;
-                statusText.innerText = "L'Aliat està parlant en veu alta...";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-bold tracking-wide shadow-xs mx-auto";
+                statusText.innerText = "L'Aliat està parlant...";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
                 if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-emerald-400/60 animate-ping opacity-90";
                 if (ring2) ring2.className = "absolute -inset-4 rounded-full border border-teal-400/40 animate-pulse opacity-80";
             } else if (state === 'processing') {
-                orb.className = "w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-600 shadow-[0_0_60px_rgba(147,51,234,0.7)] flex items-center justify-center transition-all duration-500 scale-95 relative overflow-hidden animate-spin duration-3000 mx-auto cursor-pointer";
+                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-600 shadow-[0_0_60px_rgba(147,51,234,0.7)] flex items-center justify-center transition-all duration-500 scale-95 relative overflow-hidden animate-spin duration-3000 mx-auto cursor-pointer";
                 orb.onclick = null;
-                statusText.innerText = "Pensant i preparant la resposta...";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs font-bold tracking-wide shadow-xs mx-auto";
+                statusText.innerText = "Pensant...";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
                 if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-purple-500/50 animate-ping opacity-50";
                 if (ring2) ring2.className = "absolute -inset-4 rounded-full border border-indigo-500/40 animate-pulse opacity-50";
             } else if (state === 'muted') {
-                orb.className = "w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-zinc-700 via-zinc-800 to-zinc-900 shadow-none flex items-center justify-center transition-all duration-500 scale-90 relative overflow-hidden mx-auto cursor-pointer";
+                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-zinc-700 via-zinc-800 to-zinc-900 shadow-none flex items-center justify-center transition-all duration-500 scale-90 relative overflow-hidden mx-auto cursor-pointer";
                 orb.onclick = null;
                 statusText.innerText = "Micròfon Silenciat";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs font-bold tracking-wide shadow-xs mx-auto";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
                 if (ring1) ring1.className = "hidden";
                 if (ring2) ring2.className = "hidden";
             } else if (state === 'permission_denied') {
-                orb.className = "w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-amber-600 via-red-600 to-rose-700 shadow-[0_0_60px_rgba(239,68,68,0.6)] flex items-center justify-center transition-all duration-500 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105";
+                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-amber-600 via-red-600 to-rose-700 shadow-[0_0_60px_rgba(239,68,68,0.6)] flex items-center justify-center transition-all duration-500 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105";
                 orb.onclick = requestVoiceCallMicPermission;
-                statusText.innerText = "Falta permís de micròfon (Fes clic per activar)";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs font-bold tracking-wide shadow-xs mx-auto cursor-pointer";
+                statusText.innerText = "Falta permís de micròfon (Clica per activar)";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto cursor-pointer";
                 if (ring1) ring1.className = "hidden";
                 if (ring2) ring2.className = "hidden";
             }
         }
-
-        let voiceCallSilenceTimer = null;
-        let voiceCallLastUserText = '';
 
         function startVoiceCallRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -3208,7 +3339,7 @@
                         appendVoiceCallTranscriptMessage('Tu', textToSend, 'user');
                         processVoiceCallUserUtterance(textToSend);
                     }
-                }, 1800);
+                }, 1600);
             };
 
             voiceCallRecognition.onerror = function(e) {
@@ -3217,7 +3348,7 @@
                     isVoiceCallMicPermissionDenied = true;
                     setVoiceCallOrbState('permission_denied');
                 } else if (e.error === 'language-not-supported' && voiceCallSelectedLang === 'ca-ES') {
-                    console.log("Catalan speech not supported natively, falling back to Spanish es-ES");
+                    console.log("Catalan speech recognition not supported natively in browser, falling back to Spanish es-ES");
                     voiceCallSelectedLang = 'es-ES';
                     startVoiceCallRecognition();
                 }
@@ -3263,32 +3394,30 @@
             }
 
             try {
-                const currentHistory = (typeof chatHistory !== 'undefined' && Array.isArray(chatHistory)) ? [...chatHistory] : [];
-                currentHistory.push({ role: 'user', content: userText });
+                if (!Array.isArray(voiceCallHistory)) voiceCallHistory = [];
+                voiceCallHistory.push({ role: 'user', content: userText });
 
-                const actionType = (typeof activeTab !== 'undefined' && activeTab === 'study') ? 'chat' : 'free_chat';
+                const isStudy = (typeof appMode !== 'undefined' && appMode === 'study');
+                const actionType = isStudy ? 'chat' : 'free_chat';
+                const langLabel = (voiceCallSelectedLang === 'es-ES' ? 'castellà' : (voiceCallSelectedLang === 'en-US' ? 'anglès' : 'català'));
 
                 const res = await callGenerateApi({
                     action: actionType,
-                    chatHistory: currentHistory,
+                    chatHistory: voiceCallHistory,
                     pdfText: (typeof finalStudyText !== 'undefined') ? finalStudyText : '',
                     studentContext: (typeof studentContext !== 'undefined') ? studentContext : '',
-                    tutorMode: (typeof currentTutorMode !== 'undefined') ? currentTutorMode : 'standard'
+                    tutorMode: (typeof currentTutorMode !== 'undefined') ? currentTutorMode : 'standard',
+                    isVoiceCall: true,
+                    callLanguage: langLabel
                 });
 
                 const data = await res.json();
                 if (data.error) throw new Error(data.error);
 
-                const aiReply = data.reply || "Disculpa, pots repetir-m'ho?";
+                const aiReply = data.reply || (voiceCallSelectedLang === 'es-ES' ? "Disculpa, ¿puedes repetirlo?" : (voiceCallSelectedLang === 'en-US' ? "Pardon, could you repeat that?" : "Disculpa, pots repetir-m'ho?"));
 
+                voiceCallHistory.push({ role: 'assistant', content: aiReply });
                 appendVoiceCallTranscriptMessage('Aliat', aiReply, 'ai');
-
-                if (typeof chatHistory !== 'undefined' && Array.isArray(chatHistory)) {
-                    chatHistory.push({ role: 'user', content: userText });
-                    chatHistory.push({ role: 'assistant', content: aiReply });
-                    if (typeof renderChatMessages === 'function') renderChatMessages();
-                    if (typeof saveSession === 'function') saveSession();
-                }
 
                 isVoiceCallAiProcessing = false;
                 speakVoiceCallResponse(aiReply);
@@ -3296,7 +3425,8 @@
             } catch(err) {
                 console.error("Error processing voice call utterance:", err);
                 isVoiceCallAiProcessing = false;
-                appendVoiceCallTranscriptMessage('Aliat', "S'ha produït un error de connexió. Em sents bé?", 'ai');
+                const errFallback = (voiceCallSelectedLang === 'es-ES' ? "Perdona, se ha cortado la conexión. ¿Me escuchas?" : (voiceCallSelectedLang === 'en-US' ? "Sorry, connection dropped for a moment. Can you hear me?" : "Perdona, s'ha tallat un moment la connexió. Em sents bé?"));
+                appendVoiceCallTranscriptMessage('Aliat', errFallback, 'ai');
                 setVoiceCallOrbState('listening');
                 startVoiceCallRecognition();
             }
@@ -3374,26 +3504,6 @@
             }, 50);
         }
 
-        window.toggleVoiceCallTranscript = function() {
-            const container = document.getElementById('voice-call-transcript-container');
-            const btn = document.getElementById('voice-call-transcript-btn');
-            if (!container) return;
-            container.classList.toggle('hidden');
-            if (!container.classList.contains('hidden')) {
-                if (btn) {
-                    btn.classList.add('border-emerald-500', 'text-emerald-400');
-                    btn.classList.remove('text-zinc-300', 'border-zinc-700');
-                }
-                const transcriptBox = document.getElementById('voice-call-transcript');
-                if (transcriptBox) transcriptBox.scrollTop = transcriptBox.scrollHeight;
-            } else {
-                if (btn) {
-                    btn.classList.remove('border-emerald-500', 'text-emerald-400');
-                    btn.classList.add('text-zinc-300', 'border-zinc-700');
-                }
-            }
-        };
-
         window.toggleVoiceCallMic = function() {
             if (isVoiceCallMicPermissionDenied) {
                 requestVoiceCallMicPermission();
@@ -3430,19 +3540,19 @@
 
             if (micBtn) {
                 if (isVoiceCallMicMuted) {
-                    micBtn.className = "w-14 h-14 rounded-full bg-red-600/90 hover:bg-red-500 text-white flex items-center justify-center transition-all shadow-lg shadow-red-600/40 border border-red-400/40 active:scale-95 cursor-pointer";
+                    micBtn.className = "w-13 h-13 md:w-14 md:h-14 rounded-full bg-red-600/90 hover:bg-red-500 text-white flex flex-col items-center justify-center transition-all shadow-xl shadow-red-600/40 border border-red-400/40 active:scale-95 cursor-pointer shrink-0";
                     if (micIcon) micIcon.innerHTML = `<path d="m12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><line x1="2" y1="2" x2="22" y2="22"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>`;
                 } else {
-                    micBtn.className = "w-14 h-14 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer";
+                    micBtn.className = "w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-white flex flex-col items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0";
                     if (micIcon) micIcon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>`;
                 }
             }
 
             if (spkBtn) {
                 if (isVoiceCallSpeakerMuted) {
-                    spkBtn.className = "w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer";
+                    spkBtn.className = "w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer shrink-0";
                 } else {
-                    spkBtn.className = "w-14 h-14 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-emerald-400 flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer";
+                    spkBtn.className = "w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-emerald-400 flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer shrink-0";
                 }
             }
         }
@@ -3471,7 +3581,7 @@
                 }, 300);
             }
 
-            showToast('Trucada de veu finalitzada. Conversa guardada al xat.');
+            showToast('Trucada finalitzada.');
         };
 
         // --- MANEGADORS DEL MENÚ DE TRES PUNTS DE LA CONVERSA (MATCHING IMAGE) ---
@@ -6232,17 +6342,17 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     ? "bg-blue-50 text-blue-900 dark:bg-zinc-800 dark:text-white font-semibold border border-blue-200/90 dark:border-zinc-700" 
                     : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 hover:text-zinc-950 dark:hover:text-white font-medium border border-transparent";
 
-                const pinIconHtml = s.pinned ? `<svg class="w-3.5 h-3.5 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Conversa fixada"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-6H6.5L5 17z" fill="currentColor"/><path d="M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7" fill="currentColor"/></svg>` : '';
-
                 list.innerHTML += `
                     <div class="relative group mb-1 w-full flex justify-center">
                         <button onclick="loadSession('${s.id}')" class="w-full py-2 px-2.5 rounded-xl text-xs truncate transition-all duration-200 ${activeClass} flex items-center justify-start gap-2.5 pr-8 cursor-pointer">
                             ${iconSvg}
-                            <span class="truncate flex-1 tracking-tight font-medium text-zinc-900 dark:text-zinc-100 text-left flex items-center gap-1.5 min-w-0">
-                                ${pinIconHtml}
+                            <span class="truncate flex-1 tracking-tight font-medium text-zinc-900 dark:text-zinc-100 text-left min-w-0">
                                 <span class="truncate">${title}</span>
                             </span>
-                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0 group-hover:hidden">${dateStr}</span>
+                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0 group-hover:hidden flex items-center gap-1">
+                                ${s.pinned ? `<svg class="w-3 h-3 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Conversa fixada"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-6H6.5L5 17z" fill="currentColor"/><path d="M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7" fill="currentColor"/></svg>` : ''}
+                                <span>${dateStr}</span>
+                            </span>
                         </button>
                         <button onclick="deleteSession('${s.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-500/15 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10 cursor-pointer" title="Eliminar conversa">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -6333,10 +6443,6 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Pla d'Estudis</span>`
                     : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> XatBot Lliure</span>`;
 
-                const badgePinned = s.pinned 
-                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50 flex items-center gap-1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-6H6.5L5 17z" fill="currentColor"/><path d="M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7" fill="currentColor"/></svg> Fixada</span>` 
-                    : '';
-
                 const activeRing = isActive ? 'border-2 border-indigo-500 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20' : 'border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-indigo-300 dark:hover:border-zinc-700';
 
                 container.innerHTML += `
@@ -6350,11 +6456,11 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-center gap-2 mb-1 flex-wrap">
                                     <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm truncate max-w-[240px] sm:max-w-xs">${title}</h4>
-                                    ${badgePinned}
                                     ${badgeMode}
                                     ${isActive ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-600 text-white">ACTIU</span>` : ''}
                                 </div>
                                 <p class="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5 font-medium">
+                                    ${s.pinned ? `<svg class="w-3.5 h-3.5 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Conversa fixada"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-6H6.5L5 17z" fill="currentColor"/><path d="M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7" fill="currentColor"/></svg>` : ''}
                                     <span>${dateStr}</span>
                                 </p>
                             </div>
@@ -8072,11 +8178,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             box.appendChild(div);
             setTimeout(() => { box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' }); }, 100);
 
-            if (sender !== 'user' && typeof autoVoiceEnabled !== 'undefined' && autoVoiceEnabled) {
-                setTimeout(() => {
-                    speakMessageText(text);
-                }, 300);
-            }
+            // El xat de text roman 100% per escrit. La veu només s'activa quan s'obre el Xat de Veu / Trucada.
         }
 
         function appendLoading(id) {

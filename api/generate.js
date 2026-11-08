@@ -651,17 +651,35 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                   "- Respon directament resolent, analitzant o explicant el que es veu a la imatge, guiant l'alumne pas a pas.\n" +
                   "- No ignoris la imatge ni et desviïs a un temari general si la imatge conté la consulta o tasca de l'alumne.\n"
                 : "";
+
+            const isVoice = !!body.isVoiceCall;
+            const callLang = body.callLanguage || 'català';
+
+            let promptToUse = systemPromptChat + imageInstruction;
+            if (isVoice) {
+                promptToUse = "ESTÀS EN UNA TRUCADA DE VEU EN DIRECTE AMB L'USUARI (com una trucada de telèfon o Gemini Live).\n" +
+                    "- Respon de manera 100% natural, càlida, humana i directa, com parlaries en una trucada telefònica.\n" +
+                    "- PROHIBICIÓ TOTAL: No utilitzis mai fórmules robòtiques ni mecàniques com 'He entès...', 'T'he comprès', 'Et puc ajudar en alguna altra cosa?', 'En què més et puc ajudar?'.\n" +
+                    "- Respon directament al que et diu o et pregunta la persona, de tu a tu, com un company intel·ligent.\n" +
+                    "- Format per a veu alta: Respostes concises, naturals i àgils (1 a 3 frases màxim per torn). Sense negretes, sense asteriscs, sense markdown, sense llistes ni símbols estranys.\n" +
+                    "- Idioma de la trucada: " + callLang + ". Parla amb total fluïdesa i naturalitat.\n" +
+                    (pdfText ? "Context de la matèria: " + pdfText.substring(0, 1500) : "");
+            }
             
             let replyText = "";
             try {
                 replyText = await executeAI({
-                    systemPrompt: systemPromptChat + imageInstruction,
+                    systemPrompt: promptToUse,
                     contents: geminiHistory
                 });
             } catch (aiErr) {
                 console.warn("[chat] Failover local per alta demanda:", aiErr.message);
-                const lastUserQuery = chatHistory.length > 0 ? (chatHistory[chatHistory.length - 1].content || '') : '';
-                replyText = `**Aliat Intel·ligent**: Hola! Tinc en compte el teu missatge sobre *"${lastUserQuery.substring(0, 100)}..."*. Podem continuar repassant el temari o fer una nova consulta d'estudi!`;
+                if (isVoice) {
+                    replyText = "Perdona, s'ha tallat un moment la connexió. Què em deies fa un moment?";
+                } else {
+                    const lastUserQuery = chatHistory.length > 0 ? (chatHistory[chatHistory.length - 1].content || '') : '';
+                    replyText = `Tinc en compte el teu missatge sobre "${lastUserQuery.substring(0, 100)}...". Podem continuar aprofundint-hi!`;
+                }
             }
 
             return res.status(200).json({ reply: replyText });
@@ -700,19 +718,40 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                   "- Respon explicant o resolent el contingut de la imatge de forma directa, detallada i estructurada.\n"
                 : "";
 
-            const systemPromptFree = "Ets Aliat Intel·ligent, el XatBot acadèmic i assistent personal.\n" + safetyRules + "\n\n" +
-                "CONTINUÏTAT TOTAL DE LA CONVERSA: Llegeix tot l'historial de missatges anteriors amb atenció. Mantingues sempre el fil i el context del tema que l'usuari està tractant (per exemple, si s'està parlant de funcions, de xarxes o d'un tema concret, continua estrictament sobre aquest tema sense canviar arbitràriament de matèria). Respon sempre amb excel·lència en català, estructurant bé els conceptes, fórmules i esquemes." + searchContext + imageInstructionFree;
+            const isVoice = !!body.isVoiceCall;
+            const callLang = body.callLanguage || 'català';
+
+            const systemPromptFree = "Ets Aliat Intel·ligent en mode Xat Lliure. Ets un assistent d'IA conversacional, obert, enginyós i de propòsit general.\n" + safetyRules + "\n\n" +
+                "- Mode Lliure Total: L'usuari pot xerrar absolutament de qualsevol cosa (aficions, curiositats, debats, idees personals, tecnologia, cinema, jocs, humor o qualsevol pregunta del món).\n" +
+                "- NO forcis que la conversa sigui d'estudi ni et limitis a l'acadèmic. Conversa amb total naturalitat i proximitat, com en un xat entre amics o companys.\n" +
+                "- CONTINUÏTAT: Segueix sempre el fil de la conversa anterior amb coherència.\n" +
+                "- Idioma: Respon amb excel·lència i expressivitat en català (o en l'idioma en què et parli l'usuari)." + searchContext + imageInstructionFree;
+
+            let promptToUse = systemPromptFree;
+            if (isVoice) {
+                promptToUse = "ESTÀS EN UNA TRUCADA DE VEU EN DIRECTE AMB L'USUARI (com una trucada de telèfon o Gemini Live).\n" +
+                    "- Respon de manera 100% natural, espontània, càlida i directa, com parlaries amb algú per telèfon.\n" +
+                    "- NO és obligatori parlar d'estudis: és una conversa lliure, relaxada i oberta.\n" +
+                    "- PROHIBICIÓ TOTAL: No utilitzis mai fórmules robòtiques com 'He entès...', 'T'he comprès', 'Et puc ajudar en alguna altra cosa?', 'En què més et puc ajudar?'.\n" +
+                    "- Respon directament al que et diu o pregunta la persona, sense embuts.\n" +
+                    "- Format per a veu alta: Respostes directes i àgils (1 a 3 frases màxim), sense markdown, sense asteriscs, sense negretes ni llistes.\n" +
+                    "- Idioma de la trucada: " + callLang + ". Parla amb naturalitat i fluïdesa.";
+            }
             
             let replyText = "";
             try {
                 replyText = await executeAI({
-                    systemPrompt: systemPromptFree,
+                    systemPrompt: promptToUse,
                     contents: geminiHistory
                 });
             } catch (aiErr) {
                 console.warn("[free_chat] Failover local per alta demanda:", aiErr.message);
-                const lastUserQuery = chatHistory.length > 0 ? (chatHistory[chatHistory.length - 1].content || '') : '';
-                replyText = `Soc l'Aliat Intel·ligent. He rebut la teva consulta: *"${lastUserQuery.substring(0, 100)}..."*. En què més et puc ajudar amb els teus estudis?`;
+                if (isVoice) {
+                    replyText = "Perdona, s'ha tallat un segon la connexió. Què em deies fa un moment?";
+                } else {
+                    const lastUserQuery = chatHistory.length > 0 ? (chatHistory[chatHistory.length - 1].content || '') : '';
+                    replyText = `M'ha semblat molt interessant el que comentes sobre "${lastUserQuery.substring(0, 100)}...". Diga'm més, com ho veus tu?`;
+                }
             }
 
             return res.status(200).json({ reply: replyText });

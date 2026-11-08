@@ -8,6 +8,7 @@
     "lint": "node -c server.js api/**/*.js"
   },
   "dependencies": {
+    "@google/genai": "^3.0.0",
     "@libsql/client": "latest",
     "bcryptjs": "^2.4.3",
     "express": "^5.3.0",

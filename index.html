@@ -844,6 +844,10 @@
                             <div class="font-semibold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 text-xs sm:text-sm min-w-0 truncate justify-start text-left">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span> 
                                 <span id="chat-mode-label" class="truncate max-w-[120px] xs:max-w-[180px] sm:max-w-xs">Classe Activa</span>
+                                <span id="chat-header-pinned-badge" class="hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/15 dark:bg-amber-400/20 text-amber-600 dark:text-amber-300 border border-amber-500/30 text-[10px] font-bold tracking-tight shadow-[0_0_10px_rgba(245,158,11,0.2)] shrink-0">
+                                    <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3l5 5-1.5 1.5-1.5-.5-3.5 3.5 1.5 5.5-2 2-4-6-5 5-1.5-1.5 5-5-6-4 2-2 5.5 1.5 3.5-3.5-.5-1.5L16 3z"/></svg>
+                                    <span>Fixada</span>
+                                </span>
                             </div>
                         </div>
                         
@@ -1069,6 +1073,12 @@
                                     </button>
                                 </div>
                             </div>
+
+                            <!-- BOTÓ DE CERCA AMB GOOGLE (Google Search Grounding gemini-3.8-flash) -->
+                            <button type="button" id="google-search-toggle-btn" onclick="toggleGoogleSearchGrounding()" title="Cerca Web amb Google activa (gemini-3.8-flash)" class="w-8 h-8 rounded-full hover:bg-blue-100/70 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center transition cursor-pointer relative shrink-0 shadow-xs active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
+                                <span id="google-search-pulse" class="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse ring-2 ring-blue-400/50"></span>
+                            </button>
 
                             <!-- MICRÒFON -->
                             <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="Dictat per Veu" class="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer relative shrink-0">
@@ -2058,10 +2068,9 @@
 
         const RECOMMENDED_AI_MODELS = {
             'gemini': [
-                { id: 'gemini-3.5-flash', label: '3.5 Flash (Recomanat)', badge: 'Ultra-Ràpid' },
-                { id: 'gemini-3.5-flash-lite', label: '3.5 Flash-Lite', badge: 'Lleuger & Eficient' },
-                { id: 'gemini-2.5-flash', label: '2.5 Flash', badge: 'Estable' },
-                { id: 'gemini-2.5-pro', label: '2.5 Pro', badge: 'Màxim Raonament' }
+                { id: 'gemini-3.8-flash', label: '3.8 Flash (Google Search Grounding)', badge: 'Cerca Web' },
+                { id: 'gemini-3.1-flash-lite', label: '3.1 Flash-Lite', badge: 'Ultra-Ràpid' },
+                { id: 'gemini-4-argon', label: 'Gemini 4 Argon', badge: 'Raonament Profund' }
             ],
             'groq': [
                 { id: 'openai/gpt-oss-120b', label: 'GPT-OSS 120B (Recomanat Groq)', badge: 'Màxim Rendiment' },
@@ -3908,9 +3917,14 @@
             isCurrentChatPinned = !!activeSession.pinned;
             const label = document.getElementById('header-menu-pin-label');
             if (label) label.innerText = isCurrentChatPinned ? 'Desfixar conversa' : 'Fixar conversa';
+            const headerBadge = document.getElementById('chat-header-pinned-badge');
+            if (headerBadge) {
+                if (isCurrentChatPinned) headerBadge.classList.remove('hidden');
+                else headerBadge.classList.add('hidden');
+            }
             saveSession();
             renderSidebarHistory();
-            showToast(isCurrentChatPinned ? 'Conversa fixada a la part superior' : 'Conversa desfixada');
+            showToast(isCurrentChatPinned ? 'Conversa fixada a la part superior' : 'Conversa desfixada', 'info');
         };
 
         window.handleHeaderMenuRename = function() {
@@ -7053,6 +7067,24 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             showToast(`Mode de Tutor activat: ${modeLabels[mode] || mode}`, 'info');
         };
 
+        window.isGoogleSearchActive = true;
+        window.toggleGoogleSearchGrounding = function() {
+            window.isGoogleSearchActive = !window.isGoogleSearchActive;
+            const btn = document.getElementById('google-search-toggle-btn');
+            const pulse = document.getElementById('google-search-pulse');
+            if (window.isGoogleSearchActive) {
+                if (btn) btn.className = "w-8 h-8 rounded-full hover:bg-blue-100/70 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center transition cursor-pointer relative shrink-0 shadow-xs active:scale-95";
+                if (btn) btn.title = "Cerca Web amb Google activa (gemini-3.8-flash)";
+                if (pulse) pulse.classList.remove('hidden');
+                showToast("Cerca amb Google activada (gemini-3.8-flash)", "info");
+            } else {
+                if (btn) btn.className = "w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-400 dark:text-zinc-500 border border-transparent flex items-center justify-center transition cursor-pointer relative shrink-0 active:scale-95";
+                if (btn) btn.title = "Cerca Web amb Google desactivada";
+                if (pulse) pulse.classList.add('hidden');
+                showToast("Cerca amb Google desactivada", "info");
+            }
+        };
+
         async function triggerAiResponse() {
             const loadingId = 'loading-' + Date.now();
             appendLoading(loadingId);
@@ -7063,12 +7095,13 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     chatHistory: chatHistory, 
                     pdfText: finalStudyText, 
                     studentContext: studentContextStr,
-                    tutorMode: window.currentTutorMode || 'standard' 
+                    tutorMode: window.currentTutorMode || 'standard',
+                    useGoogleSearch: window.isGoogleSearchActive !== false
                 });
                 document.getElementById(loadingId)?.remove();
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
-                appendMessage('ai', data.reply);
+                appendMessage('ai', data.reply, data.searchQueries, data.sources);
                 chatHistory.push({ role: 'assistant', content: data.reply });
                 saveSession();
             } catch (err) {
@@ -8140,7 +8173,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             });
         };
 
-        function appendMessage(sender, text) {
+        function appendMessage(sender, text, searchQueries = [], sources = []) {
             const box = document.getElementById('chat-messages');
             if (!box) return;
             const div = document.createElement('div');
@@ -8149,11 +8182,26 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 div.innerHTML = `<div class="bg-blue-600 dark:bg-[#282a2c] text-white dark:text-zinc-100 px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] sm:max-w-[75%] text-xs sm:text-sm font-medium shadow-xs break-words leading-relaxed">${formatMessage(text)}</div>`;
             } else {
                 div.className = "flex justify-start gap-2.5 sm:gap-3 w-full mb-5 chat-msg-ai transition-all duration-200";
+
+                let searchBadgeHtml = "";
+                if (Array.isArray(searchQueries) && searchQueries.length > 0) {
+                    searchBadgeHtml = `
+                    <div class="mb-2 flex flex-wrap items-center gap-1.5">
+                        ${searchQueries.map(q => `
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-900/60 text-blue-600 dark:text-blue-400 text-[11px] font-semibold shadow-xs">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                <span>Cercat amb Google: "${escapeHtml(q)}"</span>
+                            </span>
+                        `).join('')}
+                    </div>`;
+                }
+
                 div.innerHTML = `
                 <div class="relative shrink-0 mt-0.5">
                     <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-[10px] shadow-xs">AI</div>
                 </div>
                 <div class="flex-1 max-w-[95%] sm:max-w-[90%] text-zinc-900 dark:text-zinc-100 overflow-hidden group">
+                    ${searchBadgeHtml}
                     <div class="prose prose-sm dark:prose-invert max-w-none text-xs sm:text-[13.5px] leading-relaxed break-words overflow-x-auto">${formatMessage(text)}</div>
                     <!-- FILA D'ACCIONS ESTIL GEMINI -->
                     <div class="flex items-center gap-1 mt-2 text-zinc-400 dark:text-zinc-500 text-xs">

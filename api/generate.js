@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { GoogleGenAI } = require('@google/genai');
 const { getDbClient, JWT_SECRET } = require('./db');
 
 const quotaExceededKeys = new Set([
@@ -336,51 +337,157 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             const data = await response.json();
             const reply = data.choices?.[0]?.message?.content || '';
             if (!reply) throw new Error(`[${model}] Resposta buida del proveïdor.`);
-            return reply;
-        }
-
-        async function callGeminiModel(modelName, systemPrompt, contents, jsonMode = false, apiKey) {
-            const bodyData = {
-                contents: contents
+            return {
+                text: reply,
+                searchQueries: [],
+                sources: [],
+                groundingMetadata: null,
+                toString() { return this.text; },
+                valueOf() { return this.text; }
             };
-            if (systemPrompt) {
-                bodyData.systemInstruction = { parts: [{ text: systemPrompt }] };
-            }
-            if (jsonMode) {
-                bodyData.generationConfig = { responseMimeType: "application/json" };
-            }
-
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(bodyData)
-            });
-
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`[${modelName}] HTTP ${response.status}: ${errText.substring(0, 300)}`);
-            }
-
-            const data = await response.json();
-            const parts = data.candidates?.[0]?.content?.parts || [];
-            const textContent = parts.map(p => p.text || '').filter(Boolean).join('\n');
-            if (!textContent) {
-                throw new Error(`[${modelName}] Resposta buida o filtrada per seguretat.`);
-            }
-            return textContent;
         }
 
-        async function executeAI({ systemPrompt, contents, jsonMode = false }) {
+        async function callGeminiModel(modelName, systemPrompt, contents, jsonMode = false, apiKey, useGoogleSearch = false) {
+            let textContent = '';
+            let searchQueries = [];
+            let groundingChunks = [];
+            let sources = [];
+            let groundingMetadata = null;
+
+            // Model oficial de referència per a cerca i respostes actualitzades: gemini-3.8-flash
+            let targetModel = modelName || 'gemini-3.8-flash';
+            if (/gemini-1|gemini-2\.0|gemini-pro/i.test(targetModel)) {
+                targetModel = 'gemini-3.8-flash';
+            }
+
+            // 1. SDK oficial @google/genai (amb capçalera User-Agent aistudio-build)
+            try {
+                const ai = new GoogleGenAI({
+                    apiKey: apiKey,
+                    httpOptions: {
+                        headers: {
+                            'User-Agent': 'aistudio-build'
+                        }
+                    }
+                });
+
+                const config = {};
+                if (systemPrompt) {
+                    config.systemInstruction = systemPrompt;
+                }
+                if (jsonMode) {
+                    config.responseMimeType = "application/json";
+                } else if (useGoogleSearch) {
+                    // Search Grounding natiu amb el tool googleSearch
+                    config.tools = [{ googleSearch: {} }];
+                }
+
+                const response = await ai.models.generateContent({
+                    model: targetModel,
+                    contents: contents,
+                    config: config
+                });
+
+                textContent = response.text || '';
+                groundingMetadata = response.candidates?.[0]?.groundingMetadata || null;
+                if (groundingMetadata) {
+                    searchQueries = groundingMetadata.webSearchQueries || [];
+                    groundingChunks = groundingMetadata.groundingChunks || [];
+                }
+            } catch (sdkErr) {
+                console.warn(`[@google/genai SDK error per ${targetModel}]: ${sdkErr.message}. Provant via REST directament...`);
+
+                const bodyData = {
+                    contents: contents
+                };
+                if (systemPrompt) {
+                    bodyData.systemInstruction = { parts: [{ text: systemPrompt }] };
+                }
+                if (jsonMode) {
+                    bodyData.generationConfig = { responseMimeType: "application/json" };
+                } else if (useGoogleSearch) {
+                    bodyData.tools = [{ googleSearch: {} }];
+                }
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(bodyData)
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`[${targetModel}] HTTP ${response.status}: ${errText.substring(0, 300)}`);
+                }
+
+                const data = await response.json();
+                const parts = data.candidates?.[0]?.content?.parts || [];
+                textContent = parts.map(p => p.text || '').filter(Boolean).join('\n');
+                groundingMetadata = data.candidates?.[0]?.groundingMetadata || null;
+                if (groundingMetadata) {
+                    searchQueries = groundingMetadata.webSearchQueries || [];
+                    groundingChunks = groundingMetadata.groundingChunks || [];
+                }
+            }
+
+            if (!textContent) {
+                throw new Error(`[${targetModel}] Resposta buida o filtrada per seguretat.`);
+            }
+
+            // Extreure enllaços web de groundingChunks
+            if (Array.isArray(groundingChunks)) {
+                for (const chunk of groundingChunks) {
+                    if (chunk && chunk.web && chunk.web.uri) {
+                        sources.push({
+                            title: chunk.web.title || chunk.web.uri,
+                            url: chunk.web.uri
+                        });
+                    }
+                }
+            }
+
+            // Si s'han obtingut fonts de Google i no és format JSON, afegir cites si no estan presents
+            if (sources.length > 0 && !jsonMode) {
+                const uniqueSources = [];
+                const seenUrls = new Set();
+                for (const s of sources) {
+                    if (!seenUrls.has(s.url)) {
+                        seenUrls.add(s.url);
+                        uniqueSources.push(s);
+                    }
+                }
+                if (uniqueSources.length > 0 && !textContent.includes('**Fonts consultades:')) {
+                    const citationsMd = '\n\n**Fonts consultades a Google:**\n' + 
+                        uniqueSources.map(s => `- [${s.title}](${s.url})`).join('\n');
+                    textContent += citationsMd;
+                }
+            }
+
+            return {
+                text: textContent,
+                searchQueries,
+                sources,
+                groundingMetadata,
+                toString() { return this.text; },
+                valueOf() { return this.text; }
+            };
+        }
+
+        async function executeAI({ systemPrompt, contents, jsonMode = false, useGoogleSearch = false }) {
             const runnerList = [];
 
-            // Sanititzar el model del client per si passa noms invàlids o no suportats
+            // Sanititzar el model del client
             let effectiveModel = (userCustomModel || '').trim();
             if (effectiveModel) {
                 if (userPreferredProvider === 'gemini') {
-                    if (/gemini-3|gemini-2\.5/i.test(effectiveModel)) {
-                        effectiveModel = 'gemini-2.0-flash';
-                    } else if (/gemini-1\.5/i.test(effectiveModel)) {
-                        effectiveModel = 'gemini-1.5-flash';
+                    if (/gemini-3\.8/i.test(effectiveModel)) {
+                        effectiveModel = 'gemini-3.8-flash';
+                    } else if (/gemini-3\.1/i.test(effectiveModel)) {
+                        effectiveModel = 'gemini-3.1-flash-lite';
+                    } else if (/gemini-4/i.test(effectiveModel)) {
+                        effectiveModel = 'gemini-4-argon';
+                    } else {
+                        effectiveModel = 'gemini-3.8-flash';
                     }
                 } else if (userPreferredProvider === 'groq') {
                     if (effectiveModel.includes('gpt-oss-20b')) {
@@ -397,13 +504,12 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
             }
 
-            // 1. Si tenim clau de Gemini API (el motor oficial), afegir-lo al capdavant
+            // 1. Si tenim clau de Gemini API (el motor oficial), utilitzar gemini-3.8-flash al capdavant
             if (geminiApiKey && !quotaExceededKeys.has(geminiApiKey)) {
-                const primaryGemini = effectiveModel && userPreferredProvider === 'gemini' ? effectiveModel : 'gemini-2.0-flash';
+                const primaryGemini = effectiveModel && userPreferredProvider === 'gemini' ? effectiveModel : 'gemini-3.8-flash';
                 runnerList.push({ type: 'gemini', key: geminiApiKey, model: primaryGemini });
-                if (primaryGemini !== 'gemini-1.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-1.5-flash' });
-                if (primaryGemini !== 'gemini-1.5-pro') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-1.5-pro' });
-                if (primaryGemini !== 'gemini-2.0-flash-lite') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-2.0-flash-lite' });
+                if (primaryGemini !== 'gemini-3.8-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-3.8-flash' });
+                runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-3.1-flash-lite' });
             }
 
             // 2. Proveïdors personalitzats seleccionats per l'usuari
@@ -446,7 +552,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 const runner = runnerList[i];
                 try {
                     if (runner.type === 'gemini') {
-                        return await callGeminiModel(runner.model, systemPrompt, contents, jsonMode, runner.key);
+                        return await callGeminiModel(runner.model, systemPrompt, contents, jsonMode, runner.key, useGoogleSearch);
                     } else if (runner.type === 'groq') {
                         return await callOpenAICompatible({
                             endpoint: 'https://api.groq.com/openai/v1/chat/completions',
@@ -667,11 +773,15 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             }
             
             let replyText = "";
+            let aiRes = null;
+            const useGoogleSearch = body.useGoogleSearch !== false;
             try {
-                replyText = await executeAI({
+                aiRes = await executeAI({
                     systemPrompt: promptToUse,
-                    contents: geminiHistory
+                    contents: geminiHistory,
+                    useGoogleSearch: !isVoice && useGoogleSearch
                 });
+                replyText = aiRes.text || String(aiRes);
             } catch (aiErr) {
                 console.warn("[chat] Failover local per alta demanda:", aiErr.message);
                 if (isVoice) {
@@ -682,10 +792,15 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
             }
 
-            return res.status(200).json({ reply: replyText });
+            return res.status(200).json({
+                reply: replyText,
+                searchQueries: aiRes?.searchQueries || [],
+                sources: aiRes?.sources || [],
+                groundingMetadata: aiRes?.groundingMetadata || null
+            });
         }
 
-        // ACCIÓ 3: XATBOT LLIURE AMB INTERNET (TAVILY)
+        // ACCIÓ 3: XATBOT LLIURE AMB INTERNET I GOOGLE SEARCH GROUNDING
         if (action === 'free_chat') {
             const geminiHistory = formatGeminiHistory(chatHistory);
             let searchContext = "";
@@ -721,10 +836,11 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             const isVoice = !!body.isVoiceCall;
             const callLang = body.callLanguage || 'català';
 
-            const systemPromptFree = "Ets Aliat Intel·ligent en mode Xat Lliure. Ets un assistent d'IA conversacional, obert, enginyós i de propòsit general.\n" + safetyRules + "\n\n" +
+            const systemPromptFree = "Ets Aliat Intel·ligent en mode Xat Lliure amb connexió a Google Search. Ets un assistent d'IA conversacional, obert, enginyós i de propòsit general.\n" + safetyRules + "\n\n" +
                 "- Mode Lliure Total: L'usuari pot xerrar absolutament de qualsevol cosa (aficions, curiositats, debats, idees personals, tecnologia, cinema, jocs, humor o qualsevol pregunta del món).\n" +
                 "- NO forcis que la conversa sigui d'estudi ni et limitis a l'acadèmic. Conversa amb total naturalitat i proximitat, com en un xat entre amics o companys.\n" +
                 "- CONTINUÏTAT: Segueix sempre el fil de la conversa anterior amb coherència.\n" +
+                "- Dades i fets actualitzats: Utilitza les eines de cerca per donar informació rigorosa, fresca i verificada quan es tracti d'esdeveniments recents, notícies o consultes d'informació general.\n" +
                 "- Idioma: Respon amb excel·lència i expressivitat en català (o en l'idioma en què et parli l'usuari)." + searchContext + imageInstructionFree;
 
             let promptToUse = systemPromptFree;
@@ -739,11 +855,15 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             }
             
             let replyText = "";
+            let aiRes = null;
+            const useGoogleSearch = body.useGoogleSearch !== false;
             try {
-                replyText = await executeAI({
+                aiRes = await executeAI({
                     systemPrompt: promptToUse,
-                    contents: geminiHistory
+                    contents: geminiHistory,
+                    useGoogleSearch: !isVoice && useGoogleSearch
                 });
+                replyText = aiRes.text || String(aiRes);
             } catch (aiErr) {
                 console.warn("[free_chat] Failover local per alta demanda:", aiErr.message);
                 if (isVoice) {
@@ -754,7 +874,12 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
             }
 
-            return res.status(200).json({ reply: replyText });
+            return res.status(200).json({
+                reply: replyText,
+                searchQueries: aiRes?.searchQueries || [],
+                sources: aiRes?.sources || [],
+                groundingMetadata: aiRes?.groundingMetadata || null
+            });
         }
 
         // ACCIÓ 4: LECTOR I SOLUCIONADOR D'APUNTS (VISIÓ I ANÀLISI DE FOTOS)

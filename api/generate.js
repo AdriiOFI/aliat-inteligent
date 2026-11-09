@@ -271,6 +271,39 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 3. Llenguatge i respecte: Mantindràs un estil comunicatiu respectuós, constructiu i adaptat a un entorn educatiu i de desenvolupament personal.
 4. Privacitat de dades: No sol·licitaràs, ni recordaràs informació personal sensible dels usuaris.`;
 
+        async function transcribeWithWhisper({ apiKey, endpoint, model = 'whisper-large-v3-turbo', rawBase64, cleanMime }) {
+            const buffer = Buffer.from(rawBase64, 'base64');
+            const boundary = '----WebKitFormBoundary' + Math.random().toString(36).substring(2);
+            let ext = 'webm';
+            if (cleanMime.includes('mp3')) ext = 'mp3';
+            else if (cleanMime.includes('wav')) ext = 'wav';
+            else if (cleanMime.includes('m4a')) ext = 'm4a';
+            else if (cleanMime.includes('ogg')) ext = 'ogg';
+
+            const postData = [];
+            postData.push(Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="model"\r\n\r\n${model}\r\n`));
+            postData.push(Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="audio.${ext}"\r\nContent-Type: ${cleanMime}\r\n\r\n`));
+            postData.push(buffer);
+            postData.push(Buffer.from(`\r\n--${boundary}--\r\n`));
+
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': `multipart/form-data; boundary=${boundary}`
+                },
+                body: Buffer.concat(postData)
+            });
+
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(`[${model}] HTTP ${res.status}: ${errText.substring(0, 200)}`);
+            }
+
+            const data = await res.json();
+            return data.text || '';
+        }
+
         async function callOpenAICompatible({ endpoint, apiKey, model, systemPrompt, contents, jsonMode = false }) {
             const messages = [];
             if (systemPrompt) {
@@ -286,11 +319,18 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                             parts.push({ type: 'text', text: p.text });
                         }
                         if (p.inlineData && p.inlineData.data) {
-                            const mime = p.inlineData.mimeType || 'image/png';
-                            parts.push({
-                                type: 'image_url',
-                                image_url: { url: `data:${mime};base64,${p.inlineData.data}` }
-                            });
+                            const mime = (p.inlineData.mimeType || 'image/png').toLowerCase();
+                            if (mime.startsWith('image/')) {
+                                parts.push({
+                                    type: 'image_url',
+                                    image_url: { url: `data:${mime};base64,${p.inlineData.data}` }
+                                });
+                            } else if (mime.startsWith('audio/')) {
+                                parts.push({
+                                    type: 'text',
+                                    text: `[Àudio adjuntat: ${mime}]`
+                                });
+                            }
                         }
                     }
                 } else if (typeof item.content === 'string') {
@@ -984,6 +1024,130 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             });
 
             return res.status(200).json({ deck: ankiOutput });
+        }
+
+        // ACCIÓ 8: TRANSCRIURE ÀUDIO AMB GEMINI 3.5 TRANSCRIBE (AMB FALLBACKS A GROQ/OPENAI WHISPER)
+        if (action === 'transcribe_audio') {
+            const { audioBase64, mimeType, promptText } = body;
+            if (!audioBase64) return res.status(200).json({ error: "Falta l'àudio en Base64." });
+
+            const cleanMime = audioBase64.includes(';') 
+                ? audioBase64.split(';')[0].split(':')[1] 
+                : (mimeType || 'audio/webm');
+            const rawBase64 = audioBase64.includes('base64,') 
+                ? audioBase64.split('base64,')[1] 
+                : audioBase64;
+
+            let transcription = "";
+            let usedModel = "gemini-3.5-transcribe";
+
+            // 1. Intent amb Gemini API (gemini-3.5-transcribe) si tenim clau de Gemini
+            if (geminiApiKey && !quotaExceededKeys.has(geminiApiKey)) {
+                try {
+                    const ai = new GoogleGenAI({
+                        apiKey: geminiApiKey,
+                        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
+                    });
+
+                    const response = await ai.models.generateContent({
+                        model: "gemini-3.5-transcribe",
+                        contents: {
+                            parts: [
+                                { inlineData: { mimeType: cleanMime, data: rawBase64 } },
+                                { text: promptText || "Transcriu l'àudio de manera impecable, exacta i fidel al contingut parlat." }
+                            ]
+                        }
+                    });
+                    transcription = response.text || "";
+                } catch (err) {
+                    console.warn(`[gemini-3.5-transcribe SDK error]: ${err.message}. Intentant via REST...`);
+                    try {
+                        const restRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-transcribe:generateContent?key=${geminiApiKey}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                contents: [{
+                                    parts: [
+                                        { inlineData: { mimeType: cleanMime, data: rawBase64 } },
+                                        { text: promptText || "Transcriu l'àudio de manera impecable, exacta i fidel al contingut parlat." }
+                                    ]
+                                }]
+                            })
+                        });
+                        if (restRes.ok) {
+                            const restData = await restRes.json();
+                            const parts = restData.candidates?.[0]?.content?.parts || [];
+                            transcription = parts.map(p => p.text || '').filter(Boolean).join('\n');
+                        } else {
+                            const errText = await restRes.text();
+                            console.warn(`[gemini-3.5-transcribe REST error]: HTTP ${restRes.status}: ${errText.substring(0, 150)}`);
+                        }
+                    } catch (restErr) {
+                        console.warn(`[gemini-3.5-transcribe REST catch]: ${restErr.message}`);
+                    }
+                }
+            }
+
+            // 2. Si Gemini no té clau o ha fallat, provar Groq Whisper (whisper-large-v3-turbo)
+            if (!transcription && groqApiKey && !quotaExceededKeys.has(groqApiKey)) {
+                try {
+                    transcription = await transcribeWithWhisper({
+                        apiKey: groqApiKey,
+                        endpoint: 'https://api.groq.com/openai/v1/audio/transcriptions',
+                        model: 'whisper-large-v3-turbo',
+                        rawBase64,
+                        cleanMime
+                    });
+                    usedModel = "whisper-large-v3-turbo (Groq)";
+                } catch (groqErr) {
+                    console.warn(`[Groq Whisper error]: ${groqErr.message}`);
+                }
+            }
+
+            // 3. Si encara no tenim transcripció, provar OpenAI Whisper (whisper-1)
+            if (!transcription && openAiApiKey && !quotaExceededKeys.has(openAiApiKey)) {
+                try {
+                    transcription = await transcribeWithWhisper({
+                        apiKey: openAiApiKey,
+                        endpoint: 'https://api.openai.com/v1/audio/transcriptions',
+                        model: 'whisper-1',
+                        rawBase64,
+                        cleanMime
+                    });
+                    usedModel = "whisper-1 (OpenAI)";
+                } catch (openAiErr) {
+                    console.warn(`[OpenAI Whisper error]: ${openAiErr.message}`);
+                }
+            }
+
+            // 4. Utilitzar executeAI com a darrer recurs si hi ha alguna clau de Gemini disponible
+            if (!transcription && geminiApiKey) {
+                try {
+                    const fallbackRes = await executeAI({
+                        systemPrompt: "Ets un transcritor d'àudio professional d'alta precisió. Transcriu exactament el contingut de l'àudio adjuntat.",
+                        contents: [{
+                            role: "user",
+                            parts: [
+                                { inlineData: { mimeType: cleanMime, data: rawBase64 } },
+                                { text: "Transcriu aquest àudio de forma neta i exacta." }
+                            ]
+                        }]
+                    });
+                    transcription = fallbackRes.text || String(fallbackRes);
+                    usedModel = "gemini-3.8-flash";
+                } catch (execErr) {
+                    console.warn(`[executeAI Audio Fallback error]: ${execErr.message}`);
+                }
+            }
+
+            if (!transcription) {
+                return res.status(200).json({ 
+                    error: "No s'ha pogut transcriure l'àudio. Si us plau, verifica que has introduït una API Key d'IA (Gemini / Groq / OpenAI) vàlida des de la configuració.",
+                    transcription: ""
+                });
+            }
+
+            return res.status(200).json({ transcription, model: usedModel });
         }
 
         return res.status(200).json({ error: 'Acció no reconeguda.' });

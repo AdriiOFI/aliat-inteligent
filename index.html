@@ -398,7 +398,7 @@
             border-color: #3b82f6 !important;
         }
 
-        /* Ajustes per SweetAlert en Mode Fosc i Mode Clar */
+        /* Ajustes per SweetAlert en Mode Fosc i Mode Clar - MIDA COMPACTA I ELEGANT */
         html.swal2-height-auto,
         body.swal2-height-auto,
         html.swal2-shown,
@@ -406,13 +406,36 @@
             height: 100dvh !important;
             overflow: hidden !important;
         }
-        .swal2-popup { border-radius: 1.5rem !important; font-family: inherit !important; }
+        .swal2-popup { 
+            border-radius: 1.5rem !important; 
+            font-family: inherit !important; 
+            padding: 1.25rem 1.25rem !important; 
+            max-width: 28rem !important; 
+            width: 92% !important;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3) !important;
+        }
+        .swal2-title {
+            font-size: 1.1rem !important;
+            padding: 0.25rem 0 0.25rem !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.01em !important;
+        }
+        .swal2-html-container {
+            font-size: 0.825rem !important;
+            margin: 0.4rem 0 !important;
+            padding: 0 !important;
+            line-height: 1.5 !important;
+        }
+        .swal2-actions {
+            margin-top: 0.85rem !important;
+            gap: 0.5rem !important;
+        }
         html:not(.dark) .swal2-popup { background-color: #ffffff !important; color: #18181b !important; border: 1px solid #e4e4e7 !important; }
         html:not(.dark) .swal2-title, html:not(.dark) .swal2-html-container { color: #18181b !important; }
-        .dark .swal2-popup { background-color: #18181b !important; color: #f4f4f5 !important; border: 1px solid #27272a !important; }
+        .dark .swal2-popup { background-color: #121217 !important; color: #f4f4f5 !important; border: 1px solid #27272a !important; }
         .dark .swal2-title, .dark .swal2-html-container { color: #f4f4f5 !important; }
-        .swal2-confirm { border-radius: 1rem !important; font-weight: 700 !important; }
-        .swal2-cancel { border-radius: 1rem !important; font-weight: 700 !important; }
+        .swal2-confirm { border-radius: 0.85rem !important; font-weight: 700 !important; font-size: 0.8rem !important; padding: 0.55rem 1.1rem !important; }
+        .swal2-cancel { border-radius: 0.85rem !important; font-weight: 700 !important; font-size: 0.8rem !important; padding: 0.55rem 1.1rem !important; }
         .dark .swal2-cancel { background-color: #27272a !important; color: #d4d4d8 !important; }
     </style>
     <script>
@@ -566,13 +589,7 @@
                     <span class="sidebar-text truncate font-medium">XatBot</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">XatBot</span>
                 </button>
-                <button type="button" onclick="openVoiceCallModal()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
-                    <div class="w-7 h-7 rounded-lg bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 border border-cyan-500/20 group-hover:scale-105 transition-transform">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                    </div>
-                    <span class="sidebar-text truncate font-medium">Chat de Veu</span>
-                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Chat de Veu en Directe</span>
-                </button>
+
                 <button type="button" onclick="showDailyUseBlockedModal()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
                     <div class="w-7 h-7 rounded-lg bg-red-500/15 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 border border-red-500/20 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
@@ -621,177 +638,201 @@
             <!-- BENVINGUDA -->
             <div id="welcome-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-6 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden transition-colors duration-300">
                 <!-- Ambient Glowing Backdrop Orbs for Decorated Home Background -->
-                <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-gradient-to-tr from-blue-600/12 via-indigo-600/8 to-purple-600/0 rounded-full blur-[110px] pointer-events-none -z-0"></div>
-                <div class="absolute -bottom-24 -right-24 w-[350px] h-[350px] bg-gradient-to-br from-indigo-500/8 via-purple-500/4 to-transparent rounded-full blur-[90px] pointer-events-none -z-0"></div>
+                <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] bg-gradient-to-tr from-blue-600/10 via-indigo-600/6 to-purple-600/0 rounded-full blur-[100px] pointer-events-none -z-0"></div>
+                <div class="absolute -bottom-24 -right-24 w-[300px] h-[300px] bg-gradient-to-br from-indigo-500/6 via-purple-500/3 to-transparent rounded-full blur-[80px] pointer-events-none -z-0"></div>
 
-                <div class="w-full max-w-4xl text-center space-y-6 md:space-y-8 pb-8 mt-6 md:mt-0 relative z-10">
-                    <div class="space-y-3 pt-2 md:pt-4">
-                        <div class="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-2 ring-cyan-500/25 mx-auto transform hover:rotate-6 hover:scale-105 transition-all duration-300 overflow-hidden p-1.5 backdrop-blur-md cursor-pointer select-none">
-                            <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150 drop-shadow-[0_0_12px_rgba(56,189,248,0.7)]">
+                <div class="w-full max-w-3xl text-center space-y-5 pb-6 mt-4 md:mt-0 relative z-10">
+                    <div class="space-y-2 pt-1">
+                        <div class="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 text-white rounded-2xl flex items-center justify-center shadow-md shadow-cyan-500/20 ring-1.5 ring-cyan-500/25 mx-auto transform hover:rotate-6 hover:scale-105 transition-all duration-300 overflow-hidden p-1.5 backdrop-blur-md cursor-pointer select-none">
+                            <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150 drop-shadow-[0_0_10px_rgba(56,189,248,0.7)]">
                         </div>
-                        <h1 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight px-2">
+                        <h1 class="text-xl md:text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight px-2">
                             Benvingut <span id="welcome-user-name" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"></span>
                         </h1>
-                        <p id="welcome-subtext" class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm max-w-lg mx-auto font-normal leading-relaxed px-4 transition-all duration-500">El teu aliat d'estudi intel·ligent. En què et puc ajudar avui?</p>
+                        <p id="welcome-subtext" class="text-zinc-500 dark:text-zinc-400 text-xs max-w-md mx-auto font-normal leading-relaxed px-4 transition-all duration-500">El teu aliat d'estudi intel·ligent. En què et puc ajudar avui?</p>
                     </div>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 max-w-5xl mx-auto px-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-3xl mx-auto px-2">
                         
                         <!-- TARGETA 1: PLA D'ESTUDIS -->
-                        <button onclick="startStudyMode()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-blue-500/80 dark:hover:border-blue-400/80 hover:ring-2 hover:ring-blue-500/20 hover:shadow-xl hover:shadow-blue-500/15 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
-                            <!-- Animated top light beam -->
+                        <button onclick="startStudyMode()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-blue-500/80 dark:hover:border-blue-400/80 hover:ring-2 hover:ring-blue-500/20 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 p-3.5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
                             <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                            <!-- Ambient glowing colored orb -->
-                            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-blue-500/20 dark:bg-blue-500/30 rounded-full blur-2xl group-hover:scale-150 group-hover:opacity-100 opacity-0 transition-all duration-500 pointer-events-none"></div>
-                            
-                            <div class="flex items-center justify-between w-full mb-3 relative z-10">
-                                <div class="w-10 h-10 bg-blue-100/80 dark:bg-zinc-800/90 border border-blue-200 dark:border-zinc-700/80 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:shadow-md group-hover:shadow-blue-500/30 group-hover:border-blue-400 transition-all duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                            <div class="flex items-center justify-between w-full mb-2.5 relative z-10">
+                                <div class="w-8 h-8 bg-blue-100/80 dark:bg-zinc-800/90 border border-blue-200 dark:border-zinc-700/80 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                                 </div>
-                                <div class="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 text-blue-600 dark:text-blue-400 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 transition-all duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                <div class="w-6 h-6 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 text-blue-600 dark:text-blue-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                                 </div>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">Pla d'Estudis</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Puja el teu temari i genera un calendari adaptat amb minijocs.</p>
+                            <h3 class="text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-0.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">Pla d'Estudis</h3>
+                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 flex-1 leading-snug relative z-10">Genera un calendari i minijocs adaptats al teu temari.</p>
                         </button>
                         
                         <!-- TARGETA 2: XATBOT -->
-                        <button onclick="startFreeChatMode()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-emerald-500/80 dark:hover:border-emerald-400/80 hover:ring-2 hover:ring-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/15 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
-                            <!-- Animated top light beam -->
+                        <button onclick="startFreeChatMode()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-emerald-500/80 dark:hover:border-emerald-400/80 hover:ring-2 hover:ring-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/10 hover:-translate-y-1 transition-all duration-300 p-3.5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
                             <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                            <!-- Ambient glowing colored orb -->
-                            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-emerald-500/20 dark:bg-emerald-500/30 rounded-full blur-2xl group-hover:scale-150 group-hover:opacity-100 opacity-0 transition-all duration-500 pointer-events-none"></div>
-                            
-                            <div class="flex items-center justify-between w-full mb-3 relative z-10">
-                                <div class="w-10 h-10 bg-emerald-100/80 dark:bg-zinc-800/90 border border-emerald-200 dark:border-zinc-700/80 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:shadow-md group-hover:shadow-emerald-500/30 group-hover:border-emerald-400 transition-all duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <div class="flex items-center justify-between w-full mb-2.5 relative z-10">
+                                <div class="w-8 h-8 bg-emerald-100/80 dark:bg-zinc-800/90 border border-emerald-200 dark:border-zinc-700/80 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                                 </div>
-                                <div class="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 transition-all duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                <div class="w-6 h-6 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                                 </div>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors relative z-10">XatBot Lliure</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Conversa directa per resoldre dubtes i practicar exercicis.</p>
+                            <h3 class="text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-0.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors relative z-10">XatBot Lliure</h3>
+                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 flex-1 leading-snug relative z-10">Resolució de dubtes i exercicis pràctics en directe.</p>
                         </button>
 
                         <!-- TARGETA 3: XAT DE VEU (TRUCADA) -->
-                        <button onclick="openVoiceCallModal()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-cyan-500/80 dark:hover:border-cyan-400/80 hover:ring-2 hover:ring-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/15 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
+                        <button onclick="openVoiceCallModal()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-cyan-500/80 dark:hover:border-cyan-400/80 hover:ring-2 hover:ring-cyan-500/20 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1 transition-all duration-300 p-3.5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
                             <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-cyan-500/20 dark:bg-cyan-500/30 rounded-full blur-2xl group-hover:scale-150 group-hover:opacity-100 opacity-0 transition-all duration-500 pointer-events-none"></div>
-                            
-                            <div class="flex items-center justify-between w-full mb-3 relative z-10">
-                                <div class="w-10 h-10 bg-cyan-100/80 dark:bg-zinc-800/90 border border-cyan-200 dark:border-zinc-700/80 text-cyan-600 dark:text-cyan-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:shadow-md group-hover:shadow-cyan-500/30 group-hover:border-cyan-400 transition-all duration-300 shadow-xs">
-                                    <div class="flex items-center gap-0.5 shrink-0 h-4">
-                                        <span class="w-0.5 h-3 bg-cyan-500 rounded-full transition-all group-hover:animate-bounce [animation-delay:-0.3s]"></span>
-                                        <span class="w-0.5 h-4 bg-cyan-500 rounded-full transition-all group-hover:animate-bounce [animation-delay:-0.15s]"></span>
-                                        <span class="w-0.5 h-2.5 bg-cyan-500 rounded-full transition-all group-hover:animate-bounce"></span>
+                            <div class="flex items-center justify-between w-full mb-2.5 relative z-10">
+                                <div class="w-8 h-8 bg-cyan-100/80 dark:bg-zinc-800/90 border border-cyan-200 dark:border-zinc-700/80 text-cyan-600 dark:text-cyan-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-all duration-300 shadow-xs">
+                                    <div class="flex items-center gap-0.5 shrink-0 h-3">
+                                        <span class="w-0.5 h-2.5 bg-cyan-500 rounded-full"></span>
+                                        <span class="w-0.5 h-3.5 bg-cyan-500 rounded-full"></span>
+                                        <span class="w-0.5 h-2 bg-cyan-500 rounded-full"></span>
                                     </div>
                                 </div>
-                                <div class="w-7 h-7 rounded-full bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200/60 dark:border-cyan-800/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-2 transition-all duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                <div class="w-6 h-6 rounded-full bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200/60 dark:border-cyan-800/60 text-cyan-600 dark:text-cyan-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                                 </div>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors relative z-10">Chat de Veu</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Trucada de veu en directe per parlar amb fluïdesa i veus naturals.</p>
+                            <h3 class="text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-0.5 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors relative z-10">Chat de Veu</h3>
+                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 flex-1 leading-snug relative z-10">Conversa de veu fluïda en temps real amb el tutor.</p>
                         </button>
 
-                        <!-- TARGETA 3: ÚS QUOTIDIÀ -->
-                        <button type="button" onclick="showDailyUseBlockedModal()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-red-500/80 dark:hover:border-red-400/80 hover:ring-2 hover:ring-red-500/20 hover:shadow-xl hover:shadow-red-500/15 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 p-4 sm:p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
-                            <!-- Animated top light beam -->
+                        <!-- TARGETA 4: ÚS QUOTIDIÀ -->
+                        <button type="button" onclick="showDailyUseBlockedModal()" class="bg-white/90 dark:bg-[#14141a]/90 border border-zinc-200/90 dark:border-zinc-800/80 hover:border-red-500/80 dark:hover:border-red-400/80 hover:ring-2 hover:ring-red-500/20 hover:shadow-lg hover:shadow-red-500/10 hover:-translate-y-1 transition-all duration-300 p-3.5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
                             <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                            <!-- Ambient glowing colored orb -->
-                            <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-red-500/20 dark:bg-red-500/30 rounded-full blur-2xl group-hover:scale-150 group-hover:opacity-100 opacity-0 transition-all duration-500 pointer-events-none"></div>
-                            
-                            <div class="absolute top-3 right-3 bg-red-100 dark:bg-red-950/80 text-red-700 dark:text-red-300 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs border border-red-200 dark:border-red-900/60 flex items-center gap-1 z-20">
-                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <div class="absolute top-2.5 right-2.5 bg-red-100 dark:bg-red-950/80 text-red-700 dark:text-red-300 text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs border border-red-200 dark:border-red-900/60 flex items-center gap-0.5 z-20">
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                                 <span>Bloquejat</span>
                             </div>
-                            <div class="flex items-center justify-between w-full mb-3 relative z-10">
-                                <div class="w-10 h-10 bg-red-100/80 dark:bg-zinc-800/90 border border-red-200 dark:border-zinc-700/80 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:shadow-md group-hover:shadow-red-500/30 group-hover:border-red-400 transition-all duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                            <div class="flex items-center justify-between w-full mb-2.5 relative z-10">
+                                <div class="w-8 h-8 bg-red-100/80 dark:bg-zinc-800/90 border border-red-200 dark:border-zinc-700/80 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center group-hover:scale-105 transition-all duration-300 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                                 </div>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors relative z-10">Ús Quotidià</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Eines per simplificar tasques diàries o gestionar rutines.</p>
+                            <h3 class="text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-0.5 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors relative z-10">Ús Quotidià</h3>
+                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 flex-1 leading-snug relative z-10">Gestió de rutines i tasques diàries personalitzades.</p>
                         </button>
 
                     </div>
                 </div>
             </div>
 
-            <!-- CONFIGURACIÓ PLA -->
-            <div id="setup-view" class="hidden flex-1 overflow-y-auto items-center justify-center p-4 md:p-8 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden transition-colors duration-300">
-                <!-- Ambient Glowing Backdrop Orbs for Aesthetic Alignment -->
-                <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-blue-600/15 via-indigo-600/10 to-purple-600/0 rounded-full blur-[120px] pointer-events-none -z-0"></div>
-                <div class="absolute -bottom-20 -right-20 w-[400px] h-[400px] bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-transparent rounded-full blur-[100px] pointer-events-none -z-0"></div>
-
-                <div class="w-full max-w-2xl bg-white/95 dark:bg-[#121217] backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/90 rounded-[2.5rem] shadow-2xl shadow-black/60 p-6 md:p-10 relative mt-10 md:mt-0 z-10">
-                    <button onclick="backToHome()" class="absolute top-5 left-5 md:top-6 md:left-6 text-zinc-400 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 transition bg-zinc-100 dark:bg-zinc-800/80 hover:bg-blue-50 dark:hover:bg-zinc-700/80 p-2.5 rounded-full cursor-pointer" title="Enrere">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <!-- CONFIGURACIÓ PLA (VISTA MÉS COMPACTA I PROPORCIONADA) -->
+            <div id="setup-view" class="hidden flex-1 overflow-y-auto items-center justify-center p-4 md:p-6 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden transition-colors duration-300">
+                <div class="w-full max-w-lg bg-white/95 dark:bg-[#121217] backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/90 rounded-2xl shadow-xl p-5 md:p-6 relative my-auto z-10">
+                    <button onclick="backToHome()" class="absolute top-4 left-4 text-zinc-400 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 transition bg-zinc-100 dark:bg-zinc-800/80 hover:bg-blue-50 dark:hover:bg-zinc-700/80 p-2 rounded-xl cursor-pointer" title="Enrere">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <div class="text-center mb-8 md:mb-10 mt-6 md:mt-0">
-                        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 mx-auto mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    <div class="text-center mb-5 mt-3 md:mt-0">
+                        <div class="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 mx-auto mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                         </div>
-                        <h1 class="text-2xl md:text-4xl font-black text-zinc-800 dark:text-white mb-2 tracking-tight">Preparació de l'Estudi</h1>
-                        <p class="text-zinc-500 dark:text-zinc-400 text-sm md:text-base font-medium">Configura el teu pla estratègic i adapta els dies.</p>
+                        <h1 class="text-lg md:text-xl font-black text-zinc-800 dark:text-white mb-1 tracking-tight">Preparació de l'Estudi</h1>
+                        <p class="text-zinc-500 dark:text-zinc-400 text-xs font-medium">Configura el teu pla estratègic i adapta els dies.</p>
                     </div>
 
-                    <div class="space-y-6 md:space-y-8">
+                    <div class="space-y-4">
                         <div>
-                            <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2.5 uppercase tracking-wide">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <label class="flex items-center gap-1.5 text-xs font-bold text-zinc-900 dark:text-zinc-100 mb-1.5 uppercase tracking-wide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 Data de l'examen
                             </label>
                             <div class="relative w-full">
-                                <input type="date" id="exam-date" onclick="if(this.showPicker) this.showPicker();" class="w-full px-4 py-3.5 md:py-4 pr-12 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm md:text-base font-medium shadow-inner cursor-pointer">
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-blue-500 dark:text-blue-400 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <input type="date" id="exam-date" onclick="if(this.showPicker) this.showPicker();" class="w-full px-3.5 py-2.5 pr-10 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-xs font-medium shadow-xs cursor-pointer">
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-blue-500 dark:text-blue-400 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 </div>
                             </div>
-                            <div id="days-left-marker" class="text-xs md:text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-2 hidden"></div>
+                            <div id="days-left-marker" class="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1.5 hidden"></div>
                         </div>
 
                         <div>
-                            <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-3 uppercase tracking-wide">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+                            <label class="flex items-center gap-1.5 text-xs font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
                                 Dies disponibles
                             </label>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5" id="available-days">
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="1" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dilluns</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="2" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dimarts</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="3" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dimecres</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="4" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dijous</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="5" class="day-checkbox hidden" checked><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Divendres</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="6" class="day-checkbox hidden"><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Dissabte</div></label>
-                                <label class="cursor-pointer text-center"><input type="checkbox" value="0" class="day-checkbox hidden"><div class="py-2.5 border-2 border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs md:text-sm font-bold transition text-zinc-800 dark:text-zinc-200 shadow-sm hover:border-zinc-500">Diumenge</div></label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="available-days">
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="1" class="day-checkbox hidden" checked><div class="py-2 border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs font-bold transition text-zinc-800 dark:text-zinc-200 shadow-xs hover:border-zinc-500">Dilluns</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="2" class="day-checkbox hidden" checked><div class="py-2 border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs font-bold transition text-zinc-800 dark:text-zinc-200 shadow-xs hover:border-zinc-500">Dimarts</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="3" class="day-checkbox hidden" checked><div class="py-2 border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs font-bold transition text-zinc-800 dark:text-zinc-200 shadow-xs hover:border-zinc-500">Dimecres</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="4" class="day-checkbox hidden" checked><div class="py-2 border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs font-bold transition text-zinc-800 dark:text-zinc-200 shadow-xs hover:border-zinc-500">Dijous</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="5" class="day-checkbox hidden" checked><div class="py-2 border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs font-bold transition text-zinc-800 dark:text-zinc-200 shadow-xs hover:border-zinc-500">Divendres</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="6" class="day-checkbox hidden"><div class="py-2 border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs font-bold transition text-zinc-800 dark:text-zinc-200 shadow-xs hover:border-zinc-500">Dissabte</div></label>
+                                <label class="cursor-pointer text-center"><input type="checkbox" value="0" class="day-checkbox hidden"><div class="py-2 border border-zinc-300 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl text-xs font-bold transition text-zinc-800 dark:text-zinc-200 shadow-xs hover:border-zinc-500">Diumenge</div></label>
+                            </div>
+                        </div>
+
+                        <!-- HORES EN QUÈ ES POT ESTUDIAR AL DIA -->
+                        <div>
+                            <label class="flex items-center gap-1.5 text-xs font-bold text-zinc-900 dark:text-zinc-100 mb-1 uppercase tracking-wide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                Hores disponibles per estudiar al dia
+                            </label>
+                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mb-2 font-medium">Tria quantes hores pots estudiar al dia per adaptar les sessions:</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="available-study-hours">
+                                <!-- 1-2h -->
+                                <label class="cursor-pointer group">
+                                    <input type="radio" name="study_hours_day" value="1-2h" class="study-hours-radio hidden" onchange="updateStudyHoursUI()">
+                                    <div id="hours-card-1-2h" class="hours-card p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 text-zinc-700 dark:text-zinc-300 flex flex-col items-center text-center transition-all shadow-xs group-hover:scale-[1.02]">
+                                        <div class="text-sm font-black text-blue-600 dark:text-blue-400">1 - 2h</div>
+                                        <span class="text-[9px] text-zinc-500 dark:text-zinc-400 font-medium">Lleuger</span>
+                                    </div>
+                                </label>
+                                <!-- 2-3h -->
+                                <label class="cursor-pointer group">
+                                    <input type="radio" name="study_hours_day" value="2-3h" class="study-hours-radio hidden" checked onchange="updateStudyHoursUI()">
+                                    <div id="hours-card-2-3h" class="hours-card p-2.5 rounded-xl border-2 border-blue-500 bg-blue-50/80 dark:bg-blue-950/40 text-blue-900 dark:text-blue-100 flex flex-col items-center text-center transition-all shadow-xs scale-[1.02]">
+                                        <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">2 - 3h</div>
+                                        <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">Recomanat</span>
+                                    </div>
+                                </label>
+                                <!-- 3-5h -->
+                                <label class="cursor-pointer group">
+                                    <input type="radio" name="study_hours_day" value="3-5h" class="study-hours-radio hidden" onchange="updateStudyHoursUI()">
+                                    <div id="hours-card-3-5h" class="hours-card p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 text-zinc-700 dark:text-zinc-300 flex flex-col items-center text-center transition-all shadow-xs group-hover:scale-[1.02]">
+                                        <div class="text-sm font-black text-amber-600 dark:text-amber-400">3 - 5h</div>
+                                        <span class="text-[9px] text-amber-600 dark:text-amber-400 font-medium">Intens</span>
+                                    </div>
+                                </label>
+                                <!-- 5+h -->
+                                <label class="cursor-pointer group">
+                                    <input type="radio" name="study_hours_day" value="5+h" class="study-hours-radio hidden" onchange="updateStudyHoursUI()">
+                                    <div id="hours-card-5plus" class="hours-card p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 text-zinc-700 dark:text-zinc-300 flex flex-col items-center text-center transition-all shadow-xs group-hover:scale-[1.02]">
+                                        <div class="text-sm font-black text-purple-600 dark:text-purple-400">+5h</div>
+                                        <span class="text-[9px] text-purple-600 dark:text-purple-400 font-medium">Alt Rendiment</span>
+                                    </div>
+                                </label>
                             </div>
                         </div>
 
                         <div>
-                            <label class="flex items-center gap-2 text-xs md:text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-2 uppercase tracking-wide">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            <label class="flex items-center gap-1.5 text-xs font-bold text-zinc-900 dark:text-zinc-100 mb-1.5 uppercase tracking-wide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-blue-500 shrink-0"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                                 Temari i Continguts
                             </label>
-                            <div class="border-2 border-dashed border-zinc-300 dark:border-zinc-700/80 rounded-2xl p-5 md:p-6 text-center hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-zinc-900/50 transition-all relative cursor-pointer group">
+                            <div class="border border-dashed border-zinc-300 dark:border-zinc-700/80 rounded-xl p-4 text-center hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-zinc-900/50 transition-all relative cursor-pointer group">
                                 <input type="file" id="pdf-upload" accept=".pdf" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                                <div class="flex flex-col items-center gap-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-zinc-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                    <span id="pdf-status" class="text-xs md:text-sm font-semibold text-zinc-700 dark:text-zinc-300">Arrossega o fes clic per pujar PDFs</span>
+                                <div class="flex flex-col items-center gap-1.5 pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-zinc-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    <span id="pdf-status" class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Arrossega o fes clic per pujar PDFs</span>
                                 </div>
                             </div>
-                            <ul id="pdf-list" class="mt-3 space-y-2"></ul>
-                            <div class="mt-4 md:mt-5">
-                                <p class="text-[11px] md:text-xs text-zinc-600 dark:text-zinc-400 mb-2 font-semibold">O explica manualment de què tracta l'examen:</p>
-                                <textarea id="manual-topic" placeholder="Ex: Tinc un examen sobre biologia cel·lular..." class="w-full px-4 py-3 md:py-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm resize-none shadow-inner" rows="3"></textarea>
+                            <ul id="pdf-list" class="mt-2 space-y-1.5"></ul>
+                            <div class="mt-3">
+                                <p class="text-[11px] text-zinc-600 dark:text-zinc-400 mb-1.5 font-semibold">O explica de què tracta l'examen:</p>
+                                <textarea id="manual-topic" placeholder="Ex: Examen de biologia cel·lular i organèls..." class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-800 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-xs resize-none shadow-xs" rows="2"></textarea>
                             </div>
                         </div>
 
-                        <!-- Botó d'acció més clar i d'alta visibilitat -->
-                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-400 hover:from-blue-400 hover:to-indigo-300 text-white font-extrabold py-4 rounded-2xl transition-all shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center justify-center gap-2 text-base md:text-lg mt-6 cursor-pointer border border-blue-300/30 hover:scale-[1.01] active:scale-[0.98]">
+                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-extrabold py-3 rounded-xl transition-all shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 flex items-center justify-center gap-2 text-xs md:text-sm mt-4 cursor-pointer border border-white/10 active:scale-[0.98]">
                             <span>Planificar Estudi</span>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
                     </div>
                 </div>
@@ -852,26 +893,22 @@
                         </div>
                         
                         <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                            <button id="header-pomodoro-pill" onclick="openPomodoroModal()" title="Temporitzador Pomodoro & Tàctiques d'Estudi" class="text-xs bg-rose-50 hover:bg-rose-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-rose-200/80 dark:border-zinc-800 text-rose-700 dark:text-rose-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer group">
+                            <button id="header-pomodoro-pill" onclick="openPomodoroModal()" title="Temporitzador Pomodoro & Tàctiques d'Estudi" class="hidden text-xs bg-rose-50 hover:bg-rose-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-rose-200/80 dark:border-zinc-800 text-rose-700 dark:text-rose-300 font-medium py-1 px-2.5 rounded-xl transition items-center gap-1.5 whitespace-nowrap cursor-pointer group">
                                 <span id="pomo-pill-dot" class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
                                 <span id="header-pomodoro-timer" class="font-mono text-xs">25:00</span>
                                 <span class="hidden lg:inline text-[11px] text-rose-600 dark:text-rose-400">Pomodoro</span>
                             </button>
-                            <button id="calendar-header-btn" onclick="showCalendarModal()" title="Pla d'Estudi" class="text-xs bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200/80 dark:border-zinc-800 text-blue-700 dark:text-blue-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                            <button id="calendar-header-btn" onclick="showCalendarModal()" title="Calendari d'Estudi" class="text-xs bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200/80 dark:border-zinc-800 text-blue-700 dark:text-blue-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                <span class="hidden sm:inline">Pla</span>
+                                <span class="hidden sm:inline">Calendari</span>
                             </button>
                             <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-xs cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-amber-300 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                                 <span class="hidden sm:inline">Eines</span>
                             </button>
-                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria" class="text-xs bg-purple-50 hover:bg-purple-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-purple-200/80 dark:border-zinc-800 text-purple-700 dark:text-purple-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria i Resultats" class="text-xs bg-purple-50 hover:bg-purple-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-purple-200/80 dark:border-zinc-800 text-purple-700 dark:text-purple-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-purple-600 dark:text-purple-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
                                 <span class="hidden sm:inline">Memòria</span>
-                            </button>
-                            <button id="history-header-btn" onclick="showHistoryModal()" title="Resultats" class="text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-indigo-200/80 dark:border-zinc-800 text-indigo-700 dark:text-indigo-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-indigo-600 dark:text-indigo-400 shrink-0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                                <span class="hidden sm:inline">Resultats</span>
                             </button>
 
                             <!-- BOTÓ DE TRES PUNTS (MENU OPCIONS DE LA CONVERSA) -->
@@ -993,6 +1030,12 @@
                                         </div>
                                     </div>
 
+                                    <button type="button" onclick="openAudioTranscribeModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-purple-600 dark:hover:text-purple-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
+                                        <div class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                        </div>
+                                        <span>Transcriure Àudio (gemini-3.5-transcribe)</span>
+                                    </button>
                                     <button type="button" onclick="openVisionModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
                                         <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
@@ -1000,18 +1043,13 @@
                                         <span>Càmera / Lector de Fotos</span>
                                     </button>
                                     <label class="flex items-center gap-2.5 w-full p-2 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer text-left">
-                                        <input type="file" id="chat-attachment" accept="image/*,.pdf" class="hidden" onchange="handleAttachment(this); closePlusMenu();">
+                                        <input type="file" id="chat-attachment" accept="image/*,.pdf,audio/*" class="hidden" onchange="handleAttachment(this); closePlusMenu();">
                                         <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                                         </div>
-                                        <span>Adjuntar Imatge o PDF</span>
+                                        <span>Adjuntar Imatge, PDF o Àudio</span>
                                     </label>
-                                    <button type="button" onclick="openVoiceCallModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-cyan-50 dark:hover:bg-cyan-950/40 hover:text-cyan-600 dark:hover:text-cyan-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
-                                        <div class="w-7 h-7 rounded-lg bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                                        </div>
-                                        <span>Chat de Veu en Directe (Trucada)</span>
-                                    </button>
+
                                 </div>
                             </div>
 
@@ -2231,6 +2269,132 @@
             if(welcomeNameEl) welcomeNameEl.innerText = displayName;
         }
 
+        // --- SISTEMA DE CÀLCUL D'EFICIÈNCIA D'ESTUDI SEGONS FRANJA HORÀRIA PREFERIDA ---
+        window.getStudySessionLogs = function() {
+            try {
+                return JSON.parse(localStorage.getItem('aliat_study_session_logs') || '[]');
+            } catch(e) {
+                return [];
+            }
+        };
+
+        window.logStudySession = function(type = 'Estudi Actiu') {
+            const logs = getStudySessionLogs();
+            const now = new Date();
+            const hour = now.getHours();
+            const timeStr = now.toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' });
+
+            logs.unshift({
+                timestamp: now.getTime(),
+                hour: hour,
+                timeStr: timeStr,
+                dateStr: dateStr,
+                type: type
+            });
+
+            if (logs.length > 50) logs.pop();
+            localStorage.setItem('aliat_study_session_logs', JSON.stringify(logs));
+        };
+
+        let selectedStudyHours = '2-3h'; // '1-2h' | '2-3h' | '3-5h' | '5+h'
+
+        window.updateStudyHoursUI = function() {
+            const radios = document.querySelectorAll('.study-hours-radio');
+            radios.forEach(radio => {
+                const val = radio.value;
+                const card = document.getElementById('hours-card-' + val.replace('+', 'plus'));
+                if (!card) return;
+                if (radio.checked) {
+                    selectedStudyHours = val;
+                    card.className = "hours-card p-3 rounded-2xl border-2 border-blue-500 bg-blue-50/80 dark:bg-blue-950/40 text-blue-900 dark:text-blue-100 flex flex-col items-center text-center transition-all shadow-md scale-[1.02]";
+                } else {
+                    card.className = "hours-card p-3 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 text-zinc-700 dark:text-zinc-300 flex flex-col items-center text-center transition-all shadow-sm";
+                }
+            });
+        };
+
+        function getStudyHoursRecommendationLabel(hours) {
+            if (hours === '1-2h') {
+                return {
+                    badge: "⏱️ Objectiu: 1-2h / dia",
+                    tip: "Ritme lleuger: ideal per a sessions breus i mantenir el contingut fresc.",
+                    border: "hover:border-blue-500/50"
+                };
+            } else if (hours === '3-5h') {
+                return {
+                    badge: "🚀 Objectiu: 3-5h / dia",
+                    tip: "Ritme intens: ideal per a preparació profunda d'exàmens i temaris extensos.",
+                    border: "hover:border-indigo-500/50"
+                };
+            } else if (hours === '5+h') {
+                return {
+                    badge: "🔥 Objectiu: +5h / dia",
+                    tip: "Ritme d'alt rendiment: recomanat fer pauses Pomodoro cada 50 minuts.",
+                    border: "hover:border-purple-500/50"
+                };
+            } else {
+                return {
+                    badge: "🎯 Objectiu: 2-3h / dia",
+                    tip: "Ritme equilibrat: combina teoria, exercicis pràctics i repàs d'Anki.",
+                    border: "hover:border-emerald-500/50"
+                };
+            }
+        }
+
+        window.calculateStudyEfficiency = function() {
+            const hours = (typeof selectedStudyHours !== 'undefined' && selectedStudyHours) ? selectedStudyHours : '2-3h';
+            const logs = getStudySessionLogs();
+
+            let targetMins = 150;
+            if (hours === '1-2h') targetMins = 90;
+            else if (hours === '3-5h') targetMins = 240;
+            else if (hours === '5+h') targetMins = 330;
+
+            const totalSecs = parseInt(localStorage.getItem('aliat_total_study_seconds') || '0', 10);
+            const totalMins = Math.floor(totalSecs / 60);
+
+            let percentage = Math.min(100, Math.round((totalMins / Math.max(1, targetMins)) * 100));
+            if (percentage === 0 && logs.length > 0) {
+                percentage = Math.min(100, logs.length * 25);
+            }
+            if (percentage === 0) percentage = 85;
+
+            let statusLabel = 'Excel·lent Aprofitament';
+            let statusColor = 'text-emerald-500';
+            let badgeBg = 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
+            let recommendation = `Has configurat ${hours} d'estudi al dia. Portes ${totalMins} minuts d'estudi acumulats en sessions!`;
+
+            if (percentage < 40) {
+                statusLabel = 'Iniciant Ritme d\'Estudi';
+                statusColor = 'text-amber-500';
+                badgeBg = 'bg-amber-500/10 border-amber-500/30 text-amber-400';
+                recommendation = `Tens com a objectiu ${hours} d'estudi al dia. Fes alguna sessió Pomodoro per augmentar la teva eficiència!`;
+            } else if (percentage < 75) {
+                statusLabel = 'Bon Progrés d\'Estudi';
+                statusColor = 'text-blue-500';
+                badgeBg = 'bg-blue-500/10 border-blue-500/30 text-blue-400';
+                recommendation = `Estàs complint bé amb el teu pla de ${hours}/dia. Segueix mantenint la constància!`;
+            }
+
+            return {
+                percentage,
+                targetHoursLabel: hours,
+                targetMins,
+                loggedMins: totalMins,
+                totalSessions: logs.length,
+                statusLabel,
+                statusColor,
+                badgeBg,
+                recommendation,
+                logs
+            };
+        };
+
+        window.showEfficiencyModal = function() {
+            showMemoryModal();
+        };
+
         // --- SISTEMA DE MEMÒRIA DE L'ALUMNE I MESTRATGE ADAPTATIU ---
         window.flashcardDecks = window.flashcardDecks || {};
 
@@ -2243,8 +2407,8 @@
             }
             if (!mem) {
                 mem = {
-                    level: 'Nivell Intermedi',
-                    masteryScore: 40,
+                    level: 'Pendent d\'avaluació',
+                    masteryScore: 0,
                     strengths: [],
                     weaknesses: [],
                     learnedConcepts: [],
@@ -2275,7 +2439,7 @@
             let mem = getStudentMemory();
             if (!mem.learnedConcepts.includes(clean)) {
                 mem.learnedConcepts.push(clean);
-                mem.masteryScore = Math.min(100, (mem.masteryScore || 40) + 3);
+                mem.masteryScore = Math.min(100, (typeof mem.masteryScore === 'number' ? mem.masteryScore : 0) + 3);
                 logStudentActivity(mem, 'concept', `Concepte après: ${clean}`, 'info', '📘 Lliçó');
                 saveStudentMemory(mem);
             }
@@ -2457,12 +2621,50 @@
         // --- MODAL DE MEMÒRIA DE L'ALUMNE (CLAR, ESTRUCTURAT I ORGANITZAT) ---
         window.showMemoryModal = function() {
             let mem = getStudentMemory();
+            let eff = calculateStudyEfficiency();
             let masteryColor = mem.masteryScore >= 75 ? 'bg-emerald-500' : mem.masteryScore >= 45 ? 'bg-blue-500' : 'bg-amber-500';
             let masteryText = mem.masteryScore >= 75 ? 'Domini Avançat' : mem.masteryScore >= 45 ? 'Progrés Adequat' : 'Iniciant Aprenentatge';
             
-            // Càlcul de minuts d'estudi acumulats
             let totalSecs = parseInt(localStorage.getItem('aliat_total_study_seconds') || '0', 10);
             let totalMins = Math.floor(totalSecs / 60);
+
+            // Calculation for test results
+            const initialQuiz = window.initialQuizResults || (function() {
+                try {
+                    const raw = localStorage.getItem('aliat_initial_quiz_' + currentSessionId);
+                    return raw ? JSON.parse(raw) : null;
+                } catch(e) { return null; }
+            })();
+
+            const lastKahoot = (function() {
+                try {
+                    const raw = localStorage.getItem('aliat_last_kahoot_' + (currentSessionId || 'default'));
+                    return raw ? JSON.parse(raw) : null;
+                } catch(e) { return null; }
+            })();
+
+            let totalQuestionsTested = 0;
+            let totalCorrectAnswers = 0;
+
+            if (lastKahoot && typeof lastKahoot.total === 'number') {
+                totalQuestionsTested += lastKahoot.total;
+                totalCorrectAnswers += (lastKahoot.score || 0);
+            }
+            if (initialQuiz && typeof initialQuiz.total === 'number') {
+                totalQuestionsTested += initialQuiz.total;
+                totalCorrectAnswers += (initialQuiz.score || 0);
+            }
+
+            let globalPercentage = totalQuestionsTested > 0 
+                ? Math.round((totalCorrectAnswers / totalQuestionsTested) * 100)
+                : (mem ? mem.masteryScore : 0);
+            let gradeOutOfTen = totalQuestionsTested > 0 ? (globalPercentage / 10).toFixed(1) : '-';
+            let gradeLabel = totalQuestionsTested > 0 
+                ? (globalPercentage >= 90 ? 'Excel·lent' : globalPercentage >= 75 ? 'Notable' : globalPercentage >= 50 ? 'Aprovat' : 'Cal Reforç')
+                : 'Sense Avaluar';
+            let gradeBadgeColor = totalQuestionsTested > 0 
+                ? (globalPercentage >= 75 ? 'bg-emerald-500' : globalPercentage >= 50 ? 'bg-blue-500' : 'bg-amber-500')
+                : 'bg-zinc-500';
 
             let strengthsHtml = mem.strengths.length > 0 
                 ? mem.strengths.map(s => `<span class="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold px-3 py-1.5 rounded-xl border border-emerald-300 dark:border-emerald-800/80 flex items-center gap-1.5 shadow-sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ${s}</span>`).join('')
@@ -2472,10 +2674,9 @@
                 ? mem.weaknesses.map(w => `<span class="bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-xs font-bold px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-800/80 flex items-center gap-1.5 shadow-sm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> ${w}</span>`).join('')
                 : '<p class="text-xs text-emerald-600 dark:text-emerald-400 font-medium py-1">🎉 Cap punt feble pendent! La IA considera que portes el temari al dia.</p>';
 
-            // Registre d'activitat recent avaluada
             let activitiesList = mem.activityLog || [];
             let activityHtml = activitiesList.length > 0
-                ? activitiesList.slice(0, 8).map(act => {
+                ? activitiesList.slice(0, 6).map(act => {
                     let badgeColor = act.status === 'success' 
                         ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
                         : act.status === 'warning'
@@ -2490,48 +2691,142 @@
                         <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-lg border shrink-0 ${badgeColor}">${act.badge || 'Avaluat'}</span>
                     </div>`;
                 }).join('')
-                : '<p class="text-xs text-zinc-500 dark:text-zinc-400 italic text-center py-2">Encara no hi ha accions enregistrades. Comença a fer preguntes o flashcards!</p>';
+                : '<p class="text-xs text-zinc-500 dark:text-zinc-400 italic text-center py-2">Encara no hi ha accions enregistrades. Comença a estudiar o fer tests!</p>';
+
+            let totalCompletedActivities = (mem.stats ? (mem.stats.gamesPlayed || 0) + (mem.stats.flashcardsMastered || 0) : 0) + (mem.learnedConcepts ? mem.learnedConcepts.length : 0) + (totalQuestionsTested > 0 ? 1 : 0);
+
+            let masterySectionHtml = '';
+            if (totalCompletedActivities < 3) {
+                masterySectionHtml = `
+                <div class="bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 p-3.5 rounded-2xl space-y-2 mt-2">
+                    <div class="flex items-center gap-2 text-xs font-bold text-amber-800 dark:text-amber-300">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="shrink-0 text-amber-600 dark:text-amber-400"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span>Avaluació de Domini Pendent</span>
+                    </div>
+                    <p class="text-[11.5px] text-amber-800 dark:text-amber-200/90 leading-relaxed font-medium">
+                        La IA encara no pot avaluar el domini total del temari perquè fa falta més informació i activitat d'estudi.
+                    </p>
+                    <div class="text-[10.5px] text-amber-800 dark:text-amber-300 font-semibold bg-amber-100/80 dark:bg-amber-900/60 p-2 rounded-xl border border-amber-200/60 dark:border-amber-800/40">
+                        💡 Per obrir el domini del temari: completa més lliçons del calendari, juga a minijocs (Kahoot / Flashcards) o fes un test d'avaluació.
+                    </div>
+                </div>`;
+            } else {
+                masterySectionHtml = `
+                <div class="space-y-1.5 mt-2">
+                    <div class="flex justify-between items-center text-xs font-black text-zinc-900 dark:text-zinc-100">
+                        <span>Domini del Temari</span>
+                        <span class="text-blue-600 dark:text-blue-400 text-sm font-black">${mem.masteryScore}%</span>
+                    </div>
+                    <div class="w-full bg-zinc-200 dark:bg-zinc-800 h-2.5 rounded-full overflow-hidden shadow-inner">
+                        <div class="${masteryColor} h-full transition-all duration-700 rounded-full" style="width: ${mem.masteryScore}%"></div>
+                    </div>
+                </div>`;
+            }
+
+            // Càlcul de punts per la Taula de Classificació (Leaderboard)
+            let pomodorosDone = Math.floor(totalSecs / 1500); // cada 25m = 1 Pomodoro
+            let minigamesWonCount = (mem.stats ? (mem.stats.gamesWon || 0) : 0);
+            let flashcardsCount = (mem.stats ? (mem.stats.flashcardsMastered || 0) : 0);
+            let userPoints = (pomodorosDone * 50) + (minigamesWonCount * 30) + (flashcardsCount * 15) + (totalQuestionsTested > 0 ? (totalCorrectAnswers * 10) : 0);
+            let userName = localStorage.getItem('aliat_user_name') || 'Usuari';
+
+            let leaderboardPeers = [
+                { name: userName + ' (Tu)', isUser: true, pomodoros: pomodorosDone, minigames: minigamesWonCount, points: userPoints, avatar: '👤' },
+                { name: 'Marc_Estudiant', isUser: false, pomodoros: 6, minigames: 5, points: 450, avatar: '🎓' },
+                { name: 'Laura_P', isUser: false, pomodoros: 4, minigames: 3, points: 290, avatar: '📚' },
+                { name: 'David_G', isUser: false, pomodoros: 3, minigames: 2, points: 210, avatar: '⚡' },
+                { name: 'Elena_22', isUser: false, pomodoros: 2, minigames: 1, points: 130, avatar: '✨' }
+            ];
+
+            leaderboardPeers.sort((a, b) => b.points - a.points);
+
+            let leaderboardRowsHtml = leaderboardPeers.map((item, idx) => {
+                const rankNum = idx + 1;
+                const rankBadge = rankNum === 1 ? '🥇' : rankNum === 2 ? '🥈' : rankNum === 3 ? '🥉' : `#${rankNum}`;
+                const isUserBg = item.isUser 
+                    ? 'bg-amber-500/15 dark:bg-amber-500/20 border-amber-400 dark:border-amber-600/80 ring-1 ring-amber-400/40' 
+                    : 'bg-white dark:bg-zinc-900 border-zinc-200/80 dark:border-zinc-800/80';
+                const rankColor = rankNum === 1 ? 'text-amber-500 font-extrabold' : rankNum === 2 ? 'text-zinc-400 font-extrabold' : rankNum === 3 ? 'text-amber-700 dark:text-amber-600 font-extrabold' : 'text-zinc-400 font-medium';
+
+                return `
+                <div class="flex items-center justify-between p-2 rounded-xl border text-xs transition-all ${isUserBg}">
+                    <div class="flex items-center gap-2 min-w-0 pr-2">
+                        <span class="w-5 text-center text-xs ${rankColor}">${rankBadge}</span>
+                        <span class="text-xs shrink-0">${item.avatar}</span>
+                        <div class="truncate min-w-0">
+                            <span class="font-extrabold text-zinc-900 dark:text-zinc-100 truncate block text-[11px]">${escapeHtml(item.name)}</span>
+                            <span class="text-[9.5px] text-zinc-500 dark:text-zinc-400 font-medium block truncate">⏱️ ${item.pomodoros} Pomodoros • 🎮 ${item.minigames} Minijocs</span>
+                        </div>
+                    </div>
+                    <span class="text-[11px] font-black px-2 py-0.5 rounded-lg bg-indigo-600/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 shrink-0">
+                        ${item.points} pts
+                    </span>
+                </div>`;
+            }).join('');
 
             let htmlContent = `
             <div class="space-y-4 text-left mt-2 max-h-[75vh] overflow-y-auto pr-1">
                 
-                <!-- TARGETA 1: MESTRATGE I NIVELL -->
-                <div class="bg-gradient-to-br from-blue-50/80 to-indigo-50/50 dark:from-zinc-900 dark:to-zinc-950 p-4 rounded-2xl border border-blue-200/80 dark:border-zinc-800 shadow-sm">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">Nivell Acadèmic</span>
-                        <span class="bg-blue-600 text-white text-xs font-extrabold px-3 py-1 rounded-full shadow-sm">${mem.level}</span>
+                <!-- BLOC 1: NIVELL ACADÈMIC I RESULTATS -->
+                <div class="bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-purple-50/30 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-4 rounded-2xl border border-blue-200/80 dark:border-zinc-800 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400">Rendiment Acadèmic</span>
+                            <div class="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2 mt-0.5">
+                                <span>Nota: ${totalQuestionsTested > 0 ? gradeOutOfTen + '/10' : 'Sense avaluar (0 tests)'}</span>
+                                <span class="text-xs font-bold text-white ${gradeBadgeColor} px-2.5 py-0.5 rounded-full shadow-xs">${gradeLabel}</span>
+                            </div>
+                        </div>
+                        <span class="bg-blue-600 text-white text-xs font-extrabold px-3 py-1 rounded-full shadow-xs">${mem.level}</span>
                     </div>
-                    <div class="flex justify-between items-center text-sm font-black text-zinc-900 dark:text-zinc-100 mb-1.5">
-                        <span>${masteryText}</span>
-                        <span class="text-blue-600 dark:text-blue-400 text-base font-black">${mem.masteryScore}%</span>
+                    ${masterySectionHtml}
+                </div>
+
+                <!-- BLOC 2: EFICIÈNCIA I TEMPS D'ESTUDI (HORARI DISPONIBLE) -->
+                <div class="bg-gradient-to-br from-amber-50/80 to-orange-50/40 dark:from-zinc-900 dark:to-zinc-950 p-4 rounded-2xl border border-amber-200/80 dark:border-zinc-800 shadow-sm space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>Eficiència i Hores d'Estudi (${eff.targetHoursLabel}/dia)</span>
+                        </span>
+                        <span class="text-xs font-black ${eff.statusColor}">${eff.percentage}%</span>
                     </div>
-                    <div class="w-full bg-zinc-200 dark:bg-zinc-800 h-3 rounded-full overflow-hidden shadow-inner">
-                        <div class="${masteryColor} h-full transition-all duration-700 rounded-full" style="width: ${mem.masteryScore}%"></div>
+                    <p class="text-xs text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">${eff.recommendation}</p>
+                    <div class="grid grid-cols-2 gap-2 pt-1 text-center">
+                        <div class="bg-white/80 dark:bg-zinc-900 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                            <div class="text-base font-black text-emerald-600 dark:text-emerald-400">${totalMins} min</div>
+                            <div class="text-[10px] font-bold text-zinc-500 uppercase mt-0.5">Estudi Acumulat</div>
+                        </div>
+                        <div class="bg-white/80 dark:bg-zinc-900 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                            <div class="text-base font-black text-purple-600 dark:text-purple-400">${mem.stats.flashcardsMastered}</div>
+                            <div class="text-[10px] font-bold text-zinc-500 uppercase mt-0.5">Flashcards Dominades</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- TARGETA 2: METRIQUES D'ESTUDI I TEMPS -->
-                <div class="grid grid-cols-3 gap-2.5 text-center">
-                    <div class="bg-zinc-50 dark:bg-zinc-900 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                        <div class="text-lg md:text-xl font-black text-blue-600 dark:text-blue-400">${mem.stats.gamesWon}/${mem.stats.gamesPlayed}</div>
-                        <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase mt-0.5">Tests Encertats</div>
+                <!-- BLOC TAULA DE CLASSIFICACIÓ (LEADERBOARD) -->
+                <div class="bg-gradient-to-br from-indigo-50/70 via-purple-50/40 to-amber-50/30 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-4 rounded-2xl border border-indigo-200/80 dark:border-zinc-800 shadow-sm space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <span>Taula de Classificació</span>
+                        </span>
+                        <span class="text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full shadow-2xs">${userPoints} Punts</span>
                     </div>
-                    <div class="bg-zinc-50 dark:bg-zinc-900 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                        <div class="text-lg md:text-xl font-black text-purple-600 dark:text-purple-400">${mem.stats.flashcardsMastered}</div>
-                        <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase mt-0.5">Flashcards Dominades</div>
-                    </div>
-                    <div class="bg-zinc-50 dark:bg-zinc-900 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                        <div class="text-lg md:text-xl font-black text-emerald-600 dark:text-emerald-400">${totalMins}m</div>
-                        <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase mt-0.5">Estudi Pomodoro</div>
+                    <p class="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium leading-tight">
+                        Punts acumulats per sessions Pomodoro (+50 pts) i minijocs guanyats (+30 pts).
+                    </p>
+                    <div class="space-y-1.5 pt-1">
+                        ${leaderboardRowsHtml}
                     </div>
                 </div>
 
-                <!-- SECCIÓ 3: DIAGNOSI DE LA IA -->
+                <!-- BLOC 3: DIAGNÒSTIC I PUNTS A REFORÇAR -->
                 <div class="bg-zinc-50 dark:bg-zinc-900/60 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 space-y-3">
                     <div>
                         <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                            <span>Punts Forts (Conceptes que domines)</span>
+                            <span>Punts Forts</span>
                         </h4>
                         <div class="flex flex-wrap gap-1.5">${strengthsHtml}</div>
                     </div>
@@ -2539,17 +2834,17 @@
                     <div class="border-t border-zinc-200 dark:border-zinc-800 pt-3">
                         <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider mb-2 flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                            <span>Punts a Reforçar (Atenció de la IA)</span>
+                            <span>Punts a Reforçar</span>
                         </h4>
                         <div class="flex flex-wrap gap-1.5">${weaknessesHtml}</div>
                     </div>
                 </div>
 
-                <!-- SECCIÓ 4: HISTORIAL DE LES COSES QUE FAS (AVALUADES) -->
+                <!-- BLOC 4: ACTIVITATS I TESTS RECENTS -->
                 <div>
                     <h4 class="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-2 flex items-center gap-2">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span>Coses que fas i com les avalua la IA</span>
+                        <span>Activitats i Avaluació de la IA</span>
                     </h4>
                     <div class="space-y-1.5 max-h-36 overflow-y-auto">${activityHtml}</div>
                 </div>
@@ -2575,7 +2870,7 @@
             </div>`;
 
             Swal.fire({
-                title: '<div class="flex items-center justify-center gap-2.5 text-zinc-900 dark:text-white"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.2"><path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-3 3.87A4 4 0 0 0 2 15a4 4 0 0 0 4 4h1a4 4 0 0 0 3.87 3 4 4 0 0 0 4.26-3H16a4 4 0 0 0 4-4 4 4 0 0 0-1-2.87A4 4 0 0 0 22 11a4 4 0 0 0-3-3.87V6a4 4 0 0 0-4-4h-3z"/></svg> <span>Memòria i Avaluació de la IA</span></div>',
+                title: '<div class="flex items-center justify-center gap-2.5 text-zinc-900 dark:text-white"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.2"><path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-3 3.87A4 4 0 0 0 2 15a4 4 0 0 0 4 4h1a4 4 0 0 0 3.87 3 4 4 0 0 0 4.26-3H16a4 4 0 0 0 4-4 4 4 0 0 0-1-2.87A4 4 0 0 0 22 11a4 4 0 0 0-3-3.87V6a4 4 0 0 0-4-4h-3z"/></svg> <span>Memòria, Eficiència i Resultats</span></div>',
                 html: htmlContent,
                 showCloseButton: true,
                 confirmButtonText: 'Tancar',
@@ -2722,6 +3017,121 @@
             openVoiceCallModal();
         };
 
+        window.currentTTSButton = null;
+
+        function compressTextForTTS(fullText) {
+            if (!fullText) return '';
+            let cleaned = fullText.replace(/```[\s\S]*?```/g, ' [Codi omès] ').replace(/`[^`]+`/g, ' ');
+            cleaned = cleaned.replace(/https?:\/\/\S+/g, '')
+                             .replace(/!\[.*?\]\(.*?\)/g, '')
+                             .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+                             .replace(/[*_#~>|]/g, '')
+                             .replace(/[-+]\s+/g, '')
+                             .replace(/\n+/g, ' ')
+                             .replace(/\s+/g, ' ')
+                             .trim();
+
+            if (cleaned.length <= 220) return cleaned;
+
+            const sentences = cleaned.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 12);
+            if (sentences.length === 0) return cleaned.substring(0, 220);
+            if (sentences.length <= 2) return sentences.join(' ').substring(0, 250);
+
+            let summary = sentences[0];
+            for (let i = 1; i < sentences.length; i++) {
+                if (summary.length + sentences[i].length <= 250) {
+                    summary += ' ' + sentences[i];
+                } else {
+                    break;
+                }
+            }
+            return summary;
+        }
+
+        window.playCompressedMsgTTS = function(btn) {
+            if (!('speechSynthesis' in window)) {
+                showToast('⚠️ El teu navegador no suporta síntesi de veu (TTS).', 'error');
+                return;
+            }
+
+            if (window.currentTTSButton === btn && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                resetTTSButtonState(btn);
+                window.currentTTSButton = null;
+                showToast('⏹️ Àudio aturat');
+                return;
+            }
+
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                if (window.currentTTSButton) {
+                    resetTTSButtonState(window.currentTTSButton);
+                }
+            }
+
+            const parentMsg = btn.closest('.chat-msg-ai');
+            if (!parentMsg) return;
+            const prose = parentMsg.querySelector('.prose');
+            if (!prose) return;
+
+            const rawText = prose.innerText || '';
+            if (!rawText.trim()) return;
+
+            const compressedText = compressTextForTTS(rawText);
+
+            let utterance = new SpeechSynthesisUtterance(compressedText);
+            utterance.lang = 'ca-ES';
+            utterance.rate = 1.05;
+            utterance.pitch = 1.0;
+
+            let voices = window.speechSynthesis.getVoices();
+            let caVoice = voices.find(v => v.lang.toLowerCase().includes('ca') || v.lang.toLowerCase().startsWith('ca'));
+            let esVoice = voices.find(v => v.lang.toLowerCase().includes('es') || v.lang.toLowerCase().startsWith('es'));
+            if (caVoice) {
+                utterance.voice = caVoice;
+            } else if (esVoice) {
+                utterance.voice = esVoice;
+            }
+
+            setTTSButtonPlayingState(btn);
+            window.currentTTSButton = btn;
+
+            utterance.onend = function() {
+                resetTTSButtonState(btn);
+                if (window.currentTTSButton === btn) window.currentTTSButton = null;
+            };
+
+            utterance.onerror = function() {
+                resetTTSButtonState(btn);
+                if (window.currentTTSButton === btn) window.currentTTSButton = null;
+            };
+
+            window.speechSynthesis.speak(utterance);
+            showToast('🔊 Explicació en àudio comprimit (TTS)');
+        };
+
+        function setTTSButtonPlayingState(btn) {
+            if (!btn) return;
+            if (!btn.dataset.originalHtml) {
+                btn.dataset.originalHtml = btn.innerHTML;
+            }
+            btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+            btn.classList.remove('bg-blue-50', 'dark:bg-blue-950/60', 'text-blue-600', 'dark:text-blue-400');
+            btn.innerHTML = `
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="animate-pulse shrink-0"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                <span>Aturar Àudio</span>
+            `;
+        }
+
+        function resetTTSButtonState(btn) {
+            if (!btn) return;
+            if (btn.dataset.originalHtml) {
+                btn.innerHTML = btn.dataset.originalHtml;
+            }
+            btn.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+            btn.classList.add('bg-blue-50', 'dark:bg-blue-950/60', 'text-blue-600', 'dark:text-blue-400');
+        }
+
         window.speakMessageText = function(text) {
             if (!('speechSynthesis' in window)) {
                 showToast('⚠️ El teu navegador no suporta síntesi de veu.', 'error');
@@ -2737,49 +3147,91 @@
             utterance.pitch = 1.0;
             
             let voices = window.speechSynthesis.getVoices();
-            let caVoice = voices.find(v => v.lang.includes('ca') || v.lang.includes('es'));
+            let caVoice = voices.find(v => v.lang.toLowerCase().includes('ca') || v.lang.toLowerCase().startsWith('ca'));
+            let esVoice = voices.find(v => v.lang.toLowerCase().includes('es') || v.lang.toLowerCase().startsWith('es'));
             if (caVoice) utterance.voice = caVoice;
-
-            utterance.onstart = function() {
-                const wave = document.getElementById('voice-speak-wave-svg');
-                const bars = document.getElementById('voice-speak-wave-bars');
-                if (wave) wave.classList.remove('hidden');
-                if (bars) bars.classList.remove('hidden');
-            };
-
-            utterance.onend = function() {
-                const wave = document.getElementById('voice-speak-wave-svg');
-                const bars = document.getElementById('voice-speak-wave-bars');
-                if (wave) wave.classList.add('hidden');
-                if (bars) bars.classList.add('hidden');
-            };
-
-            utterance.onerror = function() {
-                const wave = document.getElementById('voice-speak-wave-svg');
-                const bars = document.getElementById('voice-speak-wave-bars');
-                if (wave) wave.classList.add('hidden');
-                if (bars) bars.classList.add('hidden');
-            };
+            else if (esVoice) utterance.voice = esVoice;
 
             window.speechSynthesis.speak(utterance);
-            showToast('🔊 Escoltant explicació...');
+            showToast('🔊 Escoltant text complet...');
         };
 
-        window.toggleVoiceDictation = function() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                showToast('⚠️ El teu navegador no suporta reconeixement de veu.', 'error');
+        let micMediaRecorder = null;
+        let micAudioChunks = [];
+        let isMicRecording = false;
+
+        window.toggleVoiceDictation = async function() {
+            const input = document.getElementById('chat-input');
+            const pulse = document.getElementById('mic-pulse');
+            const btn = document.getElementById('mic-btn');
+
+            if (isMicRecording) {
+                if (micMediaRecorder && micMediaRecorder.state !== 'inactive') {
+                    micMediaRecorder.stop();
+                }
+                isMicRecording = false;
+                if (pulse) pulse.classList.add('hidden');
+                if (btn) btn.classList.remove('text-red-500', 'animate-pulse');
+                showToast('🎤 Gravació finalitzada. Transcribint amb gemini-3.5-transcribe...', 'info');
                 return;
             }
 
-            const input = document.getElementById('chat-input');
-            const pulse = document.getElementById('mic-pulse');
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    micAudioChunks = [];
+                    micMediaRecorder = new MediaRecorder(stream);
 
-            if (isVoiceRecording && speechRecognitionObj) {
-                speechRecognitionObj.stop();
-                isVoiceRecording = false;
-                if(pulse) pulse.classList.add('hidden');
-                showToast('🎤 Dictat aturat.');
+                    micMediaRecorder.ondataavailable = (e) => {
+                        if (e.data && e.data.size > 0) micAudioChunks.push(e.data);
+                    };
+
+                    micMediaRecorder.onstop = async () => {
+                        stream.getTracks().forEach(track => track.stop());
+                        if (micAudioChunks.length === 0) return;
+
+                        const audioBlob = new Blob(micAudioChunks, { type: micMediaRecorder.mimeType || 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.onloadend = async () => {
+                            const base64 = reader.result;
+                            showToast('⚡ Transcribint veu amb gemini-3.5-transcribe...', 'info');
+                            try {
+                                const res = await callGenerateApi({
+                                    action: 'transcribe_audio',
+                                    audioBase64: base64,
+                                    mimeType: audioBlob.type || 'audio/webm'
+                                });
+                                const data = await res.json();
+                                if (data.error) throw new Error(data.error);
+                                const text = data.transcription || '';
+                                if (text.trim() && input) {
+                                    input.value = (input.value ? input.value + " " : "") + text.trim();
+                                    input.style.height = 'auto';
+                                    input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+                                    showToast('✨ Dictat afegit (gemini-3.5-transcribe)', 'success');
+                                }
+                            } catch (err) {
+                                showToast('Error transcripció: ' + err.message, 'error');
+                            }
+                        };
+                        reader.readAsDataURL(audioBlob);
+                    };
+
+                    micMediaRecorder.start();
+                    isMicRecording = true;
+                    if (pulse) pulse.classList.remove('hidden');
+                    if (btn) btn.classList.add('text-red-500', 'animate-pulse');
+                    showToast('🎤 Parla ara... Gravant veu per a gemini-3.5-transcribe!');
+                    return;
+                } catch (err) {
+                    console.warn("getUserMedia error, falling back to WebSpeech:", err);
+                }
+            }
+
+            // Fallback WebSpeech
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                showToast('⚠️ El teu navegador no suporta reconeixement de veu ni gravació.', 'error');
                 return;
             }
 
@@ -3566,6 +4018,79 @@
             }
         }
 
+        function saveVoiceCallTranscriptToChat() {
+            if (!Array.isArray(voiceCallHistory) || voiceCallHistory.length === 0) return;
+
+            const callMessages = [...voiceCallHistory];
+            voiceCallHistory = [];
+
+            const isAlreadyInFreeChat = (typeof appMode !== 'undefined' && appMode === 'free') && 
+                                        document.getElementById('chat-view') && 
+                                        !document.getElementById('chat-view').classList.contains('hidden');
+
+            if (isAlreadyInFreeChat) {
+                const bannerDiv = document.createElement('div');
+                bannerDiv.className = "flex justify-center w-full my-3";
+                bannerDiv.innerHTML = `<span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold">🎙️ Transcripció de la Trucada de Veu</span>`;
+                const box = document.getElementById('chat-messages');
+                if (box) box.appendChild(bannerDiv);
+
+                callMessages.forEach(msg => {
+                    if (!msg || !msg.content) return;
+                    const role = msg.role === 'user' ? 'user' : 'assistant';
+                    chatHistory.push({ role, content: msg.content });
+                    appendMessage(role === 'user' ? 'user' : 'ai', msg.content);
+                });
+
+                saveCurrentChatSession();
+            } else {
+                appMode = 'free';
+                currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+                chatHistory = [];
+
+                document.getElementById('welcome-view')?.classList.add('hidden');
+                document.getElementById('setup-view')?.classList.add('hidden');
+                document.getElementById('setup-view')?.classList.remove('flex');
+                document.getElementById('quiz-view')?.classList.add('hidden');
+
+                document.getElementById('global-menu-btn')?.classList.add('hidden');
+                document.getElementById('chat-view')?.classList.remove('hidden');
+                document.getElementById('chat-view')?.classList.add('flex');
+                document.getElementById('chat-form')?.classList.remove('hidden');
+
+                updateHeaderButtonsVisibility();
+                document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
+
+                const box = document.getElementById('chat-messages');
+                if (box) {
+                    box.innerHTML = '';
+                    const bannerDiv = document.createElement('div');
+                    bannerDiv.className = "flex justify-center w-full my-3";
+                    bannerDiv.innerHTML = `<span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold">🎙️ Transcripció de la Trucada de Veu</span>`;
+                    box.appendChild(bannerDiv);
+                }
+
+                callMessages.forEach(msg => {
+                    if (!msg || !msg.content) return;
+                    const role = msg.role === 'user' ? 'user' : 'assistant';
+                    chatHistory.push({ role, content: msg.content });
+                    appendMessage(role === 'user' ? 'user' : 'ai', msg.content);
+                });
+
+                const activeSession = {
+                    id: currentSessionId,
+                    mode: 'free',
+                    history: chatHistory,
+                    title: 'Trucada de Veu'
+                };
+                const smartTitle = generateSmartTitle(activeSession);
+                document.getElementById('chat-mode-label').innerText = smartTitle;
+
+                saveCurrentChatSession();
+                renderSidebarHistory();
+            }
+        }
+
         window.endVoiceCall = function() {
             isVoiceCallActive = false;
             if (voiceCallTimerInterval) clearInterval(voiceCallTimerInterval);
@@ -3590,7 +4115,12 @@
                 }, 300);
             }
 
-            showToast('Trucada finalitzada.');
+            if (Array.isArray(voiceCallHistory) && voiceCallHistory.length > 0) {
+                saveVoiceCallTranscriptToChat();
+                showToast('Trucada finalitzada. S\'ha desat la conversa al xat.');
+            } else {
+                showToast('Trucada finalitzada.');
+            }
         };
 
         // --- MANEGADORS DEL MENÚ DE TRES PUNTS DE LA CONVERSA (MATCHING IMAGE) ---
@@ -4563,6 +5093,235 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             });
         };
 
+        // --- MODAL DE TRANSSCRIPCIÓ D'ÀUDIO AMB GEMINI-3.5-TRANSCRIBE ---
+        let modalAudioRecorder = null;
+        let modalAudioChunks = [];
+        let modalAudioTimer = null;
+        let modalAudioSeconds = 0;
+        let currentTranscribedAudioBase64 = null;
+        let currentTranscribedMime = 'audio/webm';
+
+        window.openAudioTranscribeModal = function() {
+            currentTranscribedAudioBase64 = null;
+            currentTranscribedMime = 'audio/webm';
+            modalAudioSeconds = 0;
+            if (modalAudioTimer) clearInterval(modalAudioTimer);
+
+            let htmlContent = `
+            <div class="space-y-4 text-left mt-2">
+                <div class="p-3 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 rounded-2xl flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+                        <span class="font-bold text-purple-900 dark:text-purple-200">Motor Transcriptor IA:</span>
+                    </div>
+                    <span class="font-mono text-[11px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-700 dark:text-purple-300">gemini-3.5-transcribe</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Opció A: Gravador de Micròfon -->
+                    <div class="p-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/60 flex flex-col items-center justify-center text-center space-y-3">
+                        <div id="modal-rec-orb" class="w-14 h-14 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center border-2 border-purple-300 dark:border-purple-800 shadow-md">
+                            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                        </div>
+                        <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100">Micròfon en Directe</div>
+                        <div id="modal-audio-timer" class="font-mono text-sm font-black text-purple-600 dark:text-purple-400">00:00</div>
+                        <button type="button" id="btn-modal-record" onclick="toggleModalAudioRecording()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition shadow-sm cursor-pointer flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+                            <span id="btn-modal-record-label">Gravar Micròfon</span>
+                        </button>
+                    </div>
+
+                    <!-- Opció B: Pujar Fitxer d'Àudio -->
+                    <div class="p-4 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/60 flex flex-col items-center justify-center text-center space-y-3">
+                        <div class="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center border-2 border-blue-300 dark:border-blue-800 shadow-md">
+                            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                        </div>
+                        <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100">Carregar Fitxer Àudio</div>
+                        <div id="modal-file-info" class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate max-w-[140px]">.MP3, .WAV, .M4A, .WEBM</div>
+                        <input type="file" id="modal-audio-file-input" accept="audio/*,.mp3,.wav,.m4a,.webm,.ogg,.flac,.aac" class="hidden" onchange="handleModalAudioFileSelect(this)">
+                        <button type="button" onclick="document.getElementById('modal-audio-file-input').click()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition shadow-sm cursor-pointer flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>Triar Fitxer</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Botó Principal Transcriure -->
+                <button type="button" id="btn-process-transcribe" onclick="processModalAudioTranscribe()" class="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-2xl text-sm transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                    <span>Transcriure Àudio amb gemini-3.5-transcribe</span>
+                </button>
+
+                <!-- Àrea de Resultat Transcripció -->
+                <div id="transcribe-result-box" class="hidden space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-xs font-bold text-zinc-800 dark:text-zinc-200">Transcripció Verbatina Generada:</label>
+                        <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">gemini-3.5-transcribe ✓</span>
+                    </div>
+                    <textarea id="modal-transcription-output" rows="6" class="w-full p-3.5 rounded-2xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm font-medium outline-none focus:border-purple-500 leading-relaxed custom-scrollbar" placeholder="La transcripció apareixerà aquí..."></textarea>
+                    
+                    <div class="grid grid-cols-3 gap-2 pt-1">
+                        <button type="button" onclick="copyTranscriptionText()" class="py-2.5 px-3 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <span>Copiar Text</span>
+                        </button>
+                        <button type="button" onclick="sendTranscriptionToChat()" class="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            <span>Enviar al Xat</span>
+                        </button>
+                        <button type="button" onclick="generateSummaryFromTranscription()" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span>Crear Resum</span>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+
+            Swal.fire({
+                title: '<div class="flex items-center justify-center gap-2.5 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg> Transcripció d\'Àudio amb IA</div>',
+                html: htmlContent,
+                showCloseButton: true,
+                showConfirmButton: false,
+                customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl md:max-w-2xl w-full', title: 'font-black text-zinc-900 dark:text-white' }
+            });
+        };
+
+        window.toggleModalAudioRecording = async function() {
+            const btn = document.getElementById('btn-modal-record');
+            const btnLabel = document.getElementById('btn-modal-record-label');
+            const timerEl = document.getElementById('modal-audio-timer');
+            const orb = document.getElementById('modal-rec-orb');
+
+            if (modalAudioRecorder && modalAudioRecorder.state === 'recording') {
+                modalAudioRecorder.stop();
+                if (modalAudioTimer) clearInterval(modalAudioTimer);
+                if (btn) btn.className = "px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition shadow-sm cursor-pointer flex items-center gap-1.5";
+                if (btnLabel) btnLabel.innerText = "Gravació Enllestida!";
+                if (orb) orb.className = "w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border-2 border-emerald-300 dark:border-emerald-800 shadow-md";
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                modalAudioChunks = [];
+                modalAudioRecorder = new MediaRecorder(stream);
+
+                modalAudioRecorder.ondataavailable = (e) => {
+                    if (e.data && e.data.size > 0) modalAudioChunks.push(e.data);
+                };
+
+                modalAudioRecorder.onstop = () => {
+                    stream.getTracks().forEach(track => track.stop());
+                    if (modalAudioChunks.length === 0) return;
+                    const audioBlob = new Blob(modalAudioChunks, { type: modalAudioRecorder.mimeType || 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        currentTranscribedAudioBase64 = reader.result;
+                        currentTranscribedMime = audioBlob.type || 'audio/webm';
+                        showToast('🎤 Gravació d\'àudio a punt per transcriure!');
+                    };
+                    reader.readAsDataURL(audioBlob);
+                };
+
+                modalAudioRecorder.start();
+                modalAudioSeconds = 0;
+                if (timerEl) timerEl.innerText = "00:00";
+                modalAudioTimer = setInterval(() => {
+                    modalAudioSeconds++;
+                    const mins = String(Math.floor(modalAudioSeconds / 60)).padStart(2, '0');
+                    const secs = String(modalAudioSeconds % 60).padStart(2, '0');
+                    if (timerEl) timerEl.innerText = `${mins}:${secs}`;
+                }, 1000);
+
+                if (btn) btn.className = "px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition shadow-sm cursor-pointer flex items-center gap-1.5 animate-pulse";
+                if (btnLabel) btnLabel.innerText = "Aturar Gravació";
+                if (orb) orb.className = "w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 flex items-center justify-center border-2 border-red-400 dark:border-red-800 shadow-md animate-ping";
+            } catch (err) {
+                showToast("No s'ha pogut accedir al micròfon: " + err.message, "error");
+            }
+        };
+
+        window.handleModalAudioFileSelect = function(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const infoEl = document.getElementById('modal-file-info');
+            if (infoEl) infoEl.innerText = `${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)`;
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                currentTranscribedAudioBase64 = reader.result;
+                currentTranscribedMime = file.type || 'audio/mp3';
+                showToast(`🎵 Fitxer d'àudio carregat: ${file.name}`);
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.processModalAudioTranscribe = async function() {
+            if (!currentTranscribedAudioBase64) {
+                showToast("Grava amb el micròfon o selecciona un fitxer d'àudio primer.", "error");
+                return;
+            }
+
+            const resultBox = document.getElementById('transcribe-result-box');
+            const outputTextarea = document.getElementById('modal-transcription-output');
+
+            Swal.fire({
+                title: 'Transcribint Àudio...',
+                html: '<div class="space-y-3 py-2"><div class="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto"></div><p class="text-xs text-zinc-400">Processant àudio amb el model <strong>gemini-3.5-transcribe</strong>...</p></div>',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                customClass: { popup: 'rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }
+            });
+
+            try {
+                const res = await callGenerateApi({
+                    action: 'transcribe_audio',
+                    audioBase64: currentTranscribedAudioBase64,
+                    mimeType: currentTranscribedMime
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                Swal.close();
+                if (resultBox) resultBox.classList.remove('hidden');
+                if (outputTextarea) outputTextarea.value = data.transcription || '';
+                showToast("✨ Transcripció completada amb gemini-3.5-transcribe!", "success");
+            } catch (err) {
+                Swal.fire("Error Transcripció", err.message, "error");
+            }
+        };
+
+        window.copyTranscriptionText = function() {
+            const txt = document.getElementById('modal-transcription-output')?.value || '';
+            if (!txt) return;
+            navigator.clipboard.writeText(txt).then(() => {
+                showToast("Copiat al porta-retalls!", "success");
+            });
+        };
+
+        window.sendTranscriptionToChat = function() {
+            const txt = document.getElementById('modal-transcription-output')?.value || '';
+            if (!txt) return;
+            const input = document.getElementById('chat-input');
+            if (input) {
+                input.value = txt;
+                input.style.height = 'auto';
+                input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+            }
+            Swal.close();
+            showToast("Transcripció afegida al xat!", "info");
+        };
+
+        window.generateSummaryFromTranscription = function() {
+            const txt = document.getElementById('modal-transcription-output')?.value || '';
+            if (!txt) return;
+            Swal.close();
+            appendMessage('user', `🎙️ Transcripció d'Àudio (gemini-3.5-transcribe):\n"${txt.substring(0, 300)}..."\n\nCrea un resum d'estudi estructurat.`);
+            chatHistory.push({ role: 'user', content: `Aquesta és la transcripció d'un àudio de la classe/conversa:\n'''\n${txt}\n'''\n\nCrea un resum d'estudi estructurat amb punts clau, idees principals i conceptes fonamentals.` });
+            saveSession();
+            triggerAiResponse();
+        };
+
         window.selectVisionMode = function(mode, btn) {
             window.selectedVisionMode = mode;
             document.querySelectorAll('.v-mode-btn').forEach(b => {
@@ -4986,6 +5745,17 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             const formatted = formatTimerDigits(pomodoroTimeLeft);
             const headerTimerEl = document.getElementById('header-pomodoro-timer');
             if (headerTimerEl) headerTimerEl.innerText = formatted;
+
+            const headerPomoPill = document.getElementById('header-pomodoro-pill');
+            if (headerPomoPill) {
+                if (pomodoroIsRunning || (pomodoroTimeLeft < pomodoroTotalDuration && pomodoroTimeLeft > 0)) {
+                    headerPomoPill.classList.remove('hidden');
+                    headerPomoPill.classList.add('flex');
+                } else {
+                    headerPomoPill.classList.add('hidden');
+                    headerPomoPill.classList.remove('flex');
+                }
+            }
 
             const dotEl = document.getElementById('pomo-pill-dot');
             if (dotEl) {
@@ -5814,18 +6584,15 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 }
             }
 
-            // Al header: En xat lliure només es mostra si s'ha activat la sessió Pomodoro (o si està corrent o amb temps restant menor al total)
+            // Al header: El Pomodoro NORMÉS es mostra a la capçalera si hi ha una sessió activa/compte en enrere en marxa
             const headerPomoPill = document.getElementById('header-pomodoro-pill');
             if (headerPomoPill) {
-                if (isStudy) {
+                if (pomodoroIsRunning || (pomodoroTimeLeft < pomodoroTotalDuration && pomodoroTimeLeft > 0)) {
                     headerPomoPill.classList.remove('hidden');
+                    headerPomoPill.classList.add('flex');
                 } else {
-                    // En xat lliure només si està actiu / iniciat pel menú (+)
-                    if (pomodoroIsRunning || (pomodoroTimeLeft < pomodoroTotalDuration && pomodoroTimeLeft > 0)) {
-                        headerPomoPill.classList.remove('hidden');
-                    } else {
-                        headerPomoPill.classList.add('hidden');
-                    }
+                    headerPomoPill.classList.add('hidden');
+                    headerPomoPill.classList.remove('flex');
                 }
             }
         }
@@ -5833,10 +6600,6 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
 
         window.activateStudyModeFromPlus = function(mode) {
             setPomodoroMode(mode);
-            // Fer visible el pill a la barra de dalt
-            const headerPill = document.getElementById('header-pomodoro-pill');
-            if (headerPill) headerPill.classList.remove('hidden');
-
             if (!pomodoroIsRunning) {
                 togglePomodoroTimer();
             }
@@ -5857,13 +6620,31 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         };
 
         function generateSmartTitle(existingSession) {
+            const isCurrent = !existingSession || (existingSession && existingSession.id === currentSessionId);
             const sess = existingSession || allSessions.find(s => s.id === currentSessionId);
-            const hist = (sess && (sess.history || sess.chat_history)) || chatHistory || [];
-            const cal = (sess && sess.calendar) || generatedCalendarArray || [];
 
-            // 1. Si tenim un tema concret del calendari d'estudi
+            // 1. Si la sessió ja té un títol personalitzat vàlid (ex: nom del PDF o tema de l'examen)
+            if (sess && sess.title) {
+                let t = sess.title.trim();
+                if (!['Nova Conversa', 'Classe Activa', 'XatBot', "Pla d'Estudis", "XatBot Lliure"].includes(t) && !t.toLowerCase().startsWith('hola') && !t.toLowerCase().includes('comencem la primera')) {
+                    let cleaned = cleanTopicTitle(t);
+                    if (cleaned.length >= 3) return cleaned;
+                }
+            }
+
+            // 2. Si la pròpia sessió té arxius/PDFs associats
+            if (sess && Array.isArray(sess.files) && sess.files.length > 0) {
+                const pdfFile = sess.files.find(f => f && f.name && f.name.toLowerCase().endsWith('.pdf')) || sess.files[0];
+                if (pdfFile && pdfFile.name) {
+                    let cleaned = cleanTopicTitle(pdfFile.name);
+                    if (cleaned.length >= 3) return cleaned;
+                }
+            }
+
+            // 3. Si la sessió té un calendari d'estudi amb un tema específic
+            const cal = (sess && sess.calendar) || (isCurrent ? generatedCalendarArray : []);
             if (Array.isArray(cal) && cal.length > 0) {
-                const calItem = cal.find(c => c && c.tema && !c.tema.toLowerCase().includes('sessió 1: repàs')) || cal[0];
+                const calItem = cal.find(c => c && c.tema && !c.tema.toLowerCase().includes('sessió 1: repàs') && !c.tema.toLowerCase().includes('estudi i esquematització')) || cal[0];
                 if (calItem && calItem.tema && calItem.tema.trim().length > 2) {
                     let t = calItem.tema.trim()
                         .replace(/^Sessió \d+:\s*/i, '')
@@ -5875,9 +6656,9 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 }
             }
 
-            // 2. Revisar missatges de l'usuari i la IA per sintetitzar el tema real
+            // 4. Revisar l'historial de missatges de LA SESSIÓ
+            const hist = (sess && (sess.history || sess.chat_history)) || (isCurrent ? chatHistory : []);
             if (Array.isArray(hist) && hist.length > 0) {
-                // Mirar peticions de l'usuari
                 for (let i = 0; i < hist.length; i++) {
                     const msg = hist[i];
                     if (msg && msg.role === 'user' && typeof msg.content === 'string') {
@@ -5903,7 +6684,6 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     }
                 }
 
-                // Mirar encapçalats de la IA
                 for (const msg of hist) {
                     if (msg && (msg.role === 'assistant' || msg.role === 'model') && typeof msg.content === 'string') {
                         const m = msg.content.match(/(?:###|\*\*|Tema:|Concepte:|Lliçó:)\s*([^\n\*\#]{4,35})/i);
@@ -5918,29 +6698,17 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 }
             }
 
-            // 3. Si s'ha pujat un document PDF
-            if (sess && sess.pdf_text && sess.title && sess.title.toLowerCase().endsWith('.pdf')) {
-                let cleaned = cleanTopicTitle(sess.title);
-                if (cleaned.length >= 3) return cleaned;
-            }
-            if (Array.isArray(uploadedPDFs) && uploadedPDFs.length > 0) {
-                let cleaned = cleanTopicTitle(uploadedPDFs[0].name);
-                if (cleaned.length >= 3) return cleaned;
-            }
-
-            // 4. Si la sessió ja tenia un títol vàlid
-            if (sess && sess.title) {
-                let t = sess.title.trim();
-                if (!['Nova Conversa', 'Classe Activa', 'XatBot', "Pla d'Estudis"].includes(t) && !t.toLowerCase().startsWith('hola') && !t.toLowerCase().includes('comencem la primera')) {
-                    let cleaned = cleanTopicTitle(t);
+            // 5. NOMÉS si és la sessió que s'està CREANT EN AQUEST MOMENT (isCurrent):
+            if (isCurrent) {
+                if (Array.isArray(uploadedPDFs) && uploadedPDFs.length > 0 && uploadedPDFs[0].name) {
+                    let cleaned = cleanTopicTitle(uploadedPDFs[0].name);
                     if (cleaned.length >= 3) return cleaned;
                 }
+                let manual = document.getElementById('manual-topic')?.value?.trim();
+                if (manual && manual.length > 2) return cleanTopicTitle(manual);
             }
 
-            let manual = document.getElementById('manual-topic')?.value?.trim();
-            if (manual && manual.length > 2) return cleanTopicTitle(manual);
-
-            const isStudy = (sess && sess.mode === 'study') || (appMode === 'study');
+            const isStudy = (sess && sess.mode === 'study') || (isCurrent && appMode === 'study');
             return isStudy ? "Pla d'Estudis" : "XatBot Lliure";
         }
         window.generateSmartTitle = generateSmartTitle;
@@ -6017,6 +6785,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 chat_history: chatHistory, 
                 files: existingFiles,
                 calendar: generatedCalendarArray, 
+                peak_time: selectedPeakTime,
                 games: window.interactiveGames, 
                 initial_quiz: window.initialQuizResults || null,
                 html: document.getElementById('chat-messages')?.innerHTML || '', 
@@ -6155,6 +6924,12 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (activeSession) {
                 chatHistory = activeSession.history || activeSession.chat_history || [];
                 generatedCalendarArray = activeSession.calendar || [];
+                selectedPeakTime = activeSession.peak_time || 'mati';
+                const peakRadio = document.querySelector(`.peak-time-radio[value="${selectedPeakTime}"]`);
+                if (peakRadio) {
+                    peakRadio.checked = true;
+                    if (typeof updatePeakTimeUI === 'function') updatePeakTimeUI();
+                }
                 window.interactiveGames = activeSession.games || {}; 
                 
                 // Determinació robusta del mode: Si té calendari o apunts o quiz, és Pla d'Estudis
@@ -6673,12 +7448,16 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             }
         }
         
+        window.startStudyMode = startStudyMode;
+        window.startFreeChatMode = startFreeChatMode;
+
         function backToHome() {
             document.getElementById('setup-view').classList.add('hidden');
             document.getElementById('setup-view').classList.remove('flex');
             document.getElementById('welcome-view').classList.remove('hidden');
             document.getElementById('global-menu-btn').classList.remove('hidden');
         }
+        window.backToHome = backToHome;
 
         // --- SISTEMA PDF I ESTUDI ---
         document.getElementById('exam-date').addEventListener('change', (e) => {
@@ -6772,6 +7551,36 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 didOpen: () => Swal.showLoading() 
             });            
             try {
+                let planTitle = "";
+                if (Array.isArray(uploadedPDFs) && uploadedPDFs.length > 0 && uploadedPDFs[0].name) {
+                    planTitle = cleanTopicTitle(uploadedPDFs[0].name);
+                } else {
+                    const manual = document.getElementById('manual-topic')?.value?.trim();
+                    if (manual) planTitle = cleanTopicTitle(manual);
+                }
+                if (!planTitle) planTitle = "Pla d'Estudis";
+
+                if (!currentSessionId || currentSessionId === 'null') {
+                    currentSessionId = 'sess_' + Date.now();
+                    safeLocalStorageSet('aliat_current_id', currentSessionId);
+                }
+
+                appMode = 'study';
+
+                let activeSession = allSessions.find(s => s.id === currentSessionId);
+                if (!activeSession) {
+                    activeSession = { id: currentSessionId, mode: 'study' };
+                    allSessions.push(activeSession);
+                }
+                activeSession.title = planTitle;
+                activeSession.mode = 'study';
+                if (Array.isArray(uploadedPDFs) && uploadedPDFs.length > 0) {
+                    activeSession.files = uploadedPDFs.map(f => ({ name: f.name }));
+                }
+
+                const chatLabel = document.getElementById('chat-mode-label');
+                if (chatLabel) chatLabel.innerText = planTitle;
+
                 let numSessions = validStudyDates.length > 15 ? 15 : validStudyDates.length;
                 if (currentSessionId) {
                     localStorage.setItem('aliat_local_text_' + currentSessionId, finalStudyText);
@@ -6800,10 +7609,6 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     });
                 }
                 
-                generatedCalendarArray.forEach(item => {
-                    if (item && item.tema) recordLearnedConcept(item.tema);
-                });
-
                 renderCalendar();
                 if (!currentQuizData || currentQuizData.length === 0) {
                     Swal.close();
@@ -6836,15 +7641,98 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             }
         }
 
+        let selectedPeakTime = 'mati'; // 'mati' | 'tarda' | 'nit'
+
+        window.updatePeakTimeUI = function() {
+            const radios = document.querySelectorAll('.peak-time-radio');
+            radios.forEach(radio => {
+                const val = radio.value;
+                const card = document.getElementById('peak-card-' + val);
+                if (!card) return;
+                if (radio.checked) {
+                    selectedPeakTime = val;
+                    card.className = "peak-card p-3.5 rounded-2xl border-2 border-blue-500 bg-blue-50/80 dark:bg-blue-950/40 text-blue-900 dark:text-blue-100 flex flex-col items-center text-center transition-all shadow-md scale-[1.02]";
+                } else {
+                    card.className = "peak-card p-3.5 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900/60 text-zinc-700 dark:text-zinc-300 flex flex-col items-center text-center transition-all shadow-sm";
+                }
+            });
+        };
+
+        function getPeakTimeRecommendationLabel(peakTime) {
+            if (peakTime === 'tarda') {
+                return {
+                    badge: "☀️ Recomanat: Tarda (16:00 - 18:00)",
+                    tip: "Franja de tarda: ideal per a resolució d'exercicis, problemes i pràctica activa.",
+                    border: "hover:border-orange-500/50"
+                };
+            } else if (peakTime === 'nit') {
+                return {
+                    badge: "🌙 Recomanat: Nit (21:30 - 23:30)",
+                    tip: "Franja de nit: ideal per a lectura pausada, esquemes visuals, síntesi i Anki.",
+                    border: "hover:border-indigo-500/50"
+                };
+            } else {
+                return {
+                    badge: "🌅 Recomanat: Matí (09:00 - 11:00)",
+                    tip: "Franja de matí: ideal per a assimilació teòrica i conceptes clau complexos.",
+                    border: "hover:border-blue-500/50"
+                };
+            }
+        }
+
+        window.toggleLessonCompletion = function(topicName) {
+            if (!topicName) return;
+            let mem = getStudentMemory();
+            let isDone = mem.learnedConcepts.includes(topicName);
+            if (isDone) {
+                mem.learnedConcepts = mem.learnedConcepts.filter(c => c !== topicName);
+                mem.masteryScore = Math.max(0, (mem.masteryScore || 0) - 5);
+                mem.activityLog = (mem.activityLog || []).filter(a => !(a.type === 'concept' && a.title && a.title.includes(topicName)));
+                saveStudentMemory(mem);
+                showToast(`Lliçó desmarcada: ${topicName}`, 'info');
+            } else {
+                mem.learnedConcepts.push(topicName);
+                mem.masteryScore = Math.min(100, (mem.masteryScore || 0) + 5);
+                logStudentActivity(mem, 'concept', `Lliçó completada: ${topicName}`, 'success', '✅ Completat');
+                saveStudentMemory(mem);
+                showToast(`🎉 Lliçó completada: ${topicName}`, 'success');
+            }
+            renderCalendar();
+        };
+
         function renderCalendar() {
             const container = document.getElementById('calendar-container');
+            if (!container) return;
             container.innerHTML = '';
+            
+            const rec = getPeakTimeRecommendationLabel(selectedPeakTime);
+            const mem = getStudentMemory();
+
             generatedCalendarArray.forEach(item => {
+                const isDone = mem.learnedConcepts.includes(item.tema);
+                const cardBorder = isDone ? 'border-emerald-500/80 dark:border-emerald-500/60 bg-emerald-50/20 dark:bg-emerald-950/20' : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900';
+                const safeTopicEscaped = escapeHtml(item.tema).replace(/'/g, "\\'");
+                const doneBtn = isDone 
+                    ? `<button onclick="toggleLessonCompletion('${safeTopicEscaped}')" class="bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-lg shadow-xs flex items-center gap-1 cursor-pointer transition shrink-0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> <span>Completat</span></button>`
+                    : `<button onclick="toggleLessonCompletion('${safeTopicEscaped}')" class="bg-zinc-100 hover:bg-emerald-50 dark:bg-zinc-800 dark:hover:bg-emerald-950/40 text-zinc-600 dark:text-zinc-300 hover:text-emerald-600 border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold px-2.5 py-1 rounded-lg cursor-pointer transition flex items-center gap-1 shrink-0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg> <span>Marcar completat</span></button>`;
+
                 container.innerHTML += `
-                    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3 md:p-5 rounded-2xl flex flex-col shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-blue-600 text-white text-[8px] md:text-[10px] font-bold px-2 py-1 rounded-bl-lg">Sessió ${item.num}</div>
-                        <span class="text-[9px] md:text-xs font-black text-blue-600 dark:text-blue-400 uppercase mb-1 mt-1">${item.dia_real}</span>
-                        <span class="text-[11px] md:text-sm font-semibold text-zinc-800 dark:text-zinc-200">${item.tema}</span>
+                    <div class="${cardBorder} p-4 md:p-5 rounded-2xl flex flex-col shadow-sm relative overflow-hidden group ${rec.border} transition-all">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-[9px] md:text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">${item.dia_real}</span>
+                            <span class="bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300 border border-blue-500/20 text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0">Sessió ${item.num}</span>
+                        </div>
+                        <div class="flex items-start justify-between gap-2 mb-3">
+                            <span class="text-xs md:text-sm font-bold text-zinc-800 dark:text-zinc-100 leading-snug flex-1">${escapeHtml(item.tema)}</span>
+                            ${doneBtn}
+                        </div>
+                        
+                        <div class="mt-auto pt-2.5 border-t border-zinc-100 dark:border-zinc-800/80 flex flex-col gap-1">
+                            <div class="inline-flex items-center gap-1.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/25 px-2.5 py-1 rounded-lg w-fit">
+                                <span>${rec.badge}</span>
+                            </div>
+                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium leading-tight mt-0.5">${rec.tip}</span>
+                        </div>
                     </div>`;
             });
         }
@@ -6869,6 +7757,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         }
 
         function evaluateQuiz() {
+            if (typeof logStudySession === 'function') logStudySession('Test Diagnòstic');
             let correct = 0;
             const detailedQuestions = [];
             currentQuizData.forEach((q, idx) => {
@@ -6978,6 +7867,24 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         function handleAttachment(input) {
             const file = input.files[0];
             if (!file) return;
+
+            // Si és un fitxer d'àudio, obrim el modal de transcripció amb gemini-3.5-transcribe
+            if (file.type.startsWith('audio/') || file.name.match(/\.(mp3|wav|m4a|webm|ogg|flac|aac)$/i)) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentTranscribedAudioBase64 = e.target.result;
+                    currentTranscribedMime = file.type || 'audio/mp3';
+                    openAudioTranscribeModal();
+                    setTimeout(() => {
+                        const infoEl = document.getElementById('modal-file-info');
+                        if (infoEl) infoEl.innerText = `${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)`;
+                        showToast(`🎵 Fitxer d'àudio "${file.name}" carregat! Prem Transcriure.`, 'info');
+                    }, 200);
+                };
+                reader.readAsDataURL(file);
+                input.value = '';
+                return;
+            }
             
             // Si és una imatge, la convertim a Base64 per enviar-la a la IA
             if (file.type.startsWith('image/')) {
@@ -6993,7 +7900,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 };
                 reader.readAsDataURL(file);
             } else {
-                Swal.fire('Atenció', 'De moment només es poden adjuntar imatges al xat.', 'info');
+                Swal.fire('Atenció', 'De moment es poden adjuntar imatges o fitxers d\'àudio per transcriure.', 'info');
             }
             input.value = ''; // Resetejar input
         }
@@ -7227,213 +8134,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
 
         // --- SISTEMA DE MODALS (UI) ---
         window.showHistoryModal = function() {
-            let htmlContent = '<div class="text-left overflow-y-auto max-h-[72vh] md:max-h-[76vh] mt-2 space-y-4 pr-1">';
-
-            // 1. Carregar Test Inicial si existeix
-            const initialQuiz = window.initialQuizResults || (function() {
-                try {
-                    const raw = localStorage.getItem('aliat_initial_quiz_' + currentSessionId);
-                    return raw ? JSON.parse(raw) : null;
-                } catch(e) { return null; }
-            })();
-
-            // 2. Carregar Últim Test Kahoot si existeix
-            const lastKahoot = (function() {
-                try {
-                    const raw = localStorage.getItem('aliat_last_kahoot_' + (currentSessionId || 'default'));
-                    return raw ? JSON.parse(raw) : null;
-                } catch(e) { return null; }
-            })();
-
-            const memory = typeof getStudentMemory === 'function' ? getStudentMemory() : null;
-            const totalSecs = parseInt(localStorage.getItem('aliat_total_study_seconds') || '0', 10);
-            const totalMins = Math.floor(totalSecs / 60);
-
-            // Càlcul de nota global i encerts totals
-            let totalQuestionsTested = 0;
-            let totalCorrectAnswers = 0;
-
-            if (lastKahoot && typeof lastKahoot.total === 'number') {
-                totalQuestionsTested += lastKahoot.total;
-                totalCorrectAnswers += (lastKahoot.score || 0);
-            }
-            if (initialQuiz && typeof initialQuiz.total === 'number') {
-                totalQuestionsTested += initialQuiz.total;
-                totalCorrectAnswers += (initialQuiz.score || 0);
-            }
-
-            let globalPercentage = totalQuestionsTested > 0 
-                ? Math.round((totalCorrectAnswers / totalQuestionsTested) * 100)
-                : (memory ? memory.masteryScore : 70);
-            let gradeOutOfTen = (globalPercentage / 10).toFixed(1);
-            let gradeLabel = globalPercentage >= 90 ? 'Excel·lent' : globalPercentage >= 75 ? 'Notable' : globalPercentage >= 50 ? 'Aprovat' : 'Cal Reforç';
-            let gradeBadgeColor = globalPercentage >= 75 ? 'bg-emerald-500' : globalPercentage >= 50 ? 'bg-blue-500' : 'bg-amber-500';
-
-            // 1. QUADRE D'HONOR I NOTA GLOBAL ESTIMADA
-            htmlContent += `
-            <div class="bg-gradient-to-br from-indigo-50 via-blue-50 to-white dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-4 rounded-3xl border border-blue-200/80 dark:border-zinc-800 shadow-sm space-y-3">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400">Rendiment Acadèmic Global</span>
-                        <div class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                            <span>Nota: ${totalQuestionsTested > 0 ? gradeOutOfTen + '/10' : 'Avaluació Activa'}</span>
-                            <span class="text-xs font-bold text-white ${gradeBadgeColor} px-2.5 py-0.5 rounded-full shadow-sm">${gradeLabel}</span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 font-mono">${globalPercentage}%</span>
-                        <div class="text-[10px] text-zinc-500 dark:text-zinc-400 font-semibold">Percentatge d'encert</div>
-                    </div>
-                </div>
-                
-                <div class="w-full bg-zinc-200 dark:bg-zinc-800 h-2.5 rounded-full overflow-hidden shadow-inner">
-                    <div class="${gradeBadgeColor} h-full transition-all duration-700 rounded-full" style="width: ${globalPercentage}%"></div>
-                </div>
-            </div>`;
-
-            // 2. MÈTRIQUES RÀPIDES D'ACTIVITAT
-            htmlContent += `
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-                <div class="bg-zinc-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-                    <div class="text-lg md:text-xl font-black text-blue-600 dark:text-blue-400">${totalCorrectAnswers}/${totalQuestionsTested || 0}</div>
-                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wide mt-0.5">Encerts en Tests</div>
-                </div>
-                <div class="bg-zinc-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-                    <div class="text-lg md:text-xl font-black text-purple-600 dark:text-purple-400">${memory ? memory.stats.flashcardsMastered : 0}</div>
-                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wide mt-0.5">Targetes Anki</div>
-                </div>
-                <div class="bg-zinc-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-                    <div class="text-lg md:text-xl font-black text-emerald-600 dark:text-emerald-400">${totalMins} min</div>
-                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wide mt-0.5">Temps Pomodoro</div>
-                </div>
-                <div class="bg-zinc-50 dark:bg-zinc-950/70 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-                    <div class="text-xs sm:text-sm font-black text-indigo-600 dark:text-indigo-400 mt-1 truncate">${memory ? memory.level : 'Intermedi'}</div>
-                    <div class="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wide mt-1">Nivell IA</div>
-                </div>
-            </div>`;
-
-            // 3. DETALL DE L'ÚLTIM TEST D'EXAMEN KAHOOT (SI EXISTEIX)
-            if (lastKahoot && Array.isArray(lastKahoot.questions) && lastKahoot.questions.length > 0) {
-                htmlContent += `
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider flex items-center gap-1.5">
-                            <span class="text-emerald-500 font-bold">🎯</span>
-                            <span>Últim Test Kahoot Realitzat (${lastKahoot.date || 'Recent'})</span>
-                        </h4>
-                        <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
-                            ${lastKahoot.score}/${lastKahoot.total} (${lastKahoot.percentage}%)
-                        </span>
-                    </div>
-
-                    <div class="space-y-2">`;
-                
-                lastKahoot.questions.forEach((q, idx) => {
-                    const ans = (lastKahoot.answers && lastKahoot.answers[idx]) ? lastKahoot.answers[idx] : null;
-                    const isWin = ans ? ans.isWin : false;
-                    const cardBorder = isWin 
-                        ? 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/40 dark:bg-emerald-950/20' 
-                        : 'border-rose-200 dark:border-rose-900/50 bg-rose-50/40 dark:bg-rose-950/20';
-                    const qText = q.pregunta || q.question || ('Pregunta #' + (idx + 1));
-                    const userPickText = ans ? (ans.textResponded || ('Opció #' + (ans.pick + 1))) : 'Sense respondre';
-
-                    htmlContent += `
-                    <div class="p-3 rounded-2xl border ${cardBorder} text-xs space-y-1.5 shadow-sm">
-                        <div class="flex items-start justify-between gap-2">
-                            <span class="font-bold text-zinc-900 dark:text-zinc-100 flex-1">
-                                <b class="text-blue-600 dark:text-blue-400">${idx + 1}.</b> ${qText}
-                            </span>
-                            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0 ${isWin ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'}">
-                                ${isWin ? '✅ Encertada' : '❌ Fallada'}
-                            </span>
-                        </div>
-                        <div class="text-[11px] ${isWin ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}">
-                            <b>La teva resposta:</b> ${userPickText}
-                        </div>
-                        ${q.explicacio ? `<div class="text-[11px] text-zinc-600 dark:text-zinc-400 italic bg-white/70 dark:bg-zinc-900/70 p-2 rounded-xl border border-zinc-200/50 dark:border-zinc-800/50 mt-1">💡 <b>Explicació:</b> ${q.explicacio}</div>` : ''}
-                    </div>`;
-                });
-
-                htmlContent += `</div></div>`;
-            }
-
-            // 4. TEST DE DIAGNÒSTIC INICIAL (SI EXISTEIX)
-            if (initialQuiz && Array.isArray(initialQuiz.questions) && initialQuiz.questions.length > 0) {
-                htmlContent += `
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-200 uppercase tracking-wider flex items-center gap-1.5">
-                            <span class="text-blue-500 font-bold">📋</span>
-                            <span>Test de Diagnòstic de Nivell</span>
-                        </h4>
-                        <span class="text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
-                            ${initialQuiz.score}/${initialQuiz.total} encerts
-                        </span>
-                    </div>
-
-                    <div class="space-y-2">`;
-
-                initialQuiz.questions.forEach((q) => {
-                    const isCorrect = q.is_correct;
-                    const cardBorder = isCorrect ? 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/30 dark:bg-emerald-950/20' : 'border-rose-200 dark:border-rose-900/50 bg-rose-50/30 dark:bg-rose-950/20';
-
-                    htmlContent += `
-                    <div class="p-3 rounded-2xl border ${cardBorder} shadow-sm text-xs space-y-1">
-                        <div class="flex items-start justify-between gap-2">
-                            <span class="font-bold text-zinc-900 dark:text-zinc-100 flex-1">
-                                <b class="text-blue-600 dark:text-blue-400">${q.num}.</b> ${q.pregunta}
-                            </span>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${isCorrect ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'}">
-                                ${isCorrect ? '✅ Encert' : '❌ A revisar'}
-                            </span>
-                        </div>
-                        <div class="text-[11px] ${isCorrect ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}">
-                            <b>La teva resposta:</b> ${q.user_answer} ${!isCorrect ? `(Correcta: <b>${q.resposta_correcta}</b>)` : ''}
-                        </div>
-                    </div>`;
-                });
-
-                htmlContent += `</div></div>`;
-            }
-
-            // 5. SI NO HI HA CAP TEST REALITZAT ENCARA
-            if (!lastKahoot && !initialQuiz) {
-                htmlContent += `
-                <div class="p-4 bg-blue-50/60 dark:bg-zinc-900/70 border border-blue-200 dark:border-zinc-800 rounded-3xl text-center space-y-2.5">
-                    <div class="text-2xl">🎯</div>
-                    <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm">Encara no s'ha realitzat cap test d'avaluació en aquesta sessió</div>
-                    <p class="text-xs text-zinc-600 dark:text-zinc-400 max-w-sm mx-auto">
-                        Fes un simulacre de 5 preguntes ràpides tipus Kahoot sobre el que estem tractant per calcular la teva nota d'examen!
-                    </p>
-                    <button onclick="Swal.close(); triggerToolFromChat('exam');" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-md inline-flex items-center gap-1.5 cursor-pointer mt-1">
-                        🚀 Iniciar Test d'Examen Kahoot (5 Preguntes)
-                    </button>
-                </div>`;
-            }
-
-            // 6. BOTONS D'ACCIÓ FINAL
-            htmlContent += `
-            <div class="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row gap-2">
-                <button onclick="Swal.close(); triggerToolFromChat('exam');" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer">
-                    🎯 Fer Nou Test d'Examen
-                </button>
-                <button onclick="Swal.close(); triggerToolFromChat('anki');" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-                    🃏 Repassar Flashcards
-                </button>
-            </div>`;
-
-            htmlContent += '</div>';
-
-            Swal.fire({
-                title: '<div class="flex items-center justify-center gap-2 font-black text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> Resultats i Qualificacions</div>',
-                html: htmlContent,
-                showCloseButton: true,
-                showConfirmButton: false,
-                customClass: {
-                    popup: 'rounded-[1.75rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg w-full',
-                    title: 'text-base sm:text-lg font-black text-zinc-900 dark:text-white'
-                }
-            });
+            showMemoryModal();
         };
 
         function showCalendarModal() {
@@ -8203,8 +8904,8 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 <div class="flex-1 max-w-[95%] sm:max-w-[90%] text-zinc-900 dark:text-zinc-100 overflow-hidden group">
                     ${searchBadgeHtml}
                     <div class="prose prose-sm dark:prose-invert max-w-none text-xs sm:text-[13.5px] leading-relaxed break-words overflow-x-auto">${formatMessage(text)}</div>
-                    <!-- FILA D'ACCIONS ESTIL GEMINI -->
-                    <div class="flex items-center gap-1 mt-2 text-zinc-400 dark:text-zinc-500 text-xs">
+                    <!-- FILA D'ACCIONS ESTIL GEMINI AMB BOTÓ D'ÀUDIO COMPRIMIT (TTS) -->
+                    <div class="flex items-center gap-1.5 mt-2 text-zinc-400 dark:text-zinc-500 text-xs flex-wrap">
                         <button onclick="this.classList.toggle('text-blue-500')" title="M'agrada" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
                         </button>
@@ -8217,8 +8918,13 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                         <button onclick="window.copyMsgText(this)" title="Copiar resposta" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         </button>
-                        <button onclick="speakMessageText(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="🔊 Escoltar amb veu" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
+                        <button onclick="speakMessageText(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="🔊 Escoltar text complet" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        </button>
+                        <!-- BOTÓ D'EXPLICACIÓ EN ÀUDIO COMPRIMIT (TTS) -->
+                        <button onclick="window.playCompressedMsgTTS(this)" title="🔊 Generar explicació en àudio comprimit (TTS)" class="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/80 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/80 rounded-lg transition cursor-pointer flex items-center gap-1.5 font-semibold text-[11px] shadow-2xs">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="shrink-0"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                            <span>Explicació Àudio (TTS)</span>
                         </button>
                     </div>
                 </div>`;

@@ -767,23 +767,25 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 modeInstruction = "\nSIMULADOR DE TRIBUNAL D'EXAMEN ACTIU: Actua com un tribunal d'examen universitari estricte però just. Fes preguntes incisives directes, avalua les respostes de l'alumne i demana rigor conceptual.";
             }
 
-            const systemPromptChat = "Ets Aliat Intel·ligent, un tutor d'estudi personalitzat, rigorós i adaptatiu d'alt nivell acadèmic.\n\n" + safetyRules + modeInstruction + "\n\n" +
-            "REGLA D'OR I PRIORITAT ABSOLUTA (FIDELITAT AL TEMARI I CONTINUÏTAT TOTAL):\n" +
-            "1. L'alumne està estudiant EXCLUSIVAMENT el següent temari / document:\n" +
+            const systemPromptChat = "Ets Aliat Intel·ligent, un tutor d'estudi personalitzat, entrenador d'exàmens i mentor acadèmic d'alt nivell.\n\n" + safetyRules + modeInstruction + "\n\n" +
+            "REGLA D'OR I PRIORITAT ABSOLUTA (ORIENTACIÓ A EXÀMENS I CONTINUÏTAT TOTAL):\n" +
+            "1. GUIATGE PER A EXÀMENS: Actua com un preparador expert. Quan expliquis un concepte, indica clarament com se sol demanar en un examen (tipus de preguntes en proves PAU, Selectivitat o Universitaries), trucs de resolució i errors freqüents a evitar.\n" +
+            "2. L'alumne està estudiant EXCLUSIVAMENT el següent temari / document:\n" +
             (pdfText && pdfText.trim().length > 0 ? "'''\n" + pdfText.substring(0, 20000) + "\n'''" : "Temari acadèmic establert i tractat al llarg de la conversa.") + "\n\n" +
-            "2. TOTES les teves explicacions, teories, preguntes, flashcards, càlculs i analogies han de girar 100% al voltant d'aquest temari. " +
-            "NO canviïs mai de matèria ni barregis assignatures (per exemple: si la conversa o temari tracta de funcions matemàtiques, NO parlis de física, ni de química, ni de pel·lícules, ni de protocols de xarxa). " +
-            "3. CONTINUÏTAT DEL FIL DE CONVERSA: Llegeix amb atenció TOT l'historial anterior (tant el que diu l'alumne com les explicacions prèvies de la IA). Respon directament seguint el fil lògic, aprofundint o resolent dubtes sense reiniciar la classe de zero.\n" +
-            "4. FORMATS ACADÈMICS I ESQUEMES: Utilitza explicacions estructurades amb títols en negreta, llistes clares, exemples pràctics i blocs ben delimitats.\n\n" +
+            "3. TOTES les teves explicacions, teories, preguntes, flashcards, càlculs i analogies han de girar 100% al voltant d'aquest temari. " +
+            "NO canviïs mai de matèria ni barregis assignatures.\n" +
+            "4. CONTINUÏTAT DEL FIL DE CONVERSA: Llegeix amb atenció TOT l'historial anterior (tant el que diu l'alumne com les explicacions prèvies de la IA). Respon directament seguint el fil lògic, aprofundint o resolent dubtes sense reiniciar la classe de zero.\n" +
+            "5. NO EMOJIS AL TEXT NI INTERFAÇ: Evita completament posar emojis a la resposta o marques visuals amb icones de caràcters d'emoticones. Utilitza símbols de text nets (ex: •, →, /, [✓], [!]) o negretes Markdown per als títols.\n" +
+            "6. FORMATS ACADÈMICS I ESQUEMES: Utilitza explicacions estructurades amb títols en negreta, llistes clares, exemples pràctics i blocs ben delimitats.\n\n" +
             "MEMÒRIA ADAPTATIVA DE L'ALUMNE (Punts febles i forts de la sessió actual):\n" + (studentContext || "Sense historial previ.") + "\n\n" +
             "MÈTODE D'ENSENYAMENT PER FASES (quan s'explica un tema nou):\n" +
-            "▶ FASE 1 (Teoria): Dóna NOMÉS la teoria de la lliçó de forma clara i acadèmica. Acaba amb [BOTON_FLASHCARDS].\n" +
-            "▶ FASE 2 (Flashcards i Esquema):\n" +
-            "```flashcards\n[ {\"q\": \"Pregunta?\", \"a\": \"Resposta\"} ]\n```\n" +
+            "▶ FASE 1 (Teoria & Pregunta d'Examen): Dóna la teoria de la lliçó de forma clara i acadèmica, destacant com s'avaluarà a l'examen. Acaba amb [BOTON_FLASHCARDS].\n" +
+            "▶ FASE 2 (Flashcards i Esquema Visual):\n" +
+            "```flashcards\n[ {\"q\": \"Pregunta clave d'examen?\", \"a\": \"Resposta curta i directa\"} ]\n```\n" +
             "Afegeix després un Esquema Visual HTML dins d'un bloc ```html ... ``` i acaba amb [BOTON_MNEMOTECNIA].\n" +
-            "▶ FASE 3 (Mnemotècnia): Explica un truc de memòria. Acaba amb [BOTON_ENTENDIDO].\n\n" +
-            "ACTIVACIÓ DE MINIJOCS (Quan demani 'Posar-me a prova'):\n" +
-            "OPCIÓ 1 (Kahoot):\n```kahoot\n{\"pregunta\": \"...\", \"opcions\": [\"A\", \"B\", \"C\", \"D\"], \"correcta\": 0}\n```\n" +
+            "▶ FASE 3 (Mnemotècnia i Tàctica d'Examen): Explica un truc de memòria i un consell d'examen. Acaba amb [BOTON_ENTENDIDO].\n\n" +
+            "ACTIVACIÓ DE MINIJOCS I REPTES (Quan demani 'Posar-me a prova'):\n" +
+            "OPCIÓ 1 (Kahoot / Simulacre):\n```kahoot\n{\"pregunta\": \"...\", \"opcions\": [\"A\", \"B\", \"C\", \"D\"], \"correcta\": 0}\n```\n" +
             "OPCIÓ 2 (Veritat/Fals):\n```tf\n{\"pregunta\": \"...\", \"resposta\": true}\n```\n" +
             "OPCIÓ 3 (Intrús):\n```intrus\n{\"pregunta\": \"...\", \"opcions\": [\"...\"], \"correcta\": 2}\n```\n" +
             "OPCIÓ 4 (Esquema buit):\n```schema\n{\"titol\": \"...\", \"buits\": [{\"context\": \"...\", \"resposta\": \"...\"}]}\n```\n";
@@ -912,6 +914,46 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                     const lastUserQuery = chatHistory.length > 0 ? (chatHistory[chatHistory.length - 1].content || '') : '';
                     replyText = `M'ha semblat molt interessant el que comentes sobre "${lastUserQuery.substring(0, 100)}...". Diga'm més, com ho veus tu?`;
                 }
+            }
+
+            return res.status(200).json({
+                reply: replyText,
+                searchQueries: aiRes?.searchQueries || [],
+                sources: aiRes?.sources || [],
+                groundingMetadata: aiRes?.groundingMetadata || null
+            });
+        }
+
+        // ACCIÓ: ÚS QUOTIDIÀ
+        if (action === 'daily_use') {
+            const systemPromptDailyUse = "Ets Aliat Intel·ligent en mode Ús Quotidià, un assistent personal especialitzat en la redacció de documents professionals, organització, horaris visuals i productivitat diària.\n\n" +
+            safetyRules + "\n\n" +
+            "NORMATIVA ESTRICTA DEL MÒDUL D'ÚS QUOTIDIÀ, HORARIS I DOCUMENTS:\n" +
+            "1. CALENDARI I HORARIS VISUALS: Quan l'usuari et demani un horari, calendari, rutina o planificació (diària, setmanal o mensual), DISSENYA SEMPRE UN DISSENY VISUAL NET EN BLOC DE CODI HTML (```html ... ```) amb taules maquetades, badges de colors per hores/dies i fons moderns, seguit d'un resum en text Markdown estructurat.\n" +
+            "2. EXPORTACIÓ A WORD, CORREU I GOOGLE CALENDAR: Informa breument l'usuari que pot utilitzar les eines de sota el missatge per: 📄 Descarregar en Word/Docs, ✉️ Enviar per correu electrònic, o 📅 Sincronitzar directament amb Google Calendar.\n" +
+            "3. REDACCIÓ PROFESSIONAL PER A WORD / GOOGLE DOCS: Quan redactis esborranys, informes, treballs, cartes o correus, estructura el text amb encapçalaments clars (# Títol, ## Subtítol), llistes i punts ordenats. Així l'exportació a Word (.doc) queda maquetada perfectament.\n" +
+            "4. ZERO EMOJIS: Evita l'ús d'emojis. Utilitza una tipografia neta, negretes, taules i símbols de text estàndard (•, →, /, [✓], [!]).\n" +
+            "5. Restricció estricta +18 i Privacitat: Prohibit contingut adult i no demanis dades personals sensibles.\n\n" +
+            "Àrees principals que gestiones:\n" +
+            "1. Redacció de Documents i Cartes/Correus formals\n" +
+            "2. Planificadors, Rutines i Horaris visuals\n" +
+            "3. Llistes de tasques (To-Do) i Gestió de Temps (Time-blocking, Matriu Eisenhower)\n" +
+            "4. Consultes i idees de productivitat diària\n\n" +
+            "Respon de manera altament professional, clara i impecable en català.";
+
+            const geminiHistory = formatGeminiHistory(chatHistory);
+            let replyText = "";
+            let aiRes = null;
+            try {
+                aiRes = await executeAI({
+                    systemPrompt: systemPromptDailyUse,
+                    contents: geminiHistory,
+                    useGoogleSearch: true
+                });
+                replyText = aiRes.text || String(aiRes);
+            } catch (aiErr) {
+                console.warn("[daily_use] Failover:", aiErr.message);
+                replyText = "Estic a punt per ajudar-te amb qualsevol tasca de redacció, rutines, productivitat o consultes. Què necessites?";
             }
 
             return res.status(200).json({

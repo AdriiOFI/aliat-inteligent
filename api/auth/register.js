@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
-const { getDbClient } = require('../db');
+const jwt = require('jsonwebtoken');
+const { getDbClient, JWT_SECRET } = require('../db');
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -43,10 +44,23 @@ module.exports = async function handler(req, res) {
             args: [id, normalizedEmail, password_hash]
         });
 
-        return res.status(200).json({ success: true, message: 'Usuari registrat correctament' });
+        // Crear el bitllet d'accés (Token JWT) vàlid per 30 dies
+        const token = jwt.sign(
+            { id: id, email: normalizedEmail },
+            JWT_SECRET,
+            { expiresIn: '30d' }
+        );
+
+        return res.status(200).json({ 
+            success: true, 
+            message: 'Usuari registrat correctament',
+            token: token,
+            user: { id: id, email: normalizedEmail }
+        });
 
     } catch (error) {
         console.error('Register error:', error);
         return res.status(500).json({ error: `Error crític: ${error.message}` });
     }
 };
+

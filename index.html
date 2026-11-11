@@ -1101,6 +1101,28 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- BANNER DESPLEGABLE D'ÚS QUOTIDIÀ I DOCUMENTS -->
+                <div id="daily-use-banner" class="hidden shrink-0 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/40 px-3 sm:px-6 py-2.5 backdrop-blur-md">
+                    <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+                            <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">Mode Ús Quotidià i Documents</span>
+                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 hidden sm:inline truncate">• Redacció ràpida, plantilles i exportació a Word / Google Docs</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" onclick="openFullscreenStudioModal('redaccio')" class="px-2.5 py-1 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition cursor-pointer flex items-center gap-1 shadow-xs active:scale-95">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                                <span>Estudi de Redacció</span>
+                            </button>
+                            <button type="button" onclick="openFullscreenStudioModal('organitzacio')" class="px-2.5 py-1 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition cursor-pointer flex items-center gap-1 border border-zinc-200 dark:border-zinc-700 active:scale-95">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+                                <span>Taules & Rutines</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 2. MESSAGES CONTAINER -->
                 <div id="chat-messages" class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 pb-2 scroll-smooth max-w-4xl mx-auto w-full"></div>
                 
@@ -1127,110 +1149,111 @@
                                 </button>
 
                                 <!-- MENU DESPLEGABLE DEL (+) -->
-                                <div id="plus-menu" class="hidden absolute left-0 bottom-11 z-50 bg-white/95 dark:bg-[#18181b]/95 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-2 w-76 sm:w-80 max-w-[90vw] flex flex-col gap-1.5 backdrop-blur-xl">
-                                    <!-- SECCIÓ DE REDACCIÓ I EINES DE DOCUMENT -->
-                                    <button type="button" onclick="openFullscreenStudioModal('redaccio'); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-600 dark:hover:text-red-400 rounded-xl text-xs font-bold text-zinc-800 dark:text-zinc-100 transition text-left cursor-pointer border border-red-200/60 dark:border-red-900/40 group">
-                                        <div class="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                <div id="plus-menu" class="hidden absolute left-0 bottom-12 z-50 bg-white/98 dark:bg-[#14141a]/98 border border-zinc-200/90 dark:border-zinc-800/90 rounded-[1.75rem] shadow-2xl p-3 w-80 sm:w-88 max-w-[95vw] flex flex-col gap-2 backdrop-blur-2xl">
+                                    
+                                    <!-- SECCIÓ 1: CREACIÓ DE DOCUMENTS I MAPA MENTAL -->
+                                    <div class="px-2 pt-0.5 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                                        Creació & Anàlisi
+                                    </div>
+
+                                    <button type="button" onclick="event.stopPropagation(); openFullscreenStudioModal('redaccio'); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-red-50/90 dark:hover:bg-red-950/40 rounded-2xl text-xs font-bold text-zinc-800 dark:text-zinc-100 transition text-left cursor-pointer border border-red-200/70 dark:border-red-900/50 group">
+                                        <div class="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                                         </div>
                                         <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight">Crear / Editar Document</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight">Format per a Word i Google Docs</div>
+                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Crear / Editar Document</div>
+                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Editor per a Word (.docx) i Google Docs</div>
                                         </div>
                                     </button>
 
-                                    <button type="button" onclick="openFullscreenStudioModal('organitzacio'); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer group">
-                                        <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                    <!-- BOTÓ ANALITZAR SESSIÓ ACTUAL (OBRE MAPA MENTAL D3.JS / ARBRE) -->
+                                    <button type="button" id="plus-analyze-session-btn" onclick="event.stopPropagation(); openMindMapModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-indigo-50/90 dark:hover:bg-indigo-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-indigo-200/80 dark:border-indigo-900/60 group">
+                                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>
                                         </div>
                                         <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight">Llista de Tasques / Rutina</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight">Calendari, To-Do i horaris</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- SECCIÓ DE MODES D'ESTUDI (Especialment visible en Xat Lliure) -->
-                                    <button type="button" onclick="event.stopPropagation(); closePlusMenu(); openMindMapModal();" class="flex items-center gap-3 w-full p-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-indigo-200/60 dark:border-indigo-900/40 group">
-                                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight flex items-center gap-1.5">
+                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight flex items-center gap-1.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                                 <span>Analitzar Sessió Actual</span>
-                                                <span class="text-[9px] bg-indigo-600 text-white font-extrabold px-1.5 py-0.2 rounded-md">D3</span>
+                                                <span class="text-[9px] bg-indigo-600 text-white font-extrabold px-1.5 py-0.5 rounded-md">D3</span>
                                             </div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight">Mapa mental interactiu de conceptes</div>
+                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Mapa mental interactiu de conceptes</div>
                                         </div>
                                     </button>
 
-                                    <div id="plus-menu-modes-section" class="flex flex-col gap-1 p-1.5 bg-zinc-50/80 dark:bg-zinc-950/60 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80">
-                                        <div class="flex items-center justify-between px-2 py-1">
+                                    <button type="button" onclick="event.stopPropagation(); openFullscreenStudioModal('organitzacio'); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-blue-50/90 dark:hover:bg-blue-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-blue-200/70 dark:border-blue-900/50 group">
+                                        <div class="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                        </div>
+                                        <div class="flex flex-col min-w-0">
+                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Llista de Tasques / Rutina</div>
+                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Calendari, To-Do i horaris organitzats</div>
+                                        </div>
+                                    </button>
+
+                                    <!-- SECCIÓ 2: MODES D'ESTUDI & FOCUS -->
+                                    <div id="plus-menu-modes-section" class="flex flex-col gap-1.5 p-2 bg-zinc-50/90 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 my-0.5">
+                                        <div class="flex items-center justify-between px-1.5 pt-0.5">
                                             <span class="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" id="plus-pomodoro-indicator"></span>
-                                                <span>Modes d'Estudi:</span>
+                                                <span>Sessió de Concentració:</span>
                                             </span>
-                                            <button type="button" onclick="openPomodoroModal(); closePlusMenu();" class="text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1 cursor-pointer" title="Configurar minuts">
-                                                <span>Editar</span>
+                                            <button type="button" onclick="openPomodoroModal(); closePlusMenu();" class="text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1 cursor-pointer">
+                                                <span>Personalitzar</span>
                                             </button>
                                         </div>
 
-                                        <!-- Botons ràpids de modes -->
-                                        <div class="grid grid-cols-4 gap-1 px-1 pb-1">
-                                            <button type="button" onclick="activateStudyModeFromPlus('classic')" title="Mode Clàssic 25 minuts" class="p-1.5 rounded-lg text-center bg-white dark:bg-zinc-900 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-800 transition cursor-pointer group">
-                                                <div class="text-[11px] font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400">25m</div>
+                                        <!-- Botons ràpids de focus amb espai net -->
+                                        <div class="grid grid-cols-4 gap-1.5 pt-0.5">
+                                            <button type="button" onclick="activateStudyModeFromPlus('classic')" title="Mode Clàssic 25 minuts" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer group shadow-2xs">
+                                                <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400">25m</div>
                                                 <div class="text-[9px] text-zinc-400 font-medium">Clàssic</div>
                                             </button>
-                                            <button type="button" onclick="activateStudyModeFromPlus('deep')" title="Mode Focus Intens 50 minuts" class="p-1.5 rounded-lg text-center bg-white dark:bg-zinc-900 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-800 transition cursor-pointer group">
-                                                <div class="text-[11px] font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400">50m</div>
+                                            <button type="button" onclick="activateStudyModeFromPlus('deep')" title="Mode Focus Intens 50 minuts" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer group shadow-2xs">
+                                                <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400">50m</div>
                                                 <div class="text-[9px] text-zinc-400 font-medium">Focus</div>
                                             </button>
-                                            <button type="button" onclick="activateStudyModeFromPlus('short')" title="Pausa curta 5 minuts" class="p-1.5 rounded-lg text-center bg-white dark:bg-zinc-900 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-800 transition cursor-pointer group">
-                                                <div class="text-[11px] font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400">5m</div>
+                                            <button type="button" onclick="activateStudyModeFromPlus('short')" title="Pausa curta 5 minuts" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer group shadow-2xs">
+                                                <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400">5m</div>
                                                 <div class="text-[9px] text-zinc-400 font-medium">Pausa</div>
                                             </button>
-                                            <button type="button" onclick="activateStudyModeFromPlus('custom')" title="Mode Personalitzat" class="p-1.5 rounded-lg text-center bg-white dark:bg-zinc-900 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-800 transition cursor-pointer group">
-                                                <div class="text-[11px] font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400 flex items-center justify-center gap-0.5">
+                                            <button type="button" onclick="activateStudyModeFromPlus('custom')" title="Mode Personalitzat" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer group shadow-2xs">
+                                                <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400 flex items-center justify-center gap-0.5">
                                                     <span id="plus-custom-mins-badge">30m</span>
                                                 </div>
                                                 <div class="text-[9px] text-zinc-400 font-medium">Editat</div>
                                             </button>
                                         </div>
-
-                                        <!-- Estat actiu i botó d'accés complet -->
-                                        <div class="px-2 pt-1 pb-0.5 flex items-center justify-between border-t border-zinc-200/50 dark:border-zinc-800/50 mt-0.5">
-                                            <span id="plus-active-mode-label" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium truncate">Temps: <strong id="plus-menu-pomodoro-time" class="font-mono text-rose-600 dark:text-rose-400">25:00</strong></span>
-                                            <button type="button" onclick="openPomodoroModal(); closePlusMenu();" class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Totes les eines →</button>
-                                        </div>
                                     </div>
 
-                                    <button type="button" onclick="openAudioTranscribeModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-purple-50 dark:hover:bg-purple-950/40 hover:text-purple-600 dark:hover:text-purple-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer group">
-                                        <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight">Transcriure Àudio</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight">Gravador o fitxers de veu</div>
-                                        </div>
-                                    </button>
+                                    <!-- SECCIÓ 3: MULTIMODAL & FITXERS -->
+                                    <div class="px-2 pt-1 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                                        Multimodal & Fitxers
+                                    </div>
 
-                                    <button type="button" onclick="openVisionModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer group">
-                                        <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight">Càmera / Lector de Fotos</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight">Resolució pas a pas d'imatges</div>
-                                        </div>
-                                    </button>
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <button type="button" onclick="event.stopPropagation(); openAudioTranscribeModal(); closePlusMenu();" class="flex items-center gap-2.5 p-2 hover:bg-purple-50/90 dark:hover:bg-purple-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
+                                            <div class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                            </div>
+                                            <span class="truncate text-xs font-medium">Àudio / Veu</span>
+                                        </button>
 
-                                    <label class="flex items-center gap-3 w-full p-2.5 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer text-left group">
+                                        <button type="button" onclick="event.stopPropagation(); openVisionModal(); closePlusMenu();" class="flex items-center gap-2.5 p-2 hover:bg-blue-50/90 dark:hover:bg-blue-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
+                                            <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                                            </div>
+                                            <span class="truncate text-xs font-medium">Fotos / Càmera</span>
+                                        </button>
+                                    </div>
+
+                                    <label class="flex items-center gap-3 w-full p-2.5 hover:bg-emerald-50/90 dark:hover:bg-emerald-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer text-left border border-emerald-200/70 dark:border-emerald-900/50 group">
                                         <input type="file" id="chat-attachment" accept="image/*,.pdf,audio/*" class="hidden" onchange="handleAttachment(this); closePlusMenu();">
                                         <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                                         </div>
                                         <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight">Adjuntar Fitxer</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight">Imatge, PDF o Àudio</div>
+                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Adjuntar Fitxer</div>
+                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Imatge, PDF d'apunts o gravació d'àudio</div>
                                         </div>
                                     </label>
                                 </div>
@@ -1695,6 +1718,9 @@
             <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white bg-zinc-800 hover:bg-zinc-700 p-2.5 rounded-full transition shadow-lg">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
+        </div>
+    </div>
+
     <!-- MODAL VERIFICACIÓ DE CODI DE SEGURETAT -->
     <div id="email-verify-modal" class="fixed inset-0 bg-zinc-950/70 dark:bg-zinc-950/85 z-[115] hidden flex items-center justify-center p-4 backdrop-blur-md opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-[#121217] text-zinc-900 dark:text-zinc-100 rounded-[2.25rem] w-full max-w-md flex flex-col overflow-hidden shadow-2xl border border-zinc-200/90 dark:border-zinc-800/90" id="email-verify-modal-box">
@@ -1832,41 +1858,102 @@
                 <div class="lg:col-span-7 p-4 sm:p-5 flex flex-col overflow-hidden bg-white dark:bg-[#121217]">
                     
                     <!-- ACTION BAR SUPERIOR DE L'EDITOR -->
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 shrink-0">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2 pb-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 shrink-0">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Editor & Esborrany Studio</span>
-                            <span id="studio-word-count-badge" class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-700">0 paraules</span>
+                            <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Editor de Documents & Esborranys</span>
+                            <span id="studio-word-count-badge" class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/90 px-2.5 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-700/80">0 paraules</span>
                         </div>
                         <div class="flex items-center gap-1.5 flex-wrap">
-                            <button type="button" onclick="setStudioViewTab('edit')" id="studio-tab-edit" class="px-2.5 py-1 rounded-lg bg-red-600 text-white font-bold text-xs transition cursor-pointer shadow-xs">
-                                📝 Edit
+                            <div class="inline-flex rounded-xl bg-zinc-100 dark:bg-zinc-800/80 p-0.5 border border-zinc-200 dark:border-zinc-700/80 mr-1">
+                                <button type="button" onclick="setStudioViewTab('edit')" id="studio-tab-edit" class="px-2.5 py-1 rounded-lg bg-red-600 text-white font-bold text-xs transition cursor-pointer shadow-xs">
+                                    Edició
+                                </button>
+                                <button type="button" onclick="setStudioViewTab('preview')" id="studio-tab-preview" class="px-2.5 py-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-bold text-xs transition cursor-pointer">
+                                    Vista Prèvia
+                                </button>
+                            </div>
+
+                            <!-- EXPORT & COPY ACTIONS -->
+                            <button type="button" onclick="copyStudioForGoogleDocs()" title="Copiar text amb format enriquit per enganxar directament a Google Docs o Word" class="px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer border border-zinc-200 dark:border-zinc-700/80 active:scale-95 shadow-2xs">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                <span>Google Docs</span>
                             </button>
-                            <button type="button" onclick="setStudioViewTab('preview')" id="studio-tab-preview" class="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 font-bold text-xs transition cursor-pointer">
-                                👁️ Vista Prèvia
+
+                            <button type="button" onclick="exportAsWordDocument(document.getElementById('studio-editable-textarea')?.value, 'document_aliat_intel_ligent.doc')" title="Descarregar fitxer compatible amb Microsoft Word (.doc) i LibreOffice" class="px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/80 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer border border-blue-200 dark:border-blue-800/80 active:scale-95 shadow-2xs">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                <span>Word (.doc)</span>
                             </button>
-                            <button type="button" onclick="copyStudioResult()" class="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition flex items-center gap-1 cursor-pointer border border-zinc-200 dark:border-zinc-700">
-                                📋 Copiar
+
+                            <button type="button" onclick="sendAsEmail(document.getElementById('studio-editable-textarea')?.value)" title="Enviar per Correu electrònic" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer border border-indigo-200 dark:border-indigo-800/80 active:scale-95 shadow-2xs">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                <span>Correu</span>
                             </button>
-                            <button type="button" onclick="exportAsWordDocument(document.getElementById('studio-editable-textarea')?.value, 'document_aliat_intel_ligent.doc')" class="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/80 font-bold text-xs transition flex items-center gap-1 cursor-pointer border border-blue-200 dark:border-blue-800">
-                                📄 Word / Docs
+
+                            <button type="button" onclick="exportStudioPdf()" title="Descarregar document en PDF" class="px-2.5 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer border border-zinc-200 dark:border-zinc-700/80 active:scale-95 shadow-2xs">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                <span>PDF</span>
                             </button>
-                            <button type="button" onclick="sendAsEmail(document.getElementById('studio-editable-textarea')?.value)" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 font-bold text-xs transition flex items-center gap-1 cursor-pointer border border-indigo-200 dark:border-indigo-800">
-                                ✉️ Correu
+
+                            <button type="button" onclick="sendStudioToChat()" title="Enviar el text generat al xat principal per continuar la conversa" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white hover:opacity-95 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+                                <span>Al Xat</span>
                             </button>
-                            <button type="button" onclick="exportStudioPdf()" class="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition flex items-center gap-1 cursor-pointer border border-zinc-200 dark:border-zinc-700">
-                                📥 PDF
+                        </div>
+                    </div>
+
+                    <!-- BARRA D'EINES D'EDICIÓ ENRIQUIDA I TAULES -->
+                    <div id="studio-rich-toolbar" class="flex flex-wrap items-center justify-between gap-1.5 px-2.5 py-1.5 mb-2 bg-zinc-50 dark:bg-zinc-900/80 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 shrink-0 text-xs text-zinc-700 dark:text-zinc-300">
+                        <div class="flex items-center gap-1 flex-wrap">
+                            <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mr-1">Format:</span>
+                            <button type="button" onclick="insertStudioFormatting('**', '**', 'text destacat')" title="Negreta" class="w-7 h-7 flex items-center justify-center font-extrabold rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer">
+                                B
                             </button>
-                            <button type="button" onclick="sendStudioToChat()" class="px-3 py-1 rounded-lg bg-gradient-to-r from-red-600 to-rose-600 text-white hover:opacity-95 font-bold text-xs transition flex items-center gap-1 cursor-pointer shadow-xs">
-                                💬 Al Xat
+                            <button type="button" onclick="insertStudioFormatting('*', '*', 'text en cursiva')" title="Cursiva" class="w-7 h-7 flex items-center justify-center italic font-serif font-bold rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition cursor-pointer">
+                                I
+                            </button>
+                            <span class="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></span>
+                            <button type="button" onclick="insertStudioFormatting('# ', '', 'Títol Principal')" title="Títol 1 (H1)" class="px-1.5 py-0.5 font-bold rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[11px] transition cursor-pointer">
+                                H1
+                            </button>
+                            <button type="button" onclick="insertStudioFormatting('## ', '', 'Subtítol')" title="Títol 2 (H2)" class="px-1.5 py-0.5 font-bold rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[11px] transition cursor-pointer">
+                                H2
+                            </button>
+                            <button type="button" onclick="insertStudioFormatting('### ', '', 'Secció')" title="Títol 3 (H3)" class="px-1.5 py-0.5 font-bold rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-[11px] transition cursor-pointer">
+                                H3
+                            </button>
+                            <span class="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></span>
+                            <button type="button" onclick="insertStudioFormatting('- ', '', 'Punt clau')" title="Llista de punts" class="px-2 py-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-xs transition cursor-pointer flex items-center gap-1 font-medium">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+                                <span>Punts</span>
+                            </button>
+                            <button type="button" onclick="insertStudioFormatting('1. ', '', 'Primer pas')" title="Llista numerada" class="px-2 py-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-xs transition cursor-pointer flex items-center gap-1 font-medium">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/></svg>
+                                <span>1, 2, 3</span>
+                            </button>
+                            <button type="button" onclick="insertStudioFormatting('- [ ] ', '', 'Tasca a fer')" title="Casella de tasca (To-Do)" class="px-2 py-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-xs transition cursor-pointer flex items-center gap-1 font-medium">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+                                <span>To-Do</span>
+                            </button>
+                            <span class="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></span>
+                            <button type="button" onclick="insertStudioTable()" title="Inserir taula organitzativa exportable" class="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/60 font-bold text-xs transition cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-2xs">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+                                <span>+ Taula</span>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="loadStudioCurrentTemplateBoilerplate()" title="Carregar l'estructura base de la plantilla triada directament a l'editor" class="px-2.5 py-1 rounded-lg bg-zinc-200/80 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition cursor-pointer flex items-center gap-1">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                <span>Esquelet Base</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- LIVE EDITABLE TEXTAREA & PREVIEW CONTAINER -->
-                    <div id="studio-result-editor" class="flex-1 overflow-hidden relative rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80">
-                        <textarea id="studio-editable-textarea" oninput="updateStudioStats()" placeholder="Escriu, redacta o edita el teu document directament aquí..." class="w-full h-full p-4 bg-transparent text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm leading-relaxed outline-none resize-none custom-scrollbar font-sans"></textarea>
-                        <div id="studio-formatted-preview" class="hidden w-full h-full p-4 overflow-y-auto text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm leading-relaxed custom-scrollbar prose dark:prose-invert max-w-none"></div>
+                    <div id="studio-result-editor" class="flex-1 overflow-hidden relative rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 flex flex-col shadow-inner">
+                        <textarea id="studio-editable-textarea" oninput="updateStudioStats()" placeholder="Escriu, redacta o edita el teu document directament aquí... Pots utilitzar la barra d'eines superior per afegir títols, taules, tasques o descarregar-lo per a Word i Google Docs." class="w-full h-full p-4 bg-transparent text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm leading-relaxed outline-none resize-none custom-scrollbar font-sans"></textarea>
+                        <div id="studio-formatted-preview" class="hidden w-full h-full p-5 overflow-y-auto text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm leading-relaxed custom-scrollbar prose dark:prose-invert max-w-none"></div>
                     </div>
                 </div>
 
@@ -1983,63 +2070,101 @@
         </div>
     </div>
 
-    <!-- MODAL MAPA MENTAL VISUAL (D3.JS FORCE-DIRECTED GRAPH) -->
-    <div id="mindmap-modal" class="fixed inset-0 bg-zinc-950/90 z-[175] hidden flex flex-col p-2 sm:p-4 md:p-6 backdrop-blur-2xl opacity-0 transition-opacity duration-300 overflow-hidden text-zinc-900 dark:text-zinc-100 select-none">
+    <!-- MODAL MAPA MENTAL VISUAL (D3.JS FORCE GRAPH & ARBRE JERÀRQUIC) -->
+    <div id="mindmap-modal" onclick="if (event.target === this) closeMindMapModal();" class="fixed inset-0 bg-zinc-950/85 z-[175] hidden flex flex-col p-2 sm:p-4 md:p-6 backdrop-blur-xl opacity-0 transition-opacity duration-300 overflow-hidden text-zinc-900 dark:text-zinc-100 select-none">
         <div class="bg-white/95 dark:bg-[#121217] w-full h-full rounded-[2rem] border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl flex flex-col overflow-hidden relative">
             
             <!-- HEADER -->
-            <div class="p-3.5 sm:px-6 py-3 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between bg-zinc-50/90 dark:bg-zinc-900/60 shrink-0">
+            <div class="p-3 sm:px-5 py-3 border-b border-zinc-200/80 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2.5 bg-zinc-50/90 dark:bg-zinc-900/60 shrink-0">
                 <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="m4.93 4.93 2.12 2.12"/><path d="m16.95 16.95 2.12 2.12"/><path d="m4.93 19.07 2.12-2.12"/><path d="m16.95 7.05 2.12-2.12"/></svg>
                     </div>
                     <div class="min-w-0">
                         <div class="flex items-center gap-2">
-                            <h2 class="font-extrabold text-base sm:text-lg text-zinc-900 dark:text-zinc-100 truncate">Mapa Mental Visual (D3.js)</h2>
-                            <span id="mindmap-topic-badge" class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded-md truncate max-w-[200px]">Context del Xat</span>
+                            <h2 class="font-extrabold text-sm sm:text-base text-zinc-900 dark:text-zinc-100 truncate">Mapa Mental de la Sessió</h2>
+                            <span id="mindmap-topic-badge" class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 px-2 py-0.5 rounded-md truncate max-w-[180px]">Context del Xat</span>
                         </div>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 truncate">Grau interactiu de conceptes, idees i relacions clau extretes del xat</p>
+                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Visualització interactiva de conceptes, relacions i conclusions de la classe</p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 shrink-0">
-                    <button type="button" onclick="regenerateMindMapWithAi()" class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-300 font-bold text-xs rounded-xl hover:bg-indigo-100 transition cursor-pointer flex items-center gap-1.5">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
-                        <span class="hidden sm:inline">Regenerar amb IA</span>
+                <!-- CONTROLS SUPERIORS (MODE SWITCHER, CERCA, EXPORTACIO, TANCAR) -->
+                <div class="flex items-center gap-2 flex-wrap shrink-0">
+                    <!-- Segmented View Mode Toggle: Force vs Tree -->
+                    <div class="flex items-center p-0.5 rounded-xl bg-zinc-200/80 dark:bg-zinc-800 border border-zinc-300/80 dark:border-zinc-700/80">
+                        <button type="button" id="mindmap-view-force-btn" onclick="setMindMapViewMode('force')" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-colors bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs flex items-center gap-1 cursor-pointer">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/></svg>
+                            <span class="hidden sm:inline">Graf de Xarxa</span>
+                        </button>
+                        <button type="button" id="mindmap-view-tree-btn" onclick="setMindMapViewMode('tree')" class="px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 flex items-center gap-1 cursor-pointer">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            <span class="hidden sm:inline">Arbre Jeràrquic</span>
+                        </button>
+                    </div>
+
+                    <!-- Input Cerca de Conceptes -->
+                    <div class="relative">
+                        <input type="text" id="mindmap-search-input" placeholder="Cercar concepte..." oninput="filterMindMapNodes(this.value)" class="w-32 sm:w-44 px-2.5 py-1 text-xs rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-850 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                    </div>
+
+                    <!-- Exportació PNG -->
+                    <button type="button" onclick="exportMindMapImage()" title="Descarregar imatge PNG del mapa mental" class="px-2.5 py-1 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-1 active:scale-95">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span class="hidden md:inline">PNG</span>
                     </button>
-                    <button type="button" onclick="closeMindMapModal()" class="w-9 h-9 flex items-center justify-center rounded-xl text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+
+                    <!-- Regenerar amb IA -->
+                    <button type="button" onclick="regenerateMindMapWithAi()" title="Ampliar conceptes amb IA" class="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-300 font-bold text-xs rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition cursor-pointer flex items-center gap-1 active:scale-95">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+                        <span class="hidden md:inline">Ampliar IA</span>
+                    </button>
+
+                    <!-- Tancar -->
+                    <button type="button" onclick="closeMindMapModal()" class="w-8 h-8 flex items-center justify-center rounded-xl text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer active:scale-95" title="Tancar (Esc)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
             </div>
 
             <!-- CONTENIDOR DEL GRAF D3 + SIDEBAR DE DETALLS -->
             <div class="flex-1 relative overflow-hidden bg-zinc-950 text-white">
-                <!-- CANVAS SVG D3 -->
-                <div id="mindmap-svg-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+                <!-- CANVAS SVG D3 / ARBRE -->
+                <div id="mindmap-svg-container" class="w-full h-full cursor-grab active:cursor-grabbing overflow-hidden"></div>
 
                 <!-- CONTROLS EN FLOTACIÓ -->
                 <div class="absolute bottom-4 left-4 z-20 flex items-center gap-1.5 bg-zinc-900/90 border border-zinc-800 p-1.5 rounded-2xl shadow-xl backdrop-blur-md">
-                    <button type="button" onclick="zoomMindMap(1.2)" class="w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-sm flex items-center justify-center cursor-pointer">+</button>
-                    <button type="button" onclick="zoomMindMap(0.8)" class="w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-sm flex items-center justify-center cursor-pointer">-</button>
-                    <button type="button" onclick="resetMindMapZoom()" class="px-2.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-300 cursor-pointer">Centrar</button>
+                    <button type="button" onclick="zoomMindMap(1.2)" class="w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-sm flex items-center justify-center cursor-pointer active:scale-95 transition" title="Apropar">+</button>
+                    <button type="button" onclick="zoomMindMap(0.8)" class="w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-sm flex items-center justify-center cursor-pointer active:scale-95 transition" title="Allunyar">-</button>
+                    <button type="button" onclick="resetMindMapZoom()" class="px-2.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-300 cursor-pointer active:scale-95 transition">Centrar</button>
                 </div>
 
                 <!-- LLEGENDA -->
                 <div class="absolute top-4 left-4 z-20 bg-zinc-900/80 border border-zinc-800/80 p-2.5 rounded-2xl backdrop-blur-md text-[11px] space-y-1 hidden sm:block">
                     <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-500"></span> <span>Tema Principal</span></div>
                     <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-500"></span> <span>Concepte Clau</span></div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> <span>Detall / Subtema</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> <span>Detall / Exemple</span></div>
                 </div>
 
                 <!-- TARGETA DE DETALLS DEL NODO SELECCIONAT -->
-                <div id="mindmap-node-detail-panel" class="hidden absolute top-4 right-4 z-20 w-80 max-w-[90vw] bg-zinc-900/95 border border-zinc-800 p-4 rounded-2xl shadow-2xl backdrop-blur-xl text-xs space-y-2">
+                <div id="mindmap-node-detail-panel" class="hidden absolute top-4 right-4 z-20 w-84 max-w-[92vw] bg-zinc-900/95 border border-zinc-700/80 p-4 rounded-2xl shadow-2xl backdrop-blur-xl text-xs space-y-3">
                     <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
                         <span id="mindmap-detail-type" class="px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-400 font-extrabold text-[10px] uppercase">Concepte</span>
-                        <button type="button" onclick="document.getElementById('mindmap-node-detail-panel').classList.add('hidden')" class="text-zinc-500 hover:text-white">✕</button>
+                        <button type="button" onclick="document.getElementById('mindmap-node-detail-panel').classList.add('hidden')" class="w-6 h-6 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer">✕</button>
                     </div>
-                    <h4 id="mindmap-detail-title" class="font-extrabold text-sm text-white">Nom del Nodo</h4>
-                    <p id="mindmap-detail-desc" class="text-zinc-300 leading-relaxed text-xs">Explicació del concepte...</p>
+                    <div>
+                        <h4 id="mindmap-detail-title" class="font-extrabold text-sm text-white">Nom del Node</h4>
+                        <p id="mindmap-detail-desc" class="text-zinc-300 leading-relaxed text-xs mt-1">Explicació del concepte...</p>
+                    </div>
+                    <div class="flex items-center gap-2 pt-1 border-t border-zinc-800">
+                        <button type="button" id="mindmap-ask-chat-btn" onclick="askConceptInChat(document.getElementById('mindmap-detail-title').innerText)" class="flex-1 py-1.5 px-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] transition flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+                            <span>Preguntar al Xat</span>
+                        </button>
+                        <button type="button" id="mindmap-add-studio-btn" onclick="addConceptToStudio(document.getElementById('mindmap-detail-title').innerText, document.getElementById('mindmap-detail-desc').innerText)" class="py-1.5 px-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-[11px] transition flex items-center justify-center gap-1 cursor-pointer border border-zinc-700 active:scale-95">
+                            <span>📝 Estudi</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -5826,20 +5951,6 @@
                             <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Fórmules, conceptes i definicions de la lliçó.</div>
                         </div>
                     </button>
-
-                    <!-- 5. MAPA MENTAL VISUAL (D3.JS) -->
-                    <button onclick="Swal.close(); openMindMapModal();" class="p-3.5 bg-gradient-to-r from-indigo-50/80 to-purple-50/80 dark:from-indigo-950/40 dark:to-purple-950/40 border border-indigo-200/80 dark:border-indigo-800/80 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-400 hover:shadow-md hover:bg-white dark:hover:bg-zinc-900 transition-all group flex items-start gap-3 text-left cursor-pointer col-span-1 sm:col-span-2">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="m4.93 4.93 2.12 2.12"/><path d="m16.95 16.95 2.12 2.12"/><path d="m4.93 19.07 2.12-2.12"/><path d="m16.95 7.05 2.12-2.12"/></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition flex items-center gap-2">
-                                <span>Mapa Mental Visual (D3.js)</span>
-                                <span class="text-[9px] bg-indigo-600 text-white font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">NOU • D3 Graph</span>
-                            </div>
-                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Genera una xarxa de conceptes i relacions interactiva amb zoom i arrossegar nodes.</div>
-                        </div>
-                    </button>
                 </div>
 
                 <!-- EINES AUXILIARS -->
@@ -8664,58 +8775,401 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (cat === 'redaccio') {
                 templates = [
                     { id: 'correu_formal', title: 'Correu Formal', desc: 'Sol·licituds, empreses o beques' },
-                    { id: 'missatge_informal', title: 'Missatge Informal', desc: 'Agraïment o explicacions' },
-                    { id: 'resum_text', title: 'Resum / Esborrany', desc: 'Condensar idees o articles' },
+                    { id: 'correu_agrahiment', title: 'Correu d\'Agraïment', desc: 'Seguiment o resposta cordial' },
+                    { id: 'informe_executiu', title: 'Informe Executiu', desc: 'Resum amb taula d\'indicadors' },
+                    { id: 'resum_estudi', title: 'Resum d\'Estudi', desc: 'Esquema i conceptes clau' },
                     { id: 'carta_presentacio', title: 'Carta Presentació / CV', desc: 'Perfil i motivació professional' }
                 ];
             } else if (cat === 'organitzacio') {
                 templates = [
-                    { id: 'llista_todo', title: 'Llista de Tasques (To-Do)', desc: 'Desglossament de prioritats' },
-                    { id: 'planificador_diari', title: 'Planificador Diari', desc: 'Rutina d\'avui per hores' },
-                    { id: 'horari_estudi', title: 'Horari de Treball', desc: 'Distribució setmanal' },
-                    { id: 'recordatoris', title: 'Recordatoris Clau', desc: 'Dates límit i alertes' }
+                    { id: 'planificador_setmanal', title: 'Planificador Setmanal', desc: 'Taula de dies, blocs i tasques' },
+                    { id: 'llista_prioritats', title: 'Llista de Prioritats', desc: 'To-Do per nivells d\'urgència' },
+                    { id: 'horari_diari', title: 'Horari Diari per Hores', desc: 'Rutina matí, tarda i nit' },
+                    { id: 'acta_reunio', title: 'Acta de Reunió', desc: 'Punts tractats, acords i dates' }
                 ];
             } else if (cat === 'productivitat') {
                 templates = [
-                    { id: 'time_blocking', title: 'Time-Blocking', desc: 'Blocs de treball i pauses' },
-                    { id: 'matriu_eisenhower', title: 'Matriu Eisenhower', desc: 'Priorització de 4 quadrants' },
-                    { id: 'avaluacio_habits', title: 'Optimització d\'Hàbits', desc: 'Millora del rendiment' }
+                    { id: 'matriu_eisenhower', title: 'Matriu Eisenhower', desc: 'Priorització en 4 quadrants' },
+                    { id: 'time_blocking', title: 'Time-Blocking', desc: 'Taula de blocs de concentració' },
+                    { id: 'optimitzacio_habits', title: 'Optimització d\'Hàbits', desc: 'Rutina d\'alt rendiment' }
                 ];
             } else {
                 templates = [
-                    { id: 'brainstorming', title: 'Pluja d\'Idees', desc: '10 idees noves i solucions' },
-                    { id: 'cultura_general', title: 'Consulta Cultural', desc: 'Respostes a dubtes complexes' },
-                    { id: 'consells_practics', title: 'Consells Pràctics', desc: 'Guia pas a pas del dia a dia' }
+                    { id: 'brainstorming', title: 'Pluja d\'Idees', desc: '10 solucions i enfocaments' },
+                    { id: 'taula_comparativa', title: 'Taula Comparativa', desc: 'Avantatges, riscos i alternatives' },
+                    { id: 'consells_practics', title: 'Guia Pas a Pas', desc: 'Instruccions clares i aplicades' }
                 ];
             }
 
             templatesBox.innerHTML = templates.map((t) => `
-                <button type="button" onclick="applyStudioTemplate('${t.id}')" class="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-red-500 hover:shadow-xs text-left transition cursor-pointer group">
-                    <div class="flex items-center gap-1.5 font-bold text-xs text-zinc-900 dark:text-zinc-100 group-hover:text-red-600 dark:group-hover:text-red-400">
+                <button type="button" onclick="applyStudioTemplate('${t.id}')" class="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-red-500 hover:shadow-xs text-left transition cursor-pointer group active:scale-[0.98]">
+                    <div class="flex items-center justify-between gap-1.5 font-bold text-xs text-zinc-900 dark:text-zinc-100 group-hover:text-red-600 dark:group-hover:text-red-400">
                         <span>${t.title}</span>
+                        <span class="text-[10px] text-zinc-400 group-hover:text-red-500 font-normal">Triar</span>
                     </div>
                     <p class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-tight">${t.desc}</p>
                 </button>
             `).join('');
         };
 
+        window.currentStudioTemplateId = 'correu_formal';
+        window.studioTemplateBoilerplates = {
+            'correu_formal': `# Sol·licitud Formal
+
+**Assumpte:** Sol·licitud d'informació sobre [Tema o Procés]
+
+Benvolgut/da [Nom o Càrrec del Destinatari],
+
+Em poso en contacte amb vostè per sol·licitar formalment informació detallada sobre [exposar breument l'objecte de la petició].
+
+A continuació resumeixo els punts principals:
+- **Objectiu principal:** [Breu descripció clara i precisa]
+- **Terminis d'interès:** [Data límit o període desitjat]
+- **Documentació de suport:** [Llista de documents o referències si s'escau]
+
+Resto a la seva disposició per a qualsevol aclariment addicional o reunió breu.
+
+Agraint la seva atenció, rebi una cordial salutació,
+
+**[El teu nom i cognoms]**  
+[Càrrec / Departament / Contacte]`,
+
+            'correu_agrahiment': `# Correu de Seguiment i Agraïment
+
+**Assumpte:** Agraïment i seguiment respecte a [Reunió / Projecte]
+
+Benvolgut/da [Nom],
+
+Moltes gràcies pel temps dedicat a la trobada de [ahir / avui / data]. Ha estat molt profitosa per alinear els següents passos.
+
+## Punts Clau Tractats
+1. **Punt 1:** [Descripció breu]
+2. **Punt 2:** [Descripció breu]
+
+Segons el que hem acordat, quedo a l'espera de [tasca pendent] abans del [data límit].
+
+Cordialment,
+
+**[El teu nom]**`,
+
+            'informe_executiu': `# Informe Executiu de Situació
+
+**Data:** [Data d'avui]  
+**Autor:** [El teu nom]  
+**Destinatari:** [Equip o Direcció]
+
+## 1. Resum Executiu
+Aquest document resumeix l'estat actual de les activitats, els resultats assolits i els plans d'acció per al proper període.
+
+## 2. Indicadors i Estat de Tasques
+| Àrea / Fita | Objectiu | Estat Actual | Responsable | Termini |
+| :--- | :--- | :---: | :--- | :---: |
+| Planificació inicial | Definir abast i recursos | Completat | Equip de gestió | 05/11 |
+| Fase de desenvolupament | Implementació de millores | En curs | Equip tècnic | 20/11 |
+| Validació i proves | Proves amb usuaris | Pendent | Control de qualitat | 28/11 |
+
+## 3. Riscos i Accions Mitigadores
+- **Risc 1:** Retards en l'entrega de dades externes.  
+  *Mitigació:* Contactar directament amb els proveïdors i establir canals d'urgència.
+
+## 4. Conclusions i Següents Passos
+Es recomana aprovar el pas a la fase de proves un cop assolida la fita del dia 20.`,
+
+            'resum_estudi': `# Esquema i Resum d'Estudi
+
+**Assignatura / Mòdul:** [Nom del curs]  
+**Tema Principal:** [Títol de la lliçó]  
+**Data:** [Data d'estudi]
+
+## 1. Concepte Central
+> [Escriu aquí la definició fonamental en 1 o 2 frases d'alta precisió].
+
+## 2. Principis Fonamentals
+- **Principi A:** Explicació concisa de com funciona.
+- **Principi B:** Explicació concisa de com funciona.
+- **Principi C:** Aplicació pràctica.
+
+## 3. Taula Comparativa de Conceptes
+| Concepte | Definició Clau | Exemple Pràctic | Importància Examen |
+| :--- | :--- | :--- | :---: |
+| Concepte 1 | Descripció sintètica | Cas pràctic 1 | Alta |
+| Concepte 2 | Descripció sintètica | Cas pràctic 2 | Mitjana |
+
+## 4. Preguntes d'Autocomprovació
+1. Quina és la diferència clau entre el Concepte 1 i el Concepte 2?
+2. Quin exemple real demostra la utilitat d'aquest mecanisme?`,
+
+            'carta_presentacio': `# Carta de Motivació i Presentació
+
+**Data:** [Data d'avui]  
+**A l'atenció de:** [Nom del responsable o Departament de Selecció]  
+**Empresa / Institució:** [Nom de l'entitat]
+
+Benvolguts/des,
+
+Em poso en contacte amb vostès per manifestar el meu gran interès en formar part de la convocatòria per a [nom del lloc de treball o beca].
+
+Amb una trajectòria enfocada a [especialitat o camp], he desenvolupat habilitats sòlides en:
+- Resolució de problemes i pensament analític.
+- Treball coordinat en equip i comunicació eficaç.
+- Adaptabilitat ràpida a noves eines i metodologies.
+
+Estic convençut/da que la meva motivació i dedicació poden aportar valor tangible al seu equip. Resto a la seva disposició per a una entrevista personal.
+
+Atentament,
+
+**[El teu nom i cognoms]**  
+[Telèfon] | [Correu electrònic] | [Enllaç a perfil o portafoli]`,
+
+            'planificador_setmanal': `# Planificador Setmanal d'Organització
+
+## Blocs de Treball i Horari
+| Dia de la Setmana | Matí (Objectiu Clau) | Tarda (Tasques Operatives) | Estat / Fita |
+| :--- | :--- | :--- | :---: |
+| **Dilluns** | Planificació de la setmana | Resposta de consultes i To-Do | Pendent |
+| **Dimarts** | Bloc de treball profund 1 | Gestió de documents | Pendent |
+| **Dimecres** | Bloc de treball profund 2 | Revisió d'avenços | Pendent |
+| **Dijous** | Redacció d'esborranys | Coordinació i reunions | Pendent |
+| **Divendres** | Tancament i balanç | Preparació de la setmana següent | Pendent |
+
+### Llista de Tasques Prioritàries
+- [ ] 1. Enllestir la tasca més crítica de la setmana
+- [ ] 2. Revisar pendents acumulats
+- [ ] 3. Respondre correus que requereixen decisió`,
+
+            'llista_prioritats': `# Llista To-Do i Matriu de Prioritats
+
+## 🔴 Alta Prioritat (Fer avui sense falta)
+- [ ] 1. [Tasca urgent i important]
+- [ ] 2. [Tasca amb data límit propera]
+
+## 🟡 Mitjana Prioritat (Programar aquesta setmana)
+- [ ] 3. [Tasca important però no immediata]
+- [ ] 4. [Avançar part d'un projecte gran]
+
+## 🟢 Baixa Prioritat (Quan hi hagi temps lliure)
+- [ ] 5. [Organització d'arxius o tasques secundàries]
+
+### Resum d'Estat
+| Prioritat | Total Tasques | Completades | Pendents |
+| :---: | :---: | :---: | :---: |
+| Alta | 2 | 0 | 2 |
+| Mitjana | 2 | 0 | 2 |
+| Baixa | 1 | 0 | 1 |`,
+
+            'horari_diari': `# Horari i Rutina Diària de Concentració
+
+**Objectiu del dia:** [Escriu aquí l'objectiu principal d'avui]
+
+| Franja Horària | Activitat / Bloc | Mode de Treball | Estat |
+| :---: | :--- | :---: | :---: |
+| 08:30 - 09:00 | Planificació del dia i revisió de prioritats | Organització | [ ] |
+| 09:00 - 11:00 | Treball Profund (Bloc Focus 1) | Sense distraccions | [ ] |
+| 11:00 - 11:20 | Pausa activa, hidratació i descans visual | Pausa | [ ] |
+| 11:20 - 13:30 | Treball Profund (Bloc Focus 2) | Resolució de tasques | [ ] |
+| 13:30 - 15:00 | Dinar i descans | Descans | [ ] |
+| 15:00 - 17:00 | Tasques administratives, correus i comunicació | Operatiu | [ ] |
+| 17:00 - 17:30 | Balanç del dia i preparació de demà | Tancament | [ ] |`,
+
+            'acta_reunio': `# Acta de Reunió
+
+**Títol / Assumpte:** [Tema de la trobada]  
+**Data i Hora:** [Data i hora]  
+**Assistents:** [Noms dels participants]  
+**Moderat per:** [Nom del moderador/a]
+
+## 1. Ordre del Dia
+1. Revisió de l'estat anterior
+2. Propostes de millora
+3. Assignació de tasques
+
+## 2. Acords i Decisions Preses
+| Acord / Decisió | Responsable | Data Límit |
+| :--- | :--- | :---: |
+| Acord 1: [Detall de l'acord] | [Persona] | [Data] |
+| Acord 2: [Detall de l'acord] | [Persona] | [Data] |
+
+## 3. Propera Convocatòria
+- **Data prevista:** [Propera data límit o reunió de seguiment]`,
+
+            'matriu_eisenhower': `# Matriu de Priorització Eisenhower
+
+| Quadrant | Urgent | No Urgent |
+| :--- | :--- | :--- |
+| **Important** | **1. FER ARA MATEIX (Crisi i Terminisfinits)**<br>• [Tasca immediata 1]<br>• [Tasca immediata 2] | **2. PLANIFICAR I PROGRAMAR (Creixement)**<br>• [Objectiu a mitjà termini 1]<br>• [Hàbits i formació continuada] |
+| **No Important** | **3. DELEGAR O SIMPLIFICAR (Interrupcions)**<br>• [Consultes ràpides que poden resoldre altres]<br>• [Tasques rutinàries menors] | **4. ELIMINAR O MINIMITZAR (Pèrdues de temps)**<br>• [Distraccions digitals]<br>• [Activitats sense retorn] |`,
+
+            'time_blocking': `# Sessió Time-Blocking (Blocs de Rendiment)
+
+## Distribució de Blocs
+| Bloc | Durada | Objectiu Concret | Descans Posterior |
+| :---: | :---: | :--- | :---: |
+| **Bloc 1** | 50 minuts | [Tasca principal de màxima concentració] | 10 minuts |
+| **Bloc 2** | 50 minuts | [Continuació o resolució de problemes] | 15 minuts |
+| **Bloc 3** | 25 minuts | [Revisió ràpida de correus i comunicacions] | 5 minuts |
+| **Bloc 4** | 25 minuts | [Organització de tasques per demà] | Finalitzat |`,
+
+            'optimitzacio_habits': `# Guia d'Optimització d'Hàbits i Rendiment
+
+## 1. Hàbit Principal a Implementar
+- **Nom de l'hàbit:** [Ex: Bloqueig de notificacions de 09:00 a 12:00]
+- **Senyal disparador:** [Quan m'assec a l'escriptori i començo la jornada]
+- **Recompensa:** [Cafè o pausa de 10 minuts amb satisfacció de feina feta]
+
+## 2. Seguiment Setmanal
+| Hàbit / Rutina | Dil | Dim | Dmx | Dij | Div | Diss | Diu |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Focus sense mòbil (2h) | [ ] | [ ] | [ ] | [ ] | [ ] | - | - |
+| Pauses actives regulars | [ ] | [ ] | [ ] | [ ] | [ ] | - | - |
+| Revisió final de tasques | [ ] | [ ] | [ ] | [ ] | [ ] | - | - |`,
+
+            'brainstorming': `# Pluja d'Idees Estructurada
+
+**Repte o Pregunta Central:** [Com podem millorar o resoldre aquest problema?]
+
+## Idees Proposades
+1. **Idea 1 (Ràpida d'implementar):** [Descripció]
+2. **Idea 2 (Alt impacte):** [Descripció]
+3. **Idea 3 (Innovadora / Disruptiva):** [Descripció]
+4. **Idea 4 (Cost zero):** [Descripció]
+
+## Taula d'Avaluació d'Idees
+| Idea | Impacte (1-5) | Esforç (1-5) | Viabilitat | Prioritat |
+| :--- | :---: | :---: | :---: | :---: |
+| Idea 1 | 4 | 2 | Alta | Immediata |
+| Idea 2 | 5 | 4 | Mitjana | Segona fase |
+| Idea 3 | 3 | 1 | Alta | Prova pilot |`,
+
+            'taula_comparativa': `# Taula Comparativa de Solucions
+
+**Objectiu:** Avaluar les opcions disponibles per prendre la millor decisió.
+
+| Criteri / Paràmetre | Opció A: [Nom] | Opció B: [Nom] | Opció C: [Nom] |
+| :--- | :--- | :--- | :--- |
+| **Avantatges principals** | Ràpid i provat | Menor cost | Màxima flexibilitat |
+| **Inconvenients / Riscos** | Menys personalització | Requereix temps | Manteniment més alt |
+| **Temps d'implementació** | 2 dies | 1 setmana | 2 setmanes |
+| **Recomanació final** | ✅ Molt recomanat per a la fase inicial | Alternativa viable | Descartat temporalment |`,
+
+            'consells_practics': `# Guia Pràctica Pas a Pas
+
+**Tema:** [Objectiu de la guia]
+
+## Pas 1: Preparació inicial
+- Llegeix completament els requisits.
+- Reuneix tots els recursos i enllaços necessaris.
+
+## Pas 2: Execució guiada
+1. Executa la primera acció comprovant el resultat.
+2. Continua amb el segon bloc sense saltar etapes.
+
+## Pas 3: Validació final
+- [ ] Comprova que no hi ha errades de format.
+- [ ] Valida el compliment de tots els requisits.
+- [ ] Guarda una còpia de seguretat o exporta el document.`
+        };
+
         window.applyStudioTemplate = function(tmplIdOrTitle) {
-            const tmplMap = {
-                'correu_formal': 'Correu Formal',
-                'missatge_informal': 'Missatge Informal',
-                'nota_rapida': 'Nota Ràpida',
-                'to_do_list': 'Llista de Tasques (To-Do)',
-                'pla_rutina': 'Planificador de Rutines',
-                'time_blocking': 'Time-Blocking',
-                'matriu_eisenhower': 'Matriu Eisenhower',
-                'avaluacio_habits': "Optimització d'Hàbits",
-                'brainstorming': "Pluja d'Idees",
-                'cultura_general': 'Consulta Cultural',
-                'consells_practics': 'Consells Pràctics'
+            window.currentStudioTemplateId = tmplIdOrTitle;
+            const tmplTitles = {
+                'correu_formal': 'Correu Formal de Sol·licitud',
+                'correu_agrahiment': 'Correu d\'Agraïment o Seguiment',
+                'informe_executiu': 'Informe Executiu amb Taula d\'Indicadors',
+                'resum_estudi': 'Resum d\'Estudi i Esquema',
+                'carta_presentacio': 'Carta de Presentació / CV',
+                'planificador_setmanal': 'Planificador Setmanal amb Taula',
+                'llista_prioritats': 'Llista de Prioritats i To-Do',
+                'horari_diari': 'Horari Diari per Hores',
+                'acta_reunio': 'Acta de Reunió i Acords',
+                'matriu_eisenhower': 'Matriu Eisenhower de Priorització',
+                'time_blocking': 'Sessió de Blocs Time-Blocking',
+                'optimitzacio_habits': 'Optimització d\'Hàbits i Rutines',
+                'brainstorming': 'Pluja d\'Idees Estructurada',
+                'taula_comparativa': 'Taula Comparativa de Solucions',
+                'consells_practics': 'Guia Pràctica Pas a Pas'
             };
-            const title = tmplMap[tmplIdOrTitle] || tmplIdOrTitle;
+
+            const title = tmplTitles[tmplIdOrTitle] || tmplIdOrTitle;
             const titleInput = document.getElementById('studio-task-title');
             if (titleInput) titleInput.value = title;
+
+            // Si l'àrea d'edició està buida o té el missatge per defecte, carreguem l'esquelet immediatament
+            const textarea = document.getElementById('studio-editable-textarea');
+            if (textarea && (!textarea.value.trim() || textarea.value.includes("Generant esborrany"))) {
+                if (window.studioTemplateBoilerplates[tmplIdOrTitle]) {
+                    textarea.value = window.studioTemplateBoilerplates[tmplIdOrTitle];
+                    updateStudioStats();
+                }
+            }
+        };
+
+        window.loadStudioCurrentTemplateBoilerplate = function() {
+            const tmplId = window.currentStudioTemplateId || 'correu_formal';
+            const boilerplate = window.studioTemplateBoilerplates[tmplId] || window.studioTemplateBoilerplates['correu_formal'];
+            const textarea = document.getElementById('studio-editable-textarea');
+            if (!textarea) return;
+
+            textarea.value = boilerplate;
+            updateStudioStats();
+            setStudioViewTab('edit');
+            showToast('Estructura base de la plantilla carregada!', 'success');
+        };
+
+        window.insertStudioFormatting = function(prefix, suffix = '', defaultText = '') {
+            const textarea = document.getElementById('studio-editable-textarea');
+            if (!textarea) return;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const val = textarea.value;
+            const selected = val.substring(start, end) || defaultText;
+            const replacement = prefix + selected + suffix;
+            textarea.setRangeText(replacement, start, end, 'select');
+            textarea.focus();
+            updateStudioStats();
+        };
+
+        window.insertStudioTable = function() {
+            const tableTemplate = `\n| Concepte / Fita | Descripció | Responsable | Prioritat / Estat |\n| :--- | :--- | :--- | :---: |\n| Tasca 1 | Redacció de l'esborrany inicial | Equip | Alta |\n| Tasca 2 | Revisió d'indicadors i contingut | Supervisor | En curs |\n| Tasca 3 | Enviament formal al destinatari | Responsable | Pendent |\n\n`;
+            const textarea = document.getElementById('studio-editable-textarea');
+            if (!textarea) return;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            textarea.setRangeText(tableTemplate, start, end, 'end');
+            textarea.focus();
+            updateStudioStats();
+            showToast('Taula organitzativa inserida a l\'editor!', 'info');
+        };
+
+        window.copyStudioForGoogleDocs = async function() {
+            const text = document.getElementById('studio-editable-textarea')?.value || window.currentStudioMarkdown || '';
+            if (!text.trim()) {
+                showToast('No hi ha cap contingut per copiar', 'warning');
+                return;
+            }
+            const cleanText = text.replace(/\[BOTON_[^\]]+\]/g, '').trim();
+            const renderedHtml = typeof formatMessage === 'function' ? formatMessage(cleanText) : cleanText;
+            const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;color:#111827;}table{border-collapse:collapse;width:100%;margin:10pt 0;}th,td{border:1px solid #d1d5db;padding:6pt 8pt;text-align:left;}th{background-color:#f3f4f6;font-weight:bold;}</style></head><body>${renderedHtml}</body></html>`;
+
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    const htmlBlob = new Blob([fullHtml], { type: 'text/html' });
+                    const textBlob = new Blob([cleanText], { type: 'text/plain' });
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/html': htmlBlob,
+                            'text/plain': textBlob
+                        })
+                    ]);
+                    showToast('Format ric copiat! Llest per enganxar a Google Docs o Word.', 'success');
+                    return;
+                }
+            } catch (err) {
+                console.warn('ClipboardItem no admès pel navegador:', err);
+            }
+
+            navigator.clipboard.writeText(cleanText).then(() => {
+                showToast('Text copiat al porta-retalls!', 'success');
+            });
         };
 
         window.setStudioViewTab = function(mode) {
@@ -8729,13 +9183,13 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 editArea.classList.remove('hidden');
                 prevArea.classList.add('hidden');
                 if (tabEdit) tabEdit.className = "px-2.5 py-1 rounded-lg bg-red-600 text-white font-bold text-xs transition cursor-pointer shadow-xs";
-                if (tabPrev) tabPrev.className = "px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 font-bold text-xs transition cursor-pointer";
+                if (tabPrev) tabPrev.className = "px-2.5 py-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-bold text-xs transition cursor-pointer";
             } else {
                 prevArea.innerHTML = formatMessage(editArea.value || "No hi ha contingut per previsualitzar.");
                 editArea.classList.add('hidden');
                 prevArea.classList.remove('hidden');
                 if (tabPrev) tabPrev.className = "px-2.5 py-1 rounded-lg bg-red-600 text-white font-bold text-xs transition cursor-pointer shadow-xs";
-                if (tabEdit) tabEdit.className = "px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 font-bold text-xs transition cursor-pointer";
+                if (tabEdit) tabEdit.className = "px-2.5 py-1 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-bold text-xs transition cursor-pointer";
             }
         };
 
@@ -8776,7 +9230,7 @@ Detalls de la petició:
 "${notes}"
 
 Instruccions de format:
-- Retorna el resultat perfectament redactat i estructurat amb títols, seccions clares, paràgrafs ben polits i caselles o punts si escau.
+- Retorna el resultat perfectament redactat i estructurat amb títols, seccions clares, paràgrafs ben polits i caselles, taules o punts si escau.
 - Inclou un títol principal i una petita nota al final per si l'usuari vol fer alguna modificació.`;
 
             try {
@@ -9354,56 +9808,134 @@ Instruccions de format:
             } catch(e) {}
         };
 
-        // --- D3 FORCE MIND MAP ENGINE ---
+        // --- D3 FORCE & HIERARCHICAL MIND MAP ENGINE ---
         window.currentMindMapZoom = null;
+        window.currentMindMapViewMode = 'force'; // 'force' | 'tree'
+        window.currentMindMapNodes = [];
+        window.currentMindMapLinks = [];
 
-        window.openMindMapModal = function() {
+        function openMindMapModal() {
+            try {
+                const modal = document.getElementById('mindmap-modal');
+                if (!modal) {
+                    if (typeof showToast === 'function') {
+                        showToast("No s'ha trobat el contenidor del mapa mental", "error");
+                    }
+                    return;
+                }
+
+                // Netejar possibles estils inline conflictius i mostrar modal amb màxima robustesa
+                modal.classList.remove('hidden');
+                modal.classList.remove('opacity-0');
+                modal.style.display = 'flex';
+                modal.style.opacity = '1';
+                modal.style.visibility = 'visible';
+                modal.style.zIndex = '175';
+
+                const searchInput = document.getElementById('mindmap-search-input');
+                if (searchInput) searchInput.value = '';
+
+                const topic = (typeof getCurrentChatTopic === 'function' ? getCurrentChatTopic() : null) || "Aliat Intel·ligent";
+                const topicBadge = document.getElementById('mindmap-topic-badge');
+                if (topicBadge) topicBadge.innerText = topic;
+
+                // Actualitzar estat visual dels botons de mode
+                setMindMapViewMode(window.currentMindMapViewMode || 'force', false);
+
+                // Donar temps breu al navegador per fer el reflow del contenidor i calcular clientWidth/Height
+                setTimeout(() => {
+                    generateLocalMindMapGraph(topic);
+                }, 50);
+            } catch (err) {
+                console.error("Error al obrir mapa mental:", err);
+                if (typeof showToast === 'function') {
+                    showToast("Error al carregar el mapa mental: " + (err.message || err), "error");
+                }
+            }
+        }
+        window.openMindMapModal = openMindMapModal;
+
+        function closeMindMapModal() {
             const modal = document.getElementById('mindmap-modal');
             if (!modal) return;
-            
-            modal.style.display = 'flex';
-            modal.classList.remove('hidden');
-            void modal.offsetWidth; // Force DOM layout reflow
-            modal.classList.remove('opacity-0');
-            modal.style.opacity = '1';
-
-            const topic = (typeof getCurrentChatTopic === 'function' ? getCurrentChatTopic() : null) || "Aliat Intel·ligent";
-            const topicBadge = document.getElementById('mindmap-topic-badge');
-            if (topicBadge) topicBadge.innerText = topic;
-
-            setTimeout(() => {
-                generateLocalMindMapGraph(topic);
-            }, 60);
-        };
-
-        window.closeMindMapModal = function() {
-            const modal = document.getElementById('mindmap-modal');
-            if (!modal) return;
-            modal.style.opacity = '0';
             modal.classList.add('opacity-0');
+            modal.style.opacity = '0';
             setTimeout(() => { 
                 modal.classList.add('hidden'); 
                 modal.style.display = 'none';
             }, 200);
+        }
+        window.closeMindMapModal = closeMindMapModal;
+
+        window.askConceptInChat = function(conceptLabel) {
+            closeMindMapModal();
+            const input = document.getElementById('user-input');
+            if (input) {
+                input.value = `Pots explicar-me detalladament el concepte "${conceptLabel}" i donar-me un parell d'exemples pràctics?`;
+                input.focus();
+                if (typeof adjustTextareaHeight === 'function') adjustTextareaHeight(input);
+                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         };
 
-        window.generateLocalMindMapGraph = function(topic) {
-            const container = document.getElementById('mindmap-svg-container');
-            if (!container) return;
-            if (typeof d3 === 'undefined') {
-                container.innerHTML = `<div class="p-8 text-center text-zinc-400 font-bold flex flex-col items-center justify-center h-full gap-2"><svg class="animate-spin h-6 w-6 text-indigo-500" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg><span>Carregant motor gràfic D3.js...</span></div>`;
-                setTimeout(() => generateLocalMindMapGraph(topic), 300);
-                return;
+        window.addConceptToStudio = function(conceptLabel, conceptDesc) {
+            closeMindMapModal();
+            openFullscreenStudioModal('redaccio');
+            setTimeout(() => {
+                const titleEl = document.getElementById('studio-task-title');
+                const notesEl = document.getElementById('studio-task-notes');
+                if (titleEl && !titleEl.value) titleEl.value = `Anàlisi del concepte: ${conceptLabel}`;
+                if (notesEl) {
+                    notesEl.value = (notesEl.value ? notesEl.value + '\n\n' : '') + `## ${conceptLabel}\n${conceptDesc || ''}\n`;
+                }
+                if (typeof showToast === 'function') showToast(`Concepte "${conceptLabel}" afegit a l'Estudi de Redacció`, 'success');
+            }, 150);
+        };
+
+        function setMindMapViewMode(mode, triggerRender = true) {
+            window.currentMindMapViewMode = mode;
+            const forceBtn = document.getElementById('mindmap-view-force-btn');
+            const treeBtn = document.getElementById('mindmap-view-tree-btn');
+
+            if (mode === 'force') {
+                if (forceBtn) {
+                    forceBtn.className = "px-2.5 py-1 text-xs font-bold rounded-lg transition-colors bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs flex items-center gap-1 cursor-pointer";
+                }
+                if (treeBtn) {
+                    treeBtn.className = "px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 flex items-center gap-1 cursor-pointer";
+                }
+            } else {
+                if (treeBtn) {
+                    treeBtn.className = "px-2.5 py-1 text-xs font-bold rounded-lg transition-colors bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-xs flex items-center gap-1 cursor-pointer";
+                }
+                if (forceBtn) {
+                    forceBtn.className = "px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 flex items-center gap-1 cursor-pointer";
+                }
             }
 
+            if (triggerRender && window.currentMindMapNodes.length > 0) {
+                if (mode === 'tree') {
+                    renderNativeSvgMindMapTree(window.currentMindMapNodes, window.currentMindMapLinks);
+                } else {
+                    renderD3ForceMindMap(window.currentMindMapNodes, window.currentMindMapLinks);
+                }
+            }
+        }
+        window.setMindMapViewMode = setMindMapViewMode;
+
+        function generateLocalMindMapGraph(topic) {
+            const container = document.getElementById('mindmap-svg-container');
+            if (!container) return;
+
+            const resolvedTopic = topic || (typeof getCurrentChatTopic === 'function' ? getCurrentChatTopic() : null) || "Aliat Intel·ligent";
+
             const nodes = [
-                { id: 'root', label: topic, type: 'root', desc: `Tema principal de la conversa: ${topic}` }
+                { id: 'root', label: resolvedTopic, type: 'root', desc: `Tema central i eix conductor: ${resolvedTopic}` }
             ];
             const links = [];
-
             let extractedConcepts = [];
 
-            if (Array.isArray(chatHistory) && chatHistory.length > 0) {
+            if (typeof chatHistory !== 'undefined' && Array.isArray(chatHistory) && chatHistory.length > 0) {
                 chatHistory.forEach((msg) => {
                     if (msg && msg.content && typeof msg.content === 'string') {
                         // 1. Capçaleres Markdown (# ## ###)
@@ -9428,8 +9960,8 @@ Instruccions de format:
                             });
                         }
 
-                        // 3. Sentències d'usuari rellevants si no hi ha negretes o capçaleres
-                        if (msg.role === 'user' && extractedConcepts.length < 3) {
+                        // 3. Sentències d'usuari rellevants si no hi ha suficients conceptes
+                        if (msg.role === 'user' && extractedConcepts.length < 4) {
                             const cleanU = msg.content.replace(/^(Hola|Crea|Explica|Quina|Què)\s+/i, '').trim();
                             if (cleanU.length >= 4 && cleanU.length <= 35 && !extractedConcepts.includes(cleanU)) {
                                 extractedConcepts.push(cleanU);
@@ -9444,151 +9976,335 @@ Instruccions de format:
 
             if (extractedConcepts.length === 0) {
                 extractedConcepts = [
-                    "Definició i Fonaments",
-                    "Conceptes Clau i Teoria",
-                    "Exemples i Aplicacions",
-                    "Estructura i Resum",
-                    "Punts Importants"
+                    "Fonaments & Teoria",
+                    "Conceptes Clau & Marc",
+                    "Exemples & Casos Pràctics",
+                    "Estructura & Metodologia",
+                    "Conclusions & Síntesi"
                 ];
             }
 
             extractedConcepts.forEach((concept, i) => {
                 const conceptId = `c_${i}`;
-                nodes.push({ id: conceptId, label: concept, type: 'concept', desc: `Concepte desenvolupat al xat sobre ${concept}` });
+                nodes.push({ id: conceptId, label: concept, type: 'concept', desc: `Concepte fonamental: ${concept}` });
                 links.push({ source: 'root', target: conceptId });
 
                 const detail1Id = `d_${i}_1`;
                 const detail2Id = `d_${i}_2`;
-                nodes.push({ id: detail1Id, label: `Punt Clau ${i+1}.1`, type: 'detail', desc: `Especificació fonamental de ${concept}` });
-                nodes.push({ id: detail2Id, label: `Exemple ${i+1}.2`, type: 'detail', desc: `Cas pràctic o aplicació de ${concept}` });
+                nodes.push({ id: detail1Id, label: `Punt Clau ${i+1}.1`, type: 'detail', desc: `Especificació de ${concept}` });
+                nodes.push({ id: detail2Id, label: `Exemple ${i+1}.2`, type: 'detail', desc: `Aplicació pràctica de ${concept}` });
                 links.push({ source: conceptId, target: detail1Id });
                 links.push({ source: conceptId, target: detail2Id });
             });
 
-            renderD3ForceMindMap(nodes, links);
-        };
+            window.currentMindMapNodes = nodes;
+            window.currentMindMapLinks = links;
 
-        window.renderD3ForceMindMap = function(nodes, links) {
+            if (window.currentMindMapViewMode === 'tree' || typeof d3 === 'undefined') {
+                renderNativeSvgMindMapTree(nodes, links);
+            } else {
+                renderD3ForceMindMap(nodes, links);
+            }
+        }
+        window.generateLocalMindMapGraph = generateLocalMindMapGraph;
+
+        // --- RENDERITZADOR 1: GRAF DE FORCES D3.JS ---
+        function renderD3ForceMindMap(nodes, links) {
+            const container = document.getElementById('mindmap-svg-container');
+            if (!container) return;
+            if (typeof d3 === 'undefined') {
+                renderNativeSvgMindMapTree(nodes, links);
+                return;
+            }
+
+            try {
+                container.innerHTML = '';
+
+                const width = Math.max(340, container.clientWidth || (window.innerWidth - 40) || 800);
+                const height = Math.max(340, container.clientHeight || (window.innerHeight - 120) || 600);
+
+                // Clonar nodes i enllaços per protegir-los de mutacions internes de d3.forceSimulation
+                const simNodes = (nodes || []).map(n => Object.assign({}, n));
+                const simLinks = (links || []).map(l => ({
+                    source: (typeof l.source === 'object' && l.source !== null) ? (l.source.id || 'root') : l.source,
+                    target: (typeof l.target === 'object' && l.target !== null) ? (l.target.id || '') : l.target
+                }));
+
+                const svg = d3.select(container)
+                    .append('svg')
+                    .attr('id', 'mindmap-svg-element')
+                    .attr('width', '100%')
+                    .attr('height', '100%')
+                    .attr('viewBox', `0 0 ${width} ${height}`);
+
+                const g = svg.append('g').attr('id', 'mindmap-root-g');
+
+                const zoom = d3.zoom()
+                    .scaleExtent([0.3, 3])
+                    .on('zoom', (event) => {
+                        g.attr('transform', event.transform);
+                    });
+
+                svg.call(zoom);
+                window.currentMindMapZoom = zoom;
+                window.currentMindMapSvg = svg;
+
+                const simulation = d3.forceSimulation(simNodes)
+                    .force('link', d3.forceLink(simLinks).id(d => d.id).distance(d => {
+                        const sType = d.source && d.source.type ? d.source.type : (simNodes.find(n => n.id === (d.source.id || d.source))?.type);
+                        return sType === 'root' ? 140 : 85;
+                    }))
+                    .force('charge', d3.forceManyBody().strength(-360))
+                    .force('center', d3.forceCenter(width / 2, height / 2))
+                    .force('collide', d3.forceCollide(45));
+
+                const link = g.append('g')
+                    .attr('class', 'links-layer')
+                    .selectAll('line')
+                    .data(simLinks)
+                    .join('line')
+                    .attr('stroke', '#6366f1')
+                    .attr('stroke-opacity', 0.6)
+                    .attr('stroke-width', d => {
+                        const sType = d.source && d.source.type ? d.source.type : (simNodes.find(n => n.id === (d.source.id || d.source))?.type);
+                        return sType === 'root' ? 2.5 : 1.5;
+                    })
+                    .attr('stroke-dasharray', d => {
+                        const tType = d.target && d.target.type ? d.target.type : (simNodes.find(n => n.id === (d.target.id || d.target))?.type);
+                        return tType === 'detail' ? '3,3' : 'none';
+                    });
+
+                const node = g.append('g')
+                    .attr('class', 'nodes-layer')
+                    .selectAll('g')
+                    .data(simNodes)
+                    .join('g')
+                    .attr('class', 'node-item')
+                    .attr('data-id', d => d.id)
+                    .attr('data-label', d => (d.label || '').toLowerCase())
+                    .style('cursor', 'pointer')
+                    .call(d3.drag()
+                        .on('start', (event, d) => {
+                            if (!event.active) simulation.alphaTarget(0.3).restart();
+                            d.fx = d.x;
+                            d.fy = d.y;
+                        })
+                        .on('drag', (event, d) => {
+                            d.fx = event.x;
+                            d.fy = event.y;
+                        })
+                        .on('end', (event, d) => {
+                            if (!event.active) simulation.alphaTarget(0);
+                            d.fx = null;
+                            d.fy = null;
+                        }));
+
+                node.append('circle')
+                    .attr('r', d => d.type === 'root' ? 24 : (d.type === 'concept' ? 18 : 12))
+                    .attr('fill', d => d.type === 'root' ? '#4f46e5' : (d.type === 'concept' ? '#9333ea' : '#059669'))
+                    .attr('stroke', '#ffffff')
+                    .attr('stroke-width', 2)
+                    .style('filter', 'drop-shadow(0px 3px 8px rgba(0,0,0,0.5))');
+
+                node.append('text')
+                    .text(d => d.label)
+                    .attr('x', d => d.type === 'root' ? 28 : 22)
+                    .attr('y', 4)
+                    .attr('fill', '#f4f4f5')
+                    .attr('font-size', d => d.type === 'root' ? '14px' : (d.type === 'concept' ? '12px' : '10px'))
+                    .attr('font-weight', d => d.type === 'root' ? 'bold' : '500')
+                    .style('pointer-events', 'none')
+                    .style('text-shadow', '0 1px 3px rgba(0,0,0,0.8)');
+
+                node.on('click', (event, d) => {
+                    event.stopPropagation();
+                    showMindMapNodeDetail(d);
+                });
+
+                simulation.on('tick', () => {
+                    link
+                        .attr('x1', d => d.source.x)
+                        .attr('y1', d => d.source.y)
+                        .attr('x2', d => d.target.x)
+                        .attr('y2', d => d.target.y);
+
+                    node
+                        .attr('transform', d => `translate(${d.x},${d.y})`);
+                });
+            } catch (err) {
+                console.warn("D3 Force fallit, activant arbre natiu:", err);
+                renderNativeSvgMindMapTree(nodes, links);
+            }
+        }
+        window.renderD3ForceMindMap = renderD3ForceMindMap;
+
+        // --- RENDERITZADOR 2: ARBRE JERÀRQUIC SVG NATIU (IMMUNE A PROBLEMES DE CDN) ---
+        function renderNativeSvgMindMapTree(nodes, links) {
             const container = document.getElementById('mindmap-svg-container');
             if (!container) return;
             container.innerHTML = '';
 
-            const width = Math.max(320, container.clientWidth || (window.innerWidth - 40) || 800);
-            const height = Math.max(320, container.clientHeight || (window.innerHeight - 120) || 600);
+            const width = Math.max(400, container.clientWidth || 800);
+            const height = Math.max(400, container.clientHeight || 600);
 
-            const svg = d3.select(container)
-                .append('svg')
-                .attr('width', '100%')
-                .attr('height', '100%')
-                .attr('viewBox', [0, 0, width, height]);
+            const rootNode = (nodes || []).find(n => n.type === 'root') || (nodes && nodes[0]) || { id: 'root', label: 'Tema Principal', type: 'root', desc: '' };
+            const conceptNodes = (nodes || []).filter(n => n.type === 'concept');
 
-            const g = svg.append('g').attr('id', 'mindmap-root-g');
+            let svgHtml = `<svg id="mindmap-svg-element" width="100%" height="100%" viewBox="0 0 ${width} ${height}" class="w-full h-full"><g id="mindmap-root-g">`;
 
-            const zoom = d3.zoom()
-                .scaleExtent([0.3, 3])
-                .on('zoom', (event) => {
-                    g.attr('transform', event.transform);
+            const startX = 60;
+            const centerY = height / 2;
+
+            // Dibuixar Root Node
+            svgHtml += `
+                <g class="node-item cursor-pointer" onclick="showMindMapNodeDetailById('root')" data-id="root" data-label="${escapeHtml(rootNode.label.toLowerCase())}">
+                    <rect x="${startX}" y="${centerY - 24}" width="180" height="48" rx="16" fill="#4f46e5" stroke="#ffffff" stroke-width="2" filter="drop-shadow(0 4px 10px rgba(79,70,229,0.4))"/>
+                    <text x="${startX + 90}" y="${centerY + 5}" fill="#ffffff" font-size="12px" font-weight="bold" text-anchor="middle">${escapeHtml(rootNode.label.substring(0, 24))}</text>
+                </g>
+            `;
+
+            // Dibuixar branques de conceptes
+            const conceptSpacing = height / Math.max(1, (conceptNodes.length + 1));
+            conceptNodes.forEach((c, idx) => {
+                const cX = startX + 260;
+                const cY = conceptSpacing * (idx + 1);
+
+                // Corba Bézier del Root al Concepte
+                svgHtml += `<path d="M ${startX + 180} ${centerY} C ${startX + 220} ${centerY}, ${startX + 220} ${cY}, ${cX} ${cY}" fill="none" stroke="#6366f1" stroke-width="2" stroke-opacity="0.7"/>`;
+
+                // Node Concepte
+                svgHtml += `
+                    <g class="node-item cursor-pointer" onclick="showMindMapNodeDetailById('${c.id}')" data-id="${c.id}" data-label="${escapeHtml(c.label.toLowerCase())}">
+                        <rect x="${cX}" y="${cY - 18}" width="160" height="36" rx="12" fill="#9333ea" stroke="#ffffff" stroke-width="1.5" filter="drop-shadow(0 3px 8px rgba(0,0,0,0.4))"/>
+                        <text x="${cX + 80}" y="${cY + 4}" fill="#ffffff" font-size="11px" font-weight="bold" text-anchor="middle">${escapeHtml(c.label.substring(0, 22))}</text>
+                    </g>
+                `;
+
+                // Detalls secundaris
+                const details = (nodes || []).filter(n => n.type === 'detail' && n.id.startsWith(`d_${idx}_`));
+                details.forEach((d, dIdx) => {
+                    const dX = cX + 220;
+                    const dY = cY + (dIdx === 0 ? -18 : 18);
+
+                    svgHtml += `<path d="M ${cX + 160} ${cY} C ${cX + 190} ${cY}, ${cX + 190} ${dY}, ${dX} ${dY}" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3,3" stroke-opacity="0.8"/>`;
+
+                    svgHtml += `
+                        <g class="node-item cursor-pointer" onclick="showMindMapNodeDetailById('${d.id}')" data-id="${d.id}" data-label="${escapeHtml(d.label.toLowerCase())}">
+                            <rect x="${dX}" y="${dY - 14}" width="130" height="28" rx="8" fill="#065f46" stroke="#10b981" stroke-width="1"/>
+                            <text x="${dX + 65}" y="${dY + 4}" fill="#a7f3d0" font-size="10px" font-weight="600" text-anchor="middle">${escapeHtml(d.label.substring(0, 20))}</text>
+                        </g>
+                    `;
                 });
+            });
 
-            svg.call(zoom);
-            window.currentMindMapZoom = zoom;
-            window.currentMindMapSvg = svg;
+            svgHtml += `</g></svg>`;
+            container.innerHTML = svgHtml;
+        }
+        window.renderNativeSvgMindMapTree = renderNativeSvgMindMapTree;
 
-            const simulation = d3.forceSimulation(nodes)
-                .force('link', d3.forceLink(links).id(d => d.id).distance(d => d.source.type === 'root' ? 140 : 85))
-                .force('charge', d3.forceManyBody().strength(-350))
-                .force('center', d3.forceCenter(width / 2, height / 2))
-                .force('collide', d3.forceCollide(45));
+        function showMindMapNodeDetail(d) {
+            const panel = document.getElementById('mindmap-node-detail-panel');
+            const title = document.getElementById('mindmap-detail-title');
+            const desc = document.getElementById('mindmap-detail-desc');
+            const typeBadge = document.getElementById('mindmap-detail-type');
 
-            const link = g.append('g')
-                .selectAll('line')
-                .data(links)
-                .join('line')
-                .attr('stroke', '#4b5563')
-                .attr('stroke-opacity', 0.8)
-                .attr('stroke-width', d => d.source.type === 'root' ? 3 : 1.5)
-                .attr('stroke-dasharray', d => d.target.type === 'detail' ? '3,3' : 'none');
+            if (panel) {
+                panel.classList.remove('hidden');
+                if (title) title.innerText = d.label || '';
+                if (desc) desc.innerText = d.desc || '';
+                if (typeBadge) typeBadge.innerText = d.type === 'root' ? 'TEMA PRINCIPAL' : (d.type === 'concept' ? 'CONCEPTE CLAU' : 'DETALL / EXEMPLE');
+            }
+        }
+        window.showMindMapNodeDetail = showMindMapNodeDetail;
 
-            const node = g.append('g')
-                .selectAll('g')
-                .data(nodes)
-                .join('g')
-                .attr('class', 'node')
-                .style('cursor', 'pointer')
-                .call(d3.drag()
-                    .on('start', (event, d) => {
-                        if (!event.active) simulation.alphaTarget(0.3).restart();
-                        d.fx = d.x;
-                        d.fy = d.y;
-                    })
-                    .on('drag', (event, d) => {
-                        d.fx = event.x;
-                        d.fy = event.y;
-                    })
-                    .on('end', (event, d) => {
-                        if (!event.active) simulation.alphaTarget(0);
-                        d.fx = null;
-                        d.fy = null;
-                    }));
+        function showMindMapNodeDetailById(nodeId) {
+            const node = (window.currentMindMapNodes || []).find(n => n.id === nodeId);
+            if (node) showMindMapNodeDetail(node);
+        }
+        window.showMindMapNodeDetailById = showMindMapNodeDetailById;
 
-            node.append('circle')
-                .attr('r', d => d.type === 'root' ? 24 : (d.type === 'concept' ? 18 : 12))
-                .attr('fill', d => d.type === 'root' ? '#4f46e5' : (d.type === 'concept' ? '#a855f7' : '#10b981'))
-                .attr('stroke', '#ffffff')
-                .attr('stroke-width', 2)
-                .style('filter', 'drop-shadow(0px 4px 10px rgba(0,0,0,0.5))');
-
-            node.append('text')
-                .text(d => d.label)
-                .attr('x', d => d.type === 'root' ? 28 : 22)
-                .attr('y', 4)
-                .attr('fill', '#f4f4f5')
-                .attr('font-size', d => d.type === 'root' ? '14px' : (d.type === 'concept' ? '12px' : '10px'))
-                .attr('font-weight', d => d.type === 'root' ? 'bold' : '500')
-                .style('pointer-events', 'none');
-
-            node.on('click', (event, d) => {
-                event.stopPropagation();
-                const panel = document.getElementById('mindmap-node-detail-panel');
-                const title = document.getElementById('mindmap-detail-title');
-                const desc = document.getElementById('mindmap-detail-desc');
-                const typeBadge = document.getElementById('mindmap-detail-type');
-
-                if (panel) {
-                    panel.classList.remove('hidden');
-                    if (title) title.innerText = d.label;
-                    if (desc) desc.innerText = d.desc;
-                    if (typeBadge) typeBadge.innerText = d.type === 'root' ? 'TEMA PRINCIPAL' : (d.type === 'concept' ? 'CONCEPTE CLAU' : 'DETALL / SUBTEMA');
+        // --- FILTRAR NODES EN TEMPS REAL AMB L'INPUT DE CERCA ---
+        function filterMindMapNodes(query) {
+            const q = (query || '').toLowerCase().trim();
+            const elements = document.querySelectorAll('#mindmap-svg-container .node-item');
+            elements.forEach(el => {
+                const label = el.getAttribute('data-label') || '';
+                if (!q || label.includes(q)) {
+                    el.style.opacity = '1';
+                    el.style.filter = q ? 'drop-shadow(0 0 10px #f59e0b)' : '';
+                } else {
+                    el.style.opacity = '0.2';
+                    el.style.filter = '';
                 }
             });
+        }
+        window.filterMindMapNodes = filterMindMapNodes;
 
-            simulation.on('tick', () => {
-                link
-                    .attr('x1', d => d.source.x)
-                    .attr('y1', d => d.source.y)
-                    .attr('x2', d => d.target.x)
-                    .attr('y2', d => d.target.y);
+        // --- EXPORTAR EL MAPA MENTAL A IMATGE PNG ---
+        function exportMindMapImage() {
+            const svgEl = document.getElementById('mindmap-svg-element');
+            if (!svgEl) {
+                if (typeof showToast === 'function') showToast("No s'ha pogut trobar el mapa gràfic", 'warning');
+                return;
+            }
 
-                node
-                    .attr('transform', d => `translate(${d.x},${d.y})`);
-            });
-        };
+            try {
+                const serializer = new XMLSerializer();
+                let source = serializer.serializeToString(svgEl);
 
-        window.zoomMindMap = function(factor) {
-            if (window.currentMindMapSvg && window.currentMindMapZoom) {
+                // Assegurar namespaces
+                if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+                    source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+                }
+
+                const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(svgBlob);
+                const img = new Image();
+
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = svgEl.clientWidth || 1000;
+                    canvas.height = svgEl.clientHeight || 700;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#09090b';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+
+                    const pngUrl = canvas.toDataURL('image/png');
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = pngUrl;
+                    downloadLink.download = `mapa_mental_${Date.now()}.png`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                    URL.revokeObjectURL(url);
+                    if (typeof showToast === 'function') showToast('Imatge del Mapa Mental descarregada!', 'success');
+                };
+                img.src = url;
+            } catch (err) {
+                console.error("Error exportant PNG:", err);
+                if (typeof showToast === 'function') showToast("Error generant la imatge", "error");
+            }
+        }
+        window.exportMindMapImage = exportMindMapImage;
+
+        function zoomMindMap(factor) {
+            if (window.currentMindMapSvg && window.currentMindMapZoom && typeof d3 !== 'undefined') {
                 window.currentMindMapSvg.transition().duration(300).call(window.currentMindMapZoom.scaleBy, factor);
             }
-        };
+        }
+        window.zoomMindMap = zoomMindMap;
 
-        window.resetMindMapZoom = function() {
-            if (window.currentMindMapSvg && window.currentMindMapZoom) {
+        function resetMindMapZoom() {
+            if (window.currentMindMapSvg && window.currentMindMapZoom && typeof d3 !== 'undefined') {
                 window.currentMindMapSvg.transition().duration(400).call(window.currentMindMapZoom.transform, d3.zoomIdentity);
             }
-        };
+        }
+        window.resetMindMapZoom = resetMindMapZoom;
 
-        window.regenerateMindMapWithAi = async function() {
-            const topic = getCurrentChatTopic();
-            showToast('💡 Generant mapa mental ampliat amb IA...', 'info');
+        async function regenerateMindMapWithAi() {
+            const topic = (typeof getCurrentChatTopic === 'function' ? getCurrentChatTopic() : null) || "Aliat Intel·ligent";
+            if (typeof showToast === 'function') showToast('Ampliant mapa mental amb IA...', 'info');
             try {
                 const res = await fetch('/api/generate', {
                     method: 'POST',
@@ -9601,12 +10317,63 @@ Instruccions de format:
                 const data = await res.json();
                 if (data.reply) {
                     generateLocalMindMapGraph(topic);
-                    showToast('Mapa mental actualitzat!', 'success');
+                    if (typeof showToast === 'function') showToast('Mapa mental actualitzat!', 'success');
                 }
             } catch(e) {
                 generateLocalMindMapGraph(topic);
             }
-        };
+        }
+        window.regenerateMindMapWithAi = regenerateMindMapWithAi;
+
+        // Assegurar event listener per al botó Analitzar Sessió Actual
+        function initMindMapTrigger() {
+            const btn = document.getElementById('plus-analyze-session-btn');
+            if (btn && !btn.dataset.mindMapBound) {
+                btn.dataset.mindMapBound = 'true';
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openMindMapModal();
+                    if (typeof closePlusMenu === 'function') closePlusMenu();
+                });
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMindMapTrigger);
+        } else {
+            initMindMapTrigger();
+        }
+
+        // Tancar modals i menús amb tecla Escape per a millor ergonomia i accessibilitat
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const mindmap = document.getElementById('mindmap-modal');
+                if (mindmap && !mindmap.classList.contains('hidden')) {
+                    closeMindMapModal();
+                    return;
+                }
+                const studio = document.getElementById('fullscreen-studio-modal');
+                if (studio && !studio.classList.contains('hidden')) {
+                    if (typeof closeFullscreenStudioModal === 'function') closeFullscreenStudioModal();
+                    return;
+                }
+                const pomodoro = document.getElementById('pomodoro-custom-modal');
+                if (pomodoro && !pomodoro.classList.contains('hidden')) {
+                    if (typeof closePomodoroModal === 'function') closePomodoroModal();
+                    return;
+                }
+                const verifyModal = document.getElementById('email-verify-modal');
+                if (verifyModal && !verifyModal.classList.contains('hidden')) {
+                    if (typeof closeVerifyModal === 'function') closeVerifyModal();
+                    return;
+                }
+                const plusMenu = document.getElementById('plus-menu');
+                if (plusMenu && !plusMenu.classList.contains('hidden')) {
+                    if (typeof closePlusMenu === 'function') closePlusMenu();
+                    return;
+                }
+            }
+        });
 
         window.promptGoogleCalendarReminder = function(prefillTitle = "", prefillDetails = "") {
             const now = new Date();
@@ -9704,24 +10471,41 @@ Instruccions de format:
                 return;
             }
             const cleanText = text.replace(/\[BOTON_[^\]]+\]/g, '').trim();
+            const parsedBody = (typeof formatMessage === 'function')
+                ? formatMessage(cleanText)
+                : cleanText.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+
             const formattedHtml = `<!DOCTYPE html>
-<html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
 <head>
 <meta charset="utf-8">
 <title>Document Aliat Intel·ligent</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
 <style>
-body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #111827; padding: 20px; }
-h1 { font-size: 18pt; color: #1d4ed8; font-weight: bold; margin-bottom: 12pt; }
-h2 { font-size: 14pt; color: #1e40af; font-weight: bold; margin-top: 15pt; margin-bottom: 8pt; }
-h3 { font-size: 12pt; color: #374151; font-weight: bold; margin-top: 10pt; margin-bottom: 6pt; }
-p { margin-bottom: 8pt; }
-table { border-collapse: collapse; width: 100%; margin-top: 10pt; margin-bottom: 10pt; }
-th, td { border: 1px solid #d1d5db; padding: 6px 10px; text-align: left; }
-th { background-color: #f3f4f6; font-weight: bold; }
+body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #111827; padding: 24pt; max-width: 800px; margin: 0 auto; }
+h1 { font-size: 18pt; color: #1e3a8a; font-weight: bold; margin-bottom: 12pt; border-bottom: 2pt solid #2563eb; padding-bottom: 4pt; }
+h2 { font-size: 14pt; color: #1e40af; font-weight: bold; margin-top: 14pt; margin-bottom: 6pt; }
+h3 { font-size: 12pt; color: #374151; font-weight: bold; margin-top: 10pt; margin-bottom: 4pt; }
+p { margin-bottom: 8pt; text-align: justify; }
+ul, ol { margin-left: 20pt; margin-bottom: 8pt; }
+li { margin-bottom: 3pt; }
+table { border-collapse: collapse; width: 100%; margin-top: 10pt; margin-bottom: 12pt; font-size: 10pt; }
+th, td { border: 1px solid #d1d5db; padding: 6pt 10pt; text-align: left; vertical-align: top; }
+th { background-color: #f3f4f6; font-weight: bold; color: #111827; }
+tr:nth-child(even) td { background-color: #f9fafb; }
+blockquote { border-left: 3pt solid #2563eb; margin-left: 0; padding-left: 10pt; color: #4b5563; font-style: italic; }
 </style>
 </head>
 <body>
-${cleanText.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('')}
+${parsedBody}
 </body>
 </html>`;
 
@@ -9729,7 +10513,7 @@ ${cleanText.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join(''
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = filename;
+            a.download = filename.endsWith('.doc') ? filename : `${filename}.doc`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -11372,6 +12156,37 @@ ${cleanText.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join(''
             });
         };
 
+        window.copyRichMsgForGoogleDocs = async function(btn) {
+            const parentMsg = btn.closest('.chat-msg-ai');
+            if (!parentMsg) return;
+            const prose = parentMsg.querySelector('.prose');
+            if (!prose) return;
+            const cleanText = prose.innerText;
+            const htmlContent = prose.innerHTML;
+            const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;color:#111827;}table{border-collapse:collapse;width:100%;margin:10pt 0;}th,td{border:1px solid #d1d5db;padding:6pt 8pt;text-align:left;}th{background-color:#f3f4f6;font-weight:bold;}</style></head><body>${htmlContent}</body></html>`;
+
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    const htmlBlob = new Blob([fullHtml], { type: 'text/html' });
+                    const textBlob = new Blob([cleanText], { type: 'text/plain' });
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/html': htmlBlob,
+                            'text/plain': textBlob
+                        })
+                    ]);
+                    showToast('Format ric copiat per a Google Docs / Word!', 'success');
+                    return;
+                }
+            } catch (err) {
+                console.warn('ClipboardItem no admès:', err);
+            }
+
+            navigator.clipboard.writeText(cleanText).then(() => {
+                showToast('Text copiat al porta-retalls!', 'success');
+            });
+        };
+
         function appendMessage(sender, text, searchQueries = [], sources = []) {
             const box = document.getElementById('chat-messages');
             if (!box) return;
@@ -11413,13 +12228,16 @@ ${cleanText.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join(''
                         <button onclick="triggerAiResponse()" title="Regenerar resposta" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
                         </button>
-                        <button onclick="window.copyMsgText(this)" title="Copiar resposta" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
+                        <button onclick="window.copyMsgText(this)" title="Copiar resposta (Text)" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                        <button onclick="window.copyRichMsgForGoogleDocs(this)" title="Copiar amb format per a Google Docs / Word" class="p-1 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                         </button>
                         <button onclick="speakMessageText(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="Escoltar text complet" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                         </button>
-                        <button onclick="exportAsWordDocument(this.closest('.chat-msg-ai').querySelector('.prose').innerText, 'document_aliat_intel_ligent.doc')" title="Exportar a Word / Google Docs" class="p-1 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
+                        <button onclick="exportAsWordDocument(this.closest('.chat-msg-ai').querySelector('.prose').innerText, 'document_aliat_intel_ligent.doc')" title="Exportar a Word / LibreOffice (.doc)" class="p-1 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                         </button>
                         <button onclick="sendAsEmail(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="Enviar per Correu electrònic" class="p-1 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">

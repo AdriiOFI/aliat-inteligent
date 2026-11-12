@@ -1310,236 +1310,344 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                 </button>
 
-                                <!-- MENU DESPLEGABLE DEL (+) -->
-                                <div id="plus-menu" class="hidden absolute left-0 bottom-12 z-50 bg-white/98 dark:bg-[#14141a]/98 border border-zinc-200/90 dark:border-zinc-800/90 rounded-[1.75rem] shadow-2xl p-3 w-80 sm:w-88 max-w-[95vw] flex flex-col gap-2 backdrop-blur-2xl">
+                                <!-- MENU DESPLEGABLE DEL (+) ORGANITZAT PER CARPETES I SUB-OPCIONS -->
+                                <div id="plus-menu" class="hidden absolute left-0 bottom-12 z-50 bg-white/98 dark:bg-[#14141a]/98 border border-zinc-200/90 dark:border-zinc-800/90 rounded-[1.75rem] shadow-2xl p-3 w-80 sm:w-84 max-w-[95vw] flex flex-col gap-2 backdrop-blur-2xl transition-all duration-200">
                                     
-                                    <!-- SECCIÓ 1: CREACIÓ DE DOCUMENTS I MAPA MENTAL -->
-                                    <div class="px-2 pt-0.5 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                                        Creació & Anàlisi
-                                    </div>
-
-                                    <!-- BOTÓ D'INSTAL·LAR APP ANDROID PWA -->
-                                    <button type="button" id="plus-pwa-install-btn" onclick="event.stopPropagation(); installPWA(); closePlusMenu();" class="pwa-hide-on-standalone flex items-center gap-3 w-full p-2.5 hover:bg-emerald-50/90 dark:hover:bg-emerald-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-emerald-200/70 dark:border-emerald-900/50 group">
-                                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">📲 Instal·lar App a Android</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Accés directe i mode pantalla completa</div>
-                                        </div>
-                                    </button>
-
-                                    <button type="button" onclick="event.stopPropagation(); openFullscreenStudioModal('redaccio'); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-red-50/90 dark:hover:bg-red-950/40 rounded-2xl text-xs font-bold text-zinc-800 dark:text-zinc-100 transition text-left cursor-pointer border border-red-200/70 dark:border-red-900/50 group">
-                                        <div class="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Crear / Editar Document</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Editor per a Word (.docx) i Google Docs</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- BOTÓ ANALITZAR SESSIÓ ACTUAL (OBRE MAPA MENTAL D3.JS / ARBRE) -->
-                                    <button type="button" id="plus-analyze-session-btn" onclick="event.stopPropagation(); openMindMapModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-indigo-50/90 dark:hover:bg-indigo-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-indigo-200/80 dark:border-indigo-900/60 group">
-                                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight flex items-center gap-1.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                                                <span>Analitzar Sessió Actual</span>
-                                                <span class="text-[9px] bg-indigo-600 text-white font-extrabold px-1.5 py-0.5 rounded-md">D3</span>
+                                    <!-- VISTA PRINCIPAL: CARPETES D'OPCIONS -->
+                                    <div id="plus-folder-root" class="space-y-1.5">
+                                        <div class="flex items-center justify-between px-1 pb-1 border-b border-zinc-100 dark:border-zinc-800/80">
+                                            <div>
+                                                <div class="text-[11px] font-black text-zinc-900 dark:text-white uppercase tracking-wider">📁 Menú d'Eines & Opcions</div>
+                                                <div class="text-[10px] text-zinc-400 font-medium">Tria una carpeta per explorar les seves funcions</div>
                                             </div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Mapa mental interactiu de conceptes</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- BOTÓ GENERAR QUIZZ / KAHOOT -->
-                                    <button type="button" onclick="event.stopPropagation(); triggerToolFromChat('exam', null, 'Fes-me un quiz d\'examen sobre ' + (getCurrentChatTopic() || 'el tema actual')); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-emerald-50/90 dark:hover:bg-emerald-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-emerald-200/70 dark:border-emerald-900/50 group">
-                                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight flex items-center gap-1.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                                                <span>Generar Quiz d'Examen</span>
-                                                <span class="text-[9px] bg-emerald-600 text-white font-extrabold px-1.5 py-0.5 rounded-md">Kahoot</span>
-                                            </div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Test d'examen de 5 preguntes puntuades</div>
-                                        </div>
-                                    </button>
-
-                                    <button type="button" onclick="event.stopPropagation(); openFullscreenStudioModal('organitzacio'); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-blue-50/90 dark:hover:bg-blue-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-blue-200/70 dark:border-blue-900/50 group">
-                                        <div class="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Llista de Tasques / Rutina</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Calendari, To-Do i horaris organitzats</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- NOU: GENERAR VÍDEO DES DE TEXT (GEMINI OMNI FLASH) -->
-                                    <button type="button" onclick="event.stopPropagation(); openGenerateVideoModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-violet-50/90 dark:hover:bg-violet-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-violet-200/80 dark:border-violet-900/60 group">
-                                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight flex items-center gap-1.5 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-                                                <span>Generar Vídeo des de Text</span>
-                                                <span class="text-[9px] bg-violet-600 text-white font-extrabold px-1.5 py-0.5 rounded-md">Omni IA</span>
-                                            </div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Crea clips visuals automàticament des de prompts</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- NOU: CREAR IMATGE AMB CONTROL DE PROPORCIONS (9:16, 16:9, etc.) -->
-                                    <button type="button" onclick="event.stopPropagation(); openGenerateImageModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-pink-50/90 dark:hover:bg-pink-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-pink-200/80 dark:border-pink-900/60 group">
-                                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight flex items-center gap-1.5 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
-                                                <span>Crear Imatge amb IA</span>
-                                                <span class="text-[9px] bg-pink-600 text-white font-extrabold px-1.5 py-0.5 rounded-md">9:16 / 16:9</span>
-                                            </div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Control de proporcions per stories, vídeos o notes</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- NOU: ANALITZAR IMATGES I VÍDEOS (DETECCIÓ D'OBJECTES & OCR) -->
-                                    <button type="button" onclick="event.stopPropagation(); openAnalyzeMediaModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-cyan-50/90 dark:hover:bg-cyan-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-cyan-200/80 dark:border-cyan-900/60 group">
-                                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight flex items-center gap-1.5 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                                                <span>Analitzar Imatges & Vídeos</span>
-                                                <span class="text-[9px] bg-cyan-600 text-white font-extrabold px-1.5 py-0.5 rounded-md">OCR</span>
-                                            </div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Detecció d'objectes, text/fórmules i escenes</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- NOU: GOOGLE DRIVE -->
-                                    <button type="button" onclick="event.stopPropagation(); openGoogleDriveModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-amber-50/90 dark:hover:bg-amber-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-amber-200/80 dark:border-amber-900/60 group">
-                                        <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">El meu Google Drive</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Visualitza i desa apunts al teu disc de Google</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- NOU: GMAIL -->
-                                    <button type="button" onclick="event.stopPropagation(); openGmailModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-red-50/90 dark:hover:bg-red-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-red-200/80 dark:border-red-900/60 group">
-                                        <div class="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Gestionar Correu (Gmail)</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Envia apunts i consulta missatges de Gmail</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- NOU: GOOGLE CALENDAR -->
-                                    <button type="button" onclick="event.stopPropagation(); openGoogleCalendarModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-blue-50/90 dark:hover:bg-blue-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-blue-200/80 dark:border-blue-900/60 group">
-                                        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Google Calendar (Agenda & Rutines)</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Planifica sessions i consulta la teva agenda</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- NOU: GOOGLE CLASSROOM -->
-                                    <button type="button" onclick="event.stopPropagation(); openGoogleClassroomModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-emerald-50/90 dark:hover:bg-emerald-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-emerald-200/80 dark:border-emerald-900/60 group">
-                                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Google Classroom (Aules & Deures)</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Consulta tasques pendents i prepara-les amb IA</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- NOU: GOOGLE PICKER -->
-                                    <button type="button" onclick="event.stopPropagation(); openGooglePickerModal(); closePlusMenu();" class="flex items-center gap-3 w-full p-2.5 hover:bg-cyan-50/90 dark:hover:bg-cyan-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-cyan-200/80 dark:border-cyan-900/60 group">
-                                        <div class="w-9 h-9 rounded-xl bg-cyan-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
-                                        </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">Google Picker (Triar de Drive)</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Explorador visual per carregar apunts a l'estudi</div>
-                                        </div>
-                                    </button>
-
-                                    <!-- SECCIÓ 2: MODES D'ESTUDI & FOCUS -->
-                                    <div id="plus-menu-modes-section" class="flex flex-col gap-1.5 p-2 bg-zinc-50/90 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 my-0.5">
-                                        <div class="flex items-center justify-between px-1.5 pt-0.5">
-                                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" id="plus-pomodoro-indicator"></span>
-                                                <span>Sessió de Concentració:</span>
-                                            </span>
-                                            <button type="button" onclick="openPomodoroModal(); closePlusMenu();" class="text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1 cursor-pointer">
-                                                <span>Personalitzar</span>
-                                            </button>
+                                            <button type="button" onclick="closePlusMenu()" class="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs">✕</button>
                                         </div>
 
-                                        <!-- Botons ràpids de focus amb espai net -->
-                                        <div class="grid grid-cols-4 gap-1.5 pt-0.5">
-                                            <button type="button" onclick="activateStudyModeFromPlus('classic')" title="Mode Clàssic 25 minuts" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer group shadow-2xs">
-                                                <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400">25m</div>
-                                                <div class="text-[9px] text-zinc-400 font-medium">Clàssic</div>
-                                            </button>
-                                            <button type="button" onclick="activateStudyModeFromPlus('deep')" title="Mode Focus Intens 50 minuts" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer group shadow-2xs">
-                                                <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400">50m</div>
-                                                <div class="text-[9px] text-zinc-400 font-medium">Focus</div>
-                                            </button>
-                                            <button type="button" onclick="activateStudyModeFromPlus('short')" title="Pausa curta 5 minuts" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer group shadow-2xs">
-                                                <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400">5m</div>
-                                                <div class="text-[9px] text-zinc-400 font-medium">Pausa</div>
-                                            </button>
-                                            <button type="button" onclick="activateStudyModeFromPlus('custom')" title="Mode Personalitzat" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer group shadow-2xs">
-                                                <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-rose-600 dark:group-hover:text-rose-400 flex items-center justify-center gap-0.5">
-                                                    <span id="plus-custom-mins-badge">30m</span>
+                                        <!-- CARPETA 1: GOOGLE WORKSPACE -->
+                                        <button type="button" onclick="showPlusFolder('workspace')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-blue-300 dark:hover:border-blue-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                                                 </div>
-                                                <div class="text-[9px] text-zinc-400 font-medium">Editat</div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex items-center gap-1.5">
+                                                        <span>Google Workspace</span>
+                                                        <span class="text-[9px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-extrabold px-1.5 py-0.2 rounded-md">6 eines</span>
+                                                    </div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Calendar, Classroom, Drive, Docs, Gmail...</div>
+                                                </div>
+                                            </div>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                                        </button>
+
+                                        <!-- CARPETA 2: IA CREATIVA & MULTIMODAL -->
+                                        <button type="button" onclick="showPlusFolder('creative')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-pink-50/80 dark:hover:bg-pink-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-pink-300 dark:hover:border-pink-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors flex items-center gap-1.5">
+                                                        <span>IA Creativa & Multimodal</span>
+                                                        <span class="text-[9px] bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 font-extrabold px-1.5 py-0.2 rounded-md">5 eines</span>
+                                                    </div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Imatges (9:16/16:9), Vídeos, OCR, Àudio...</div>
+                                                </div>
+                                            </div>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-pink-600 dark:group-hover:text-pink-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                                        </button>
+
+                                        <!-- CARPETA 3: EINES D'ESTUDI & TESTS -->
+                                        <button type="button" onclick="showPlusFolder('study')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+                                                        <span>Eines d'Estudi & Tests</span>
+                                                        <span class="text-[9px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-extrabold px-1.5 py-0.2 rounded-md">4 eines</span>
+                                                    </div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Kahoot d'examen, Mapa Mental D3, Tasques...</div>
+                                                </div>
+                                            </div>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                                        </button>
+
+                                        <!-- CARPETA 4: FOCUS & POMODORO -->
+                                        <button type="button" onclick="showPlusFolder('focus')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-rose-300 dark:hover:border-rose-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors flex items-center gap-1.5">
+                                                        <span>Focus & Concentració</span>
+                                                        <span class="text-[9px] bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-extrabold px-1.5 py-0.2 rounded-md">Pomodoro</span>
+                                                    </div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Blocs 25m, 50m, Pauses i avisos sonors</div>
+                                                </div>
+                                            </div>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                                        </button>
+
+                                        <!-- ACCIONS RÀPIDES DIRECTES -->
+                                        <div class="pt-1 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center gap-1.5">
+                                            <label class="flex-1 flex items-center justify-center gap-1.5 p-2 bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xl border border-emerald-200/80 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold transition cursor-pointer shadow-2xs">
+                                                <input type="file" id="chat-attachment" accept="image/*,.pdf,audio/*" class="hidden" onchange="handleAttachment(this); closePlusMenu();">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                                <span>📎 Adjuntar Fitxer</span>
+                                            </label>
+                                            <button type="button" id="plus-pwa-install-btn" onclick="event.stopPropagation(); installPWA(); closePlusMenu();" class="pwa-hide-on-standalone flex-1 flex items-center justify-center gap-1.5 p-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl text-zinc-700 dark:text-zinc-300 text-[11px] font-bold transition cursor-pointer shadow-2xs">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                                <span>📲 App Android</span>
                                             </button>
                                         </div>
                                     </div>
 
-                                    <!-- SECCIÓ 3: MULTIMODAL & FITXERS -->
-                                    <div class="px-2 pt-1 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                                        Multimodal & Fitxers
+                                    <!-- SUB-CARPETA 1: GOOGLE WORKSPACE -->
+                                    <div id="plus-folder-workspace" class="hidden space-y-1.5">
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-zinc-200/80 dark:border-zinc-800/80 mb-1">
+                                            <button type="button" onclick="showPlusFolder('root')" class="flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                                                <span>Tornar</span>
+                                            </button>
+                                            <span class="text-xs font-black text-zinc-900 dark:text-white flex items-center gap-1.5">
+                                                <span>📂 Google Workspace</span>
+                                            </span>
+                                            <button type="button" onclick="closePlusMenu()" class="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs">✕</button>
+                                        </div>
+
+                                        <div class="max-h-72 overflow-y-auto space-y-1 pr-0.5 custom-scrollbar">
+                                            <button type="button" onclick="event.stopPropagation(); openGoogleCalendarModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-blue-50/90 dark:hover:bg-blue-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-blue-200/70 dark:border-blue-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Google Calendar (Agenda)</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Sessions, rutines i avisos push</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openGoogleClassroomModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-emerald-50/90 dark:hover:bg-emerald-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-emerald-200/70 dark:border-emerald-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Google Classroom (Aules)</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Tasques, lliuraments i esborranys</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openGooglePickerModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-cyan-50/90 dark:hover:bg-cyan-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-cyan-200/70 dark:border-cyan-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-cyan-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Google Picker (Triar de Drive)</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Explora apunts i fitxers al núvol</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openGoogleDriveModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-amber-50/90 dark:hover:bg-amber-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-amber-200/70 dark:border-amber-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">El meu Google Drive</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Apunts i carpetes de Google</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openGmailModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-red-50/90 dark:hover:bg-red-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-red-200/70 dark:border-red-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Gestionar Correu (Gmail)</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Envia apunts i consulta missatges</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); handleHeaderMenuExportDocs(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-blue-50/90 dark:hover:bg-blue-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-blue-200/70 dark:border-blue-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Obrir a Google Docs</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Crea document oficial editable</div>
+                                                </div>
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div class="grid grid-cols-2 gap-1.5">
-                                        <button type="button" onclick="event.stopPropagation(); openAudioTranscribeModal(); closePlusMenu();" class="flex items-center gap-2.5 p-2 hover:bg-purple-50/90 dark:hover:bg-purple-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
-                                            <div class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                                            </div>
-                                            <span class="truncate text-xs font-medium">Àudio / Veu</span>
-                                        </button>
+                                    <!-- SUB-CARPETA 2: IA CREATIVA & MULTIMODAL -->
+                                    <div id="plus-folder-creative" class="hidden space-y-1.5">
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-zinc-200/80 dark:border-zinc-800/80 mb-1">
+                                            <button type="button" onclick="showPlusFolder('root')" class="flex items-center gap-1 text-xs font-bold text-pink-600 dark:text-pink-400 hover:underline cursor-pointer">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                                                <span>Tornar</span>
+                                            </button>
+                                            <span class="text-xs font-black text-zinc-900 dark:text-white flex items-center gap-1.5">
+                                                <span>🎨 IA Creativa & Multimodal</span>
+                                            </span>
+                                            <button type="button" onclick="closePlusMenu()" class="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs">✕</button>
+                                        </div>
 
-                                        <button type="button" onclick="event.stopPropagation(); openVisionModal(); closePlusMenu();" class="flex items-center gap-2.5 p-2 hover:bg-blue-50/90 dark:hover:bg-blue-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
-                                            <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                                            </div>
-                                            <span class="truncate text-xs font-medium">Fotos / Càmera</span>
-                                        </button>
+                                        <div class="max-h-72 overflow-y-auto space-y-1 pr-0.5 custom-scrollbar">
+                                            <button type="button" onclick="event.stopPropagation(); openGenerateImageModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-pink-50/90 dark:hover:bg-pink-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-pink-200/70 dark:border-pink-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-pink-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Crear Imatge amb IA</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Ràtios 1:1, 9:16 (Stories), 16:9</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openGenerateVideoModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-violet-50/90 dark:hover:bg-violet-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-violet-200/70 dark:border-violet-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-violet-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Generar Vídeo des de Text</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Clips visuals automàtics amb Omni IA</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openAnalyzeMediaModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-cyan-50/90 dark:hover:bg-cyan-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-cyan-200/70 dark:border-cyan-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Analitzar Imatges & Vídeos</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">OCR, detecció d'objectes i text</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openAudioTranscribeModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-purple-50/90 dark:hover:bg-purple-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
+                                                <div class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Transcriure Àudio / Veu</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Passa gravacions de classe a apunts</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openVisionModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-blue-50/90 dark:hover:bg-blue-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
+                                                <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Fotos & Càmera en directe</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Captura la pissarra o el llibre</div>
+                                                </div>
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <label class="flex items-center gap-3 w-full p-2.5 hover:bg-emerald-50/90 dark:hover:bg-emerald-950/40 rounded-2xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition cursor-pointer text-left border border-emerald-200/70 dark:border-emerald-900/50 group">
-                                        <input type="file" id="chat-attachment" accept="image/*,.pdf,audio/*" class="hidden" onchange="handleAttachment(this); closePlusMenu();">
-                                        <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                    <!-- SUB-CARPETA 3: EINES D'ESTUDI & TESTS -->
+                                    <div id="plus-folder-study" class="hidden space-y-1.5">
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-zinc-200/80 dark:border-zinc-800/80 mb-1">
+                                            <button type="button" onclick="showPlusFolder('root')" class="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                                                <span>Tornar</span>
+                                            </button>
+                                            <span class="text-xs font-black text-zinc-900 dark:text-white flex items-center gap-1.5">
+                                                <span>🧠 Eines d'Estudi & Tests</span>
+                                            </span>
+                                            <button type="button" onclick="closePlusMenu()" class="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs">✕</button>
                                         </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <div class="font-bold text-xs text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Adjuntar Fitxer</div>
-                                            <div class="text-[10px] text-zinc-500 font-normal leading-tight mt-0.5">Imatge, PDF d'apunts o gravació d'àudio</div>
+
+                                        <div class="max-h-72 overflow-y-auto space-y-1 pr-0.5 custom-scrollbar">
+                                            <button type="button" onclick="event.stopPropagation(); triggerToolFromChat('exam', null, 'Fes-me un quiz d\'examen sobre ' + (getCurrentChatTopic() || 'el tema actual')); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-emerald-50/90 dark:hover:bg-emerald-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-emerald-200/70 dark:border-emerald-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Generar Quiz d'Examen</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Test cronometrat tipus Kahoot</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openMindMapModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-indigo-50/90 dark:hover:bg-indigo-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-indigo-200/70 dark:border-indigo-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Mapa Mental D3.js</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Arbre interactiu de conceptes clau</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openFullscreenStudioModal('redaccio'); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-red-50/90 dark:hover:bg-red-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-red-200/70 dark:border-red-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Crear / Editar Document</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Editor complet per a Word i Docs</div>
+                                                </div>
+                                            </button>
+
+                                            <button type="button" onclick="event.stopPropagation(); openFullscreenStudioModal('organitzacio'); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-blue-50/90 dark:hover:bg-blue-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-blue-200/70 dark:border-blue-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Llista de Tasques / Rutina</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Taules d'estudi, horaris i To-Do</div>
+                                                </div>
+                                            </button>
                                         </div>
-                                    </label>
+                                    </div>
+
+                                    <!-- SUB-CARPETA 4: FOCUS & POMODORO -->
+                                    <div id="plus-folder-focus" class="hidden space-y-2">
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-zinc-200/80 dark:border-zinc-800/80 mb-1">
+                                            <button type="button" onclick="showPlusFolder('root')" class="flex items-center gap-1 text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                                                <span>Tornar</span>
+                                            </button>
+                                            <span class="text-xs font-black text-zinc-900 dark:text-white flex items-center gap-1.5">
+                                                <span>⏱️ Focus & Concentració</span>
+                                            </span>
+                                            <button type="button" onclick="closePlusMenu()" class="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs">✕</button>
+                                        </div>
+
+                                        <div class="p-2.5 bg-rose-50/70 dark:bg-rose-950/30 rounded-2xl border border-rose-200/70 dark:border-rose-900/50 space-y-2">
+                                            <div class="flex items-center justify-between px-1">
+                                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                                                    <span>Temporitzador Pomodoro</span>
+                                                </span>
+                                                <button type="button" onclick="openPomodoroModal(); closePlusMenu();" class="text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">
+                                                    Personalitzar ↗
+                                                </button>
+                                            </div>
+
+                                            <div class="grid grid-cols-4 gap-1.5">
+                                                <button type="button" onclick="activateStudyModeFromPlus('classic')" title="Mode Clàssic 25m" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer shadow-2xs">
+                                                    <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200">25m</div>
+                                                    <div class="text-[9px] text-zinc-400 font-medium">Clàssic</div>
+                                                </button>
+                                                <button type="button" onclick="activateStudyModeFromPlus('deep')" title="Focus Intens 50m" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer shadow-2xs">
+                                                    <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200">50m</div>
+                                                    <div class="text-[9px] text-zinc-400 font-medium">Focus</div>
+                                                </button>
+                                                <button type="button" onclick="activateStudyModeFromPlus('short')" title="Pausa 5m" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer shadow-2xs">
+                                                    <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200">5m</div>
+                                                    <div class="text-[9px] text-zinc-400 font-medium">Pausa</div>
+                                                </button>
+                                                <button type="button" onclick="activateStudyModeFromPlus('custom')" title="Personalitzat" class="py-2 px-1 rounded-xl text-center bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-zinc-200 dark:border-zinc-700/80 transition cursor-pointer shadow-2xs">
+                                                    <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200">30m</div>
+                                                    <div class="text-[9px] text-zinc-400 font-medium">Custom</div>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -6957,8 +7065,11 @@
         };
 
         window.askTutorAboutPickedFile = function(fileName, fileUrl) {
-            appendMessage('user', `He seleccionat el document "${fileName}" de Google Drive per treballar-hi (${fileUrl}). Pots explicar-me els punts clau i com preparar un examen sobre aquest tema?`);
-            chatHistory.push({ role: 'user', content: `He seleccionat el document "${fileName}" de Google Drive per treballar-hi (${fileUrl}). Pots explicar-me els punts clau i com preparar un examen sobre aquest tema?` });
+            const prompt = `He seleccionat el document "${fileName}" de Google Drive per treballar-hi (${fileUrl}). Pots explicar-me els punts clau i com preparar un examen sobre aquest tema?`;
+            appendMessage('user', prompt);
+            chatHistory.push({ role: 'user', content: prompt });
+            triggerAiResponse();
+        };
         // --- EXPORTAR PLA D'ESTUDIS A GOOGLE CLASSROOM COM A ESBORRANY (DRAFT) ---
         window.exportStudyPlanToGoogleClassroom = async function() {
             const token = await window.getGoogleWorkspaceToken();
@@ -7710,10 +7821,15 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
             }
 
             try {
+                const reqHeaders = { 'Content-Type': 'application/json' };
+                if (typeof authToken !== 'undefined' && authToken) {
+                    reqHeaders['Authorization'] = `Bearer ${authToken}`;
+                }
+                const customKey = (typeof getApiKey === 'function' && getApiKey()) || (typeof userSettings !== 'undefined' && userSettings?.ai_api_key) || '';
                 const res = await fetch('/api/generate-image', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt, aspectRatio })
+                    headers: reqHeaders,
+                    body: JSON.stringify({ prompt, aspectRatio, apiKey: customKey })
                 });
 
                 const data = await res.json();
@@ -13710,10 +13826,25 @@ ${parsedBody}
             if (!menu) return;
             const isClosed = menu.classList.contains('hidden') || menu.classList.contains('dropdown-popover-exit');
             if (isClosed) {
+                showPlusFolder('root');
                 openDropdown(menu);
             } else {
                 closeDropdown(menu);
             }
+        };
+
+        window.showPlusFolder = function(folderId) {
+            const folderIds = ['root', 'workspace', 'creative', 'study', 'focus'];
+            folderIds.forEach(id => {
+                const el = document.getElementById(`plus-folder-${id}`);
+                if (el) {
+                    if (id === folderId) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                }
+            });
         };
 
         window.closePlusMenu = function() {

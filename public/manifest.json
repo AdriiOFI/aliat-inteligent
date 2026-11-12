@@ -1,0 +1,57 @@
+{
+  "id": "/",
+  "name": "Aliat Intel·ligent",
+  "short_name": "Aliat",
+  "description": "Tutor d'estudi intel·ligent, pla d'estudis personalitzat, flashcards 3D i minijocs interactius.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#2563eb",
+  "background_color": "#09090b",
+  "lang": "ca",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nova Conversa",
+      "short_name": "Nova",
+      "description": "Comença una nova sessió amb Aliat",
+      "url": "/?action=new",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pla d'Estudis",
+      "short_name": "Estudis",
+      "description": "Obre el teu pla d'estudis",
+      "url": "/?mode=study",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Quiz Diagnòstic",
+      "short_name": "Quiz",
+      "description": "Posa't a prova amb minijocs",
+      "url": "/?action=quiz",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

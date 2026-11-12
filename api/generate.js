@@ -198,6 +198,126 @@ function normalizeStudyData(data, totalSessionsToGenerate, pdfText) {
     };
 }
 
+function extractRealMindMapFromChat(messages, fallbackTopic) {
+    let topic = (fallbackTopic && fallbackTopic.trim() && !/aliat|temari general/i.test(fallbackTopic)) 
+        ? fallbackTopic.trim() 
+        : "";
+    let concepts = [];
+    const validMsgs = (messages || []).filter(m => {
+        if (!m || typeof m.content !== 'string') return false;
+        const c = m.content.trim();
+        return c.length > 0 && !c.includes("Benvingut al XatBot Lliure") && !c.includes("El teu aliat està aquí");
+    });
+
+    const fullText = validMsgs.map(m => m.content).join('\n');
+
+    // Trobar tema si no estava definit
+    if (!topic) {
+        for (const m of validMsgs) {
+            const headingMatch = m.content.match(/^#{1,2}\s+([^\n]{4,50})/m);
+            if (headingMatch && headingMatch[1]) {
+                topic = headingMatch[1].replace(/\*+/g, '').trim();
+                break;
+            }
+            const boldMatch = m.content.match(/(?:Tema|Matèria|Sessió|Concepte Clau):\s*\*?([^\*\n]{4,50})\*?/i);
+            if (boldMatch && boldMatch[1]) {
+                topic = boldMatch[1].trim();
+                break;
+            }
+        }
+        if (!topic && validMsgs.length > 0) {
+            const firstUser = validMsgs.find(m => m.role === 'user');
+            if (firstUser) {
+                topic = firstUser.content.replace(/^(Hola|Explica|Què és|Com funciona|Podries|Ajuda'm amb)\s+/i, '').substring(0, 40).trim();
+            }
+        }
+        if (!topic) topic = "Temari de la Sessió";
+    }
+
+    // 1. Capçaleres Markdown
+    const headerMatches = fullText.match(/^#{1,3}\s+([^\n]{3,60})/gm);
+    if (headerMatches) {
+        headerMatches.forEach(h => {
+            const clean = h.replace(/^#+\s+/, '').replace(/\*+/g, '').trim();
+            if (clean.length >= 3 && clean.length <= 45 && !concepts.some(c => c.name.toLowerCase() === clean.toLowerCase())) {
+                concepts.push({
+                    name: clean,
+                    desc: `Punt clau desenvolupat a la sessió sobre ${clean}.`,
+                    details: []
+                });
+            }
+        });
+    }
+
+    // 2. Termes en negreta
+    const boldMatches = fullText.match(/\*\*([^\*\n]{3,35})\*\*(?:\s*[:\-–]\s*([^\n\.\*]{10,120}))?/g);
+    if (boldMatches) {
+        boldMatches.forEach(b => {
+            const m = b.match(/\*\*([^\*\n]{3,35})\*\*(?:\s*[:\-–]\s*([^\n\.\*]{10,120}))?/);
+            if (m) {
+                const term = m[1].replace(/^[\d\.\-\:\s]+/, '').trim();
+                const explanation = m[2] ? m[2].trim() : `Concepte fonamental tractat a la conversa: ${term}.`;
+                if (term.length >= 3 && term.length <= 35 && !/comencem|hola|resposta|exercici|bon dia|concepte/i.test(term)) {
+                    if (!concepts.some(c => c.name.toLowerCase() === term.toLowerCase())) {
+                        concepts.push({
+                            name: term,
+                            desc: explanation,
+                            details: []
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. Dubtes o preguntes de l'usuari
+    if (concepts.length < 3) {
+        validMsgs.forEach(m => {
+            if (m.role === 'user' && m.content) {
+                const clean = m.content.replace(/^(Hola|Si us plau|Em pots explicar|Què és|Com funciona|Quina és)\s+/i, '').trim();
+                if (clean.length >= 4 && clean.length <= 40 && !concepts.some(c => c.name.toLowerCase() === clean.toLowerCase())) {
+                    concepts.push({
+                        name: clean,
+                        desc: `Dubte o aspecte analitzat directament per l'alumne al xat.`,
+                        details: []
+                    });
+                }
+            }
+        });
+    }
+
+    concepts = concepts.slice(0, 5);
+
+    if (concepts.length === 0) {
+        concepts = [
+            { name: `Introducció a ${topic}`, desc: `Definició i marc general de ${topic}.`, details: [] },
+            { name: `Fonaments de ${topic}`, desc: `Bases teòriques i conceptes estructurals.`, details: [] },
+            { name: `Aplicació Pràctica`, desc: `Exercicis i resolució pas a pas de ${topic}.`, details: [] }
+        ];
+    }
+
+    concepts.forEach((c) => {
+        if (!c.details || c.details.length === 0) {
+            c.details = [
+                {
+                    name: `Punt Clau: ${c.name.substring(0, 24)}`,
+                    desc: `Aspecte central relacionat amb ${c.name} tractat a la classe.`
+                },
+                {
+                    name: `Cas Pràctic: ${c.name.substring(0, 24)}`,
+                    desc: `Exemple o mètode d'aplicació directa per a ${c.name}.`
+                }
+            ];
+        }
+    });
+
+    return {
+        topic: topic,
+        summary: `Sessió enfocada en ${topic} amb ${concepts.length} conceptes clau analitzats directament de la conversa.`,
+        concepts: concepts
+    };
+}
+
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -1066,6 +1186,98 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             });
 
             return res.status(200).json({ deck: ankiOutput });
+        }
+
+        // ACCIÓ 7.5: ANÀLISI REAL I RIGOROSA DE LA SESSIÓ DE XAT PER AL MAPA MENTAL
+        if (action === 'analyze_chat_mindmap') {
+            const { chatHistory: clientHistory, currentTopic } = body;
+
+            // Filtrar missatges de benvinguda i de sistema
+            let validMessages = [];
+            if (Array.isArray(clientHistory)) {
+                validMessages = clientHistory.filter(m => {
+                    if (!m || typeof m.content !== 'string') return false;
+                    const c = m.content.trim();
+                    if (!c) return false;
+                    if (c.includes("Benvingut al XatBot Lliure") || c.includes("Benvingut al Mòdul d'Ús Quotidià") || c.includes("El teu aliat està aquí")) return false;
+                    return true;
+                });
+            }
+
+            const conversationText = validMessages
+                .map(m => `${m.role === 'user' ? 'ALUMNE' : 'PROFESSOR'}: ${m.content}`)
+                .join('\n\n');
+
+            const resolvedTopic = (currentTopic && currentTopic.trim() && currentTopic !== "Aliat Intel·ligent") 
+                ? currentTopic.trim() 
+                : "Temari de la Classe";
+
+            const systemPromptMindMap = `Ets un catedràtic universitari i pedagog expert en síntesi acadèmica i representació visual del coneixement.
+Tens la missió d'analitzar la CONVERSA REAL mantinguda entre l'alumne i el professor al xat per generar un mapa mental rigorós, precís i d'alt nivell.
+
+PROHIBICIÓ TOTAL DE COSES GENÈRIQUES, PLANTILLES O DE FARCIT:
+- Està estrictament PROHIBIT retornar etiquetes genèriques com "Punt Clau 1.1", "Exemple 1.2", "Fonaments & Teoria", "Concepte A" o textos d'exemple buits.
+- TOTS els conceptes, definicions, subtilats, fórmules i detalls han de provenir directament del que s'ha explicat, preguntat o debatut a la conversa real.
+- Si la conversa tracta sobre un tema concret (per exemple, "Derivades", "La Revolució Industrial", "Fotosíntesi", "Lleis de Newton", "Equacions de segon grau"), els nodes han de contenir exactament els conceptes científics, històrics o matemàtics d'aquell tema (ex: "Fase Lluminosa", "Cicle de Calvin", "Fotòlisi de l'aigua", "Síntesi d'ATP").
+
+RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID (sense blocs markdown, només JSON net) amb aquesta estructura exacta:
+{
+  "topic": "Títol precís i breu del tema real tractat a la conversa (màxim 5 paraules)",
+  "summary": "Resum pedagògic d'1 o 2 frases sobre el que l'alumne ha après o tractat a la classe.",
+  "concepts": [
+    {
+      "name": "Nom exacte del concepte principal 1",
+      "desc": "Explicació detallada, concreta i acadèmica basada en el xat.",
+      "details": [
+        {
+          "name": "Element, fórmula o dada clau real 1.1",
+          "desc": "Detall concret explicat a la classe."
+        },
+        {
+          "name": "Aplicació pràctica, exemple o conclusió real 1.2",
+          "desc": "Exemple o cas pràctic vist a la sessió."
+        }
+      ]
+    }
+  ]
+}
+
+Genera entre 3 i 5 conceptes principals, cadascun amb 2 detalls específics. Tota la redacció en català impecable.`;
+
+            let userPromptText = "";
+            if (conversationText.length > 20) {
+                userPromptText = `Aquesta és la transcripció exacta i real de la sessió de xat:\n\n"""\n${conversationText.substring(0, 20000)}\n"""\n\nAnalitza la conversa i extreu els conceptes clau reals i les seves relacions en l'estructura JSON indicada.`;
+            } else {
+                userPromptText = `L'alumne ha iniciat una sessió sobre el tema: "${resolvedTopic}". Genera el mapa conceptual acadèmic real, rigorós i detallat sobre aquest tema en format JSON.`;
+            }
+
+            try {
+                const aiRes = await executeAI({
+                    systemPrompt: systemPromptMindMap,
+                    contents: [{ role: "user", parts: [{ text: userPromptText }] }],
+                    jsonMode: true
+                });
+
+                const rawAiText = aiRes.text || String(aiRes);
+                const parsed = extractJson(rawAiText);
+                if (parsed && Array.isArray(parsed.concepts) && parsed.concepts.length > 0) {
+                    return res.status(200).json({
+                        success: true,
+                        mindmap: parsed,
+                        source: 'ai_real_chat'
+                    });
+                }
+            } catch (aiErr) {
+                console.warn("[analyze_chat_mindmap executeAI error]:", aiErr.message);
+            }
+
+            // Fallback intel·ligent extret directament del text de la conversa
+            const fallbackMap = extractRealMindMapFromChat(validMessages, resolvedTopic);
+            return res.status(200).json({
+                success: true,
+                mindmap: fallbackMap,
+                source: 'local_extracted_chat'
+            });
         }
 
         // ACCIÓ 8: TRANSCRIURE ÀUDIO AMB GEMINI 3.5 TRANSCRIBE (AMB FALLBACKS A GROQ/OPENAI WHISPER)

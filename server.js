@@ -11,6 +11,14 @@ const sessionsSaveHandler = require('./api/sessions/save');
 const sessionsDeleteHandler = require('./api/sessions/delete');
 const sessionsShareHandler = require('./api/sessions/share');
 const userSettingsHandler = require('./api/user/settings');
+const driveHandler = require('./api/workspace/drive');
+const docsHandler = require('./api/workspace/docs');
+const gmailHandler = require('./api/workspace/gmail');
+const calendarHandler = require('./api/workspace/calendar');
+const classroomHandler = require('./api/workspace/classroom');
+const generateVideoHandler = require('./api/generate-video');
+const generateImageHandler = require('./api/generate-image');
+const analyzeMultimodalHandler = require('./api/analyze-multimodal');
 
 const app = express();
 const PORT = 3000;
@@ -34,6 +42,18 @@ app.all('/api/sessions/save', (req, res) => sessionsSaveHandler(req, res));
 app.all('/api/sessions/delete', (req, res) => sessionsDeleteHandler(req, res));
 app.all('/api/sessions/share', (req, res) => sessionsShareHandler(req, res));
 app.all('/api/user/settings', (req, res) => userSettingsHandler(req, res));
+
+// Google Workspace 1P API Proxies
+app.all('/api/workspace/drive', (req, res) => driveHandler(req, res));
+app.all('/api/workspace/docs', (req, res) => docsHandler(req, res));
+app.all('/api/workspace/gmail', (req, res) => gmailHandler(req, res));
+app.all('/api/workspace/calendar', (req, res) => calendarHandler(req, res));
+app.all('/api/workspace/classroom', (req, res) => classroomHandler(req, res));
+
+// Advanced AI Capabilities (Video, Image aspect ratios, Multimodal analysis)
+app.all('/api/generate-video', (req, res) => generateVideoHandler(req, res));
+app.all('/api/generate-image', (req, res) => generateImageHandler(req, res));
+app.all('/api/analyze-multimodal', (req, res) => analyzeMultimodalHandler(req, res));
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));

@@ -9378,41 +9378,119 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             }
         };
 
+        let pomodoroEndTime = null;
+
+        window.requestNotificationPermission = async function() {
+            if (!('Notification' in window)) {
+                showToast("El teu navegador no suporta notificacions.", "warning");
+                return false;
+            }
+            if (Notification.permission === 'granted') {
+                showToast("🔔 Les notificacions al navegador ja estan actives!", "info");
+                return true;
+            }
+            if (Notification.permission !== 'denied') {
+                const perm = await Notification.requestPermission();
+                if (perm === 'granted') {
+                    showToast("🔔 Notificacions al navegador activades amb èxit!", "success");
+                    return true;
+                }
+            }
+            showToast("⚠️ Activa les notificacions des de la configuració del navegador.", "warning");
+            return false;
+        };
+
+        window.sendFocusNotification = function(title, body, tag = 'focus-session') {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+            const options = {
+                body: body,
+                icon: '/icon-192.png',
+                badge: '/apple-touch-icon.png',
+                tag: tag,
+                vibrate: [200, 100, 200, 100, 200],
+                requireInteraction: true,
+                data: { url: '/' }
+            };
+
+            // Notificació mitjançant Service Worker per garantir funcionament amb pestanya en segon pla
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, options);
+                }).catch(() => {
+                    try { new Notification(title, options); } catch(e) {}
+                });
+            } else {
+                try { new Notification(title, options); } catch(e) {}
+            }
+
+            // Reproduir so d'alerta harmònic amb Web Audio API
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            } catch(e) {}
+        };
+
         window.togglePomodoroTimer = function() {
             if (pomodoroIsRunning) {
                 clearInterval(pomodoroTimerId);
                 pomodoroTimerId = null;
                 pomodoroIsRunning = false;
+                pomodoroEndTime = null;
                 const btn = document.getElementById('pomo-start-btn');
                 if (btn) btn.innerHTML = '▶️ Reprendre';
                 showToast('⏸️ Pomodoro en pausa');
             } else {
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
+
                 pomodoroIsRunning = true;
+                pomodoroEndTime = Date.now() + (pomodoroTimeLeft * 1000);
                 const btn = document.getElementById('pomo-start-btn');
                 if (btn) btn.innerHTML = '⏸️ Pausa';
-                showToast('🚀 Sessió iniciada! Ànim amb l\'estudi.');
+                showToast('🚀 Sessió iniciada! T\'avisarem al navegador en acabar.');
+
                 pomodoroTimerId = setInterval(() => {
-                    if (pomodoroTimeLeft > 0) {
-                        pomodoroTimeLeft--;
-                        if (pomodoroMode === 'classic' || pomodoroMode === 'deep') {
-                            totalStudySeconds++;
-                            if (totalStudySeconds % 5 === 0) {
-                                localStorage.setItem('aliat_total_study_seconds', totalStudySeconds.toString());
-                            }
+                    if (!pomodoroEndTime) return;
+                    const secondsLeft = Math.max(0, Math.ceil((pomodoroEndTime - Date.now()) / 1000));
+                    pomodoroTimeLeft = secondsLeft;
+
+                    if (pomodoroMode === 'classic' || pomodoroMode === 'deep') {
+                        totalStudySeconds++;
+                        if (totalStudySeconds % 5 === 0) {
+                            localStorage.setItem('aliat_total_study_seconds', totalStudySeconds.toString());
                         }
-                        updateHeaderPomodoroDisplay();
-                    } else {
+                    }
+                    updateHeaderPomodoroDisplay();
+
+                    if (pomodoroTimeLeft <= 0) {
                         clearInterval(pomodoroTimerId);
                         pomodoroTimerId = null;
                         pomodoroIsRunning = false;
+                        pomodoroEndTime = null;
                         updateHeaderPomodoroDisplay();
 
                         if (pomodoroMode === 'classic' || pomodoroMode === 'deep') {
                             logStudentActivity('pomodoro', `Sessió de Focus completada (${Math.round(pomodoroTotalDuration / 60)} min)`, 'Estudi intensiu amb èxit');
                             updateStudentMemory(null, null, 1);
-                            showToast('🎉 Felicitats! Pomodoro completat! Descansa 5 minuts.');
+                            const msg = `🎉 Felicitats! Sessió de Focus de ${Math.round(pomodoroTotalDuration / 60)} minuts completada. Descansa 5 minuts!`;
+                            showToast(msg, 'success');
+                            sendFocusNotification('⏱️ Sessió de Focus completada!', msg, 'pomodoro-finished');
                         } else {
-                            showToast('🔔 Pausa finalitzada! A punt per la següent ronda d\'estudi.');
+                            const msg = "🔔 Pausa finalitzada! A punt per a la següent ronda d'estudi.";
+                            showToast(msg, 'info');
+                            sendFocusNotification('☕ Pausa finalitzada!', msg, 'break-finished');
                         }
 
                         if (typeof confetti === 'function') {
@@ -9426,12 +9504,21 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             updateHeaderPomodoroDisplay();
         };
 
+        document.addEventListener('visibilitychange', () => {
+            if (pomodoroIsRunning && pomodoroEndTime) {
+                const secondsLeft = Math.max(0, Math.ceil((pomodoroEndTime - Date.now()) / 1000));
+                pomodoroTimeLeft = secondsLeft;
+                updateHeaderPomodoroDisplay();
+            }
+        });
+
         window.resetPomodoroTimer = function() {
             if (pomodoroTimerId) {
                 clearInterval(pomodoroTimerId);
                 pomodoroTimerId = null;
             }
             pomodoroIsRunning = false;
+            pomodoroEndTime = null;
             pomodoroTimeLeft = pomodoroTotalDuration;
             updateHeaderPomodoroDisplay();
             const btn = document.getElementById('pomo-start-btn');
@@ -9502,13 +9589,20 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
                         </div>
                     </div>
 
-                    <!-- BOTONS CONTROL -->
-                    <div class="flex gap-2">
-                        <button onclick="togglePomodoroTimer()" id="pomo-start-btn" class="flex-1 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl text-sm transition shadow-md shadow-rose-500/20 active:scale-[0.98]">
-                            ${pomodoroIsRunning ? '⏸️ Pausa' : '▶️ Iniciar Sessió'}
-                        </button>
-                        <button onclick="resetPomodoroTimer()" class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold py-3 px-4 rounded-xl text-sm transition">
-                            🔄 Reiniciar
+                    <!-- BOTONS CONTROL I NOTIFICACIONS -->
+                    <div class="space-y-2">
+                        <div class="flex gap-2">
+                            <button onclick="togglePomodoroTimer()" id="pomo-start-btn" class="flex-1 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white font-bold py-3 px-4 rounded-xl text-sm transition shadow-md shadow-rose-500/20 active:scale-[0.98]">
+                                ${pomodoroIsRunning ? '⏸️ Pausa' : '▶️ Iniciar Sessió'}
+                            </button>
+                            <button onclick="resetPomodoroTimer()" class="bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold py-3 px-4 rounded-xl text-sm transition">
+                                🔄 Reiniciar
+                            </button>
+                        </div>
+
+                        <button onclick="requestNotificationPermission()" class="w-full py-2 px-3 bg-rose-50/80 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                            <span>Activar Avisos de Segon Pla al Navegador</span>
                         </button>
                     </div>
 

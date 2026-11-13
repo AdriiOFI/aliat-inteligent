@@ -47,14 +47,79 @@ function extractJson(rawInput) {
     }
 }
 
-function generateLocalStudyPlan(pdfText, totalSessionsToGenerate) {
+const GENERIC_STUDY_FILENAMES = new Set([
+    'document', 'doc', 'apunts', 'apuntes', 'notes', 'pdf', 'archivo', 'arxiu', 'file', 'scan', 'img', 'image', 'download', 'untitled', 'sense titol', 'sin titulo'
+]);
+
+function cleanStudyTitleCandidate(raw) {
+    if (!raw) return "";
+    let s = String(raw)
+        .replace(/<[^>]*>/g, '')
+        .replace(/\.[a-zA-Z0-9]{2,4}$/i, '')
+        .replace(/[_\-\+]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/^[\s.,:;…\-–—]+|[\s.,:;…\-–—]+$/g, '')
+        .trim();
+    if (!s) return "";
+    if (s.length > 3 && s === s.toUpperCase()) {
+        s = s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+    } else {
+        s = s.charAt(0).toUpperCase() + s.slice(1);
+    }
+    if (s.length > 42) {
+        let cut = s.substring(0, 40);
+        const lastSpace = cut.lastIndexOf(' ');
+        if (lastSpace > 16) cut = cut.substring(0, lastSpace);
+        s = cut.trim() + '…';
+    }
+    return s;
+}
+
+function deriveStudyTitle(pdfNames, pdfText, studyPreferences, aiTitle) {
+    const cleanAi = cleanStudyTitleCandidate(aiTitle);
+    if (cleanAi && cleanAi.length >= 3 && !/^(pla d'estudis|temari general|sense t[íi]tol|nova conversa)$/i.test(cleanAi)) {
+        return cleanAi;
+    }
+
+    if (Array.isArray(pdfNames)) {
+        for (const name of pdfNames) {
+            const cleaned = cleanStudyTitleCandidate(name);
+            const low = cleaned.toLowerCase();
+            if (cleaned && cleaned.length >= 3 && !GENERIC_STUDY_FILENAMES.has(low) && !/^\d+$/.test(low)) {
+                return cleaned;
+            }
+        }
+    }
+
+    if (studyPreferences && studyPreferences.manualNotes) {
+        const cleanedNotes = cleanStudyTitleCandidate(studyPreferences.manualNotes);
+        if (cleanedNotes && cleanedNotes.length >= 3) return cleanedNotes;
+    }
+
+    const lines = String(pdfText || '')
+        .split('\n')
+        .map(l => l.trim().replace(/^[-*•#\d.)\s]+/, '').trim())
+        .filter(l => l.length >= 4 && l.length <= 55 && !/^opcions i temari d'estudi seleccionats/i.test(l) && !/^http/i.test(l));
+    if (lines.length > 0) {
+        const fromLine = cleanStudyTitleCandidate(lines[0]);
+        if (fromLine && fromLine.length >= 3) return fromLine;
+    }
+
+    if (studyPreferences && Array.isArray(studyPreferences.presets) && studyPreferences.presets.length > 0) {
+        return cleanStudyTitleCandidate(studyPreferences.presets[0]) || "Pla d'Estudis";
+    }
+
+    return "Pla d'Estudis";
+}
+
+function generateLocalStudyPlan(pdfText, totalSessionsToGenerate, pdfNames = [], studyPreferences = null) {
     const rawText = (pdfText || "").trim();
     const cleanText = rawText.replace(/[\r\n]+/g, ' ');
     const numSessions = Math.max(1, Math.min(parseInt(totalSessionsToGenerate) || 5, 20));
 
     const lines = rawText.split('\n')
         .map(l => l.trim().replace(/^[-*•\d.)\s]+/, '').trim())
-        .filter(l => l.length >= 4 && l.length <= 80 && !l.toLowerCase().startsWith('http'));
+        .filter(l => l.length >= 4 && l.length <= 80 && !l.toLowerCase().startsWith('http') && !/^opcions i temari d'estudi seleccionats/i.test(l));
 
     const distinctTopics = Array.from(new Set(lines));
     const calendar = [];
@@ -110,15 +175,18 @@ function generateLocalStudyPlan(pdfText, totalSessionsToGenerate) {
         });
     }
 
+    const titolEstudi = deriveStudyTitle(pdfNames, pdfText, studyPreferences, '');
+
     return {
+        titol_estudi: titolEstudi,
         calendari_estudi: calendar,
         preguntes: questions
     };
 }
 
-function normalizeStudyData(data, totalSessionsToGenerate, pdfText) {
+function normalizeStudyData(data, totalSessionsToGenerate, pdfText, pdfNames = [], studyPreferences = null) {
     if (!data || typeof data !== 'object') {
-        return generateLocalStudyPlan(pdfText, totalSessionsToGenerate);
+        return generateLocalStudyPlan(pdfText, totalSessionsToGenerate, pdfNames, studyPreferences);
     }
 
     const numSessions = Math.max(1, Math.min(parseInt(totalSessionsToGenerate) || 5, 20));
@@ -185,15 +253,20 @@ function normalizeStudyData(data, totalSessionsToGenerate, pdfText) {
         });
     });
 
+    const rawAiTitle = data.titol_estudi || data.titol || data.title || data.subject || '';
+    const titolEstudi = deriveStudyTitle(pdfNames, pdfText, studyPreferences, rawAiTitle);
+
     if (normalizedQuestions.length === 0) {
-        const fallback = generateLocalStudyPlan(pdfText, numSessions);
+        const fallback = generateLocalStudyPlan(pdfText, numSessions, pdfNames, studyPreferences);
         return {
+            titol_estudi: titolEstudi,
             calendari_estudi: normalizedCalendar,
             preguntes: fallback.preguntes
         };
     }
 
     return {
+        titol_estudi: titolEstudi,
         calendari_estudi: normalizedCalendar,
         preguntes: normalizedQuestions
     };
@@ -948,15 +1021,28 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
         // ACCIÓ 1: PREPARAR ESTUDI
         if (action === 'prepare_study') {
+            const pdfNames = Array.isArray(body.pdfNames) ? body.pdfNames : [];
+            const studyPreferences = (body.studyPreferences && typeof body.studyPreferences === 'object') ? body.studyPreferences : null;
+            const prefSummary = studyPreferences ? [
+                studyPreferences.presets?.length ? `Nivell/Enfocament seleccionat: ${studyPreferences.presets.join(', ')}` : '',
+                studyPreferences.studyHoursPerDay ? `Dedicació diària: ${studyPreferences.studyHoursPerDay}` : '',
+                studyPreferences.examDate ? `Data de l'examen: ${studyPreferences.examDate}` : '',
+                studyPreferences.manualNotes ? `Indicacions específiques de l'alumne: ${studyPreferences.manualNotes}` : '',
+                pdfNames.length ? `Nom dels arxius PDF: ${pdfNames.join(', ')}` : ''
+            ].filter(Boolean).join('\n') : '';
+
             const systemPrompt = "Ets un tutor d'estudi d'alt nivell acadèmic.\n" + safetyRules + "\n\n" +
-            "La teva missió és doble i ha d'estar BASADA 100% EN ELS APUNTS DE L'ALUMNE:\n" +
-            "1. Crear un pla d'estudi de EXACTAMENT " + totalSessionsToGenerate + " sessions basat en els temes reals d'aquests apunts. ELS ÚLTIMS TEMES han de ser EXCLUSIVAMENT 'Repàs General i Simulacre'.\n" +
-            "2. Crear un test de diagnòstic inicial de 5 preguntes tipus test BASADES ESPECÍFICAMENT EN EL CONTINGUT DELS APUNTS (per avaluar si l'alumne coneix els conceptes, fórmules o procediments clau d'aquesta matèria).\n\n" +
+            "La teva missió és triple i ha d'estar BASADA 100% EN ELS APUNTS DE L'ALUMNE I LES SEVES PREFERÈNCIES:\n" +
+            "1. Posar un 'titol_estudi' curt, clar i precís (2-5 paraules) que identifiqui exactament de què tracta aquest estudi o PDF (ex: 'Fisiologia Cel·lular', 'Història Contemporània: Segle XX', 'Fonaments d'Àlgebra Lineal').\n" +
+            "2. Crear un pla d'estudi de EXACTAMENT " + totalSessionsToGenerate + " sessions basat en els temes reals d'aquests apunts. ELS ÚLTIMS TEMES han de ser EXCLUSIVAMENT 'Repàs General i Simulacre'.\n" +
+            "3. Crear un test de diagnòstic inicial de 5 preguntes tipus test BASADES ESPECÍFICAMENT EN EL CONTINGUT DELS APUNTS (per avaluar si l'alumne coneix els conceptes, fórmules o procediments clau d'aquesta matèria).\n\n" +
+            (prefSummary ? "Preferències de l'alumne per a aquest xat:\n" + prefSummary + "\n\n" : "") +
             "Apunts de l'alumne:\n'''\n" + (pdfText ? pdfText.substring(0, 18000) : "Temari general d'estudi") + "\n'''\n\n" +
             "REGLA CRÍTICA: Cada pregunta ha de tractar directament sobre conceptes reals presents als apunts (ex: definicions, fórmules, propietats). NO facis preguntes genèriques sobre tècniques d'estudi.\n" +
             "RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID (sense text addicional ni format markdown fora del bloc).\n\n" +
             "FORMAT EXACTE OBLIGATORI EN JSON:\n" +
             "{\n" +
+            "  \"titol_estudi\": \"Nom curt i adequat de l'assignatura o PDF\",\n" +
             "  \"calendari_estudi\": [ { \"tema\": \"Nom del tema o sessió\" } ],\n" +
             "  \"preguntes\": [ { \"pregunta\": \"Enunciat de la pregunta sobre el temari dels apunts?\", \"opcions\": [\"A) Opció 1\", \"B) Opció 2\", \"C) Opció 3\", \"D) Opció 4\"], \"resposta_correcta\": \"A) Opció 1\" } ]\n" +
             "}";
@@ -966,7 +1052,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             try {
                 const aiRes = await executeAI({
                     systemPrompt,
-                    contents: [{ role: "user", parts: [{ text: "Genera el pla d'estudi de " + totalSessionsToGenerate + " sessions i el test inicial de 5 preguntes en format JSON ara mateix basant-te exclusivament en els apunts adjuntats." }] }],
+                    contents: [{ role: "user", parts: [{ text: "Genera el títol d'estudi, el pla d'estudi de " + totalSessionsToGenerate + " sessions i el test inicial de 5 preguntes en format JSON ara mateix basant-te exclusivament en els apunts i preferències adjuntades." }] }],
                     jsonMode: true
                 });
                 rawContent = aiRes?.text || String(aiRes || '');
@@ -976,7 +1062,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             }
 
             if (usedFallback || !rawContent) {
-                const fallbackResult = generateLocalStudyPlan(pdfText, totalSessionsToGenerate);
+                const fallbackResult = generateLocalStudyPlan(pdfText, totalSessionsToGenerate, pdfNames, studyPreferences);
                 return res.status(200).json({
                     ...fallbackResult,
                     is_fallback: true,
@@ -985,7 +1071,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             }
 
             const parsed = extractJson(rawContent);
-            const normalized = normalizeStudyData(parsed, totalSessionsToGenerate, pdfText);
+            const normalized = normalizeStudyData(parsed, totalSessionsToGenerate, pdfText, pdfNames, studyPreferences);
             return res.status(200).json(normalized);
         }
 
@@ -1010,7 +1096,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             "4. CONTINUÏTAT DEL FIL DE CONVERSA: Llegeix amb atenció TOT l'historial anterior (tant el que diu l'alumne com les explicacions prèvies de la IA). Respon directament seguint el fil lògic, aprofundint o resolent dubtes sense reiniciar la classe de zero.\n" +
             "5. NO EMOJIS AL TEXT NI INTERFAÇ: Evita completament posar emojis a la resposta o marques visuals amb icones de caràcters d'emoticones. Utilitza símbols de text nets (ex: •, →, /, [✓], [!]) o negretes Markdown per als títols.\n" +
             "6. FORMATS ACADÈMICS I ESQUEMES: Utilitza explicacions estructurades amb títols en negreta, llistes clares, exemples pràctics i blocs ben delimitats.\n\n" +
-            "MEMÒRIA ADAPTATIVA DE L'ALUMNE (Punts febles i forts de la sessió actual):\n" + (studentContext || "Sense historial previ.") + "\n\n" +
+            "MEMÒRIA I PREFERÈNCIES D'AQUESTA SESSIÓ (Segueix aquests ajustos de nivell, enfocament i punts forts/febles estrictament en aquest xat):\n" + (studentContext || "Sense historial previ.") + "\n\n" +
             "MÈTODE D'ENSENYAMENT PER FASES (quan s'explica un tema nou):\n" +
             "▶ FASE 1 (Teoria & Pregunta d'Examen): Dóna la teoria de la lliçó de forma clara i acadèmica, destacant com s'avaluarà a l'examen. Acaba amb [BOTON_FLASHCARDS].\n" +
             "▶ FASE 2 (Flashcards i Esquema Visual):\n" +

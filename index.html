@@ -329,7 +329,7 @@
         }
         /* Botons de navegació (Pla d'estudis, xatbot, ús quotidià, historial) */
         /* El button s'ajusta exactament al div interior de 2.5rem perquè concordin al 100% */
-        body.sidebar-collapsed #sidebar button:not(#sidebar-toggle-btn):not(#sidebar-new-session-btn) {
+        body.sidebar-collapsed #sidebar button:not(#sidebar-toggle-btn):not(#sidebar-new-session-btn):not(#sidebar-pwa-install-btn) {
             justify-content: center !important;
             align-items: center !important;
             padding: 0 !important;
@@ -344,7 +344,7 @@
             border: none !important;
             gap: 0 !important;
         }
-        body.sidebar-collapsed #sidebar button:not(#sidebar-toggle-btn):not(#sidebar-new-session-btn) > div {
+        body.sidebar-collapsed #sidebar button:not(#sidebar-toggle-btn):not(#sidebar-new-session-btn):not(#sidebar-pwa-install-btn) > div {
             margin: 0 auto !important;
             width: 2.5rem !important;
             height: 2.5rem !important;
@@ -360,19 +360,29 @@
             margin: 0 auto !important;
             display: block !important;
         }
+        body.sidebar-collapsed #sidebar #sidebar-footer-bar,
         body.sidebar-collapsed #sidebar .border-t {
             justify-content: center !important;
             padding: 0.75rem 0.25rem !important;
             align-items: center !important;
             display: flex !important;
+            width: 100% !important;
         }
         body.sidebar-collapsed #sidebar #profile-initial {
             margin: 0 auto !important;
             width: 2.25rem !important;
             height: 2.25rem !important;
         }
-        body.sidebar-collapsed #sidebar .border-t > button {
+        body.sidebar-collapsed #sidebar #sidebar-footer-bar #sidebar-pwa-install-btn {
             display: none !important;
+        }
+        body.sidebar-collapsed #sidebar #sidebar-footer-bar #sidebar-settings-btn {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 auto !important;
+            width: 2.5rem !important;
+            height: 2.5rem !important;
         }
 
         /* TIPOGRAFIA I BLOCS DE CODI ESTIL GOOGLE GEMINI */
@@ -766,7 +776,7 @@
             </div>
 
             <!-- BARRA INFERIOR: COMPTE (ESQUERRA) · INSTAL·LAR APP (MIG) · CONFIGURACIÓ (DRETA) -->
-            <div class="p-2.5 border-t border-zinc-200/80 dark:border-zinc-800/60 mt-auto flex items-center justify-between gap-1.5 bg-zinc-50/70 dark:bg-zinc-950/40 relative z-10 w-full">
+            <div id="sidebar-footer-bar" class="p-2.5 border-t border-zinc-200/80 dark:border-zinc-800/60 mt-auto flex items-center justify-between gap-1.5 bg-zinc-50/70 dark:bg-zinc-950/40 relative z-10 w-full">
                 <!-- 1. COMPTE -->
                 <div class="flex items-center gap-2 text-xs sidebar-text overflow-hidden cursor-pointer hover:opacity-90 transition p-1 rounded-xl hover:bg-zinc-200/60 dark:hover:bg-zinc-800/50 flex-1 min-w-0" onclick="openSettings()">
                     <div id="profile-initial" class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shrink-0 shadow-xs text-xs ring-1 ring-white/20">U</div>
@@ -783,7 +793,7 @@
                 </button>
 
                 <!-- 3. CONFIGURACIÓ (BOTÓ NOMÉS ICONA) -->
-                <button type="button" onclick="openSettings()" class="w-8 h-8 rounded-xl text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 hover:bg-zinc-200/70 dark:hover:bg-zinc-800/70 flex items-center justify-center transition shrink-0 cursor-pointer group relative active:scale-95" title="Configuració" aria-label="Configuració">
+                <button id="sidebar-settings-btn" type="button" onclick="openSettings()" class="w-8 h-8 rounded-xl text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 hover:bg-zinc-200/70 dark:hover:bg-zinc-800/70 flex items-center justify-center transition shrink-0 cursor-pointer group relative active:scale-95" title="Configuració" aria-label="Configuració">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-45 transition-transform"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Configuració</span>
                 </button>
@@ -7066,6 +7076,9 @@
                     } else if (r.frequency === 'custom') {
                         const dTxt = (r.days || []).map(d => dayLabels[Number(d)] || '').filter(Boolean).join(', ');
                         freqText = dTxt || 'Personalitzat';
+                    } else if (r.frequency === 'once') {
+                        const targetDate = Array.isArray(r.days) && r.days[0] ? String(r.days[0]) : '';
+                        freqText = targetDate ? `Dia ${targetDate}` : 'Puntual';
                     }
                     const scheduleLine = r.frequency === 'interval' ? freqText : `${freqText} · ${escapeHtml(r.time_hhmm || '18:00')}`;
                     return `
@@ -13335,6 +13348,23 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                             appendMessage(role, msg.content, msg.searchQueries || [], msg.sources || []);
                         });
                         activeSession.html = chatMessagesEl.innerHTML;
+                    } else {
+                        // Actualitza botons de recordatori guardats en xats anteriors
+                        chatMessagesEl.querySelectorAll('button[onclick*="scheduleTaskWebReminder"]').forEach(btn => {
+                            btn.setAttribute('onclick', 'openQuickReminderModal(this)');
+                            btn.setAttribute('title', "Recorda'm (Programar dia i hora)");
+                        });
+                        chatMessagesEl.querySelectorAll('.chat-msg-ai').forEach(msgEl => {
+                            if (msgEl.querySelector('button[onclick*="openQuickReminderModal"]')) return;
+                            const actionRow = msgEl.querySelector('button[onclick*="sendAsEmail"], button[onclick*="promptGoogleCalendarReminder"]')?.parentElement;
+                            if (!actionRow) return;
+                            const bellBtn = document.createElement('button');
+                            bellBtn.setAttribute('onclick', 'openQuickReminderModal(this)');
+                            bellBtn.setAttribute('title', "Recorda'm (Programar dia i hora)");
+                            bellBtn.className = 'p-1 hover:text-amber-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center';
+                            bellBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+                            actionRow.appendChild(bellBtn);
+                        });
                     }
                 }
                 
@@ -14855,7 +14885,7 @@ Instruccions de format:
 
         window.selectDailyUseOption = function(category, suboption) {
             if (suboption === 'Creació de recordatoris') {
-                promptGoogleCalendarReminder();
+                openQuickReminderModal("Recordatori d'Ús Quotidià");
                 return;
             }
             if (suboption === 'Tècnica Pomodoro') {
@@ -14970,6 +15000,11 @@ Instruccions de format:
 
         // Programa un avís fora de la web per temps (minuts)
         window.scheduleTaskWebReminder = function(taskTitle, minutes) {
+            if (taskTitle === 'Recordatori de tasca' && typeof window.openQuickReminderModal === 'function') {
+                const triggerEl = (typeof event !== 'undefined' && event) ? (event.currentTarget || event.target) : null;
+                window.openQuickReminderModal(triggerEl || taskTitle);
+                return;
+            }
             const delayMs = Math.max(1, minutes) * 60 * 1000;
             const targetTime = new Date(Date.now() + delayMs).toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
 
@@ -14998,6 +15033,310 @@ Instruccions de format:
                     });
                 }
             }, delayMs);
+        };
+
+        // --- MINI PANTALLA DE RECORDATORI PERSONALITZAT (DIA, HORA I AVÍS) ---
+        const LOCAL_ONE_TIME_REMINDERS_KEY = 'aliat_one_time_reminders_v1';
+
+        function formatLocalYYYYMMDD(d) {
+            const yr = d.getFullYear();
+            const mo = String(d.getMonth() + 1).padStart(2, '0');
+            const da = String(d.getDate()).padStart(2, '0');
+            return `${yr}-${mo}-${da}`;
+        }
+
+        function formatLocalHHMM(d) {
+            return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function triggerScheduledReminderAlert(item) {
+            if (!item) return;
+            if (typeof playWebAudioChime === 'function') playWebAudioChime();
+            const titleText = item.title || 'Recordatori programat';
+            const notesText = item.notes || "Ha arribat el moment que havies programat.";
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification("⏰ Aliat Intel·ligent: " + titleText, {
+                        body: notesText.slice(0, 180),
+                        icon: "/assets/aistudio/logo.png_2356bbb3.png",
+                        requireInteraction: true
+                    });
+                } catch (_) {}
+            }
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: "⏰ Recordatori!",
+                    html: `<div class="text-sm font-bold text-zinc-900 dark:text-white mb-1">${escapeHtml(titleText)}</div>${item.notes ? `<p class="text-xs text-zinc-500 dark:text-zinc-400">${escapeHtml(item.notes)}</p>` : ''}`,
+                    icon: "info",
+                    confirmButtonText: "Entesos",
+                    confirmButtonColor: "#d97706",
+                    background: document.documentElement.classList.contains('dark') ? '#18181b' : '#fff',
+                    color: document.documentElement.classList.contains('dark') ? '#f4f4f5' : '#18181b',
+                    customClass: { popup: 'rounded-3xl border dark:border-zinc-800' }
+                });
+            }
+        }
+
+        function checkPendingLocalReminders() {
+            try {
+                const raw = localStorage.getItem(LOCAL_ONE_TIME_REMINDERS_KEY);
+                if (!raw) return;
+                const list = JSON.parse(raw);
+                if (!Array.isArray(list) || list.length === 0) return;
+                const now = Date.now();
+                let changed = false;
+                const remaining = [];
+                for (const item of list) {
+                    if (!item || !item.targetMs) continue;
+                    // Trigger if due (and not older than 12h stale)
+                    if (now >= item.targetMs) {
+                        changed = true;
+                        if (now - item.targetMs < 12 * 60 * 60 * 1000) {
+                            triggerScheduledReminderAlert(item);
+                        }
+                    } else {
+                        remaining.push(item);
+                    }
+                }
+                if (changed) {
+                    localStorage.setItem(LOCAL_ONE_TIME_REMINDERS_KEY, JSON.stringify(remaining));
+                }
+            } catch (_) {}
+        }
+
+        function scheduleExactLocalReminder(title, notes, targetDateObj) {
+            const targetMs = targetDateObj.getTime();
+            const delayMs = targetMs - Date.now();
+            const id = 'qr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+            const item = { id, title, notes, targetMs };
+
+            try {
+                const raw = localStorage.getItem(LOCAL_ONE_TIME_REMINDERS_KEY);
+                const list = raw ? JSON.parse(raw) : [];
+                const clean = Array.isArray(list) ? list.filter(x => x && x.targetMs > Date.now()) : [];
+                clean.push(item);
+                localStorage.setItem(LOCAL_ONE_TIME_REMINDERS_KEY, JSON.stringify(clean));
+            } catch (_) {}
+
+            if (delayMs > 0 && delayMs <= 24 * 60 * 60 * 1000) {
+                setTimeout(() => {
+                    checkPendingLocalReminders();
+                }, delayMs + 250);
+            }
+        }
+
+        if (!window._localRemindersIntervalAttached) {
+            window._localRemindersIntervalAttached = true;
+            setInterval(checkPendingLocalReminders, 15000);
+            setTimeout(checkPendingLocalReminders, 1500);
+        }
+
+        window.openQuickReminderModal = function(triggerOrTitle, explicitNotes = '') {
+            let prefillTitle = "Recordatori de tasca";
+            let prefillNotes = typeof explicitNotes === 'string' ? explicitNotes : '';
+
+            if (triggerOrTitle && typeof triggerOrTitle === 'object' && triggerOrTitle.closest) {
+                const prose = triggerOrTitle.closest('.chat-msg-ai')?.querySelector('.prose');
+                const rawText = (prose ? prose.innerText : '').trim();
+                if (rawText) {
+                    const firstLine = rawText.split(/\n+/).map(l => l.trim()).find(Boolean) || '';
+                    if (firstLine) {
+                        prefillTitle = firstLine.replace(/^[#*\-•\d.\s]+/, '').slice(0, 72);
+                    }
+                    if (!prefillNotes) {
+                        prefillNotes = rawText.slice(0, 220);
+                    }
+                }
+            } else if (typeof triggerOrTitle === 'string' && triggerOrTitle.trim()) {
+                prefillTitle = triggerOrTitle.trim().slice(0, 80);
+            }
+
+            const now = new Date();
+            const defaultTarget = new Date(now.getTime() + 30 * 60 * 1000);
+            const todayStr = formatLocalYYYYMMDD(now);
+            const defaultDateStr = formatLocalYYYYMMDD(defaultTarget);
+            const defaultTimeStr = formatLocalHHMM(defaultTarget);
+            const isDark = document.documentElement.classList.contains('dark');
+            const isSignedIn = Boolean(typeof authToken !== 'undefined' && authToken);
+            const defaultEmail = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : '';
+
+            const updateSummaryLabel = () => {
+                const dateVal = document.getElementById('qr-date')?.value;
+                const timeVal = document.getElementById('qr-time')?.value;
+                const summaryEl = document.getElementById('qr-preview-summary');
+                if (!summaryEl || !dateVal || !timeVal) return;
+                const target = new Date(`${dateVal}T${timeVal}:00`);
+                if (isNaN(target.getTime())) {
+                    summaryEl.textContent = 'Selecciona un dia i una hora vàlids.';
+                    return;
+                }
+                const diffMins = Math.round((target.getTime() - Date.now()) / 60000);
+                const prettyDate = target.toLocaleDateString('ca-ES', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+                if (diffMins <= 0) {
+                    summaryEl.innerHTML = `<span class="text-rose-500 font-semibold">⚠️ Aquesta data i hora ja ha passat. Tria un moment futur.</span>`;
+                } else {
+                    const relTxt = diffMins < 60
+                        ? `d'aquí a ${diffMins} min`
+                        : (diffMins < 1440 ? `d'aquí a ${Math.floor(diffMins / 60)}h ${diffMins % 60}m` : `d'aquí a ${Math.round(diffMins / 1440)} dies`);
+                    summaryEl.innerHTML = `⏰ Programat per a <strong>${escapeHtml(prettyDate)} a les ${escapeHtml(timeVal)}</strong> (${relTxt})`;
+                }
+            };
+
+            window._applyQuickReminderPreset = function(preset) {
+                const dateEl = document.getElementById('qr-date');
+                const timeEl = document.getElementById('qr-time');
+                if (!dateEl || !timeEl) return;
+                const base = new Date();
+                let target = new Date(base.getTime());
+                if (preset === '15m') {
+                    target = new Date(base.getTime() + 15 * 60 * 1000);
+                } else if (preset === '1h') {
+                    target = new Date(base.getTime() + 60 * 60 * 1000);
+                } else if (preset === 'evening') {
+                    target.setHours(18, 0, 0, 0);
+                    if (target.getTime() <= base.getTime() + 60000) {
+                        target.setHours(20, 0, 0, 0);
+                        if (target.getTime() <= base.getTime() + 60000) {
+                            target.setDate(target.getDate() + 1);
+                            target.setHours(18, 0, 0, 0);
+                        }
+                    }
+                } else if (preset === 'tomorrow9') {
+                    target.setDate(target.getDate() + 1);
+                    target.setHours(9, 0, 0, 0);
+                }
+                dateEl.value = formatLocalYYYYMMDD(target);
+                timeEl.value = formatLocalHHMM(target);
+                updateSummaryLabel();
+            };
+
+            Swal.fire({
+                title: `<div class="flex items-center justify-center gap-2 text-amber-500 font-bold text-base"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Programar Recordatori</span></div>`,
+                html: `
+                <div class="space-y-3 text-left mt-1 text-xs">
+                    <div>
+                        <label class="block font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-700'} mb-1">Què t'he de recordar?</label>
+                        <input id="qr-title" type="text" value="${escapeHtml(prefillTitle)}" placeholder="Ex: Repassar tema 3 / Enviar correu" class="w-full px-3 py-2 rounded-xl border ${isDark ? 'border-zinc-700 bg-zinc-800 text-white' : 'border-zinc-200 bg-white text-zinc-900'} font-medium outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-700'} mb-1">Dia</label>
+                            <input id="qr-date" type="date" min="${todayStr}" value="${defaultDateStr}" class="w-full px-2.5 py-2 rounded-xl border ${isDark ? 'border-zinc-700 bg-zinc-800 text-white' : 'border-zinc-200 bg-white text-zinc-900'} font-medium outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-700'} mb-1">Hora</label>
+                            <input id="qr-time" type="time" value="${defaultTimeStr}" class="w-full px-2.5 py-2 rounded-xl border ${isDark ? 'border-zinc-700 bg-zinc-800 text-white' : 'border-zinc-200 bg-white text-zinc-900'} font-medium outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button type="button" onclick="window._applyQuickReminderPreset('15m')" class="px-2 py-1.5 rounded-lg border ${isDark ? 'border-zinc-700 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200' : 'border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700'} text-[11px] font-semibold cursor-pointer transition">En 15m</button>
+                        <button type="button" onclick="window._applyQuickReminderPreset('1h')" class="px-2 py-1.5 rounded-lg border ${isDark ? 'border-zinc-700 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200' : 'border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700'} text-[11px] font-semibold cursor-pointer transition">En 1h</button>
+                        <button type="button" onclick="window._applyQuickReminderPreset('evening')" class="px-2 py-1.5 rounded-lg border ${isDark ? 'border-zinc-700 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200' : 'border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700'} text-[11px] font-semibold cursor-pointer transition">Tarda</button>
+                        <button type="button" onclick="window._applyQuickReminderPreset('tomorrow9')" class="px-2 py-1.5 rounded-lg border ${isDark ? 'border-zinc-700 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200' : 'border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700'} text-[11px] font-semibold cursor-pointer transition">Demà 9h</button>
+                    </div>
+
+                    <div id="qr-preview-summary" class="px-3 py-2 rounded-xl ${isDark ? 'bg-amber-950/30 border-amber-800/50 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-900'} border text-[11px]"></div>
+
+                    <div>
+                        <label class="block font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-700'} mb-1">Notes (opcional)</label>
+                        <textarea id="qr-notes" rows="2" placeholder="Detalls addicionals del recordatori..." class="w-full px-3 py-1.5 rounded-xl border ${isDark ? 'border-zinc-700 bg-zinc-800 text-white' : 'border-zinc-200 bg-white text-zinc-900'} font-medium outline-none focus:ring-2 focus:ring-amber-500">${escapeHtml(prefillNotes)}</textarea>
+                    </div>
+
+                    <div class="space-y-1.5 pt-0.5">
+                        <label class="flex items-center gap-2 cursor-pointer text-[11px] font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}">
+                            <input id="qr-notify-web" type="checkbox" checked class="accent-amber-500 w-3.5 h-3.5 rounded">
+                            <span>Notificació al navegador i so d'avís</span>
+                        </label>
+                        ${isSignedIn ? `
+                        <label class="flex items-center gap-2 cursor-pointer text-[11px] font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}">
+                            <input id="qr-save-cloud" type="checkbox" checked class="accent-amber-500 w-3.5 h-3.5 rounded">
+                            <span>Desar també al núvol (Push / Correu encara que tanquis el xat)</span>
+                        </label>` : ''}
+                        <label class="flex items-center gap-2 cursor-pointer text-[11px] font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}">
+                            <input id="qr-add-gcal" type="checkbox" class="accent-amber-500 w-3.5 h-3.5 rounded">
+                            <span>Afegir també a Google Calendar</span>
+                        </label>
+                    </div>
+                </div>`,
+                showCancelButton: true,
+                confirmButtonText: '🔔 Programar Recordatori',
+                cancelButtonText: 'Cancel·lar',
+                confirmButtonColor: '#d97706',
+                background: isDark ? '#18181b' : '#fff',
+                color: isDark ? '#f4f4f5' : '#18181b',
+                width: '460px',
+                customClass: { popup: 'rounded-3xl border dark:border-zinc-800' },
+                didOpen: () => {
+                    updateSummaryLabel();
+                    document.getElementById('qr-date')?.addEventListener('change', updateSummaryLabel);
+                    document.getElementById('qr-time')?.addEventListener('change', updateSummaryLabel);
+                    document.getElementById('qr-title')?.focus();
+                },
+                preConfirm: () => {
+                    const title = (document.getElementById('qr-title')?.value || '').trim() || 'Recordatori de tasca';
+                    const dateVal = document.getElementById('qr-date')?.value || '';
+                    const timeVal = document.getElementById('qr-time')?.value || '';
+                    const notes = (document.getElementById('qr-notes')?.value || '').trim();
+                    const notifyWeb = !!document.getElementById('qr-notify-web')?.checked;
+                    const saveCloud = !!document.getElementById('qr-save-cloud')?.checked;
+                    const addGcal = !!document.getElementById('qr-add-gcal')?.checked;
+
+                    if (!dateVal || !timeVal) {
+                        Swal.showValidationMessage('Indica el dia i l\'hora del recordatori.');
+                        return false;
+                    }
+                    const targetDateObj = new Date(`${dateVal}T${timeVal}:00`);
+                    if (isNaN(targetDateObj.getTime()) || targetDateObj.getTime() <= Date.now()) {
+                        Swal.showValidationMessage('Tria un dia i una hora futurs per al recordatori.');
+                        return false;
+                    }
+                    return { title, dateVal, timeVal, notes, notifyWeb, saveCloud, addGcal, targetDateObj };
+                }
+            }).then(async (res) => {
+                if (!res.isConfirmed || !res.value) return;
+                const { title, dateVal, timeVal, notes, notifyWeb, saveCloud, addGcal, targetDateObj } = res.value;
+
+                if (notifyWeb) {
+                    if ("Notification" in window && Notification.permission !== "granted") {
+                        try { await Notification.requestPermission(); } catch (_) {}
+                    }
+                    scheduleExactLocalReminder(title, notes, targetDateObj);
+                }
+
+                if (saveCloud && isSignedIn && typeof getReminderAuthHeaders === 'function') {
+                    try {
+                        await fetch('/api/reminders/save', {
+                            method: 'POST',
+                            headers: getReminderAuthHeaders(),
+                            body: JSON.stringify({
+                                title,
+                                email: defaultEmail,
+                                frequency: 'once',
+                                target_date: dateVal,
+                                time: timeVal,
+                                tz_offset_minutes: new Date().getTimezoneOffset(),
+                                notes,
+                                push_enabled: notifyWeb,
+                                email_enabled: !!defaultEmail,
+                                enabled: true
+                            })
+                        });
+                        if (typeof window.refreshDailyRemindersBadge === 'function') {
+                            window.refreshDailyRemindersBadge();
+                        }
+                    } catch (_) {}
+                }
+
+                if (addGcal && typeof window.openGoogleCalendarUrl === 'function') {
+                    window.openGoogleCalendarUrl(title, notes, targetDateObj, 30);
+                }
+
+                if (typeof playWebAudioChime === 'function') playWebAudioChime();
+                const formattedDay = targetDateObj.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                showToast(`🔔 Recordatori programat per al ${formattedDay} a les ${timeVal}`, "success");
+            });
         };
 
         // --- GOOGLE CALENDAR DIRECT URL GENERATION ---
@@ -18199,10 +18538,10 @@ ${parsedBody}
                         <button onclick="promptGoogleCalendarReminder('Tasca planificada', this.closest('.chat-msg-ai').querySelector('.prose').innerText.slice(0, 300))" title="Afegir a Google Calendar" class="p-1 hover:text-blue-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                         </button>
-                        <button onclick="scheduleTaskWebReminder('Recordatori de tasca', 25)" title="Recorda'm (Programar recordatori 25m)" class="p-1 hover:text-amber-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
+                        ` : ''}
+                        <button onclick="openQuickReminderModal(this)" title="Recorda'm (Programar dia i hora)" class="p-1 hover:text-amber-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                         </button>
-                        ` : ''}
                     </div>
                 </div>`;
             }
@@ -18341,6 +18680,327 @@ ${parsedBody}
                 alert("Per instal·lar a Android, obre el menú de Chrome i prem 'Instal·la l'aplicació'.");
             }
         }
+
+        // ==============================================
+        // SISTEMA UNIVERSAL DE DESPLEGABLES (<select>) AMB ESTIL DE L'APP
+        // ==============================================
+        (function initUniversalCustomSelects() {
+            if (window._aliatCustomSelectsInitialized) return;
+            window._aliatCustomSelectsInitialized = true;
+
+            const nativeValueDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+            const nativeSelectedIndexDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'selectedIndex');
+
+            let activePortal = null;
+            let activeTrigger = null;
+            let activeSelect = null;
+
+            function closeCustomSelectMenu() {
+                if (activePortal) {
+                    const portalToRemove = activePortal;
+                    portalToRemove.removeAttribute('id');
+                    portalToRemove.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => {
+                        if (portalToRemove.parentNode) portalToRemove.parentNode.removeChild(portalToRemove);
+                    }, 130);
+                    activePortal = null;
+                }
+                if (activeTrigger) {
+                    const chev = activeTrigger.querySelector('.aliat-select-chevron');
+                    if (chev) chev.classList.remove('rotate-180');
+                    activeTrigger.setAttribute('aria-expanded', 'false');
+                    activeTrigger = null;
+                }
+                activeSelect = null;
+            }
+            window.closeCustomSelectMenu = closeCustomSelectMenu;
+
+            function getTriggerClasses(select) {
+                const raw = (select.className || '')
+                    .replace(/\bhidden\b/g, '')
+                    .replace(/\bappearance-none\b/g, '')
+                    .trim();
+                const hasBorder = /\bborder\b/.test(raw);
+                const hasRounded = /\brounded-/.test(raw);
+                const hasPadding = /\bp[xy]?-\d/.test(raw);
+                return [
+                    raw,
+                    hasBorder ? '' : 'border border-zinc-200 dark:border-zinc-800',
+                    hasRounded ? '' : 'rounded-xl',
+                    hasPadding ? '' : 'px-3 py-2',
+                    'aliat-select-trigger flex items-center justify-between gap-2 text-left cursor-pointer select-none transition'
+                ].filter(Boolean).join(' ');
+            }
+
+            function renderPortalOptions(portal, select, trigger, forceDark) {
+                const opts = Array.from(select.options || []);
+                const currentIdx = select.selectedIndex;
+
+                portal.innerHTML = '';
+                if (opts.length === 0) {
+                    const emptyEl = document.createElement('div');
+                    emptyEl.className = 'px-3 py-2 text-xs text-zinc-400 text-center';
+                    emptyEl.textContent = 'Sense opcions disponibles';
+                    portal.appendChild(emptyEl);
+                    return;
+                }
+
+                opts.forEach((opt, idx) => {
+                    const isSelected = idx === currentIdx;
+                    const isDisabled = !!opt.disabled;
+                    const itemBtn = document.createElement('button');
+                    itemBtn.type = 'button';
+                    itemBtn.disabled = isDisabled;
+                    itemBtn.setAttribute('role', 'option');
+                    itemBtn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+
+                    const baseClass = 'w-full flex items-center justify-between gap-2.5 px-3 py-2 rounded-xl text-left text-xs font-medium transition cursor-pointer';
+                    let stateClass = '';
+                    if (isDisabled) {
+                        stateClass = 'opacity-40 cursor-not-allowed';
+                    } else if (isSelected) {
+                        stateClass = forceDark
+                            ? 'bg-indigo-500/25 text-indigo-300 font-semibold'
+                            : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 font-semibold';
+                    } else {
+                        stateClass = forceDark
+                            ? 'text-zinc-200 hover:bg-zinc-800/90'
+                            : 'text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/80';
+                    }
+                    itemBtn.className = `${baseClass} ${stateClass}`;
+
+                    const textSpan = document.createElement('span');
+                    textSpan.className = 'truncate flex-1';
+                    textSpan.textContent = opt.textContent || opt.label || '';
+                    itemBtn.appendChild(textSpan);
+
+                    if (isSelected) {
+                        const checkSvg = document.createElement('span');
+                        checkSvg.className = 'shrink-0 text-indigo-500 dark:text-indigo-400 flex items-center';
+                        checkSvg.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+                        itemBtn.appendChild(checkSvg);
+                    }
+
+                    itemBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+                    itemBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (isDisabled) return;
+
+                        if (nativeSelectedIndexDesc && nativeSelectedIndexDesc.set) {
+                            nativeSelectedIndexDesc.set.call(select, idx);
+                        }
+                        if (nativeValueDesc && nativeValueDesc.set) {
+                            nativeValueDesc.set.call(select, opt.value);
+                        }
+                        if (typeof select._syncCustomTrigger === 'function') {
+                            select._syncCustomTrigger();
+                        }
+
+                        closeCustomSelectMenu();
+                        select.dispatchEvent(new Event('input', { bubbles: true }));
+                        select.dispatchEvent(new Event('change', { bubbles: true }));
+                        trigger.focus({ preventScroll: true });
+                    });
+
+                    portal.appendChild(itemBtn);
+                });
+            }
+
+            function positionPortal(portal, trigger) {
+                const rect = trigger.getBoundingClientRect();
+                const viewportW = window.innerWidth;
+                const viewportH = window.innerHeight;
+                const spaceBelow = viewportH - rect.bottom - 12;
+                const spaceAbove = rect.top - 12;
+                const openAbove = spaceBelow < 170 && spaceAbove > spaceBelow;
+                const maxH = Math.max(110, Math.min(280, openAbove ? spaceAbove : spaceBelow));
+                const menuW = Math.min(viewportW - 16, Math.max(rect.width, 180));
+                const clampedLeft = Math.max(8, Math.min(rect.left, viewportW - menuW - 8));
+
+                portal.style.width = `${menuW}px`;
+                portal.style.left = `${clampedLeft}px`;
+                portal.style.maxHeight = `${maxH}px`;
+
+                if (openAbove) {
+                    portal.style.top = 'auto';
+                    portal.style.bottom = `${Math.max(8, viewportH - rect.top + 6)}px`;
+                    portal.style.transformOrigin = 'bottom center';
+                } else {
+                    portal.style.bottom = 'auto';
+                    portal.style.top = `${Math.min(viewportH - 60, rect.bottom + 6)}px`;
+                    portal.style.transformOrigin = 'top center';
+                }
+            }
+
+            function openSelectMenu(select, trigger, forceDark) {
+                const wasSame = activeSelect === select && activePortal;
+                closeCustomSelectMenu();
+                if (wasSame) return;
+
+                const portal = document.createElement('div');
+                portal.id = 'aliat-custom-select-portal';
+                portal.setAttribute('role', 'listbox');
+                portal.className = [
+                    'fixed z-[100000] rounded-2xl border backdrop-blur-xl shadow-2xl p-1.5 overflow-y-auto custom-scrollbar transition-all duration-150 transform opacity-0 scale-95',
+                    forceDark
+                        ? 'bg-zinc-900/95 border-zinc-700/90 text-zinc-100'
+                        : 'bg-white/95 dark:bg-zinc-900/95 border-zinc-200/90 dark:border-zinc-800 text-zinc-800 dark:text-zinc-100'
+                ].join(' ');
+
+                portal.addEventListener('pointerdown', (e) => e.stopPropagation());
+                renderPortalOptions(portal, select, trigger, forceDark);
+
+                const hostParent = trigger.closest('.swal2-container') || document.body;
+                hostParent.appendChild(portal);
+                positionPortal(portal, trigger);
+
+                activePortal = portal;
+                activeTrigger = trigger;
+                activeSelect = select;
+
+                const chev = trigger.querySelector('.aliat-select-chevron');
+                if (chev) chev.classList.add('rotate-180');
+                trigger.setAttribute('aria-expanded', 'true');
+
+                requestAnimationFrame(() => {
+                    if (activePortal === portal) {
+                        portal.classList.remove('opacity-0', 'scale-95');
+                        const selectedBtn = portal.querySelector('[aria-selected="true"]');
+                        if (selectedBtn && typeof selectedBtn.scrollIntoView === 'function') {
+                            selectedBtn.scrollIntoView({ block: 'nearest' });
+                        }
+                    }
+                });
+            }
+
+            function enhanceSelectElement(select) {
+                if (!select || select.tagName !== 'SELECT') return;
+                if (select.dataset.customSelectReady === '1') return;
+                if (select.multiple || Number(select.size) > 1) return;
+
+                select.dataset.customSelectReady = '1';
+                const forceDark = select.className.includes('bg-zinc-800') || !!select.closest('#voice-call-modal');
+
+                const trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = getTriggerClasses(select);
+                trigger.setAttribute('aria-haspopup', 'listbox');
+                trigger.setAttribute('aria-expanded', 'false');
+                if (select.id) trigger.setAttribute('data-for-select', select.id);
+
+                const labelSpan = document.createElement('span');
+                labelSpan.className = 'aliat-select-label truncate flex-1 text-left';
+
+                const chevWrap = document.createElement('span');
+                chevWrap.className = 'aliat-select-chevron shrink-0 opacity-65 transition-transform duration-200 flex items-center';
+                chevWrap.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+
+                trigger.appendChild(labelSpan);
+                trigger.appendChild(chevWrap);
+
+                const syncTrigger = () => {
+                    const opts = select.options;
+                    const idx = select.selectedIndex;
+                    const selectedOpt = (opts && idx >= 0 && opts[idx]) ? opts[idx] : (opts && opts[0]);
+                    labelSpan.textContent = selectedOpt ? (selectedOpt.textContent || selectedOpt.label || '') : '';
+                    if (activeSelect === select && activePortal) {
+                        renderPortalOptions(activePortal, select, trigger, forceDark);
+                    }
+                };
+
+                select._syncCustomTrigger = syncTrigger;
+                select._customTrigger = trigger;
+
+                if (nativeValueDesc && nativeValueDesc.get && nativeValueDesc.set) {
+                    try {
+                        Object.defineProperty(select, 'value', {
+                            configurable: true,
+                            enumerable: true,
+                            get() { return nativeValueDesc.get.call(this); },
+                            set(val) {
+                                nativeValueDesc.set.call(this, val);
+                                syncTrigger();
+                            }
+                        });
+                    } catch (_) {}
+                }
+
+                select.classList.add('hidden');
+                select.setAttribute('aria-hidden', 'true');
+                select.tabIndex = -1;
+                select.parentNode.insertBefore(trigger, select.nextSibling);
+
+                syncTrigger();
+
+                const optObserver = new MutationObserver(() => syncTrigger());
+                optObserver.observe(select, { childList: true, subtree: true, characterData: true, attributes: true });
+                select.addEventListener('change', syncTrigger);
+
+                trigger.addEventListener('pointerdown', (e) => e.stopPropagation());
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openSelectMenu(select, trigger, forceDark);
+                });
+                trigger.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        openSelectMenu(select, trigger, forceDark);
+                    } else if (e.key === 'Escape') {
+                        closeCustomSelectMenu();
+                    }
+                });
+            }
+
+            window.upgradeCustomSelects = function(root = document) {
+                if (!root || !root.querySelectorAll) return;
+                if (root.tagName === 'SELECT') {
+                    enhanceSelectElement(root);
+                    return;
+                }
+                root.querySelectorAll('select:not([data-custom-select-ready="1"])').forEach(enhanceSelectElement);
+            };
+
+            document.addEventListener('pointerdown', (e) => {
+                if (!activePortal) return;
+                if (activePortal.contains(e.target)) return;
+                if (activeTrigger && activeTrigger.contains(e.target)) return;
+                closeCustomSelectMenu();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && activePortal) {
+                    const prevTrigger = activeTrigger;
+                    closeCustomSelectMenu();
+                    if (prevTrigger) prevTrigger.focus({ preventScroll: true });
+                }
+            });
+
+            window.addEventListener('resize', closeCustomSelectMenu);
+            window.addEventListener('scroll', (e) => {
+                if (!activePortal) return;
+                if (e.target === activePortal || (activePortal && activePortal.contains(e.target))) return;
+                closeCustomSelectMenu();
+            }, true);
+
+            const bodyObserver = new MutationObserver((mutations) => {
+                for (const m of mutations) {
+                    for (const node of m.addedNodes) {
+                        if (node && node.nodeType === 1) {
+                            window.upgradeCustomSelects(node);
+                        }
+                    }
+                }
+            });
+            bodyObserver.observe(document.body, { childList: true, subtree: true });
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => window.upgradeCustomSelects(document));
+            } else {
+                window.upgradeCustomSelects(document);
+            }
+        })();
 
         // Registre del Service Worker
         if ('serviceWorker' in navigator) {

@@ -111,10 +111,17 @@ module.exports = async function remindersHandler(req, res) {
             const title = String(body.title || "Sessió d'Estudi").trim().slice(0, 120);
             const notes = String(body.notes || '').trim().slice(0, 400);
             const email = String(body.email || user.email || '').trim().toLowerCase();
-            const frequency = ['daily', 'weekdays', 'custom', 'interval'].includes(body.frequency)
+            const frequency = ['daily', 'weekdays', 'custom', 'interval', 'once'].includes(body.frequency)
                 ? body.frequency
                 : 'daily';
-            const daysArr = Array.isArray(body.days) ? body.days.map(Number).filter(n => n >= 0 && n <= 6) : [];
+            let daysArr = Array.isArray(body.days) ? body.days.map(Number).filter(n => n >= 0 && n <= 6) : [];
+            if (frequency === 'once') {
+                const rawTargetDate = String(body.target_date || (Array.isArray(body.days) ? body.days[0] : '') || '').trim();
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(rawTargetDate)) {
+                    return res.status(400).json({ error: 'Data objectiu invàlida (YYYY-MM-DD).' });
+                }
+                daysArr = [rawTargetDate];
+            }
             const timeHHMM = /^\d{2}:\d{2}$/.test(String(body.time || '')) ? String(body.time) : '18:00';
             const intervalMinutes = Math.max(0, Number(body.interval_minutes || 0));
             const tzOffsetMinutes = Number.isFinite(Number(body.tz_offset_minutes)) ? Number(body.tz_offset_minutes) : 0;

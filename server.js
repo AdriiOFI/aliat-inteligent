@@ -13,6 +13,7 @@ const generateImageHandler = require('./api/generate-image');
 const analyzeMultimodalHandler = require('./api/analyze-multimodal');
 
 const app = express();
+app.disable('x-powered-by');
 const PORT = 3000;
 const HOST = '0.0.0.0';
 
@@ -61,9 +62,76 @@ app.all('/api/generate-video', (req, res) => generateVideoHandler(req, res));
 app.all('/api/generate-image', (req, res) => generateImageHandler(req, res));
 app.all('/api/analyze-multimodal', (req, res) => analyzeMultimodalHandler(req, res));
 
-// Static files
+const fs = require('fs');
+
+// Explicit safe Firebase Web SDK config endpoint (public client identifiers only — never server secrets)
+app.get('/firebase-applet-config.json', (req, res) => {
+    try {
+        const cfgPath = path.join(__dirname, 'firebase-applet-config.json');
+        if (!fs.existsSync(cfgPath)) {
+            return res.status(404).json({ error: 'Config not found' });
+        }
+        const raw = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+        const publicConfig = {
+            projectId: raw.projectId || '',
+            appId: raw.appId || '',
+            apiKey: raw.apiKey || '',
+            authDomain: raw.authDomain || '',
+            storageBucket: raw.storageBucket || '',
+            messagingSenderId: raw.messagingSenderId || '',
+            measurementId: raw.measurementId || '',
+            oAuthClientId: raw.oAuthClientId || '',
+            recaptchaSiteKey: raw.recaptchaSiteKey || ''
+        };
+        if (raw.firestoreDatabaseId) {
+            publicConfig.firestoreDatabaseId = raw.firestoreDatabaseId;
+        }
+        res.setHeader('Cache-Control', 'no-store');
+        return res.json(publicConfig);
+    } catch (_) {
+        return res.status(500).json({ error: 'Unable to load public Firebase config' });
+    }
+});
+
+// Explicitly serve main entry HTML
+app.get('/', (req, res) => {
+    return res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Static assets: ONLY serve the dedicated public directory (never expose root source/data files)
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(__dirname));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// Block direct HTTP access to internal source, database, key, and configuration files
+app.use((req, res, next) => {
+    const p = (req.path || '').toLowerCase();
+    const blockedPrefixes = ['/data', '/lib', '/api/', '/.git', '/.env', '/.aistudio', '/app', '/node_modules'];
+    const blockedExact = [
+        '/server.js',
+        '/package.json',
+        '/bun.lock',
+        '/vercel.json',
+        '/firebase-blueprint.json',
+        '/firestore.rules',
+        '/security_spec.md',
+        '/eslint.config.mjs',
+        '/metadata.json',
+        '/deep_check.js',
+        '/find_onclick_vars.js'
+    ];
+    if (
+        blockedPrefixes.some(prefix => {
+            const clean = prefix.replace(/\/$/, '');
+            return p === clean || p.startsWith(clean + '/');
+        }) ||
+        blockedExact.includes(p) ||
+        /^\/temp_script_\d+\.js$/i.test(p) ||
+        /\.(db|sqlite|sqlite3|log|bak|old|env)$/i.test(p)
+    ) {
+        return res.status(404).end();
+    }
+    return next();
+});
 
 // SPA fallback
 app.use((req, res) => {

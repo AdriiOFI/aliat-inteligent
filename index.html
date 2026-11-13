@@ -727,7 +727,7 @@
             </div>
 
             <div class="px-3 space-y-1 relative z-10 w-full">
-                <button type="button" onclick="startStudyMode(false)" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
+                <button type="button" onclick="startStudyMode(true)" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
                     <div class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20 group-hover:scale-105 transition-transform">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                     </div>
@@ -13587,7 +13587,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         // --- RUTES D'INICI DE L'APP ---
         async function startStudyMode(forceNew = false) { 
             await cleanupCurrentSessionIfEmpty();
-            if (forceNew || (currentSessionHasUserContent() && appMode !== 'study')) {
+            if (forceNew || currentSessionHasUserContent() || appMode !== 'study') {
                 await newSession();
             }
 
@@ -13599,23 +13599,8 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             document.getElementById('chat-view')?.classList.remove('flex');
             document.getElementById('quiz-view')?.classList.add('hidden');
             document.getElementById('quiz-view')?.classList.remove('flex');
-            
-            if (generatedCalendarArray.length > 0 && !forceNew) { 
-                document.getElementById('setup-view')?.classList.add('hidden'); 
-                document.getElementById('setup-view')?.classList.remove('flex'); 
-                document.getElementById('chat-view')?.classList.remove('hidden'); 
-                document.getElementById('chat-view')?.classList.add('flex'); 
-                document.getElementById('global-menu-btn')?.classList.add('hidden'); 
-                document.getElementById('chat-form')?.classList.remove('hidden');
-                
-                updateHeaderButtonsVisibility();
-                document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
-                const label = document.getElementById('chat-mode-label');
-                if (label) label.innerText = generateSmartTitle();
-            } else { 
-                document.getElementById('setup-view')?.classList.remove('hidden'); 
-                document.getElementById('setup-view')?.classList.add('flex'); 
-            } 
+            document.getElementById('setup-view')?.classList.remove('hidden'); 
+            document.getElementById('setup-view')?.classList.add('flex'); 
 
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');

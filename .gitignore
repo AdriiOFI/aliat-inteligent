@@ -1,0 +1,15 @@
+# Dependencies & build output
+node_modules/
+dist/
+
+# Environment & local secrets
+.env
+.env.*
+!.env.example
+
+# Runtime local storage & keys (never commit user/session/VAPID/JWT data)
+data/
+*.db
+*.sqlite
+*.sqlite3
+*.log

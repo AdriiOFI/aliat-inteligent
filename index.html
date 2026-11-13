@@ -315,7 +315,7 @@
             align-items: center !important;
             justify-content: center !important;
             gap: 0 !important;
-            box-shadow: 0 4px 12px -2px rgba(79, 70, 229, 0.4) !important;
+            box-shadow: 0 2px 8px -2px rgba(24, 24, 27, 0.18) !important;
             text-align: center !important;
         }
         body.sidebar-collapsed #sidebar-new-session-btn svg {
@@ -631,8 +631,8 @@
             <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-zinc-500/10 to-transparent rounded-bl-full -z-10"></div>
             
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-2 ring-cyan-500/30 mx-auto mb-4 transform hover:rotate-12 transition-transform overflow-hidden p-1.5 backdrop-blur-md">
-                    <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150 drop-shadow-[0_0_10px_rgba(56,189,248,0.7)]">
+                <div class="w-20 h-20 bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-200/90 dark:border-zinc-700/80 text-zinc-900 dark:text-white rounded-2xl flex items-center justify-center shadow-sm mx-auto mb-4 transition-transform overflow-hidden p-2">
+                    <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150">
                 </div>
                 <h1 class="text-2xl font-black text-zinc-900 dark:text-white">Aliat Intel·ligent</h1>
                 <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1 font-medium">Inicia sessió per sincronitzar els teus estudis</p>
@@ -691,7 +691,7 @@
                         <input type="tel" id="auth-phone" placeholder="+34 600 000 000" class="w-full px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
                     </div>
                 </div>
-                <button type="submit" id="auth-submit-btn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all hover:shadow-lg hover:shadow-blue-500/25 mt-5 flex items-center justify-center gap-2 cursor-pointer">
+                <button type="submit" id="auth-submit-btn" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md mt-5 flex items-center justify-center gap-2 cursor-pointer border border-zinc-900 dark:border-zinc-200">
                     Accedir
                 </button>
                 <div class="mt-4 flex items-start gap-2 p-3 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl">
@@ -713,13 +713,13 @@
         <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm transition-opacity opacity-0 md:hidden"></div>
 
         <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[85%] max-w-[280px] md:w-[270px] h-full rounded-r-2xl md:rounded-r-2xl bg-white dark:bg-[#121217] text-zinc-800 dark:text-zinc-300 flex flex-col shrink-0 transition-all duration-300 ease-in-out -translate-x-full md:translate-x-0 border-r border-zinc-200 dark:border-zinc-800/80 shadow-2xl md:shadow-none overflow-hidden relative backdrop-blur-xl">
-            <!-- Glowing ambient backdrop orb -->
-            <div class="absolute -top-12 -right-12 w-44 h-44 bg-gradient-to-br from-blue-600/15 via-indigo-600/10 to-purple-600/0 rounded-full blur-2xl pointer-events-none -z-0"></div>
+            <!-- Subtle ambient backdrop -->
+            <div class="absolute -top-12 -right-12 w-44 h-44 bg-gradient-to-br from-zinc-300/20 via-zinc-200/10 to-transparent dark:from-zinc-800/20 dark:via-zinc-900/10 rounded-full blur-2xl pointer-events-none -z-0"></div>
             
             <div id="sidebar-header-box" class="p-3 pb-2 flex items-center justify-between relative z-10 border-b border-zinc-100 dark:border-zinc-800/50">
                 <div id="sidebar-brand-box" class="flex items-center gap-2.5 min-w-0">
-                    <div id="sidebar-logo-icon" onclick="toggleSidebar()" class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20 text-white flex items-center justify-center shrink-0 shadow-md shadow-cyan-500/20 ring-1.5 ring-cyan-500/30 cursor-pointer hover:scale-105 transition-transform overflow-hidden p-0.5 backdrop-blur-md" title="Aliat Intel·ligent">
-                        <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]">
+                    <div id="sidebar-logo-icon" onclick="toggleSidebar()" class="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-200/90 dark:border-zinc-700/80 text-zinc-900 dark:text-white flex items-center justify-center shrink-0 shadow-2xs cursor-pointer hover:bg-zinc-200/70 dark:hover:bg-zinc-700/80 transition-colors overflow-hidden p-1" title="Aliat Intel·ligent">
+                        <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150">
                     </div>
                     <span class="font-bold text-zinc-900 dark:text-white text-sm sidebar-text tracking-tight truncate">Aliat Intel·ligent</span>
                 </div>
@@ -729,7 +729,7 @@
             </div>
 
             <div class="px-3 mt-2.5 mb-2 relative z-10 w-full">
-                <button id="sidebar-new-session-btn" onclick="newSession()" class="flex items-center justify-start gap-2.5 w-full py-2 px-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 rounded-xl transition-all text-xs font-semibold text-white group relative shadow-sm active:scale-[0.98] cursor-pointer ring-1 ring-white/10 text-left">
+                <button id="sidebar-new-session-btn" onclick="newSession()" class="flex items-center justify-start gap-2.5 w-full py-2 px-3 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 rounded-xl transition-all text-xs font-semibold group relative shadow-xs active:scale-[0.98] cursor-pointer text-left">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                     <span class="sidebar-text truncate">Nova conversa</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Nova conversa</span>
@@ -779,7 +779,7 @@
             <div id="sidebar-footer-bar" class="p-2.5 border-t border-zinc-200/80 dark:border-zinc-800/60 mt-auto flex items-center justify-between gap-1.5 bg-zinc-50/70 dark:bg-zinc-950/40 relative z-10 w-full">
                 <!-- 1. COMPTE -->
                 <div class="flex items-center gap-2 text-xs sidebar-text overflow-hidden cursor-pointer hover:opacity-90 transition p-1 rounded-xl hover:bg-zinc-200/60 dark:hover:bg-zinc-800/50 flex-1 min-w-0" onclick="openSettings()">
-                    <div id="profile-initial" class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shrink-0 shadow-xs text-xs ring-1 ring-white/20">U</div>
+                    <div id="profile-initial" class="w-8 h-8 rounded-full bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border border-zinc-800 dark:border-zinc-300 flex items-center justify-center font-bold shrink-0 shadow-2xs text-xs">U</div>
                     <div class="flex flex-col truncate min-w-0 text-left">
                         <span id="profile-email" class="font-semibold text-zinc-900 dark:text-zinc-200 truncate text-xs tracking-tight">Usuari</span>
                         <span class="text-[9px] text-emerald-500 font-medium flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span> En línia</span>
@@ -815,7 +815,7 @@
                         </div>
                         <div class="space-y-1.5">
                             <h1 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight px-2">
-                                Benvingut <span id="welcome-user-name" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"></span>
+                                Benvingut <span id="welcome-user-name" class="text-blue-700 dark:text-sky-300"></span>
                             </h1>
                             <p id="welcome-subtext" class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm max-w-md mx-auto font-normal leading-relaxed px-4">
                                 Selecciona un espai de treball per començar.
@@ -1060,7 +1060,7 @@
                     <!-- ACCIÓ FINAL -->
                     <div class="pt-6 border-t border-zinc-200/80 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 pb-6">
                         <p class="text-xs text-zinc-500 dark:text-zinc-400">Es generarà el calendari adaptat i un breu diagnòstic inicial.</p>
-                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full sm:w-auto px-7 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-sm cursor-pointer active:scale-[0.99] shrink-0">
+                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full sm:w-auto px-7 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold py-3.5 rounded-2xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-sm cursor-pointer active:scale-[0.99] shrink-0">
                             <span>Generar Pla d'Estudis</span>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
@@ -1101,7 +1101,7 @@
                         <!-- HEADER BAR WITH COUNTDOWN TIMER & MINIGAME BADGES -->
                         <div class="border-b border-zinc-100 dark:border-zinc-800 pb-4 mb-4 md:pb-6 md:mb-8 flex flex-wrap items-center justify-between gap-4">
                             <div class="flex items-center gap-3 min-w-0">
-                                <span class="bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white p-2.5 rounded-2xl shadow-md shadow-indigo-500/20 flex items-center justify-center shrink-0">
+                                <span class="bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border border-zinc-800 dark:border-zinc-300 p-2.5 rounded-2xl shadow-sm flex items-center justify-center shrink-0">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
                                 </span>
                                 <div>
@@ -1139,7 +1139,7 @@
                         <div id="quiz-container" class="space-y-4 md:space-y-6 mb-6 md:mb-8"></div>
 
                         <div class="flex flex-col sm:flex-row items-center gap-3">
-                            <button onclick="evaluateQuiz()" class="w-full sm:flex-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-extrabold py-3.5 md:py-4 rounded-2xl transition-all hover:shadow-lg hover:shadow-indigo-500/25 text-sm md:text-base flex items-center justify-center gap-2 cursor-pointer shadow-md border border-white/10 active:scale-[0.98]">
+                            <button onclick="evaluateQuiz()" class="w-full sm:flex-1 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-extrabold py-3.5 md:py-4 rounded-2xl transition-all hover:shadow-md text-sm md:text-base flex items-center justify-center gap-2 cursor-pointer shadow-sm border border-zinc-900 dark:border-zinc-200 active:scale-[0.98]">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                                 <span>Finalitzar i Avaluar Respostes</span>
                             </button>
@@ -1185,12 +1185,12 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 <span class="hidden sm:inline">Calendari</span>
                             </button>
-                            <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-xs cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-amber-300 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 border border-zinc-900 dark:border-zinc-700 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-2xs cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-amber-400 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                                 <span class="hidden sm:inline">Eines</span>
                             </button>
-                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria i Resultats" class="text-xs bg-purple-50 hover:bg-purple-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-purple-200/80 dark:border-zinc-800 text-purple-700 dark:text-purple-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-purple-600 dark:text-purple-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
+                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria i Resultats" class="text-xs bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-sky-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
                                 <span class="hidden sm:inline">Memòria</span>
                             </button>
                             <!-- BOTÓ D'EINES D'ÚS QUOTIDIÀ (NOMÉS A MÒDUL D'ÚS QUOTIDIÀ) -->
@@ -1527,26 +1527,26 @@
                                         </button>
 
                                         <!-- CARPETA 2: IA CREATIVA & MULTIMODAL -->
-                                        <button type="button" onclick="showPlusFolder('creative')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-pink-50/80 dark:hover:bg-pink-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-pink-300 dark:hover:border-pink-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                        <button type="button" onclick="showPlusFolder('creative')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 border border-zinc-200/80 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
                                             <div class="flex items-center gap-2.5 min-w-0">
-                                                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                                <div class="w-8 h-8 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                                                 </div>
                                                 <div class="min-w-0">
-                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors flex items-center gap-1.5">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white transition-colors flex items-center gap-1.5">
                                                         <span>IA Creativa & Multimodal</span>
-                                                        <span class="text-[9px] bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 font-extrabold px-1.5 py-0.2 rounded-md">5 eines</span>
+                                                        <span class="text-[9px] bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-extrabold px-1.5 py-0.2 rounded-md">5 eines</span>
                                                     </div>
                                                     <div class="text-[10px] text-zinc-500 truncate">Imatges (9:16/16:9), Vídeos, OCR, Àudio...</div>
                                                 </div>
                                             </div>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-pink-600 dark:group-hover:text-pink-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
                                         </button>
 
                                         <!-- CARPETA 3: EINES D'ESTUDI & TESTS -->
                                         <button type="button" onclick="showPlusFolder('study')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
                                             <div class="flex items-center gap-2.5 min-w-0">
-                                                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                                <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white dark:bg-emerald-500 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
                                                 </div>
                                                 <div class="min-w-0">
@@ -1561,20 +1561,20 @@
                                         </button>
 
                                         <!-- CARPETA 4: FOCUS & POMODORO -->
-                                        <button type="button" onclick="showPlusFolder('focus')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-rose-300 dark:hover:border-rose-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                        <button type="button" onclick="showPlusFolder('focus')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-amber-50/80 dark:hover:bg-amber-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-amber-300 dark:hover:border-amber-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
                                             <div class="flex items-center gap-2.5 min-w-0">
-                                                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                                <div class="w-8 h-8 rounded-xl bg-amber-600 text-white dark:bg-amber-400 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                                 </div>
                                                 <div class="min-w-0">
-                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors flex items-center gap-1.5">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors flex items-center gap-1.5">
                                                         <span>Focus & Concentració</span>
-                                                        <span class="text-[9px] bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-extrabold px-1.5 py-0.2 rounded-md">Pomodoro</span>
+                                                        <span class="text-[9px] bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-extrabold px-1.5 py-0.2 rounded-md">Pomodoro</span>
                                                     </div>
                                                     <div class="text-[10px] text-zinc-500 truncate">Blocs 25m, 50m, Pauses i avisos sonors</div>
                                                 </div>
                                             </div>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
                                         </button>
 
                                         <!-- ACCIONS RÀPIDES DIRECTES -->
@@ -1697,8 +1697,8 @@
                                         </div>
 
                                         <div class="max-h-72 overflow-y-auto space-y-1 pr-0.5 custom-scrollbar">
-                                            <button type="button" onclick="event.stopPropagation(); openGenerateImageModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-pink-50/90 dark:hover:bg-pink-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-pink-200/70 dark:border-pink-900/50 group">
-                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-pink-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                            <button type="button" onclick="event.stopPropagation(); openGenerateImageModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
+                                                <div class="w-7 h-7 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center shrink-0 shadow-xs">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/></svg>
                                                 </div>
                                                 <div class="min-w-0">
@@ -1707,8 +1707,8 @@
                                                 </div>
                                             </button>
 
-                                            <button type="button" onclick="event.stopPropagation(); openGenerateVideoModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-violet-50/90 dark:hover:bg-violet-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-violet-200/70 dark:border-violet-900/50 group">
-                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-violet-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                            <button type="button" onclick="event.stopPropagation(); openGenerateVideoModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
+                                                <div class="w-7 h-7 rounded-lg bg-blue-700 text-white dark:bg-sky-400 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
                                                 </div>
                                                 <div class="min-w-0">
@@ -1718,7 +1718,7 @@
                                             </button>
 
                                             <button type="button" onclick="event.stopPropagation(); openAnalyzeMediaModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-cyan-50/90 dark:hover:bg-cyan-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-cyan-200/70 dark:border-cyan-900/50 group">
-                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                <div class="w-7 h-7 rounded-lg bg-cyan-700 text-white dark:bg-cyan-400 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
                                                 </div>
                                                 <div class="min-w-0">
@@ -1727,8 +1727,8 @@
                                                 </div>
                                             </button>
 
-                                            <button type="button" onclick="event.stopPropagation(); openAudioTranscribeModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-purple-50/90 dark:hover:bg-purple-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
-                                                <div class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                            <button type="button" onclick="event.stopPropagation(); openAudioTranscribeModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
+                                                <div class="w-7 h-7 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center justify-center shrink-0">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                                                 </div>
                                                 <div class="min-w-0">
@@ -1764,7 +1764,7 @@
 
                                         <div class="max-h-72 overflow-y-auto space-y-1 pr-0.5 custom-scrollbar">
                                             <button type="button" onclick="event.stopPropagation(); triggerToolFromChat('exam', null, 'Fes-me un quiz d\'examen sobre ' + (getCurrentChatTopic() || 'el tema actual')); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-emerald-50/90 dark:hover:bg-emerald-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-emerald-200/70 dark:border-emerald-900/50 group">
-                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white dark:bg-emerald-400 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                                                 </div>
                                                 <div class="min-w-0">
@@ -1773,8 +1773,8 @@
                                                 </div>
                                             </button>
 
-                                            <button type="button" onclick="event.stopPropagation(); openMindMapModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-indigo-50/90 dark:hover:bg-indigo-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-indigo-200/70 dark:border-indigo-900/50 group">
-                                                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                            <button type="button" onclick="event.stopPropagation(); openMindMapModal(); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-zinc-200/80 dark:border-zinc-800 group">
+                                                <div class="w-7 h-7 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center shrink-0 shadow-xs">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>
                                                 </div>
                                                 <div class="min-w-0">
@@ -2110,7 +2110,7 @@
                     <span>Tancar Sessió</span>
                 </button>
 
-                <button type="button" onclick="saveSettings()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs sm:text-sm transition-all shadow-md shadow-blue-500/20 flex items-center gap-2 cursor-pointer active:scale-95">
+                <button type="button" onclick="saveSettings()" class="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-extrabold text-xs sm:text-sm transition-all shadow-sm flex items-center gap-2 cursor-pointer active:scale-95">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                     <span>Guardar Canvis</span>
                 </button>
@@ -2335,7 +2335,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     <input type="text" id="chat-history-search" oninput="filterChatHistoryModal(this.value)" placeholder="Cerca converses per nom..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 outline-none text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
                 </div>
-                <button onclick="newSession(); closeChatHistoryModal();" class="px-3.5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition shrink-0 flex items-center gap-1.5 cursor-pointer">
+                <button onclick="newSession(); closeChatHistoryModal();" class="px-3.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold text-xs rounded-xl shadow-xs transition shrink-0 flex items-center gap-1.5 cursor-pointer">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                     <span>Nou Xat</span>
                 </button>
@@ -2410,7 +2410,7 @@
             </div>
             <div class="p-4 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/40 flex items-center justify-end gap-3">
                 <button type="button" onclick="closeVerifyModal()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 text-zinc-600 dark:text-zinc-400 font-bold text-xs cursor-pointer">Tancar</button>
-                <button type="button" onclick="confirmEmailVerificationCode()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 cursor-pointer">Verificar Codi</button>
+                <button type="button" onclick="confirmEmailVerificationCode()" class="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-extrabold text-xs shadow-sm cursor-pointer">Verificar Codi</button>
             </div>
         </div>
     </div>
@@ -2513,7 +2513,7 @@
                         </div>
 
                         <div class="flex items-center gap-2 pt-1">
-                            <button type="button" id="studio-generate-btn" onclick="generateStudioDocument()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-red-600 to-indigo-600 hover:from-red-500 hover:to-indigo-500 text-white font-extrabold text-xs transition shadow-md flex items-center justify-center gap-2 cursor-pointer border border-white/10 active:scale-[0.98]">
+                            <button type="button" id="studio-generate-btn" onclick="generateStudioDocument()" class="flex-1 py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-extrabold text-xs transition shadow-sm flex items-center justify-center gap-2 cursor-pointer border border-zinc-900 dark:border-zinc-200 active:scale-[0.98]">
                                 <span>✨ Generar Document amb IA</span>
                             </button>
                             <button type="button" onclick="document.getElementById('studio-task-notes').value=''; document.getElementById('studio-task-title').value='';" class="px-3 py-3 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 text-zinc-700 dark:text-zinc-300 font-bold text-xs transition cursor-pointer" title="Netejar Camps">
@@ -2746,7 +2746,7 @@
             <!-- HEADER -->
             <div class="p-3 sm:px-5 py-3 border-b border-zinc-200/80 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2.5 bg-zinc-50/90 dark:bg-zinc-900/60 shrink-0">
                 <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20">
+                    <div class="w-9 h-9 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border border-zinc-800 dark:border-zinc-300 flex items-center justify-center shrink-0 shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="m4.93 4.93 2.12 2.12"/><path d="m16.95 16.95 2.12 2.12"/><path d="m4.93 19.07 2.12-2.12"/><path d="m16.95 7.05 2.12-2.12"/></svg>
                     </div>
                     <div class="min-w-0">
@@ -4359,7 +4359,7 @@
                     initialEl.className = "w-9 h-9 rounded-xl overflow-hidden shrink-0 shadow-md ring-2 ring-blue-500/40";
                 } else {
                     initialEl.innerText = displayName.charAt(0).toUpperCase();
-                    initialEl.className = "w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-extrabold shrink-0 shadow-md text-sm ring-2 ring-indigo-500/20";
+                    initialEl.className = "w-8 h-8 rounded-full bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border border-zinc-800 dark:border-zinc-300 flex items-center justify-center font-bold shrink-0 shadow-2xs text-xs";
                 }
             }
             
@@ -4943,24 +4943,24 @@
                 ${prefsBlockHtml}
                 
                 <!-- BLOC 1: NIVELL ACADÈMIC I RESULTATS -->
-                <div class="bg-gradient-to-br from-blue-50/80 via-indigo-50/50 to-purple-50/30 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-4 rounded-2xl border border-blue-200/80 dark:border-zinc-800 shadow-sm space-y-3">
+                <div class="bg-white dark:bg-zinc-900/90 p-4 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 shadow-2xs space-y-3">
                     <div class="flex justify-between items-center">
                         <div>
-                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400">Rendiment Acadèmic</span>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 dark:text-sky-400">Rendiment Acadèmic</span>
                             <div class="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2 mt-0.5">
                                 <span>Nota: ${totalQuestionsTested > 0 ? gradeOutOfTen + '/10' : 'Sense avaluar (0 tests)'}</span>
                                 <span class="text-xs font-bold text-white ${gradeBadgeColor} px-2.5 py-0.5 rounded-full shadow-xs">${gradeLabel}</span>
                             </div>
                         </div>
-                        <span class="bg-blue-600 text-white text-xs font-extrabold px-3 py-1 rounded-full shadow-xs">${mem.level}</span>
+                        <span class="bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 text-xs font-extrabold px-3 py-1 rounded-full shadow-2xs">${mem.level}</span>
                     </div>
                     ${masterySectionHtml}
                 </div>
 
                 <!-- BLOC 2: EFICIÈNCIA I TEMPS D'ESTUDI (HORARI DISPONIBLE) -->
-                <div class="bg-gradient-to-br from-amber-50/80 to-orange-50/40 dark:from-zinc-900 dark:to-zinc-950 p-4 rounded-2xl border border-amber-200/80 dark:border-zinc-800 shadow-sm space-y-2.5">
+                <div class="bg-zinc-50/90 dark:bg-zinc-900/90 p-4 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 shadow-2xs space-y-2.5">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             <span>Eficiència i Hores d'Estudi (${eff.targetHoursLabel}/dia)</span>
                         </span>
@@ -4968,27 +4968,27 @@
                     </div>
                     <p class="text-xs text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">${eff.recommendation}</p>
                     <div class="grid grid-cols-2 gap-2 pt-1 text-center">
-                        <div class="bg-white/80 dark:bg-zinc-900 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                        <div class="bg-white dark:bg-zinc-950 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
                             <div class="text-base font-black text-emerald-600 dark:text-emerald-400">${totalMins} min</div>
                             <div class="text-[10px] font-bold text-zinc-500 uppercase mt-0.5">Estudi Acumulat</div>
                         </div>
-                        <div class="bg-white/80 dark:bg-zinc-900 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
-                            <div class="text-base font-black text-purple-600 dark:text-purple-400">${mem.stats.flashcardsMastered}</div>
+                        <div class="bg-white dark:bg-zinc-950 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                            <div class="text-base font-black text-blue-700 dark:text-sky-400">${mem.stats.flashcardsMastered}</div>
                             <div class="text-[10px] font-bold text-zinc-500 uppercase mt-0.5">Flashcards Dominades</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- BLOC SISTEMA DE PUNTS I RACHA PERSONAL -->
-                <div class="bg-gradient-to-br from-indigo-50/70 via-purple-50/40 to-amber-50/30 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-4 rounded-2xl border border-indigo-200/80 dark:border-zinc-800 shadow-sm space-y-3">
+                <div class="bg-white dark:bg-zinc-900/90 p-4 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 shadow-2xs space-y-3">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                             <span>Punts i Racha Personal</span>
                         </span>
                         <div class="flex items-center gap-1.5">
                             ${currentStreak > 1 ? `<span class="text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">🔥 ${currentStreak} seguits</span>` : ''}
-                            <span class="text-xs font-black bg-indigo-600 text-white px-2.5 py-0.5 rounded-full shadow-2xs">${userPoints} Pts</span>
+                            <span class="text-xs font-black bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-2.5 py-0.5 rounded-full shadow-2xs">${userPoints} Pts</span>
                         </div>
                     </div>
 
@@ -4997,7 +4997,7 @@
                         <span class="text-[11px] text-zinc-500 dark:text-zinc-400 font-semibold">${userPoints} / ${nextTierPoints} pts</span>
                     </div>
                     <div class="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full transition-all duration-700" style="width: ${progressPercent}%"></div>
+                        <div class="bg-zinc-900 dark:bg-sky-400 h-full rounded-full transition-all duration-700" style="width: ${progressPercent}%"></div>
                     </div>
 
                     <!-- Desglossament de punts reals -->
@@ -5037,9 +5037,9 @@
                 </div>
 
                 <!-- BLOC GRÀFIC DE PROGRÉS (D3.JS - ÚLTIMS 7 DIES) -->
-                <div class="bg-gradient-to-br from-blue-50/70 via-indigo-50/40 to-cyan-50/30 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-4 rounded-2xl border border-blue-200/80 dark:border-zinc-800 shadow-sm space-y-2">
+                <div class="bg-zinc-50/90 dark:bg-zinc-900/90 p-4 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 shadow-2xs space-y-2">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700 dark:text-sky-400 flex items-center gap-1.5">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                             <span>Evolució de Punts (Últims 7 dies)</span>
                         </span>
@@ -5090,7 +5090,7 @@
                     </button>` : ''}
 
                     <div class="flex gap-2">
-                        <button onclick="Swal.close(); launchMemoryMinigame();" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold py-3 px-4 rounded-2xl text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
+                        <button onclick="Swal.close(); launchMemoryMinigame();" class="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-extrabold py-3 px-4 rounded-2xl text-xs sm:text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             Fes un Test d'Avaluació
                         </button>
@@ -6158,12 +6158,12 @@
                 if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-emerald-400/60 animate-ping opacity-90";
                 if (ring2) ring2.className = "absolute -inset-4 rounded-full border border-teal-400/40 animate-pulse opacity-80";
             } else if (state === 'processing') {
-                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-600 shadow-[0_0_60px_rgba(147,51,234,0.7)] flex items-center justify-center transition-all duration-500 scale-95 relative overflow-hidden animate-spin duration-3000 mx-auto cursor-pointer";
+                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-slate-700 via-blue-700 to-sky-600 shadow-[0_0_50px_rgba(14,165,233,0.45)] flex items-center justify-center transition-all duration-500 scale-95 relative overflow-hidden animate-spin duration-3000 mx-auto cursor-pointer";
                 orb.onclick = null;
                 statusText.innerText = "Pensant...";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
-                if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-purple-500/50 animate-ping opacity-50";
-                if (ring2) ring2.className = "absolute -inset-4 rounded-full border border-indigo-500/40 animate-pulse opacity-50";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-sky-500/20 border border-sky-500/40 text-sky-300 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
+                if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-sky-500/50 animate-ping opacity-50";
+                if (ring2) ring2.className = "absolute -inset-4 rounded-full border border-blue-500/40 animate-pulse opacity-50";
             } else if (state === 'muted') {
                 orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-zinc-700 via-zinc-800 to-zinc-900 shadow-none flex items-center justify-center transition-all duration-500 scale-90 relative overflow-hidden mx-auto cursor-pointer";
                 orb.onclick = null;
@@ -10620,7 +10620,7 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                     <!-- CARPETA 1: ESTUDI & TESTS -->
                     <button type="button" onclick="showToolsModalFolder('study')" class="flex items-center justify-between w-full p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.99]">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white dark:bg-emerald-400 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
                             </div>
                             <div class="min-w-0">
@@ -10637,7 +10637,7 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                     <!-- CARPETA 2: GOOGLE WORKSPACE -->
                     <button type="button" onclick="showToolsModalFolder('workspace')" class="flex items-center justify-between w-full p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-300 dark:hover:border-blue-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.99]">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white dark:bg-sky-400 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                             </div>
                             <div class="min-w-0">
@@ -10652,37 +10652,37 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                     </button>
 
                     <!-- CARPETA 3: IA CREATIVA & MULTIMODAL -->
-                    <button type="button" onclick="showToolsModalFolder('creative')" class="flex items-center justify-between w-full p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 hover:bg-pink-50/80 dark:hover:bg-pink-950/40 border border-zinc-200/90 dark:border-zinc-800 hover:border-pink-300 dark:hover:border-pink-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.99]">
+                    <button type="button" onclick="showToolsModalFolder('creative')" class="flex items-center justify-between w-full p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 border border-zinc-200/90 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition cursor-pointer text-left group shadow-2xs active:scale-[0.99]">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                            <div class="w-9 h-9 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
                             </div>
                             <div class="min-w-0">
-                                <div class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors flex items-center gap-2">
+                                <div class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-white transition-colors flex items-center gap-2">
                                     <span>IA Creativa & Multimodal</span>
-                                    <span class="text-[9px] bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 font-extrabold px-1.5 py-0.5 rounded-md">4 eines</span>
+                                    <span class="text-[9px] bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-extrabold px-1.5 py-0.5 rounded-md">4 eines</span>
                                 </div>
                                 <div class="text-[11px] text-zinc-500 truncate">Imatges, Vídeos IA, Anàlisi OCR i Lector de Fotos</div>
                             </div>
                         </div>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-pink-600 dark:group-hover:text-pink-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
 
                     <!-- CARPETA 4: FOCUS & PRODUCTIVITAT -->
-                    <button type="button" onclick="showToolsModalFolder('focus')" class="flex items-center justify-between w-full p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-300 dark:hover:border-rose-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.99]">
+                    <button type="button" onclick="showToolsModalFolder('focus')" class="flex items-center justify-between w-full p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 hover:bg-amber-50/80 dark:hover:bg-amber-950/40 border border-zinc-200/90 dark:border-zinc-800 hover:border-amber-300 dark:hover:border-amber-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.99]">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                            <div class="w-9 h-9 rounded-xl bg-amber-600 text-white dark:bg-amber-400 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             </div>
                             <div class="min-w-0">
-                                <div class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors flex items-center gap-2">
+                                <div class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors flex items-center gap-2">
                                     <span>Focus & Concentració</span>
-                                    <span class="text-[9px] bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-extrabold px-1.5 py-0.5 rounded-md">Pomodoro</span>
+                                    <span class="text-[9px] bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-extrabold px-1.5 py-0.5 rounded-md">Pomodoro</span>
                                 </div>
                                 <div class="text-[11px] text-zinc-500 truncate">Temporitzador Pomodoro, sessions de focus i tasques</div>
                             </div>
                         </div>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-rose-600 dark:group-hover:text-rose-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
                 </div>
 
@@ -10696,14 +10696,14 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                         <span class="text-xs font-black text-zinc-900 dark:text-white">🧠 Estudi & Tests</span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[55vh] overflow-y-auto pr-0.5 custom-scrollbar">
-                        <button onclick="Swal.close(); launchDiagnosticQuizFromTools();" class="p-3 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/40 dark:to-blue-950/40 border border-indigo-200 dark:border-indigo-800 rounded-2xl hover:border-indigo-500 transition-all group flex items-start gap-2.5 text-left cursor-pointer col-span-1 sm:col-span-2">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                        <button onclick="Swal.close(); launchDiagnosticQuizFromTools();" class="p-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-zinc-400 dark:hover:border-zinc-600 transition-all group flex items-start gap-2.5 text-left cursor-pointer col-span-1 sm:col-span-2">
+                            <div class="w-9 h-9 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center shrink-0 shadow-xs">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs flex items-center justify-between gap-2">
                                     <span>🎯 Quiz Diagnòstic del Pla</span>
-                                    <span class="text-[9px] bg-rose-600 text-white font-extrabold px-1.5 py-0.5 rounded-full">Cronòmetre</span>
+                                    <span class="text-[9px] bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-extrabold px-1.5 py-0.5 rounded-full">Cronòmetre</span>
                                 </div>
                                 <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">5 preguntes amb temporitzador, punts i nivell.</div>
                             </div>
@@ -11059,7 +11059,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
                     </button>
                 </div>
 
-                <button type="button" id="btn-process-vision" onclick="processVisionAnalysis()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-2xl text-sm transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                <button type="button" id="btn-process-vision" onclick="processVisionAnalysis()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold py-3.5 rounded-2xl text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Analitzar Foto amb IA
                 </button>
             </div>`;
@@ -11130,7 +11130,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
                 </div>
 
                 <!-- Botó Principal Transcriure -->
-                <button type="button" id="btn-process-transcribe" onclick="processModalAudioTranscribe()" class="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-3.5 rounded-2xl text-sm transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                <button type="button" id="btn-process-transcribe" onclick="processModalAudioTranscribe()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold py-3.5 rounded-2xl text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                     <span>Transcriure Àudio amb gemini-3.5-transcribe</span>
                 </button>
@@ -11141,7 +11141,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
                         <label class="block text-xs font-bold text-zinc-800 dark:text-zinc-200">Transcripció Verbatina Generada:</label>
                         <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">gemini-3.5-transcribe ✓</span>
                     </div>
-                    <textarea id="modal-transcription-output" rows="6" class="w-full p-3.5 rounded-2xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm font-medium outline-none focus:border-purple-500 leading-relaxed custom-scrollbar" placeholder="La transcripció apareixerà aquí..."></textarea>
+                    <textarea id="modal-transcription-output" rows="6" class="w-full p-3.5 rounded-2xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm font-medium outline-none focus:border-blue-500 leading-relaxed custom-scrollbar" placeholder="La transcripció apareixerà aquí..."></textarea>
                     
                     <div class="grid grid-cols-3 gap-2 pt-1">
                         <button type="button" onclick="copyTranscriptionText()" class="py-2.5 px-3 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
@@ -11152,7 +11152,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                             <span>Enviar al Xat</span>
                         </button>
-                        <button type="button" onclick="generateSummaryFromTranscription()" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                        <button type="button" onclick="generateSummaryFromTranscription()" class="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                             <span>Crear Resum</span>
                         </button>
@@ -11462,7 +11462,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
                         <option value="dibuix_anatomic">Dibuix Anatòmic Vectorial</option>
                     </select>
                 </div>
-                <button onclick="processGenerateDiagram()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 rounded-2xl text-sm transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                <button onclick="processGenerateDiagram()" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold py-3.5 rounded-2xl text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Generar Diagrama Visual
                 </button>
             </div>`;
@@ -13355,6 +13355,10 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                             btn.setAttribute('title', "Recorda'm (Programar dia i hora)");
                         });
                         chatMessagesEl.querySelectorAll('.chat-msg-ai').forEach(msgEl => {
+                            const oldAvatar = msgEl.querySelector('.from-blue-600, .to-purple-600');
+                            if (oldAvatar) {
+                                oldAvatar.className = 'w-7 h-7 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border border-zinc-800 dark:border-zinc-300 flex items-center justify-center font-bold text-[10px] shadow-2xs';
+                            }
                             if (msgEl.querySelector('button[onclick*="openQuickReminderModal"]')) return;
                             const actionRow = msgEl.querySelector('button[onclick*="sendAsEmail"], button[onclick*="promptGoogleCalendarReminder"]')?.parentElement;
                             if (!actionRow) return;
@@ -17158,10 +17162,10 @@ ${parsedBody}
 
             document.getElementById('chat-messages').innerHTML = `
                 <div class="w-full flex justify-center my-3" id="welcome-card">
-                    <div class="bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/50 dark:from-zinc-900/90 dark:via-zinc-900 dark:to-zinc-950 border border-blue-200/80 dark:border-zinc-800 p-4 sm:p-5 rounded-2xl text-left shadow-xs max-w-xl w-full mx-2 relative overflow-hidden backdrop-blur-xl">
+                    <div class="bg-white dark:bg-zinc-900/95 border border-zinc-200/90 dark:border-zinc-800 p-4 sm:p-5 rounded-2xl text-left shadow-xs max-w-xl w-full mx-2 relative overflow-hidden">
                         <div class="flex items-center justify-between gap-3 mb-2.5">
                             <div class="flex items-center gap-2.5 min-w-0">
-                                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-xs shrink-0">
+                                <div class="w-10 h-10 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center font-bold text-lg shadow-xs shrink-0">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                                 </div>
                                 <div class="min-w-0">
@@ -17544,7 +17548,7 @@ ${parsedBody}
                     </div>
                     <div class="text-sm font-bold text-zinc-900 dark:text-zinc-100">Encara no s'ha configurat un calendari per a aquest xat</div>
                     <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">Pots carregar apunts en PDF per generar un calendari personalitzat de sessions i minijocs.</p>
-                    <button onclick="Swal.close(); startStudyMode();" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl text-xs transition shadow-md flex items-center justify-center gap-2 cursor-pointer mt-2">
+                    <button onclick="Swal.close(); startStudyMode();" class="w-full py-3 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold rounded-2xl text-xs transition shadow-sm flex items-center justify-center gap-2 cursor-pointer mt-2">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                         Crear Pla d'Estudis Ara
                     </button>
@@ -17854,7 +17858,7 @@ ${parsedBody}
 
                 if (qIdx < totalQ - 1) {
                     navigationHtml = `
-                    <button onclick="nextKahootQuestion('${id}')" class="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-3.5 px-4 rounded-2xl text-xs sm:text-sm transition shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
+                    <button onclick="nextKahootQuestion('${id}')" class="w-full mt-4 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-black py-3.5 px-4 rounded-2xl text-xs sm:text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
                         <span>Següent Pregunta (${qIdx + 2}/${totalQ})</span>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>`;
@@ -17869,7 +17873,7 @@ ${parsedBody}
                         <p class="text-xs text-zinc-600 dark:text-zinc-400 font-medium">Els resultats s'han enregistrat automàticament a la teva memòria d'estudi.</p>
                         
                         <div class="pt-2 flex flex-col sm:flex-row gap-2">
-                            <button onclick="triggerNewExamFromKahoot('${id}')" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-3 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer">
+                            <button onclick="triggerNewExamFromKahoot('${id}')" class="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold py-3 px-3 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">
                                 🔄 Nou Test (Altres preguntes)
                             </button>
                             <button onclick="finishKahootSession('${id}')" class="flex-1 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold py-3 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
@@ -18265,17 +18269,17 @@ ${parsedBody}
 
             htmlContent = htmlContent.replace(/\[BOTON_FLASHCARDS\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="📖 Teoria General"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'flashcards')" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-5 rounded-2xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Esquema i Flashcards</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
+                return `<div id="${mId}" class="theory-marker hidden" data-type="📖 Teoria General"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'flashcards')" class="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold py-3 px-5 rounded-2xl transition-all shadow-sm flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Esquema i Flashcards</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
             });
 
             htmlContent = htmlContent.replace(/\[BOTON_MNEMOTECNIA\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="🗂️ Esquema i Flashcards"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'mnemotecnia')" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-5 rounded-2xl transition-all shadow-md shadow-purple-500/20 flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Truc de Memòria</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
+                return `<div id="${mId}" class="theory-marker hidden" data-type="🗂️ Esquema i Flashcards"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'mnemotecnia')" class="bg-blue-700 hover:bg-blue-800 text-white dark:bg-sky-400 dark:hover:bg-sky-300 dark:text-zinc-950 font-bold py-3 px-5 rounded-2xl transition-all shadow-sm flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Truc de Memòria</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
             });
 
             htmlContent = htmlContent.replace(/\[BOTON_ENTENDIDO\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="🧠 Mnemotècnia"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestMinigame(this)" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-3 px-5 rounded-2xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Posar-me a prova amb Minijocs</span></button></div>`;
+                return `<div id="${mId}" class="theory-marker hidden" data-type="🧠 Mnemotècnia"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestMinigame(this)" class="bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-400 dark:hover:bg-emerald-300 dark:text-zinc-950 font-bold py-3 px-5 rounded-2xl transition-all shadow-sm flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Posar-me a prova amb Minijocs</span></button></div>`;
             });
 
             for (let i = 0; i < interactiveBlocks.length; i++) {
@@ -18501,7 +18505,7 @@ ${parsedBody}
 
                 div.innerHTML = `
                 <div class="relative shrink-0 mt-0.5">
-                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-[10px] shadow-xs">AI</div>
+                    <div class="w-7 h-7 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border border-zinc-800 dark:border-zinc-300 flex items-center justify-center font-bold text-[10px] shadow-2xs">AI</div>
                 </div>
                 <div class="flex-1 max-w-[95%] sm:max-w-[90%] text-zinc-900 dark:text-zinc-100 overflow-hidden group">
                     ${searchBadgeHtml}
@@ -18559,12 +18563,12 @@ ${parsedBody}
             div.className = "flex justify-start gap-2.5 sm:gap-3 w-full mb-4";
             div.innerHTML = `
             <div class="relative shrink-0 mt-0.5">
-                <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-[10px] shadow-xs">AI</div>
+                <div class="w-7 h-7 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 border border-zinc-800 dark:border-zinc-300 flex items-center justify-center font-bold text-[10px] shadow-2xs">AI</div>
             </div>
             <div class="bg-white/95 dark:bg-[#1e1f20] border border-zinc-200 dark:border-zinc-800 px-3.5 py-2 rounded-full flex gap-1.5 shadow-xs items-center h-8">
-                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
-                <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
-                <div class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                <div class="w-1.5 h-1.5 bg-zinc-700 dark:bg-zinc-300 rounded-full animate-bounce"></div>
+                <div class="w-1.5 h-1.5 bg-zinc-500 dark:bg-zinc-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                <div class="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
             </div>`;
             box.appendChild(div);
             box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });

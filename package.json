@@ -13,6 +13,12 @@
     "bcryptjs": "^2.4.3",
     "express": "^5.3.0",
     "firebase": "^13.2.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^10.5.0",
+    "web-push": "^4.0.0"
+  },
+  "devDependencies": {
+    "@firebase/eslint-plugin-security-rules": "^0.0.2",
+    "eslint": "^10.14.0"
   }
 }

@@ -4,6 +4,8 @@ const path = require('path');
 const authRouter = require('./api/auth');
 const sessionsRouter = require('./api/sessions');
 const workspaceRouter = require('./api/workspace');
+const remindersRouter = require('./api/reminders');
+const { processDueReminders } = require('./lib/reminders/service');
 const generateHandler = require('./api/generate');
 const userSettingsHandler = require('./api/user/settings');
 const generateVideoHandler = require('./api/generate-video');
@@ -47,6 +49,8 @@ app.all('/api/generate', (req, res) => generateHandler(req, res));
 app.all('/api/sessions/:action', (req, res) => sessionsRouter(req, res));
 app.all('/api/sessions', (req, res) => sessionsRouter(req, res));
 app.all('/api/user/settings', (req, res) => userSettingsHandler(req, res));
+app.all('/api/reminders/:action', (req, res) => remindersRouter(req, res));
+app.all('/api/reminders', (req, res) => remindersRouter(req, res));
 
 // Google Workspace 1P API Proxies
 app.all('/api/workspace/:service', (req, res) => workspaceRouter(req, res));
@@ -70,14 +74,24 @@ const server = app.listen(PORT, HOST, () => {
     console.log(`Aliat Intel·ligent server listening on http://${HOST}:${PORT}`);
 });
 
+// Periodic study reminder scheduler (every 30s)
+const reminderInterval = setInterval(() => {
+    processDueReminders().catch((err) => console.warn('[Reminders] Tick error:', err.message));
+}, 30000);
+setTimeout(() => {
+    processDueReminders().catch(() => {});
+}, 5000);
+
 server.on('error', (err) => {
     console.error('Server error:', err);
 });
 
 process.on('SIGTERM', () => {
+    clearInterval(reminderInterval);
     server.close(() => process.exit(0));
 });
 
 process.on('SIGINT', () => {
+    clearInterval(reminderInterval);
     server.close(() => process.exit(0));
 });

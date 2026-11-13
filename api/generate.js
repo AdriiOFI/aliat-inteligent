@@ -1251,7 +1251,19 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
         // ACCIÓ: ÚS QUOTIDIÀ
         if (action === 'daily_use') {
-            const systemPromptDailyUse = "Ets Aliat Intel·ligent en mode Ús Quotidià, un assistent personal especialitzat en la redacció de documents professionals, organització, horaris visuals i productivitat diària.\n\n" +
+            const dailyOutputMode = body.dailyOutputMode === 'direct' ? 'direct' : 'guided';
+
+            const systemPromptDailyUseDirect = "Ets Aliat Intel·ligent en mode Ús Quotidià (Format Directe: NOMÉS EL TEXT FINAL).\n\n" +
+            safetyRules + "\n\n" +
+            "REGLES ESTRICTES D'ENTREGA DIRECTA:\n" +
+            "1. NOMÉS EL RESULTAT FINAL LLEST PER USAR: Entrega únicament el text final acabat (correu electrònic, informe, resum, taula/horari, llista de tasques o idees). L'usuari l'ha de poder copiar o enviar tal qual.\n" +
+            "2. ZERO PASSOS, ZERO INTRODUCCIONS I ZERO PREGUNTES: Està prohibit escriure 'Pas 1', 'Pas 2', instruccions prèvies, preàmbuls ('Aquí tens el text:'), preguntes per demanar més dades o notes finals com 'Pots exportar-ho amb les eines de sota'.\n" +
+            "3. CORREUS ELECTRÒNICS: Escriu directament 'Assumpte: ...' en una línia i tot seguit el cos del correu complet i polit, sense encapçalaments '#', sense comentaris ni abans ni després.\n" +
+            "4. HORARIS, LLISTES, RESUMS I INFORMES: Si demanen un horari visual, pots donar directament la taula neta o bloc HTML net sense explicacions; per a resums, informes, tasques To-Do o idees, entrega directament el document o llista final llesta per usar.\n" +
+            "5. DADES PENDENTS: Si falta alguna dada concreta (nom, data o empresa), resol-ho de manera natural o amb un marcador breu entre claudàtors com [Nom] o [Data], però entrega SEMPRE el text complet fet.\n" +
+            "6. ZERO EMOJIS i idioma català (o l'idioma que demani l'usuari).";
+
+            const systemPromptDailyUseGuided = "Ets Aliat Intel·ligent en mode Ús Quotidià, un assistent personal especialitzat en la redacció de documents professionals, organització, horaris visuals i productivitat diària.\n\n" +
             safetyRules + "\n\n" +
             "NORMATIVA ESTRICTA DEL MÒDUL D'ÚS QUOTIDIÀ, HORARIS I DOCUMENTS:\n" +
             "1. CALENDARI I HORARIS VISUALS: Quan l'usuari et demani un horari, calendari, rutina o planificació (diària, setmanal o mensual), DISSENYA SEMPRE UN DISSENY VISUAL NET EN BLOC DE CODI HTML (```html ... ```) amb taules maquetades, badges de colors per hores/dies i fons moderns, seguit d'un resum en text Markdown estructurat.\n" +
@@ -1266,6 +1278,8 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             "4. Consultes i idees de productivitat diària\n\n" +
             "Respon de manera altament professional, clara i impecable en català.";
 
+            const systemPromptDailyUse = dailyOutputMode === 'direct' ? systemPromptDailyUseDirect : systemPromptDailyUseGuided;
+
             const geminiHistory = formatGeminiHistory(chatHistory);
             let replyText = "";
             let aiRes = null;
@@ -1279,14 +1293,23 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             } catch (aiErr) {
                 console.warn("[daily_use] Failover:", aiErr.message);
                 const lastUserQuery = chatHistory.length > 0 ? String(chatHistory[chatHistory.length - 1].content || '').trim() : '';
-                replyText = `## Proposta per a: ${lastUserQuery || 'la teva sol·licitud'}\n\n` +
-                    `Aquí tens una estructura preparada per a **${lastUserQuery || 'la tasca sol·licitada'}**:\n\n` +
-                    `- **Objectiu principal**: Resoldre i organitzar "${lastUserQuery.substring(0, 120)}" de manera clara i accionable.\n` +
-                    `- **Accions recomanades**:\n` +
-                    `  1. Definir els punts clau o prioritats immediates.\n` +
-                    `  2. Assignar blocs de temps concrets o redactar la versió final del document.\n` +
-                    `  3. Revisar i exportar a Google Docs, Word o Google Calendar des de les eines d'Ús Quotidià.\n\n` +
-                    `Indica'm qualsevol detall específic que vulguis afegir o modificar i l'ajustaré immediatament.`;
+                if (dailyOutputMode === 'direct') {
+                    const lowerQ = lastUserQuery.toLowerCase();
+                    if (lowerQ.includes('correu') || lowerQ.includes('mail')) {
+                        replyText = `Assumpte: Sol·licitud sobre [Tema]\n\nBenvolgut/da [Nom],\n\nEm poso en contacte amb vostè per comentar-li [motiu principal del correu] i confirmar els detalls necessaris.\n\nQuedo a la seva disposició per a qualsevol aclariment.\n\nCordialment,\n[El teu nom]`;
+                    } else {
+                        replyText = `## ${lastUserQuery ? lastUserQuery.substring(0, 80) : 'Document preparat'}\n\n- Punt principal 1: [Detall clau]\n- Punt principal 2: [Acció o argument]\n- Tancament / Conclusió: [Resum final]`;
+                    }
+                } else {
+                    replyText = `## Proposta per a: ${lastUserQuery || 'la teva sol·licitud'}\n\n` +
+                        `Aquí tens una estructura preparada per a **${lastUserQuery || 'la tasca sol·licitada'}**:\n\n` +
+                        `- **Objectiu principal**: Resoldre i organitzar "${lastUserQuery.substring(0, 120)}" de manera clara i accionable.\n` +
+                        `- **Accions recomanades**:\n` +
+                        `  1. Definir els punts clau o prioritats immediates.\n` +
+                        `  2. Assignar blocs de temps concrets o redactar la versió final del document.\n` +
+                        `  3. Revisar i exportar a Google Docs, Word o Google Calendar des de les eines d'Ús Quotidià.\n\n` +
+                        `Indica'm qualsevol detall específic que vulguis afegir o modificar i l'ajustaré immediatament.`;
+                }
             }
 
             return res.status(200).json({

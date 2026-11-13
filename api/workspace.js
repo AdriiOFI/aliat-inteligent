@@ -3,13 +3,17 @@ const classroomHandler = require('../lib/workspace/classroom');
 const docsHandler = require('../lib/workspace/docs');
 const driveHandler = require('../lib/workspace/drive');
 const gmailHandler = require('../lib/workspace/gmail');
+const sheetsHandler = require('../lib/workspace/sheets');
+const slidesHandler = require('../lib/workspace/slides');
 
 const ROUTES = {
     calendar: calendarHandler,
     classroom: classroomHandler,
     docs: docsHandler,
     drive: driveHandler,
-    gmail: gmailHandler
+    gmail: gmailHandler,
+    sheets: sheetsHandler,
+    slides: slidesHandler
 };
 
 module.exports = async function workspaceRouter(req, res) {

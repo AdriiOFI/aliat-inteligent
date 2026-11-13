@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aliat-pwa-v1';
+const CACHE_NAME = 'aliat-pwa-v2';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
@@ -37,8 +37,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Bypass non-GET requests and API calls
+  // Bypass non-GET requests, runtime Firebase config, and API calls
   if (event.request.method !== 'GET') return;
+  if (url.pathname === '/firebase-applet-config.json' || url.pathname === '/manifest.json') {
+    event.respondWith(fetch(event.request, { cache: 'no-store' }));
+    return;
+  }
   if (url.pathname.startsWith('/api/')) {
     // Network-first for API requests
     event.respondWith(
@@ -74,9 +78,47 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// NOTIFICACIONS EN SEGON PLA I ALERTA DE FOCUS / POMODORO
+// NOTIFICACIONS EN SEGON PLA, WEB PUSH I ALERTA DE FOCUS / POMODORO
+self.addEventListener('push', (event) => {
+  let payload = {
+    title: "📚 Recordatori d'Estudi — Aliat",
+    body: "És hora de la teva sessió d'estudi programada!",
+    url: '/',
+    tag: 'aliat-study-reminder'
+  };
+
+  if (event.data) {
+    try {
+      const parsed = event.data.json();
+      payload = { ...payload, ...parsed };
+    } catch (_) {
+      const text = event.data.text();
+      if (text) payload.body = text;
+    }
+  }
+
+  const options = {
+    body: payload.body,
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    vibrate: [200, 100, 200],
+    tag: payload.tag || 'aliat-study-reminder',
+    renotify: true,
+    requireInteraction: false,
+    data: {
+      url: payload.url || '/',
+      reminderId: payload.reminderId || null
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title, options)
+  );
+});
+
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) || '/';
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
@@ -85,7 +127,7 @@ self.addEventListener('notificationclick', (event) => {
         }
       }
       if (clients.openWindow) {
-        return clients.openWindow('/');
+        return clients.openWindow(targetUrl);
       }
     })
   );

@@ -2,29 +2,123 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    // Default deny all
+    // Global Safety Net: Default deny all reads and writes
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // User profiles & settings
+    // --- GLOBAL HELPERS ---
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isVerifiedOwner(userId) {
+      return isEmailVerified() && request.auth.uid == userId;
+    }
+
+    // --- VALIDATION BLUEPRINTS ---
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll(['uid', 'email', 'emailVerified', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'email', 'emailVerified', 'displayName', 'photoURL', 'authProvider', 'createdAt', 'updatedAt'])
+        && data.uid is string
+        && isValidId(data.uid)
+        && data.uid == userId
+        && data.uid == request.auth.uid
+        && data.email is string
+        && data.email.size() >= 3
+        && data.email.size() <= 254
+        && data.emailVerified is bool
+        && data.emailVerified == true
+        && (!('displayName' in data) || (data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120))
+        && (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 1024))
+        && (!('authProvider' in data) || (data.authProvider in ['google.com', 'password', 'firebase']))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUserSettings(data, userId) {
+      return data.keys().hasAll(['ownerId', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'theme', 'aiProvider', 'aiModel', 'updatedAt'])
+        && data.ownerId is string
+        && isValidId(data.ownerId)
+        && data.ownerId == userId
+        && data.ownerId == request.auth.uid
+        && (!('theme' in data) || (data.theme in ['light', 'dark']))
+        && (!('aiProvider' in data) || (data.aiProvider is string && data.aiProvider.size() <= 64))
+        && (!('aiModel' in data) || (data.aiModel is string && data.aiModel.size() <= 128))
+        && data.updatedAt is timestamp;
+    }
+
+    // --- COLLECTIONS ---
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      // PII Protection: Never allow collection listing on user profiles
+      allow get: if isVerifiedOwner(userId) && isValidId(userId);
+      allow list: if false;
 
+      allow create: if isVerifiedOwner(userId)
+        && isValidId(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedOwner(userId)
+        && isValidId(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().uid == existing().uid
+        && incoming().email == existing().email
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'emailVerified', 'authProvider', 'updatedAt']);
+
+      allow delete: if isVerifiedOwner(userId) && isValidId(userId);
+
+      // Owner preferences subcollection (Master Gate checks parent user profile exists)
       match /settings/{settingId} {
-        allow read, write: if isOwner(userId);
-      }
+        allow get: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(settingId)
+          && exists(/databases/$(database)/documents/users/$(userId))
+          && existing().ownerId == request.auth.uid;
 
-      match /sessions/{sessionId} {
-        allow read, write: if isOwner(userId);
+        allow list: if isVerifiedOwner(userId)
+          && existing().ownerId == request.auth.uid;
+
+        allow create: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(settingId)
+          && isValidUserSettings(incoming(), userId)
+          && exists(/databases/$(database)/documents/users/$(userId))
+          && incoming().updatedAt == request.time;
+
+        allow update: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(settingId)
+          && isValidUserSettings(incoming(), userId)
+          && exists(/databases/$(database)/documents/users/$(userId))
+          && incoming().ownerId == existing().ownerId
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['theme', 'aiProvider', 'aiModel', 'updatedAt']);
+
+        allow delete: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(settingId)
+          && exists(/databases/$(database)/documents/users/$(userId));
       }
     }
   }

@@ -2,41 +2,100 @@
   "entities": {
     "UserProfile": {
       "title": "UserProfile",
-      "description": "Public and secure user profile information",
+      "description": "Authenticated user profile and Firebase email verification state",
       "type": "object",
       "properties": {
-        "uid": { "type": "string", "description": "Firebase Auth UID" },
-        "email": { "type": "string", "description": "User email address" },
-        "displayName": { "type": "string", "description": "Display name" },
-        "photoURL": { "type": "string", "description": "Google Profile picture URL" },
-        "phoneNumber": { "type": "string", "description": "Verified phone number" },
-        "phoneVerified": { "type": "boolean", "description": "Phone verification status" },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID matching the document ID"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 254,
+          "description": "Verified user email address"
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "description": "Whether Firebase Auth verified the user email"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Display name shown in the UI"
+        },
+        "photoURL": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "Profile avatar URL"
+        },
+        "authProvider": {
+          "type": "string",
+          "enum": ["google.com", "password", "firebase"],
+          "description": "Firebase authentication provider ID"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when profile was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the latest profile sync"
+        }
       },
-      "required": ["uid", "email"]
+      "required": ["uid", "email", "emailVerified", "createdAt", "updatedAt"]
     },
     "UserSettings": {
       "title": "UserSettings",
-      "description": "User custom preferences and AI provider configs",
+      "description": "Owner-scoped UI and non-secret AI provider preferences",
       "type": "object",
       "properties": {
-        "theme": { "type": "string", "enum": ["light", "dark"] },
-        "aiProvider": { "type": "string" },
-        "aiModel": { "type": "string" },
-        "aiKey": { "type": "string" },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      }
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID of the owner"
+        },
+        "theme": {
+          "type": "string",
+          "enum": ["light", "dark"],
+          "description": "UI color theme"
+        },
+        "aiProvider": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Preferred AI provider identifier"
+        },
+        "aiModel": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Preferred AI model identifier"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when settings were updated"
+        }
+      },
+      "required": ["ownerId", "updatedAt"]
     }
   },
   "firestore": {
     "/users/{userId}": {
       "schema": "UserProfile",
-      "description": "User profile document keyed by auth UID"
+      "description": "User profile document keyed strictly by Firebase Auth UID"
     },
-    "/users/{userId}/settings/preferences": {
+    "/users/{userId}/settings/{settingId}": {
       "schema": "UserSettings",
-      "description": "User preferences subcollection"
+      "description": "User preferences subcollection under owner profile"
     }
   }
 }

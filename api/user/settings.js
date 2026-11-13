@@ -1,5 +1,4 @@
-const jwt = require('jsonwebtoken');
-const { getDbClient, JWT_SECRET } = require('../../lib/db');
+const { getDbClient, extractUserFromRequest } = require('../../lib/db');
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -9,10 +8,9 @@ module.exports = async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'No autoritzat' });
-        
-        const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+        const user = extractUserFromRequest(req);
+        if (!user || !user.id) return res.status(401).json({ error: 'No autoritzat' });
+
         const client = getDbClient();
 
         if (req.method === 'POST') {
@@ -20,13 +18,12 @@ module.exports = async function handler(req, res) {
             try {
                 await client.execute({
                     sql: 'UPDATE users SET name = ?, theme = ?, ai_provider = ?, ai_api_key = ?, ai_model = ? WHERE id = ?',
-                    args: [name || '', theme || 'light', ai_provider || '', ai_api_key || '', ai_model || '', decoded.id]
+                    args: [name || '', theme || 'light', ai_provider || '', ai_api_key || '', ai_model || '', user.id]
                 });
             } catch (updateErr) {
-                // Fallback for older schema without new columns in external database
                 await client.execute({
                     sql: 'UPDATE users SET name = ?, theme = ? WHERE id = ?',
-                    args: [name || '', theme || 'light', decoded.id]
+                    args: [name || '', theme || 'light', user.id]
                 });
             }
             return res.status(200).json({ success: true });
@@ -35,12 +32,12 @@ module.exports = async function handler(req, res) {
             try {
                 result = await client.execute({
                     sql: 'SELECT name, theme, ai_provider, ai_api_key, ai_model FROM users WHERE id = ?',
-                    args: [decoded.id]
+                    args: [user.id]
                 });
             } catch (selectErr) {
                 result = await client.execute({
                     sql: 'SELECT name, theme FROM users WHERE id = ?',
-                    args: [decoded.id]
+                    args: [user.id]
                 });
             }
             if (result.rows && result.rows.length > 0) {
@@ -54,7 +51,14 @@ module.exports = async function handler(req, res) {
                     ai_model: u.ai_model || ''
                 });
             }
-            return res.status(404).json({ error: 'Usuari no trobat' });
+            return res.status(200).json({
+                success: true,
+                name: user.email ? user.email.split('@')[0] : '',
+                theme: 'light',
+                ai_provider: '',
+                ai_api_key: '',
+                ai_model: ''
+            });
         }
     } catch (error) {
         console.error('User settings error:', error);

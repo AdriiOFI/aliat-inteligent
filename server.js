@@ -37,39 +37,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// 3. In-Memory Rate Limiting for Security
-const rateLimitMap = new Map();
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minut
-const MAX_REQUESTS_PER_MIN = 120; // 120 peticions per minut per IP
-
-app.use('/api/', (req, res, next) => {
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-    const now = Date.now();
-    
-    let record = rateLimitMap.get(ip);
-    if (!record || now - record.startTime > RATE_LIMIT_WINDOW_MS) {
-        record = { count: 1, startTime: now };
-        rateLimitMap.set(ip, record);
-    } else {
-        record.count++;
-    }
-
-    if (record.count > MAX_REQUESTS_PER_MIN) {
-        return res.status(429).json({
-            error: "Massa peticions en poc temps. Si us plau, espera un minut abans de tornar-ho a provar por seguretat."
-        });
-    }
-
-    // Netejar mapa periòdicament
-    if (rateLimitMap.size > 10000) {
-        for (const [k, v] of rateLimitMap.entries()) {
-            if (now - v.startTime > RATE_LIMIT_WINDOW_MS) rateLimitMap.delete(k);
-        }
-    }
-
-    next();
-});
-
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 

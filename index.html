@@ -111,12 +111,6 @@
         .day-checkbox:checked + div { background-color: #2563eb; border-color: #3b82f6; color: #ffffff; font-weight: bold; box-shadow: 0 0 14px rgba(37, 99, 235, 0.4); }
         .dark .day-checkbox:checked + div { background-color: #2563eb; border-color: #60a5fa; color: #ffffff; font-weight: bold; box-shadow: 0 0 16px rgba(59, 130, 246, 0.45); }
         
-        /* Focus mode requested element deletion / hiding */
-        div#app-container:nth-of-type(2) > aside#sidebar:nth-of-type(1) > div#sidebar-history-container:nth-of-type(5) > div#history-list:nth-of-type(2) > button:nth-of-type(1),
-        div#app-container:nth-of-type(2) > aside#sidebar:nth-of-type(1) > div#sidebar-history-container:nth-of-type(5) > div#history-list:nth-of-type(2) > div:nth-of-type(1) > button:nth-of-type(1) {
-            display: none !important;
-        }
-        
         /* ESTILS PEL CALENDARI I ICONA DE DATA SEGONS EL THEME */
         input[type="date"] {
             color-scheme: dark;
@@ -676,28 +670,26 @@
                 <div id="history-list" class="space-y-1 w-full"></div>
             </div>
 
-            <!-- BOTÓ D'INSTAL·LAR APP ANDROID A LA BARRA LATERAL -->
-            <div class="px-3 pb-2 relative z-10 w-full pwa-hide-on-standalone">
-                <button id="sidebar-pwa-install-btn" type="button" onclick="installPWA()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800/70 text-emerald-700 dark:text-emerald-300 rounded-xl transition-all text-xs group relative font-semibold cursor-pointer text-left shadow-2xs">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    </div>
-                    <span class="sidebar-text truncate">Instal·lar App Android</span>
-                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Instal·lar com a App Nativa</span>
-                </button>
-            </div>
-
-            <!-- PERFIL AMB CONFIGURACIÓ I LOGOUT -->
-            <div class="p-2.5 border-t border-zinc-200/80 dark:border-zinc-800/60 mt-auto flex items-center justify-between gap-2 bg-zinc-50/70 dark:bg-zinc-950/40 relative z-10 w-full">
-                <div class="flex items-center gap-2.5 text-xs sidebar-text overflow-hidden cursor-pointer hover:opacity-90 transition p-1 rounded-xl hover:bg-zinc-200/60 dark:hover:bg-zinc-800/50 flex-1 min-w-0" onclick="openSettings()">
+            <!-- BARRA INFERIOR: COMPTE (ESQUERRA) · INSTAL·LAR APP (MIG) · CONFIGURACIÓ (DRETA) -->
+            <div class="p-2.5 border-t border-zinc-200/80 dark:border-zinc-800/60 mt-auto flex items-center justify-between gap-1.5 bg-zinc-50/70 dark:bg-zinc-950/40 relative z-10 w-full">
+                <!-- 1. COMPTE -->
+                <div class="flex items-center gap-2 text-xs sidebar-text overflow-hidden cursor-pointer hover:opacity-90 transition p-1 rounded-xl hover:bg-zinc-200/60 dark:hover:bg-zinc-800/50 flex-1 min-w-0" onclick="openSettings()">
                     <div id="profile-initial" class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shrink-0 shadow-xs text-xs ring-1 ring-white/20">U</div>
                     <div class="flex flex-col truncate min-w-0 text-left">
                         <span id="profile-email" class="font-semibold text-zinc-900 dark:text-zinc-200 truncate text-xs tracking-tight">Usuari</span>
                         <span class="text-[9px] text-emerald-500 font-medium flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span> En línia</span>
                     </div>
                 </div>
-                <button onclick="openSettings()" class="w-7 h-7 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 flex items-center justify-center transition shrink-0 cursor-pointer group relative" title="Configuració">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-45 transition-transform"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+
+                <!-- 2. INSTAL·LAR L'APP (BOTÓ NOMÉS ICONA, ENTRE COMPTE I CONFIGURACIÓ) -->
+                <button id="sidebar-pwa-install-btn" type="button" onclick="installPWA()" class="pwa-hide-on-standalone w-8 h-8 rounded-xl text-emerald-600 dark:text-emerald-400 hover:text-white bg-emerald-500/15 hover:bg-emerald-500 border border-emerald-500/25 flex items-center justify-center transition shrink-0 cursor-pointer group relative active:scale-95" title="Instal·lar l'App" aria-label="Instal·lar l'App">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Instal·lar l'App</span>
+                </button>
+
+                <!-- 3. CONFIGURACIÓ (BOTÓ NOMÉS ICONA) -->
+                <button type="button" onclick="openSettings()" class="w-8 h-8 rounded-xl text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 hover:bg-zinc-200/70 dark:hover:bg-zinc-800/70 flex items-center justify-center transition shrink-0 cursor-pointer group relative active:scale-95" title="Configuració" aria-label="Configuració">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-45 transition-transform"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Configuració</span>
                 </button>
             </div>
@@ -708,101 +700,79 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
             </button>
 
-            <!-- BENVINGUDA / PANTALLA D'INICI MILLORADA -->
-            <div id="welcome-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-8 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden transition-colors duration-300">
-                <!-- Ambient Glowing Backdrop Orbs -->
-                <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-gradient-to-tr from-blue-600/10 via-indigo-600/6 to-purple-600/0 rounded-full blur-[120px] pointer-events-none -z-0"></div>
-                <div class="absolute -bottom-24 -right-24 w-[320px] h-[320px] bg-gradient-to-br from-indigo-500/6 via-purple-500/3 to-transparent rounded-full blur-[90px] pointer-events-none -z-0"></div>
-
-                <div class="w-full max-w-4xl text-center space-y-6 pb-6 mt-2 md:mt-0 relative z-10">
+            <!-- BENVINGUDA / PANTALLA D'INICI -->
+            <div id="welcome-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-8 bg-zinc-50 dark:bg-zinc-950 relative transition-colors duration-300">
+                <div class="w-full max-w-3xl text-center space-y-8 py-4 relative z-10">
                     <!-- Brand Hero Title -->
-                    <div class="space-y-3 pt-2">
-                        <div class="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20 ring-1.5 ring-cyan-500/25 mx-auto transform hover:rotate-6 hover:scale-105 transition-all duration-300 overflow-hidden p-2 backdrop-blur-md cursor-pointer select-none">
-                            <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150 drop-shadow-[0_0_10px_rgba(56,189,248,0.7)]">
+                    <div class="space-y-3">
+                        <div class="w-12 h-12 md:w-14 md:h-14 bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl flex items-center justify-center shadow-sm mx-auto p-2.5 select-none">
+                            <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150">
                         </div>
-                        <div>
-                            <h1 class="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white tracking-tight px-2">
+                        <div class="space-y-1.5">
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight px-2">
                                 Benvingut <span id="welcome-user-name" class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600"></span>
                             </h1>
-                            <p id="welcome-subtext" class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm max-w-lg mx-auto font-medium leading-relaxed mt-1 px-4">
-                                El teu aliat intel·ligent per a la preparació d'exàmens, redacció de documents i aprenentatge adaptatiu.
+                            <p id="welcome-subtext" class="text-zinc-500 dark:text-zinc-400 text-xs md:text-sm max-w-md mx-auto font-normal leading-relaxed px-4">
+                                Selecciona un espai de treball per començar.
                             </p>
                         </div>
                     </div>
                     
-                    <!-- 3 MODE CARDS (NO VOICE CHAT, ZERO EMOJIS) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto px-2">
+                    <!-- 3 MODE CARDS -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-3xl mx-auto px-2">
                         
-                        <!-- CARD 1: PLA D'ESTUDIS I EXÀMENS -->
-                        <button onclick="startStudyMode(true)" class="bg-white/95 dark:bg-[#14141a]/95 border border-zinc-200/90 dark:border-zinc-800/90 hover:border-blue-500/80 dark:hover:border-blue-400/80 hover:ring-2 hover:ring-blue-500/20 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
-                            <div class="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                            <div class="flex items-center justify-between w-full mb-3.5 relative z-10">
-                                <div class="w-10 h-10 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/80 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                                </div>
-                                <div class="w-7 h-7 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 text-blue-600 dark:text-blue-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                                </div>
+                        <!-- CARD 1: PLA D'ESTUDIS -->
+                        <button onclick="startStudyMode(true)" class="bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-500/70 dark:hover:border-blue-400/70 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-200 p-5 rounded-2xl text-left group flex flex-col h-full cursor-pointer">
+                            <div class="w-9 h-9 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/70 dark:border-blue-800/70 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center mb-3.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors relative z-10">Pla d'Estudis i Exàmens</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Genera la teva rutina d'estudi amb calendari, tests de diagnòstic, apunts en PDF i simulacres d'examen.</p>
+                            <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Pla d'Estudis</h3>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed">Calendari d'estudi personalitzat, anàlisi d'apunts i simulacres d'examen.</p>
                         </button>
                         
-                        <!-- CARD 2: XATBOT I TUTOR -->
-                        <button onclick="startFreeChatMode()" class="bg-white/95 dark:bg-[#14141a]/95 border border-zinc-200/90 dark:border-zinc-800/90 hover:border-emerald-500/80 dark:hover:border-emerald-400/80 hover:ring-2 hover:ring-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1 transition-all duration-300 p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
-                            <div class="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                            <div class="flex items-center justify-between w-full mb-3.5 relative z-10">
-                                <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/80 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                                </div>
-                                <div class="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/60 dark:border-emerald-800/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                                </div>
+                        <!-- CARD 2: XATBOT -->
+                        <button onclick="startFreeChatMode()" class="bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-500/70 dark:hover:border-emerald-400/70 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5 transition-all duration-200 p-5 rounded-2xl text-left group flex flex-col h-full cursor-pointer">
+                            <div class="w-9 h-9 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/70 dark:border-emerald-800/70 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-3.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors relative z-10">XatBot</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Resolució de dubtes teòrics, explicacions pas a pas, mètode socràtic i suport en exercicis.</p>
+                            <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">XatBot</h3>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed">Resolució de dubtes, explicacions pas a pas i suport en qualsevol tema.</p>
                         </button>
 
-                        <!-- CARD 3: ÚS QUOTIDIÀ I DOCUMENTS (WORD / GOOGLE DOCS) -->
-                        <button type="button" onclick="startDailyUseMode()" class="bg-white/95 dark:bg-[#14141a]/95 border border-zinc-200/90 dark:border-zinc-800/90 hover:border-red-500/80 dark:hover:border-red-400/80 hover:ring-2 hover:ring-red-500/20 hover:shadow-xl hover:shadow-red-500/10 hover:-translate-y-1 transition-all duration-300 p-5 rounded-2xl text-left group flex flex-col h-full relative overflow-hidden cursor-pointer backdrop-blur-xl">
-                            <div class="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                            <div class="flex items-center justify-between w-full mb-3.5 relative z-10">
-                                <div class="w-10 h-10 bg-red-50 dark:bg-red-950/60 border border-red-200/80 dark:border-red-800/80 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                                </div>
-                                <div class="w-7 h-7 rounded-full bg-red-50 dark:bg-red-950/60 border border-red-200/60 dark:border-red-800/60 text-red-600 dark:text-red-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xs">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                                </div>
+                        <!-- CARD 3: ÚS QUOTIDIÀ -->
+                        <button type="button" onclick="startDailyUseMode()" class="bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-500/70 dark:hover:border-rose-400/70 hover:shadow-lg hover:shadow-rose-500/5 hover:-translate-y-0.5 transition-all duration-200 p-5 rounded-2xl text-left group flex flex-col h-full cursor-pointer">
+                            <div class="w-9 h-9 bg-rose-50 dark:bg-rose-950/60 border border-rose-200/70 dark:border-rose-800/70 text-rose-600 dark:text-rose-400 rounded-xl flex items-center justify-center mb-3.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors relative z-10">Ús Quotidià i Documents</h3>
-                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed relative z-10">Creació de documents estructurats per a Word o Google Docs, redacció d'assaigs, informes i rutines.</p>
+                            <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-1 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Ús Quotidià</h3>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 flex-1 leading-relaxed">Redacció de documents, correus, informes i organització diària.</p>
                         </button>
 
                     </div>
                 </div>
             </div>
 
-            <!-- CONFIGURACIÓ PLA (VISTA MÉS COMPACTA I PROPORCIONADA) -->
-            <div id="setup-view" class="hidden flex-1 overflow-y-auto items-center justify-center p-4 md:p-6 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden transition-colors duration-300">
-                <div class="w-full max-w-xl bg-white/95 dark:bg-[#121217] backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/90 rounded-3xl shadow-2xl p-5 md:p-7 relative my-auto z-10 transition-all">
-                    <!-- Header Bar: Back Button & Step indicator -->
+            <!-- CONFIGURACIÓ PLA -->
+            <div id="setup-view" class="hidden flex-1 overflow-y-auto items-center justify-center p-4 md:p-6 bg-zinc-50 dark:bg-zinc-950 relative transition-colors duration-300">
+                <div class="w-full max-w-xl bg-white dark:bg-[#121217] border border-zinc-200/90 dark:border-zinc-800 rounded-3xl shadow-xl p-5 md:p-7 relative my-auto z-10 transition-all">
+                    <!-- Header Bar -->
                     <div class="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800/80 mb-5">
-                        <button onclick="backToHome()" class="flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition bg-zinc-100 dark:bg-zinc-800/60 hover:bg-zinc-200 dark:hover:bg-zinc-700/80 px-3 py-1.5 rounded-xl cursor-pointer" title="Enrere">
+                        <button onclick="backToHome()" class="flex items-center gap-1.5 text-xs font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition bg-zinc-100 dark:bg-zinc-800/60 hover:bg-zinc-200 dark:hover:bg-zinc-700/80 px-3 py-1.5 rounded-xl cursor-pointer" title="Enrere">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
                             <span>Tornar</span>
                         </button>
-                        <span class="text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
-                            ⚡ Pas 1 de 2: Configuració
+                        <span class="text-[11px] font-semibold tracking-wide px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/70 dark:border-blue-800/60">
+                            Configuració del Pla
                         </span>
                     </div>
 
                     <!-- Title Banner -->
-                    <div class="text-center mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 mx-auto mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    <div class="text-center mb-5">
+                        <div class="w-11 h-11 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/70 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-2.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                         </div>
-                        <h1 class="text-xl md:text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Pla d'Estudi Intel·ligent</h1>
-                        <p class="text-zinc-500 dark:text-zinc-400 text-xs font-medium mt-1">Personalitza la teva rutina d'estudi en 30 segons</p>
+                        <h1 class="text-xl font-extrabold text-zinc-900 dark:text-white tracking-tight">Pla d'Estudis</h1>
+                        <p class="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Configura la data, el temari i els teus dies disponibles.</p>
                     </div>
 
                     <div class="space-y-5">
@@ -977,9 +947,9 @@
                         </div>
 
                         <!-- ACTION BUTTON -->
-                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-extrabold py-3.5 rounded-2xl transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 flex items-center justify-center gap-2 text-sm cursor-pointer border border-white/20 active:scale-[0.98]">
-                            <span>🚀 Generar Pla d'Estudi i Test</span>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        <button id="btn-start" onclick="proceedToNextStep()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-sm cursor-pointer active:scale-[0.99]">
+                            <span>Generar Pla d'Estudis</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
                     </div>
                 </div>
@@ -1093,10 +1063,6 @@
                         </div>
                         
                         <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                            <button id="pwa-install-header-btn" onclick="installPWA()" title="Instal·lar com a App a Android" class="pwa-hide-on-standalone hidden text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1 px-2.5 rounded-xl transition items-center gap-1.5 shadow-xs cursor-pointer active:scale-95 shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                <span class="hidden sm:inline">Instal·lar App</span>
-                            </button>
                             <button id="header-pomodoro-pill" onclick="openPomodoroModal()" title="Temporitzador Pomodoro & Tàctiques d'Estudi" class="hidden text-xs bg-rose-50 hover:bg-rose-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-rose-200/80 dark:border-zinc-800 text-rose-700 dark:text-rose-300 font-medium py-1 px-2.5 rounded-xl transition items-center gap-1.5 whitespace-nowrap cursor-pointer group">
                                 <span id="pomo-pill-dot" class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
                                 <span id="header-pomodoro-timer" class="font-mono text-xs">25:00</span>
@@ -1116,60 +1082,118 @@
                             </button>
                             <!-- BOTÓ D'EINES D'ÚS QUOTIDIÀ (NOMÉS A MÒDUL D'ÚS QUOTIDIÀ) -->
                             <div class="relative inline-block text-left shrink-0">
-                                <button id="daily-tools-header-btn" onclick="toggleDailyToolsMenu(event)" title="Eines i Plantilles d'Ús Quotidià" class="hidden text-xs bg-red-50 hover:bg-red-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-red-200/80 dark:border-zinc-800 text-red-700 dark:text-red-400 font-bold py-1 px-2.5 rounded-xl transition items-center gap-1.5 whitespace-nowrap cursor-pointer shadow-2xs">
+                                <button id="daily-tools-header-btn" onclick="toggleDailyToolsMenu(event)" title="Eines i Integracions d'Ús Quotidià" class="hidden text-xs bg-red-50 hover:bg-red-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-red-200/80 dark:border-zinc-800 text-red-700 dark:text-red-400 font-bold py-1 px-2 sm:px-2.5 rounded-xl transition items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shadow-2xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-red-600 dark:text-red-400 shrink-0"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                                    <span class="inline sm:hidden">Eines</span>
                                     <span class="hidden sm:inline">💡 Eines Ús Quotidià</span>
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="shrink-0 text-red-500"><polyline points="6 9 12 15 18 9"/></svg>
                                 </button>
-                                <div id="daily-tools-dropdown" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-2 z-50 transition-all duration-200 text-xs font-medium">
-                                    <div class="px-2.5 py-2 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between mb-1">
+                                <div id="daily-tools-dropdown" class="hidden fixed sm:absolute right-2 sm:right-0 top-13 sm:top-auto sm:mt-2 w-[calc(100vw-1rem)] max-w-xs sm:w-80 max-h-[78vh] overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-2.5 z-50 transition-all duration-200 text-xs font-medium">
+                                    <div class="px-2 py-1.5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between mb-2 sticky top-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md z-10">
                                         <span class="font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5 text-xs">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red-500"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
                                             Eines d'Ús Quotidià
                                         </span>
-                                        <button type="button" onclick="closeDailyToolsMenu()" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-0.5 rounded-md text-xs">✕</button>
+                                        <button type="button" onclick="closeDailyToolsMenu()" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 rounded-md text-xs">✕</button>
                                     </div>
-                                    <div class="space-y-1">
+
+                                    <!-- BLOC 1: GOOGLE WORKSPACE & ESTUDI -->
+                                    <div class="mb-2">
+                                        <div class="px-2 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Google Workspace & Estudi</div>
+                                        <div class="grid grid-cols-2 gap-1.5">
+                                            <button type="button" onclick="closeDailyToolsMenu(); openGoogleCalendarModal();" class="p-2 rounded-xl bg-blue-50/90 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 border border-blue-200/80 dark:border-blue-900/60 flex items-center gap-2 text-left cursor-pointer transition active:scale-95">
+                                                <span class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                                </span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">Google Calendar</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Agenda & Avisos</div>
+                                                </div>
+                                            </button>
+                                            <button type="button" onclick="closeDailyToolsMenu(); openGoogleClassroomModal();" class="p-2 rounded-xl bg-emerald-50/90 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-200/80 dark:border-emerald-900/60 flex items-center gap-2 text-left cursor-pointer transition active:scale-95">
+                                                <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+                                                </span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">Classroom</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Classes & Tasques</div>
+                                                </div>
+                                            </button>
+                                            <button type="button" onclick="closeDailyToolsMenu(); openFullscreenStudioModal('redaccio');" class="p-2 rounded-xl bg-red-50/90 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/50 border border-red-200/80 dark:border-red-900/60 flex items-center gap-2 text-left cursor-pointer transition active:scale-95">
+                                                <span class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                                                </span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">Estudi Redacció</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Editor complet</div>
+                                                </div>
+                                            </button>
+                                            <button type="button" onclick="closeDailyToolsMenu(); openFullscreenStudioModal('organitzacio');" class="p-2 rounded-xl bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-800/80 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center gap-2 text-left cursor-pointer transition active:scale-95">
+                                                <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+                                                </span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">Taules & Rutines</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Horaris visuals</div>
+                                                </div>
+                                            </button>
+                                            <button type="button" onclick="closeDailyToolsMenu(); openGooglePickerModal();" class="p-2 rounded-xl bg-cyan-50/90 hover:bg-cyan-100 dark:bg-cyan-950/40 dark:hover:bg-cyan-900/50 border border-cyan-200/80 dark:border-cyan-900/60 flex items-center gap-2 text-left cursor-pointer transition active:scale-95">
+                                                <span class="w-7 h-7 rounded-lg bg-cyan-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                                                </span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">Google Picker</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Importar de Drive</div>
+                                                </div>
+                                            </button>
+                                            <button type="button" onclick="closeDailyToolsMenu(); openGmailModal();" class="p-2 rounded-xl bg-rose-50/90 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-200/80 dark:border-rose-900/60 flex items-center gap-2 text-left cursor-pointer transition active:scale-95">
+                                                <span class="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                                </span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">Correu Gmail</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Enviar & Llegir</div>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- BLOC 2: PLANTILLES I PRODUCTIVITAT -->
+                                    <div class="pt-1.5 border-t border-zinc-100 dark:border-zinc-800 space-y-1">
+                                        <div class="px-2 pb-0.5 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Plantilles Ràpides & Focus</div>
                                         <button type="button" onclick="closeDailyToolsMenu(); selectDailyUseOption('Redacció de Documents', 'Correu formal');" class="w-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl flex items-center gap-2.5 text-left cursor-pointer transition">
                                             <span class="w-7 h-7 rounded-lg bg-red-100 dark:bg-red-950/60 text-red-600 flex items-center justify-center font-bold shrink-0">✉️</span>
-                                            <div>
-                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Redacció de Correus i Mails</div>
-                                                <div class="text-[10px] text-zinc-500">Esborranys formals o informals</div>
+                                            <div class="min-w-0">
+                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs truncate">Redacció de Correus i Mails</div>
+                                                <div class="text-[10px] text-zinc-500 truncate">Esborranys formals o informals</div>
                                             </div>
                                         </button>
                                         <button type="button" onclick="closeDailyToolsMenu(); selectDailyUseOption('Redacció de Documents', 'Nota ràpida');" class="w-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl flex items-center gap-2.5 text-left cursor-pointer transition">
                                             <span class="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center font-bold shrink-0">📝</span>
-                                            <div>
-                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Resum i Resolució de Textos</div>
-                                                <div class="text-[10px] text-zinc-500">Extreu punts clau i esquemes</div>
+                                            <div class="min-w-0">
+                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs truncate">Resum i Resolució de Textos</div>
+                                                <div class="text-[10px] text-zinc-500 truncate">Extreu punts clau i esquemes</div>
                                             </div>
                                         </button>
                                         <button type="button" onclick="closeDailyToolsMenu(); selectDailyUseOption('Organització i Rutines', 'Llista de tasques (To-Do)');" class="w-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl flex items-center gap-2.5 text-left cursor-pointer transition">
                                             <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center font-bold shrink-0">📅</span>
-                                            <div>
-                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Organització i Rutines</div>
-                                                <div class="text-[10px] text-zinc-500">Horaris diaris i llistes To-Do</div>
+                                            <div class="min-w-0">
+                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs truncate">Organització i Rutines</div>
+                                                <div class="text-[10px] text-zinc-500 truncate">Horaris diaris i llistes To-Do</div>
                                             </div>
                                         </button>
                                         <button type="button" onclick="closeDailyToolsMenu(); openPomodoroModal();" class="w-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl flex items-center gap-2.5 text-left cursor-pointer transition">
                                             <span class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center font-bold shrink-0">⏱️</span>
-                                            <div>
-                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Productivitat i Pomodoro</div>
-                                                <div class="text-[10px] text-zinc-500">Temporitzador i tècniques de temps</div>
+                                            <div class="min-w-0">
+                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs truncate">Productivitat i Pomodoro</div>
+                                                <div class="text-[10px] text-zinc-500 truncate">Temporitzador amb notificacions</div>
                                             </div>
                                         </button>
                                         <button type="button" onclick="closeDailyToolsMenu(); selectDailyUseOption('Consultes i Idees', 'Brainstorming');" class="w-full p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl flex items-center gap-2.5 text-left cursor-pointer transition">
                                             <span class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center font-bold shrink-0">💡</span>
-                                            <div>
-                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Consultes i Idees</div>
-                                                <div class="text-[10px] text-zinc-500">Pluja d'idees i consells pràctics</div>
-                                            </div>
-                                        </button>
-                                        <button type="button" onclick="closeDailyToolsMenu(); openFullscreenStudioModal();" class="w-full p-2 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl flex items-center gap-2.5 text-left cursor-pointer transition border border-red-200/60 dark:border-red-900/40 mt-1">
-                                            <span class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center font-bold shrink-0 text-xs shadow-xs">🚀</span>
-                                            <div>
-                                                <div class="font-bold text-red-600 dark:text-red-400 text-xs">Editor Studio a Pantalla Completa</div>
-                                                <div class="text-[10px] text-zinc-500">Panell d'escriptura expansiu</div>
+                                            <div class="min-w-0">
+                                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs truncate">Consultes i Idees</div>
+                                                <div class="text-[10px] text-zinc-500 truncate">Pluja d'idees i consells pràctics</div>
                                             </div>
                                         </button>
                                     </div>
@@ -1252,35 +1276,6 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- BANNER DESPLEGABLE D'ÚS QUOTIDIÀ I DOCUMENTS -->
-                <div id="daily-use-banner" class="hidden shrink-0 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/40 px-3 sm:px-6 py-2.5 backdrop-blur-md">
-                    <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
-                            <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">Mode Ús Quotidià i Documents</span>
-                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 hidden sm:inline truncate">• Redacció ràpida, plantilles i exportació a Word / Google Docs</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 shrink-0 flex-wrap">
-                            <button type="button" onclick="openGoogleCalendarModal()" class="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition cursor-pointer flex items-center gap-1 shadow-xs active:scale-95">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                <span>Google Calendar</span>
-                            </button>
-                            <button type="button" onclick="openGoogleClassroomModal()" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition cursor-pointer flex items-center gap-1 shadow-xs active:scale-95">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
-                                <span>Classroom</span>
-                            </button>
-                            <button type="button" onclick="openFullscreenStudioModal('redaccio')" class="px-2.5 py-1 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition cursor-pointer flex items-center gap-1 shadow-xs active:scale-95">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-                                <span>Estudi de Redacció</span>
-                            </button>
-                            <button type="button" onclick="openFullscreenStudioModal('organitzacio')" class="px-2.5 py-1 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-bold text-xs transition cursor-pointer flex items-center gap-1 border border-zinc-200 dark:border-zinc-700 active:scale-95">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
-                                <span>Taules & Rutines</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -1393,15 +1388,11 @@
 
                                         <!-- ACCIONS RÀPIDES DIRECTES -->
                                         <div class="pt-1 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center gap-1.5">
-                                            <label class="flex-1 flex items-center justify-center gap-1.5 p-2 bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xl border border-emerald-200/80 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold transition cursor-pointer shadow-2xs">
+                                            <label class="w-full flex items-center justify-center gap-1.5 p-2 bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xl border border-emerald-200/80 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold transition cursor-pointer shadow-2xs">
                                                 <input type="file" id="chat-attachment" accept="image/*,.pdf,audio/*" class="hidden" onchange="handleAttachment(this); closePlusMenu();">
                                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                                                 <span>📎 Adjuntar Fitxer</span>
                                             </label>
-                                            <button type="button" id="plus-pwa-install-btn" onclick="event.stopPropagation(); installPWA(); closePlusMenu();" class="pwa-hide-on-standalone flex-1 flex items-center justify-center gap-1.5 p-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl text-zinc-700 dark:text-zinc-300 text-[11px] font-bold transition cursor-pointer shadow-2xs">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                                <span>📲 App Android</span>
-                                            </button>
                                         </div>
                                     </div>
 
@@ -1775,15 +1766,29 @@
 
             <!-- Body Content -->
             <div class="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
-                <!-- Nom -->
+                <!-- Nom / Compte -->
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">El teu Nom (Públic)</label>
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">El teu Compte (Nom Públic)</label>
                     <input type="text" id="setting-name" placeholder="Com vols que et diguem?" class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all text-sm font-medium shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600">
+                </div>
+
+                <!-- Instal·lar l'App (Entre el Compte i la Configuració general) -->
+                <div class="space-y-2 pwa-hide-on-standalone">
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Instal·lar l'App</label>
+                    <button type="button" onclick="installPWA()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50/80 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all cursor-pointer group shadow-sm">
+                        <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2.5">
+                            <span class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </span>
+                            Instal·lar l'App (Mòbil / Escriptori)
+                        </span>
+                        <span class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-white dark:bg-zinc-900 px-3 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">Instal·lar</span>
+                    </button>
                 </div>
 
                 <!-- Aparença -->
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Aparença de l'App</label>
+                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Configuració d'Aparença</label>
                     <button type="button" onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 hover:border-blue-500/40 transition-all cursor-pointer group shadow-sm">
                         <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-500"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
@@ -2819,9 +2824,24 @@
                 
                 const backup = localStorage.getItem('aliat_sessions_backup');
                 if (backup) {
-                    allSessions = JSON.parse(backup);
+                    try {
+                        allSessions = JSON.parse(backup);
+                        if (!Array.isArray(allSessions)) allSessions = [];
+                        allSessions = allSessions.filter(s => s && s.id && hasUserWrittenContent(s));
+                    } catch (e) {
+                        allSessions = [];
+                    }
                     currentSessionId = localStorage.getItem('aliat_current_id');
-                    if (currentSessionId) loadActiveSessionData();
+                    if (currentSessionId && allSessions.some(s => s.id === currentSessionId)) {
+                        loadActiveSessionData();
+                    } else {
+                        currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                        safeLocalStorageSet('aliat_current_id', currentSessionId);
+                    }
+                    renderSidebarHistory();
+                } else {
+                    currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                    safeLocalStorageSet('aliat_current_id', currentSessionId);
                     renderSidebarHistory();
                 }
                 
@@ -2857,9 +2877,12 @@
             const backup = localStorage.getItem('aliat_sessions_backup');
             if (backup) {
                 try {
-                    allSessions = JSON.parse(backup);
+                    const parsed = JSON.parse(backup);
+                    allSessions = Array.isArray(parsed) ? parsed.filter(s => s && s.id && hasUserWrittenContent(s)) : [];
                     currentSessionId = localStorage.getItem('aliat_current_id');
-                    if (currentSessionId) loadActiveSessionData();
+                    if (currentSessionId && allSessions.some(s => s.id === currentSessionId)) {
+                        loadActiveSessionData();
+                    }
                     renderSidebarHistory();
                 } catch(e) {}
             }
@@ -2930,23 +2953,75 @@
             return window.googleWorkspaceToken || null;
         };
 
+        window.sendGoogle2FACode = async function() {
+            const emailEl = document.getElementById('swal-google-email');
+            const statusEl = document.getElementById('swal-2fa-status');
+            const codeInputEl = document.getElementById('swal-google-code');
+            const email = emailEl ? emailEl.value.trim().toLowerCase() : '';
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                if (statusEl) {
+                    statusEl.className = "text-[11px] font-bold text-red-500 mt-1.5";
+                    statusEl.innerText = "⚠️ Introdueix primer un correu electrònic vàlid.";
+                }
+                return;
+            }
+            if (statusEl) {
+                statusEl.className = "text-[11px] font-semibold text-blue-500 mt-1.5";
+                statusEl.innerText = "⏳ Generant codi de verificació segur de 6 dígits...";
+            }
+            try {
+                const res = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'send', email })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    if (statusEl) {
+                        statusEl.className = "text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1.5";
+                        statusEl.innerText = data.demoCode
+                            ? `✅ Codi de seguretat generat: ${data.demoCode} (vàlid 10 min)`
+                            : `✅ Codi enviat a ${email}`;
+                    }
+                    if (data.demoCode && codeInputEl && !codeInputEl.value) {
+                        codeInputEl.value = data.demoCode;
+                    }
+                } else if (statusEl) {
+                    statusEl.className = "text-[11px] font-bold text-red-500 mt-1.5";
+                    statusEl.innerText = "❌ " + (data.error || "Error enviant el codi.");
+                }
+            } catch (err) {
+                if (statusEl) {
+                    statusEl.className = "text-[11px] font-bold text-red-500 mt-1.5";
+                    statusEl.innerText = "❌ Error de connexió enviant el codi.";
+                }
+            }
+        };
+
         async function handleGoogleLogin() {
             try {
                 await initFirebaseSDK();
                 let user = null;
+                let googleIdToken = null;
+                let googleAccessToken = null;
+
                 if (firebaseAuth) {
                     try {
                         const { GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
                         const provider = new GoogleAuthProvider();
                         GOOGLE_WORKSPACE_SCOPES.forEach(scope => provider.addScope(scope));
                         provider.setCustomParameters({ prompt: 'select_account' });
-                        showToast("Obrint inici de sessió segur de Google...", "info");
+                        showToast("Obrint inici de sessió oficial de Google...", "info");
                         const result = await signInWithPopup(firebaseAuth, provider);
                         user = result.user;
+                        if (user && typeof user.getIdToken === 'function') {
+                            googleIdToken = await user.getIdToken();
+                        }
                         const credential = GoogleAuthProvider.credentialFromResult(result);
                         if (credential && credential.accessToken) {
+                            googleAccessToken = credential.accessToken;
                             window.googleWorkspaceToken = credential.accessToken;
-                            console.log("[Workspace] Token d'accés de Google emmagatzemat en memòria.");
+                            console.log("[Workspace] Token d'accés OAuth verificat i emmagatzemat en memòria.");
                         }
                     } catch (popupErr) {
                         console.warn("Notice Google Auth Popup Sandbox:", popupErr);
@@ -2957,26 +3032,65 @@
                 let googleName = user ? (user.displayName || user.email.split('@')[0]) : null;
                 let googlePhoto = user ? (user.photoURL || '') : null;
                 let googleUid = user ? user.uid : null;
+                let twoFactorPassword = null;
+                let twoFactorCode = null;
 
                 if (!user) {
-                    const { value: emailInput } = await Swal.fire({
-                        title: "Inicia sessió amb la teva compte de Google",
-                        html: `<p class="text-xs text-zinc-500 dark:text-zinc-400 mb-4">Introdueix el teu correu electrònic oficial de Google per vincular el teu perfil i sincronitzar els teus apunts de manera segura.</p>`,
-                        input: "email",
-                        inputPlaceholder: "exemple@gmail.com",
+                    const { value: formValues } = await Swal.fire({
+                        title: "🔐 Vinculació Segura en 2 Passos",
+                        html: `
+                            <div class="text-left space-y-3 mt-2">
+                                <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/70 text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">
+                                    <strong>Seguretat activa:</strong> Per protegir el teu compte si la finestra emergent de Google està bloquejada pel navegador, cal verificar la teva contrasenya i un codi de seguretat de 6 dígits.
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mb-1">1. Correu de Google</label>
+                                    <input id="swal-google-email" type="email" placeholder="exemple@gmail.com" class="w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-white outline-none focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mb-1">2. Contrasenya de seguretat del compte (mín. 6 caràcters)</label>
+                                    <input id="swal-google-password" type="password" placeholder="La teva contrasenya privada" class="w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-white outline-none focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300">3. Codi de verificació (2FA)</label>
+                                        <button type="button" onclick="window.sendGoogle2FACode()" class="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">📲 Generar codi de 6 dígits</button>
+                                    </div>
+                                    <input id="swal-google-code" type="text" maxlength="6" placeholder="123456" class="w-full px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-mono tracking-widest text-center text-zinc-900 dark:text-white outline-none focus:border-blue-500">
+                                    <div id="swal-2fa-status" class="text-[11px] text-zinc-500 mt-1">Prem "Generar codi de 6 dígits" per verificar la propietat.</div>
+                                </div>
+                            </div>
+                        `,
                         showCancelButton: true,
-                        confirmButtonText: "Continuar amb Google",
+                        confirmButtonText: "Verificar i Vincular",
                         cancelButtonText: "Cancel·lar",
                         confirmButtonColor: "#2563eb",
                         customClass: { popup: 'rounded-[1.75rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' },
-                        inputValidator: (val) => {
-                            if (!val || !val.includes('@')) return 'Si us plau, introdueix un correu electrònic de Google vàlid.';
+                        preConfirm: () => {
+                            const emailVal = (document.getElementById('swal-google-email')?.value || '').trim().toLowerCase();
+                            const passVal = document.getElementById('swal-google-password')?.value || '';
+                            const codeVal = (document.getElementById('swal-google-code')?.value || '').trim();
+                            if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+                                Swal.showValidationMessage('Introdueix un correu electrònic vàlid.');
+                                return false;
+                            }
+                            if (!passVal || passVal.length < 6) {
+                                Swal.showValidationMessage('Per seguretat, la contrasenya ha de tenir almenys 6 caràcters.');
+                                return false;
+                            }
+                            if (!codeVal || codeVal.length !== 6) {
+                                Swal.showValidationMessage('Genera i introdueix el codi de verificació de 6 dígits.');
+                                return false;
+                            }
+                            return { email: emailVal, password: passVal, verificationCode: codeVal };
                         }
                     });
 
-                    if (!emailInput) return;
+                    if (!formValues) return;
 
-                    googleEmail = emailInput.trim().toLowerCase();
+                    googleEmail = formValues.email;
+                    twoFactorPassword = formValues.password;
+                    twoFactorCode = formValues.verificationCode;
                     googleName = googleEmail.split('@')[0];
                     googleUid = 'google_user_' + btoa(googleEmail).replace(/=/g, '');
                     googlePhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(googleName)}&background=2563eb&color=fff&bold=true`;
@@ -2990,7 +3104,11 @@
                     email: googleEmail,
                     displayName: googleName,
                     photoURL: googlePhoto,
-                    phoneNumber: userPhone
+                    phoneNumber: userPhone,
+                    idToken: googleIdToken,
+                    accessToken: googleAccessToken,
+                    password: twoFactorPassword,
+                    verificationCode: twoFactorCode
                 };
 
                 const res = await fetch('/api/auth/google', {
@@ -3003,16 +3121,22 @@
                 if (res.ok && data.success) {
                     if (data.linkedAccount) {
                         Swal.fire({
-                            title: "Compte Vinculat amb Èxit!",
+                            title: "Compte Verificat i Vinculat!",
                             text: data.message,
                             icon: "success",
-                            confirmButtonText: "Entendre",
+                            confirmButtonText: "Continuar",
                             customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }
                         });
                     }
-                    applyAuthSuccess(data.token, data.user, data.linkedAccount ? null : "Sessió iniciada amb Google exitosament!");
+                    applyAuthSuccess(data.token, data.user, data.linkedAccount ? null : "Sessió iniciada de forma segura!");
                 } else {
-                    showToast(data.error || "Error d'inici de sessió amb Google", "error");
+                    Swal.fire({
+                        title: "Error de Verificació",
+                        text: data.error || "No s'ha pogut verificar el compte.",
+                        icon: "error",
+                        confirmButtonText: "Entesos",
+                        customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }
+                    });
                 }
             } catch(e) {
                 console.error("Error Google Auth:", e);
@@ -3160,26 +3284,7 @@
                         body: JSON.stringify({ email, password })
                     });
                     let data = await res.json();
-                    
-                    // Si l'usuari no està registrat a la base de dades, intentem donar-lo d'alta directament perquè no es quedi blocat
-                    if (!res.ok && res.status === 401 && data.error && (data.error.includes('no trobat') || data.error.includes('incorrecta'))) {
-                        try {
-                            const regRes = await fetch('/api/auth/register', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ email, password })
-                            });
-                            const regData = await regRes.json();
-                            if (regRes.ok && regData.token) {
-                                applyAuthSuccess(regData.token, regData.user, "Benvingut! Compte creat i sessió iniciada.");
-                                return;
-                            }
-                        } catch(regErr) {
-                            console.warn("Auto-register fallback notice:", regErr);
-                        }
-                    }
-
-                    if (!res.ok || data.error) throw new Error(data.error || "Error d'autenticació");
+                    if (!res.ok || data.error) throw new Error(data.error || "Correu o contrasenya incorrectes");
                     applyAuthSuccess(data.token, data.user, "Benvingut de nou!");
                 } else {
                     // Mode Registre
@@ -8523,6 +8628,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
 
             appendMessage('user', userPromptText);
             chatHistory.push({ role: 'user', content: userPromptText });
+            saveSession();
 
             const loadingId = 'loading-' + Date.now();
             appendLoading(loadingId);
@@ -10270,6 +10376,234 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             openPomodoroModal();
         };
 
+        window._deletedSessionIds = window._deletedSessionIds || new Set();
+
+        function normalizeSessionDate(ts) {
+            const now = Date.now();
+            let d = typeof ts === 'number' ? ts : Number(ts);
+            if (!d || isNaN(d)) {
+                const raw = String(ts || '').trim();
+                if (raw) {
+                    const iso = raw.includes('T') ? raw : raw.replace(' ', 'T') + (raw.endsWith('Z') ? '' : 'Z');
+                    d = new Date(iso).getTime();
+                }
+            }
+            if (!d || isNaN(d)) return now;
+            while (d > now + 60000) {
+                d -= 3600000;
+            }
+            return d;
+        }
+        window.normalizeSessionDate = normalizeSessionDate;
+
+        function hasUserWrittenContent(sess) {
+            if (!sess || !sess.id) return false;
+            const hist = sess.history || sess.chat_history || [];
+            const hasUserMsg = Array.isArray(hist) && hist.some(m => m && m.role === 'user' && ((typeof m.content === 'string' && m.content.trim().length > 0) || Boolean(m.image)));
+            const hasCalendar = Array.isArray(sess.calendar) && sess.calendar.length > 0;
+            const hasQuiz = Boolean(sess.initial_quiz);
+            const hasPdf = typeof sess.pdf_text === 'string' && sess.pdf_text.trim().length > 0;
+            return hasUserMsg || hasCalendar || hasQuiz || hasPdf;
+        }
+
+        function currentSessionHasUserContent() {
+            const hasUserMessages = Array.isArray(chatHistory) && chatHistory.some(m => m && m.role === 'user' && ((typeof m.content === 'string' && m.content.trim().length > 0) || Boolean(m.image)));
+            const hasStudyArtifacts = (appMode === 'study') && (
+                (Array.isArray(generatedCalendarArray) && generatedCalendarArray.length > 0) ||
+                Boolean(window.initialQuizResults) ||
+                (typeof finalStudyText === 'string' && finalStudyText.trim().length > 0)
+            );
+            return hasUserMessages || hasStudyArtifacts;
+        }
+
+        function saveSession(bumpDate = true) {
+            // Només desem una conversa si L'USUARI ha escrit algun missatge o ha creat un pla/quiz real
+            if (!currentSessionHasUserContent()) {
+                return;
+            }
+
+            // Assegurem que el xat té un ID abans d'enviar-lo al servidor
+            if (!currentSessionId || currentSessionId === 'null') {
+                currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                safeLocalStorageSet('aliat_current_id', currentSessionId);
+            }
+            if (window._deletedSessionIds) {
+                window._deletedSessionIds.delete(currentSessionId);
+            }
+
+            // Normalitzem dates antigues per evitar que cap sessió tingui data futura
+            if (Array.isArray(allSessions)) {
+                allSessions.forEach(s => {
+                    if (s && s.date) s.date = normalizeSessionDate(s.date);
+                });
+            }
+
+            const activeSession = allSessions.find(s => s.id === currentSessionId);
+            const existingFiles = (activeSession && Array.isArray(activeSession.files)) ? activeSession.files : [];
+
+            const targetDate = bumpDate
+                ? Date.now()
+                : normalizeSessionDate((activeSession && activeSession.date) || Date.now());
+
+            const sessionData = { 
+                id: currentSessionId, 
+                mode: appMode, 
+                title: '', 
+                history: [...chatHistory], 
+                chat_history: [...chatHistory], 
+                files: existingFiles,
+                calendar: generatedCalendarArray, 
+                peak_time: selectedPeakTime,
+                games: window.interactiveGames, 
+                initial_quiz: window.initialQuizResults || null,
+                html: document.getElementById('chat-messages')?.innerHTML || '', 
+                context: studentContextStr, 
+                pdf_text: finalStudyText, 
+                date: targetDate 
+            };
+
+            const idx = allSessions.findIndex(s => s.id === currentSessionId);
+            let mergedSession;
+            if (idx >= 0) {
+                mergedSession = { ...allSessions[idx], ...sessionData, date: targetDate };
+                if (bumpDate) {
+                    allSessions.splice(idx, 1);
+                    allSessions.unshift(mergedSession);
+                } else {
+                    allSessions[idx] = mergedSession;
+                }
+            } else {
+                mergedSession = sessionData;
+                allSessions.unshift(mergedSession);
+            }
+
+            const currentTitle = generateSmartTitle(mergedSession);
+            mergedSession.title = currentTitle;
+            sessionData.title = currentTitle;
+
+            const chatLabel = document.getElementById('chat-mode-label');
+            if (chatLabel) chatLabel.innerText = currentTitle;
+            
+            try {
+                const serialized = JSON.stringify(allSessions);
+                if (serialized.length > 3800000) {
+                    const compactSessions = allSessions.map((s, i) => i === 0 ? s : { ...s, html: (s.html && s.html.length > 120000) ? '' : s.html });
+                    safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(compactSessions));
+                } else {
+                    safeLocalStorageSet('aliat_sessions_backup', serialized);
+                }
+            } catch (e) {
+                console.warn('Backup local compactat:', e);
+            }
+
+            renderSidebarHistory(); 
+            if (typeof renderChatHistoryModalList === 'function') {
+                renderChatHistoryModalList(allSessions);
+            }
+            saveSessionToCloud(mergedSession);
+            
+            safeLocalStorageSet('aliat_local_html_' + currentSessionId, sessionData.html); 
+            safeLocalStorageSet('aliat_local_context_' + currentSessionId, studentContextStr); 
+            safeLocalStorageSet('aliat_local_text_' + currentSessionId, finalStudyText);
+            if (window.initialQuizResults) {
+                safeLocalStorageSet('aliat_initial_quiz_' + currentSessionId, JSON.stringify(window.initialQuizResults));
+            }
+        }
+
+        async function syncCloudSessions(isBackground = false) {
+            if (!authToken) return;
+            try {
+                const res = await fetch('/api/sessions/get?t=' + Date.now(), { 
+                    headers: { 'Authorization': 'Bearer ' + authToken } 
+                });
+                
+                if (!res.ok) {
+                    return;
+                }
+
+                const data = await res.json();
+                
+                if (data.success && Array.isArray(data.sessions)) {
+                    const cloudSessions = data.sessions;
+                    const sessionMap = new Map();
+                    
+                    if (Array.isArray(allSessions)) {
+                        allSessions.forEach(s => {
+                            if (s && s.id && hasUserWrittenContent(s) && !window._deletedSessionIds.has(s.id)) {
+                                s.date = normalizeSessionDate(s.date);
+                                sessionMap.set(s.id, s);
+                            }
+                        });
+                    }
+
+                    cloudSessions.forEach(cs => {
+                        if (!cs || !cs.id || window._deletedSessionIds.has(cs.id)) return;
+                        if (!hasUserWrittenContent(cs)) {
+                            // Purga automàtica de converses buides heretades del núvol
+                            window._deletedSessionIds.add(cs.id);
+                            fetch('/api/sessions/delete', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                                body: JSON.stringify({ id: cs.id })
+                            }).catch(() => {});
+                            return;
+                        }
+                        cs.date = normalizeSessionDate(cs.date);
+                        const local = sessionMap.get(cs.id);
+                        if (!local) {
+                            sessionMap.set(cs.id, cs);
+                        } else {
+                            const localHist = (local.history || local.chat_history || []);
+                            const cloudHist = (cs.history || cs.chat_history || []);
+                            
+                            if (cs.id === currentSessionId || localHist.length >= cloudHist.length) {
+                                const merged = { ...cs, ...local, date: normalizeSessionDate(local.date || cs.date) };
+                                if (Array.isArray(local.files) && local.files.length > 0) merged.files = local.files;
+                                sessionMap.set(cs.id, merged);
+                                if (localHist.length > cloudHist.length) {
+                                    saveSessionToCloud(merged);
+                                }
+                            } else {
+                                const merged = { ...local, ...cs, date: normalizeSessionDate(cs.date || local.date) };
+                                if (Array.isArray(local.files) && local.files.length > 0 && (!merged.files || merged.files.length === 0)) {
+                                    merged.files = local.files;
+                                }
+                                sessionMap.set(cs.id, merged);
+                            }
+                        }
+                    });
+
+                    sessionMap.forEach(s => {
+                        const inCloud = cloudSessions.some(cs => cs.id === s.id);
+                        if (!inCloud && hasUserWrittenContent(s)) {
+                            saveSessionToCloud(s);
+                        }
+                    });
+
+                    allSessions = Array.from(sessionMap.values()).filter(s => hasUserWrittenContent(s));
+                    safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
+                    
+                    let sessionExists = allSessions.find(s => s.id === currentSessionId);
+                    const isWelcomeVisible = document.getElementById('welcome-view') && !document.getElementById('welcome-view').classList.contains('hidden');
+                    if (!sessionExists && allSessions.length > 0 && appMode === 'none' && isWelcomeVisible && chatHistory.length === 0 && generatedCalendarArray.length === 0 && !isBackground) { 
+                        // Només restaurem l'última sessió si l'usuari acaba d'obrir l'app sense haver entrat a cap mode
+                        const hasStoredId = Boolean(localStorage.getItem('aliat_current_id'));
+                        if (hasStoredId) {
+                            currentSessionId = allSessions[0].id; 
+                            safeLocalStorageSet('aliat_current_id', currentSessionId); 
+                            loadActiveSessionData();
+                        }
+                    }
+                    renderSidebarHistory(); 
+                    if (typeof renderChatHistoryModalList === 'function') {
+                        renderChatHistoryModalList(allSessions);
+                    }
+                }
+            } catch(e) {
+                console.warn('Sync cloud error:', e);
+            }
+        }
+
         function generateSmartTitle(existingSession) {
             const isCurrent = !existingSession || (existingSession && existingSession.id === currentSessionId);
             const sess = existingSession || allSessions.find(s => s.id === currentSessionId);
@@ -10283,12 +10617,19 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 'nova conversa', 'classe activa', 'xatbot', "pla d'estudis", "pla d'estudi", "xatbot lliure",
                 'ús quotidia', 'ús quotidià', 'ús quotidià i documents', 'document / tasca d\'ús quotidià',
                 'planificant...', 'redacció de documents', 'planificador diari', 'consultes i suport',
-                'conversa sense títol', 'hola', 'comencem la primera'
+                'conversa sense títol', 'comencem la primera'
             ];
 
-            const hist = (sess && (sess.history || sess.chat_history)) || (isCurrent ? chatHistory : []);
-            const cal = (sess && sess.calendar) || (isCurrent ? generatedCalendarArray : []);
-            const files = (sess && Array.isArray(sess.files) && sess.files.length > 0) ? sess.files : (isCurrent ? uploadedPDFs : []);
+            // Per a la sessió activa sempre prioritzem l'estat en viu (chatHistory, generatedCalendarArray, uploadedPDFs)
+            const hist = (isCurrent && Array.isArray(chatHistory) && chatHistory.length > 0)
+                ? chatHistory
+                : ((sess && (sess.history || sess.chat_history)) || []);
+            const cal = (isCurrent && Array.isArray(generatedCalendarArray) && generatedCalendarArray.length > 0)
+                ? generatedCalendarArray
+                : ((sess && sess.calendar) || []);
+            const files = (isCurrent && Array.isArray(uploadedPDFs) && uploadedPDFs.length > 0)
+                ? uploadedPDFs
+                : ((sess && Array.isArray(sess.files) && sess.files.length > 0) ? sess.files : []);
 
             // 1. Extraure del primer missatge rellevant de l'USUARI
             if (Array.isArray(hist) && hist.length > 0) {
@@ -10296,25 +10637,27 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     const msg = hist[i];
                     if (msg && msg.role === 'user' && typeof msg.content === 'string') {
                         let text = msg.content.replace(/<[^>]*>/g, '').trim();
-                        if (!text || /comencem la primera|estic preparat|hola tutor/i.test(text)) continue;
+                        if (!text || /comencem la primera|estic preparat/i.test(text)) continue;
 
                         const tm = text.match(/(?:baralla Anki de|diagrama sobre|resum sobre|preguntes sobre|repàs de|explicació de|redacta|crea|redacció de|sobre):?\s*(.+)$/i);
-                        if (tm && tm[1] && tm[1].trim().length >= 3) {
+                        if (tm && tm[1] && tm[1].trim().length >= 2) {
                             let extracted = cleanTopicTitle(tm[1]);
-                            if (extracted.length >= 3 && !GENERIC_PREFIXES.some(g => extracted.toLowerCase().startsWith(g))) {
+                            if (extracted.length >= 2 && !GENERIC_PREFIXES.some(g => extracted.toLowerCase() === g)) {
                                 return extracted;
                             }
                         }
 
                         let clean = text
                             .replace(/^(📝\s*Generar Apunts[^\:]*:\s*)/i, '')
-                            .replace(/^(Hola tutor!?|Hola|Bon dia|Bona tarda|Vull saber|Pots explicar-me|Explica'm|Explica|Com funciona|Què és|Quina diferència hi ha entre|Quins són|Quines són|Pregunta:|Dubte:|Vull crear|Crea|Redacta|Fes|Genera|Dibuixa|Planifica)\s+/i, '')
+                            .replace(/^(Hola tutor!?|Bon dia|Bona tarda|Vull saber|Pots explicar-me|Explica'm|Explica|Com funciona|Què és|Quina diferència hi ha entre|Quins són|Quines són|Pregunta:|Dubte:|Vull crear|Crea|Redacta|Fes|Genera|Dibuixa|Planifica)\s+/i, '')
                             .replace(/[\?\!\.\:\;…]+$/g, '')
                             .trim();
 
-                        if (clean.length >= 3 && !GENERIC_PREFIXES.some(g => clean.toLowerCase().startsWith(g))) {
+                        if (!clean) clean = text.replace(/[\?\!\.\:\;…]+$/g, '').trim();
+
+                        if (clean.length >= 1 && !GENERIC_PREFIXES.some(g => clean.toLowerCase() === g)) {
                             let extracted = cleanTopicTitle(clean);
-                            if (extracted.length >= 3) return extracted;
+                            if (extracted.length >= 1) return extracted;
                         }
                     }
                 }
@@ -10339,7 +10682,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 const pdfFile = files.find(f => f && f.name && f.name.toLowerCase().endsWith('.pdf')) || files[0];
                 if (pdfFile && pdfFile.name) {
                     let cleaned = cleanTopicTitle(pdfFile.name);
-                    if (cleaned.length >= 3) return cleaned;
+                    if (cleaned.length >= 2) return cleaned;
                 }
             }
 
@@ -10353,7 +10696,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                         .replace(/^Mòdul \d+:\s*/i, '')
                         .trim();
                     let cleaned = cleanTopicTitle(t);
-                    if (cleaned.length >= 3) return cleaned;
+                    if (cleaned.length >= 2) return cleaned;
                 }
             }
 
@@ -10363,7 +10706,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 let isGeneric = GENERIC_PREFIXES.some(g => t.toLowerCase() === g || t.toLowerCase().startsWith(g));
                 if (!isGeneric) {
                     let cleaned = cleanTopicTitle(t);
-                    if (cleaned.length >= 3) return cleaned;
+                    if (cleaned.length >= 2) return cleaned;
                 }
             }
 
@@ -10381,10 +10724,24 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             } catch (e) {
                 console.warn(`LocalStorage quota exceeded for ${key}, trimming backups...`);
                 try {
-                    if (key === 'aliat_sessions_backup' && Array.isArray(allSessions)) {
-                        const slimSessions = allSessions.map(s => {
+                    // 1. Purge heavy duplicate HTML caches from older sessions first
+                    const keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const k = localStorage.key(i);
+                        if (k && k.startsWith('aliat_local_html_') && k !== ('aliat_local_html_' + currentSessionId)) {
+                            keysToRemove.push(k);
+                        }
+                    }
+                    keysToRemove.forEach(k => localStorage.removeItem(k));
+
+                    // 2. Compact aliat_sessions_backup so it doesn't store duplicate chat_history + huge HTML
+                    if (Array.isArray(allSessions)) {
+                        const slimSessions = allSessions.map((s, idx) => {
                             const copy = { ...s };
-                            delete copy.html; // HTML can be restored from history
+                            delete copy.chat_history; // Avoid duplicating copy.history
+                            if (idx > 0 || key === 'aliat_sessions_backup') {
+                                delete copy.html; // Reconstructed automatically from history when needed
+                            }
                             if (Array.isArray(copy.history)) {
                                 copy.history = copy.history.map(m => {
                                     if (m && m.image && m.image.length > 300) {
@@ -10404,6 +10761,11 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                             return copy;
                         });
                         localStorage.setItem('aliat_sessions_backup', JSON.stringify(slimSessions));
+                    }
+
+                    // 3. Retry storing the requested key if it wasn't aliat_sessions_backup
+                    if (key !== 'aliat_sessions_backup') {
+                        localStorage.setItem(key, value);
                     }
                 } catch (e2) {
                     console.warn('Failed to save slim backup to localStorage:', e2);
@@ -10449,146 +10811,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         }
         window.formatSessionDate = formatSessionDate;
 
-        function saveSession() {
-            // Guard: Només desarem a l'historial si la conversa s'ha utilitzat REALMENT (hi ha missatges d'usuari, calendari, apunts, quiz o és pla d'estudis)
-            const hasUserMessages = Array.isArray(chatHistory) && chatHistory.some(m => m && m.role === 'user');
-            const hasCalendar = Array.isArray(generatedCalendarArray) && generatedCalendarArray.length > 0;
-            const hasPdfs = (Array.isArray(uploadedPDFs) && uploadedPDFs.length > 0) || (finalStudyText && finalStudyText.length > 0);
-            const hasQuiz = Boolean(window.initialQuizResults);
-            const isStudy = (appMode === 'study') && (hasCalendar || hasPdfs || hasQuiz);
 
-            if (!hasUserMessages && !hasCalendar && !hasPdfs && !hasQuiz && !isStudy) {
-                return;
-            }
-
-            // Assegurem que el xat té un ID abans d'enviar-lo al servidor
-            if (!currentSessionId || currentSessionId === 'null') {
-                currentSessionId = 'sess_' + Date.now();
-                safeLocalStorageSet('aliat_current_id', currentSessionId);
-            }
-
-            const activeSession = allSessions.find(s => s.id === currentSessionId);
-            const currentTitle = generateSmartTitle(activeSession);
-            
-            const chatLabel = document.getElementById('chat-mode-label');
-            if (chatLabel) chatLabel.innerText = currentTitle;
-            
-            const existingFiles = (activeSession && Array.isArray(activeSession.files)) ? activeSession.files : [];
-
-            const sessionData = { 
-                id: currentSessionId, 
-                mode: appMode, 
-                title: currentTitle, 
-                history: chatHistory, 
-                chat_history: chatHistory, 
-                files: existingFiles,
-                calendar: generatedCalendarArray, 
-                peak_time: selectedPeakTime,
-                games: window.interactiveGames, 
-                initial_quiz: window.initialQuizResults || null,
-                html: document.getElementById('chat-messages')?.innerHTML || '', 
-                context: studentContextStr, 
-                pdf_text: finalStudyText, 
-                date: new Date().getTime() 
-            };
-            
-            const idx = allSessions.findIndex(s => s.id === currentSessionId);
-            if (idx >= 0) {
-                allSessions[idx] = { ...allSessions[idx], ...sessionData };
-            } else {
-                allSessions.push(sessionData);
-            }
-            
-            safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
-            renderSidebarHistory(); 
-            if (typeof renderChatHistoryModalList === 'function') {
-                renderChatHistoryModalList(allSessions);
-            }
-            saveSessionToCloud(sessionData);
-            
-            safeLocalStorageSet('aliat_local_html_' + currentSessionId, sessionData.html); 
-            safeLocalStorageSet('aliat_local_context_' + currentSessionId, studentContextStr); 
-            safeLocalStorageSet('aliat_local_text_' + currentSessionId, finalStudyText);
-            if (window.initialQuizResults) {
-                safeLocalStorageSet('aliat_initial_quiz_' + currentSessionId, JSON.stringify(window.initialQuizResults));
-            }
-        }
-
-        async function syncCloudSessions(isBackground = false) {
-            if (!authToken) return;
-            try {
-                const res = await fetch('/api/sessions/get?t=' + Date.now(), { 
-                    headers: { 'Authorization': 'Bearer ' + authToken } 
-                });
-                
-                if (!res.ok) {
-                    if (res.status === 401) return logout();
-                    return;
-                }
-
-                const data = await res.json();
-                
-                if (data.success && Array.isArray(data.sessions)) {
-                    const cloudSessions = data.sessions;
-                    
-                    const sessionMap = new Map();
-                    
-                    if (Array.isArray(allSessions)) {
-                        allSessions.forEach(s => {
-                            if (s && s.id) sessionMap.set(s.id, s);
-                        });
-                    }
-
-                    cloudSessions.forEach(cs => {
-                        if (!cs || !cs.id) return;
-                        const local = sessionMap.get(cs.id);
-                        if (!local) {
-                            sessionMap.set(cs.id, cs);
-                        } else {
-                            const localHist = (local.history || local.chat_history || []);
-                            const cloudHist = (cs.history || cs.chat_history || []);
-                            
-                            // Si és la sessió activa o la versió local té més missatges/contingut, no sobreescriure-la mai
-                            if (cs.id === currentSessionId || localHist.length >= cloudHist.length) {
-                                const merged = { ...cs, ...local };
-                                if (Array.isArray(local.files) && local.files.length > 0) merged.files = local.files;
-                                sessionMap.set(cs.id, merged);
-                                saveSessionToCloud(merged);
-                            } else {
-                                const merged = { ...local, ...cs };
-                                if (Array.isArray(local.files) && local.files.length > 0 && (!merged.files || merged.files.length === 0)) {
-                                    merged.files = local.files;
-                                }
-                                sessionMap.set(cs.id, merged);
-                            }
-                        }
-                    });
-
-                    sessionMap.forEach(s => {
-                        const inCloud = cloudSessions.some(cs => cs.id === s.id);
-                        if (!inCloud && ((s.history && s.history.length > 0) || (s.calendar && s.calendar.length > 0) || (s.pdf_text && s.pdf_text.length > 0))) {
-                            saveSessionToCloud(s);
-                        }
-                    });
-
-                    allSessions = Array.from(sessionMap.values());
-                    safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
-                    
-                    let sessionExists = allSessions.find(s => s.id === currentSessionId);
-                    if (!sessionExists && allSessions.length > 0 && chatHistory.length === 0 && appMode !== 'study' && generatedCalendarArray.length === 0 && !isBackground) { 
-                        currentSessionId = allSessions[0].id; 
-                        safeLocalStorageSet('aliat_current_id', currentSessionId); 
-                        loadActiveSessionData(); 
-                    }
-                    renderSidebarHistory(); 
-                    if (typeof renderChatHistoryModalList === 'function') {
-                        renderChatHistoryModalList(allSessions);
-                    }
-                }
-            } catch(e) {
-                console.warn('Sync cloud error:', e);
-            }
-        }
 
         async function saveSessionToCloud(sessionData) {
             if (!authToken || !sessionData || !sessionData.id) return;
@@ -10651,7 +10874,21 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     } catch (e) {}
                 }
                 
-                document.getElementById('chat-messages').innerHTML = activeSession.html || localStorage.getItem('aliat_local_html_' + currentSessionId) || '';
+                const chatMessagesEl = document.getElementById('chat-messages');
+                const savedHtml = activeSession.html || localStorage.getItem('aliat_local_html_' + currentSessionId) || '';
+                if (chatMessagesEl) {
+                    chatMessagesEl.innerHTML = savedHtml;
+                    // Si l'HTML es va compactar per límit d'espai però tenim l'historial de missatges, reconstruïm tots els missatges al DOM
+                    if ((!savedHtml || savedHtml.trim().length < 20) && Array.isArray(chatHistory) && chatHistory.length > 0) {
+                        chatMessagesEl.innerHTML = '';
+                        chatHistory.forEach(msg => {
+                            if (!msg || !msg.content) return;
+                            const role = (msg.role === 'user') ? 'user' : 'ai';
+                            appendMessage(role, msg.content, msg.searchQueries || [], msg.sources || []);
+                        });
+                        activeSession.html = chatMessagesEl.innerHTML;
+                    }
+                }
                 
                 document.getElementById('welcome-view').classList.add('hidden');
                 document.getElementById('setup-view').classList.add('hidden');
@@ -10712,27 +10949,19 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         async function cleanupCurrentSessionIfEmpty() {
             if (!currentSessionId) return;
             const activeSession = allSessions.find(s => s.id === currentSessionId);
-            
-            // Si és un pla d'estudis configurat o actiu, mai l'esborrem automàticament
-            const isStudy = (appMode === 'study') || (activeSession && (activeSession.mode === 'study' || (activeSession.calendar && activeSession.calendar.length > 0) || (activeSession.pdf_text && activeSession.pdf_text.length > 0)));
-            if (isStudy) return;
+            if (!activeSession) return;
 
-            const history = (activeSession && activeSession.history) || chatHistory || [];
-            const hasAnyMessages = Array.isArray(history) && history.length > 0;
-            const hasCalendar = (activeSession && activeSession.calendar && activeSession.calendar.length > 0) || (generatedCalendarArray && generatedCalendarArray.length > 0);
-            const hasPdfs = (activeSession && activeSession.pdf_text && activeSession.pdf_text.length > 0) || (uploadedPDFs && uploadedPDFs.length > 0);
-            const hasHtml = activeSession && activeSession.html && activeSession.html.length > 100;
-            const hasCustomTitle = activeSession && activeSession.title && !['Nova Conversa', "Pla d'Estudis", 'XatBot Lliure'].includes(activeSession.title);
-
-            // Only delete if truly completely empty with no interaction whatsoever
-            if (!hasAnyMessages && !hasCalendar && !hasPdfs && !hasHtml && !hasCustomTitle) {
+            if (!hasUserWrittenContent(activeSession)) {
                 const idToDelete = currentSessionId;
+                if (window._deletedSessionIds) window._deletedSessionIds.add(idToDelete);
                 allSessions = allSessions.filter(s => s.id !== idToDelete);
                 safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
                 localStorage.removeItem('aliat_local_html_' + idToDelete);
                 localStorage.removeItem('aliat_local_context_' + idToDelete);
                 localStorage.removeItem('aliat_local_text_' + idToDelete);
                 localStorage.removeItem('aliat_student_memory_' + idToDelete);
+                currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                safeLocalStorageSet('aliat_current_id', currentSessionId);
                 if (authToken) {
                     try {
                         fetch('/api/sessions/delete', {
@@ -10751,8 +10980,8 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             }
             safeLocalStorageSet('aliat_current_id', id); 
             currentSessionId = id;
-            renderSidebarHistory(); 
             loadActiveSessionData();
+            renderSidebarHistory(); 
 
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
@@ -10763,10 +10992,9 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         }
 
         window.newSession = async function() {
-            // Esborrar sessió prèvia només si era completament buida abans de crear-ne una de nova
             await cleanupCurrentSessionIfEmpty();
 
-            currentSessionId = 'sess_' + Date.now();
+            currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
             safeLocalStorageSet('aliat_current_id', currentSessionId);
             
             chatHistory = [];
@@ -10809,6 +11037,9 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             }
             
             renderSidebarHistory();
+            if (typeof renderChatHistoryModalList === 'function') {
+                renderChatHistoryModalList(allSessions);
+            }
         }
 
         function renderSidebarHistory() {
@@ -10816,12 +11047,14 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (!list) return;
             list.innerHTML = '';
             
-            // Conservem totes les sessions vàlides: ordenem primer les fixades (pinned) i després per data
-            const sortedSessions = [...allSessions].filter(s => s && s.id).sort((a, b) => {
+            // Mostrem només les converses on l'usuari ha escrit o creat un pla real
+            const sortedSessions = [...allSessions].filter(s => hasUserWrittenContent(s)).sort((a, b) => {
                 if (Boolean(b.pinned) !== Boolean(a.pinned)) {
                     return b.pinned ? 1 : -1;
                 }
-                return (b.date || 0) - (a.date || 0);
+                const dateA = normalizeSessionDate(a.date || 0);
+                const dateB = normalizeSessionDate(b.date || 0);
+                return dateB - dateA;
             });
 
             if (sortedSessions.length === 0) {
@@ -10839,11 +11072,12 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                                 (s.initial_quiz);
                 let title = generateSmartTitle(s);
                 s.title = title;
+                const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(title) : title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 if (s.id === currentSessionId) {
                     const label = document.getElementById('chat-mode-label');
                     if (label) label.innerText = title;
                 }
-                let dateStr = s.date ? formatSessionDate(s.date) : 'Recent';
+                let dateStr = s.date ? formatSessionDate(normalizeSessionDate(s.date)) : 'Recent';
                 
                 const isDailyUse = (s.mode === 'daily_use');
                 let iconSvg = '';
@@ -10855,20 +11089,30 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     iconSvg = `<span class="w-7 h-7 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>`;
                 }
 
-                let activeClass = (s.id === currentSessionId) 
-                    ? "bg-blue-50 text-blue-900 dark:bg-zinc-800 dark:text-white font-semibold border border-blue-200/90 dark:border-zinc-700" 
+                const isActive = (s.id === currentSessionId);
+                let activeClass = isActive
+                    ? "bg-gradient-to-r from-blue-600/15 via-indigo-600/10 to-blue-500/5 dark:from-blue-600/30 dark:via-indigo-600/20 dark:to-zinc-900 text-blue-950 dark:text-white font-bold border-2 border-blue-500 dark:border-blue-400 shadow-md shadow-blue-500/10 ring-2 ring-blue-500/20"
                     : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 hover:text-zinc-950 dark:hover:text-white font-medium border border-transparent";
 
+                let titleTextClass = isActive
+                    ? "font-extrabold text-blue-700 dark:text-blue-300"
+                    : "font-medium text-zinc-900 dark:text-zinc-100";
+
                 list.innerHTML += `
-                    <div class="relative group mb-1 w-full flex justify-center">
-                        <button onclick="loadSession('${s.id}')" class="w-full py-2 px-2.5 rounded-xl text-xs truncate transition-all duration-200 ${activeClass} flex items-center justify-start gap-2.5 pr-8 cursor-pointer">
+                    <div class="relative group mb-1.5 w-full flex justify-center">
+                        ${isActive ? `<span class="
+                        absolute left-0 top-1.5 bottom-1.5 w-1.5 rounded-r-full bg-gradient-to-b from-blue-500 via-indigo-500 to-purple-500 z-10 shadow-xs"></span>` : ''}
+                        <button onclick="loadSession('${s.id}')" aria-current="${isActive ? 'page' : 'false'}" class="w-full py-2.5 px-3 rounded-xl text-xs truncate transition-all duration-200 ${activeClass} flex items-center justify-start gap-2.5 pr-8 cursor-pointer">
                             ${iconSvg}
-                            <span class="truncate flex-1 tracking-tight font-medium text-zinc-900 dark:text-zinc-100 text-left min-w-0">
-                                <span class="truncate">${title}</span>
+                            <span class="truncate flex-1 tracking-tight ${titleTextClass} text-left min-w-0 flex items-center gap-1.5">
+                                <span class="truncate">${safeTitle}</span>
                             </span>
-                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0 group-hover:hidden flex items-center gap-1">
+                            <span class="text-[10px] shrink-0 group-hover:hidden flex items-center gap-1">
                                 ${s.pinned ? `<svg class="w-3 h-3 text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Conversa fixada"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-6H6.5L5 17z" fill="currentColor"/><path d="M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7" fill="currentColor"/></svg>` : ''}
-                                <span>${dateStr}</span>
+                                ${isActive
+                                    ? `<span class="px-1.5 py-0.5 rounded-md bg-blue-600 text-white text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-2xs"><span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>ACTIU</span>`
+                                    : `<span class="text-zinc-500 dark:text-zinc-400">${dateStr}</span>`
+                                }
                             </span>
                         </button>
                         <button onclick="deleteSession('${s.id}')" class="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-500/15 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10 cursor-pointer" title="Eliminar conversa">
@@ -10930,11 +11174,11 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (!container) return;
             container.innerHTML = '';
             
-            const sorted = [...(sessionsList || [])].sort((a, b) => {
+            const sorted = [...(sessionsList || [])].filter(s => hasUserWrittenContent(s)).sort((a, b) => {
                 if (Boolean(b.pinned) !== Boolean(a.pinned)) {
                     return b.pinned ? 1 : -1;
                 }
-                return (b.date || 0) - (a.date || 0);
+                return normalizeSessionDate(b.date || 0) - normalizeSessionDate(a.date || 0);
             });
             
             if (sorted.length === 0) {
@@ -10952,8 +11196,10 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
 
             sorted.forEach(s => {
                 const isStudy = (s.mode === 'study') || (s.calendar && s.calendar.length > 0) || (s.pdf_text && s.pdf_text.length > 0) || (s.initial_quiz);
-                const title = s.title || generateSmartTitle(s);
-                const dateStr = s.date ? formatSessionDate(s.date) : 'Recent';
+                const title = generateSmartTitle(s);
+                s.title = title;
+                const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(title) : title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const dateStr = s.date ? formatSessionDate(normalizeSessionDate(s.date)) : 'Recent';
                 const isActive = (s.id === currentSessionId);
                 
                 const isDailyUse = (s.mode === 'daily_use');
@@ -10978,7 +11224,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                             </div>
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-center gap-2 mb-1 flex-wrap">
-                                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm truncate max-w-[240px] sm:max-w-xs">${title}</h4>
+                                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm truncate max-w-[240px] sm:max-w-xs">${safeTitle}</h4>
                                     ${badgeMode}
                                     ${isActive ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-600 text-white">ACTIU</span>` : ''}
                                 </div>
@@ -11017,7 +11263,8 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 customClass: { popup: 'rounded-3xl border dark:border-zinc-800' }
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    // 1. Esborrar localment
+                    // 1. Esborrar localment i marcar com a esborrada perquè no torni en sincronitzacions
+                    if (window._deletedSessionIds) window._deletedSessionIds.add(id);
                     allSessions = allSessions.filter(s => s.id !== id);
                     safeLocalStorageSet('aliat_sessions_backup', JSON.stringify(allSessions));
                     localStorage.removeItem('aliat_local_html_' + id);
@@ -11106,13 +11353,12 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         // --- RUTES D'INICI DE L'APP ---
         async function startStudyMode(forceNew = false) { 
             await cleanupCurrentSessionIfEmpty();
-            if (forceNew || (chatHistory.length > 0 && appMode !== 'study')) {
+            if (forceNew || (currentSessionHasUserContent() && appMode !== 'study')) {
                 await newSession();
             }
 
             appMode = 'study'; 
             
-            // Ocultar totes les vistes
             document.getElementById('daily-use-banner')?.classList.add('hidden');
             document.getElementById('welcome-view')?.classList.add('hidden');
             document.getElementById('chat-view')?.classList.add('hidden');
@@ -11120,7 +11366,6 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             document.getElementById('quiz-view')?.classList.add('hidden');
             document.getElementById('quiz-view')?.classList.remove('flex');
             
-            // 2. NOMÉS anem al xat directe si ja s'ha generat el calendari a la sessió actual i no és un nou pla forçat
             if (generatedCalendarArray.length > 0 && !forceNew) { 
                 document.getElementById('setup-view')?.classList.add('hidden'); 
                 document.getElementById('setup-view')?.classList.remove('flex'); 
@@ -11134,27 +11379,38 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 const label = document.getElementById('chat-mode-label');
                 if (label) label.innerText = generateSmartTitle();
             } else { 
-                // Si no hi ha calendari o es clica des del menú per crear pla, anem a la pantalla de preparació
                 document.getElementById('setup-view')?.classList.remove('hidden'); 
                 document.getElementById('setup-view')?.classList.add('flex'); 
             } 
 
-            // Si estàs al mòbil, tanca el menú lateral automàticament
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
                 if (sidebar && !sidebar.classList.contains('-translate-x-full')) toggleSidebar();
             }
+            renderSidebarHistory();
         }
 
         async function startFreeChatMode() { 
             await cleanupCurrentSessionIfEmpty();
-            if (chatHistory.length > 0) {
-                await newSession();
+            // Sempre que entrem a XatBot des d'una altra sessió o des d'un xat ja escrit, preparem un xat nou net sense desar-lo fins que l'usuari escrigui
+            if (currentSessionHasUserContent() || appMode !== 'free') {
+                currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                safeLocalStorageSet('aliat_current_id', currentSessionId);
+                chatHistory = [];
+                generatedCalendarArray = [];
+                window.interactiveGames = {};
+                window.initialQuizResults = null;
+                studentContextStr = "";
+                finalStudyText = "";
+                uploadedPDFs = [];
+            }
+            if (!currentSessionId || currentSessionId === 'null') {
+                currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                safeLocalStorageSet('aliat_current_id', currentSessionId);
             }
 
             appMode = 'free'; 
             
-            // Ocultar totes les vistes
             document.getElementById('daily-use-banner')?.classList.add('hidden');
             document.getElementById('welcome-view')?.classList.add('hidden'); 
             document.getElementById('setup-view')?.classList.add('hidden');
@@ -11167,18 +11423,15 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             document.getElementById('chat-view')?.classList.add('flex'); 
             document.getElementById('chat-form')?.classList.remove('hidden'); 
             
-            // En xat lliure, els botons del Pla d'Estudis s'amaguen
             updateHeaderButtonsVisibility();
             document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden'); 
-            document.getElementById('chat-mode-label').innerText = "🟢 XatBot Lliure"; 
+            document.getElementById('chat-mode-label').innerText = "XatBot"; 
             
             if (chatHistory.length === 0) { 
                 renderChatbotWelcomeCard();
-                chatHistory.push({ role: 'assistant', content: "Benvingut al XatBot Lliure d'Aliat Intel·ligent." }); 
             } 
-            saveSession();
+            renderSidebarHistory();
 
-            // Si estàs al mòbil, tanca el menú lateral
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
                 if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
@@ -11188,13 +11441,24 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         // --- CONTROLADORS MÒDUL D'ÚS QUOTIDIÀ ---
         async function startDailyUseMode() {
             await cleanupCurrentSessionIfEmpty();
-            if (chatHistory.length > 0 && appMode !== 'daily_use') {
-                await newSession();
+            if (currentSessionHasUserContent() || appMode !== 'daily_use') {
+                currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                safeLocalStorageSet('aliat_current_id', currentSessionId);
+                chatHistory = [];
+                generatedCalendarArray = [];
+                window.interactiveGames = {};
+                window.initialQuizResults = null;
+                studentContextStr = "";
+                finalStudyText = "";
+                uploadedPDFs = [];
+            }
+            if (!currentSessionId || currentSessionId === 'null') {
+                currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                safeLocalStorageSet('aliat_current_id', currentSessionId);
             }
 
             appMode = 'daily_use'; 
 
-            // Neteja de totes les altres vistes
             document.getElementById('welcome-view')?.classList.add('hidden');
             document.getElementById('setup-view')?.classList.add('hidden');
             document.getElementById('setup-view')?.classList.remove('flex');
@@ -11206,14 +11470,6 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             document.getElementById('chat-view')?.classList.add('flex'); 
             document.getElementById('chat-form')?.classList.remove('hidden'); 
 
-            // Mostrar el banner desplegable d'Ús Quotidià
-            const dailyBanner = document.getElementById('daily-use-banner');
-            if (dailyBanner) {
-                dailyBanner.classList.remove('hidden');
-            }
-
-            updateHeaderButtonsVisibility();
-            document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden'); 
             updateHeaderButtonsVisibility();
             document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden'); 
             const label = document.getElementById('chat-mode-label');
@@ -11221,9 +11477,8 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
 
             if (chatHistory.length === 0) {
                 renderDailyUseWelcomeCard();
-                chatHistory.push({ role: 'assistant', content: "Benvingut al Mòdul d'Ús Quotidià d'Aliat Intel·ligent." });
             }
-            saveSession();
+            renderSidebarHistory();
 
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
@@ -11231,35 +11486,36 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             }
         }
 
-        // --- PANTALLES DE BENVINGUDA INTERACTIVES PER A CHATBOT I ÚS QUOTIDIÀ ---
+        // --- PANTALLES DE BENVINGUDA SIMPLES I PROFESSIONALS ---
         window.renderDailyUseWelcomeCard = function() {
             const box = document.getElementById('chat-messages');
             if (!box) return;
             box.innerHTML = `
-                <div class="w-full max-w-lg mx-auto my-3 space-y-3 animate-fade-in">
-                    <div class="bg-gradient-to-br from-red-50/80 via-white to-rose-50/50 dark:from-zinc-900/90 dark:via-zinc-900 dark:to-zinc-950 border border-red-200/80 dark:border-zinc-800 p-5 rounded-2xl text-center shadow-xs">
-                        <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold text-lg shadow-xs mx-auto mb-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                <div class="mode-welcome-screen w-full max-w-xl mx-auto my-auto py-8 px-4 text-center space-y-6 animate-fade-in">
+                    <div class="space-y-2.5">
+                        <div class="w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200/80 dark:border-rose-800/70 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                         </div>
-                        <h2 class="text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Ús Quotidià, Documents i Productivitat</h2>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto mt-1 font-medium leading-relaxed">
-                            Redacció de documents per a Word i Google Docs, planificació de rutines i organització diària.
+                        <h2 class="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Ús Quotidià i Documents</h2>
+                        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 max-w-md mx-auto leading-relaxed">
+                            Redacta correus, informes per a Word o Google Docs i organitza el teu dia.
                         </p>
                     </div>
-
-                    <div class="bg-white/95 dark:bg-[#121217] border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-xs space-y-2.5">
-                        <label class="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5 uppercase tracking-wider">
-                            <span>Escriu la teva indicació o consulta</span>
-                        </label>
-                        <textarea id="daily-welcome-user-notes" rows="2" placeholder="Ex: Redacta un correu formal o un informe executiu..." class="w-full p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 text-zinc-900 dark:text-zinc-100 text-xs outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all custom-scrollbar shadow-inner"></textarea>
-                        <div class="flex items-center justify-between gap-2 pt-0.5">
-                            <span class="text-[11px] text-zinc-400 font-normal">Envia la teva petició per començar.</span>
-                            <button type="button" onclick="submitDailyWelcomeNotes()" class="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition shadow-xs cursor-pointer flex items-center gap-1 shrink-0">
-                                <span>Començar</span>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                            </button>
-                        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-left">
+                        <button type="button" onclick="startDailyUseWithTopic('correu')" class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-400 dark:hover:border-rose-500/70 transition cursor-pointer group">
+                            <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Correu Formal</div>
+                            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">Redacció clara i professional</div>
+                        </button>
+                        <button type="button" onclick="startDailyUseWithTopic('informe')" class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-400 dark:hover:border-rose-500/70 transition cursor-pointer group">
+                            <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Informe Executiu</div>
+                            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">Estructura per a Word o Docs</div>
+                        </button>
+                        <button type="button" onclick="startDailyUseWithTopic('planificador')" class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-400 dark:hover:border-rose-500/70 transition cursor-pointer group">
+                            <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Planificador Diari</div>
+                            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">Prioritats i blocs de temps</div>
+                        </button>
                     </div>
+                    <p class="text-[11px] text-zinc-400 dark:text-zinc-500">Escriu la teva petició a la barra inferior per començar.</p>
                 </div>
             `;
         };
@@ -11268,34 +11524,54 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             const box = document.getElementById('chat-messages');
             if (!box) return;
             box.innerHTML = `
-                <div class="w-full max-w-lg mx-auto my-3 space-y-3 animate-fade-in">
-                    <div class="bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/50 dark:from-zinc-900/90 dark:via-zinc-900 dark:to-zinc-950 border border-emerald-200/80 dark:border-zinc-800 p-5 rounded-2xl text-center shadow-xs">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-xs mx-auto mb-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <div class="mode-welcome-screen w-full max-w-xl mx-auto my-auto py-8 px-4 text-center space-y-6 animate-fade-in">
+                    <div class="space-y-2.5">
+                        <div class="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/70 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         </div>
-                        <h2 class="text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">XatBot Lliure</h2>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto mt-1 font-medium leading-relaxed">
-                            Resolució de dubtes, explicacions pas a pas i converses obertes sobre qualsevol tema.
+                        <h2 class="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">XatBot</h2>
+                        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 max-w-md mx-auto leading-relaxed">
+                            Resol dubtes concrets, practica exercicis o explora qualsevol tema pas a pas.
                         </p>
-                        <div class="flex flex-wrap items-center justify-center gap-2 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
-                            <button onclick="startFreeChatWithTopic('debat')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-zinc-700/80 border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-200 transition cursor-pointer">Debat i Opinió</button>
-                            <button onclick="startFreeChatWithTopic('ciencia')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-zinc-700/80 border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-200 transition cursor-pointer">Ciència i Mates</button>
-                            <button onclick="startFreeChatWithTopic('brainstorming')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-zinc-700/80 border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-700 dark:text-zinc-200 transition cursor-pointer">Pluja d'Idees</button>
-                        </div>
                     </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-left">
+                        <button type="button" onclick="startFreeChatWithTopic('debat')" class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group">
+                            <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Debat i Opinió</div>
+                            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">Arguments i anàlisi crítica</div>
+                        </button>
+                        <button type="button" onclick="startFreeChatWithTopic('ciencia')" class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group">
+                            <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Ciència i Mates</div>
+                            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">Resolució pas a pas</div>
+                        </button>
+                        <button type="button" onclick="startFreeChatWithTopic('brainstorming')" class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group">
+                            <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Pluja d'Idees</div>
+                            <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">Enfocaments per a projectes</div>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-zinc-400 dark:text-zinc-500">Escriu la teva consulta a la barra inferior per començar.</p>
                 </div>
             `;
+        };
+
+        window.startDailyUseWithTopic = function(key) {
+            const map = {
+                'correu': 'Redacta un correu formal clar i professional',
+                'informe': 'Ajuda\'m a estructurar un informe executiu',
+                'planificador': 'Crea un planificador setmanal amb blocs de temps i prioritats'
+            };
+            const userPrompt = map[key] || key;
+            appendMessage('user', userPrompt);
+            chatHistory.push({ role: 'user', content: userPrompt });
+            saveSession();
+            triggerAiResponse();
         };
 
         window.submitDailyWelcomeNotes = function() {
             const notesInput = document.getElementById('daily-welcome-user-notes');
             const notes = notesInput ? notesInput.value.trim() : '';
-            const userPrompt = notes 
-                ? `Tinc aquestes notes/comentaris per a la meva tasca d'ús quotidià:\n\n"${notes}"\n\nSi us plau, ajuda'm a organitzar, redactar o resoldre aquesta petició pas a pas.`
-                : `Hola! Estic a punt per utilitzar el mòdul d'Ús Quotidià. Quins passos em recomanes començar?`;
-            
-            appendMessage('user', userPrompt);
-            chatHistory.push({ role: 'user', content: userPrompt });
+            if (!notes) return;
+            appendMessage('user', notes);
+            chatHistory.push({ role: 'user', content: notes });
             saveSession();
             triggerAiResponse();
         };
@@ -11904,7 +12180,7 @@ Instruccions de format:
 
         async function enterDailyUseChat(initialUserPrompt, initialCategory) {
             await cleanupCurrentSessionIfEmpty();
-            if (chatHistory.length > 0 && appMode !== 'daily_use') {
+            if (currentSessionHasUserContent() || (chatHistory.length > 0 && appMode !== 'daily_use')) {
                 await newSession();
             }
 
@@ -11931,22 +12207,18 @@ Instruccions de format:
             const label = document.getElementById('chat-mode-label');
             if (label) label.innerText = "💡 " + (initialCategory || "Ús Quotidià");
 
-            // Missatge de benvinguda de la IA adaptat
-            const greeting = "Hola! Estic a punt per ajudar-te amb **" + (initialCategory || "la teva tasca") + "**.\n\n" +
-                "*(💡 Recorda revisar acuradament qualsevol esborrany o informació abans d'utilitzar-lo formalment)*\n\n" +
-                "Comencem! Què necessites concretament?";
-            appendMessage('ai', greeting);
-            chatHistory.push({ role: 'assistant', content: greeting });
-
             if (initialUserPrompt) {
                 appendMessage('user', initialUserPrompt);
                 chatHistory.push({ role: 'user', content: initialUserPrompt });
+                saveSession();
                 triggerAiResponse();
+            } else if (chatHistory.length === 0) {
+                renderDailyUseWelcomeCard();
             }
 
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');
-                if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar();
+                if (sidebar && !sidebar.classList.contains('-translate-x-full')) toggleSidebar();
             }
         }
 
@@ -13433,22 +13705,11 @@ ${parsedBody}
                 if (!planTitle) planTitle = "Pla d'Estudis";
 
                 if (!currentSessionId || currentSessionId === 'null') {
-                    currentSessionId = 'sess_' + Date.now();
+                    currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
                     safeLocalStorageSet('aliat_current_id', currentSessionId);
                 }
 
                 appMode = 'study';
-
-                let activeSession = allSessions.find(s => s.id === currentSessionId);
-                if (!activeSession) {
-                    activeSession = { id: currentSessionId, mode: 'study' };
-                    allSessions.push(activeSession);
-                }
-                activeSession.title = planTitle;
-                activeSession.mode = 'study';
-                if (Array.isArray(uploadedPDFs) && uploadedPDFs.length > 0) {
-                    activeSession.files = uploadedPDFs.map(f => ({ name: f.name }));
-                }
 
                 const chatLabel = document.getElementById('chat-mode-label');
                 if (chatLabel) chatLabel.innerText = planTitle;
@@ -14045,22 +14306,26 @@ ${parsedBody}
                 fileExt: attachedExt
             }); 
 
-            // Registrar l'arxiu a la sessió activa
-            let activeSession = allSessions.find(s => s.id === currentSessionId);
-            if (activeSession && payloadImage) {
-                if (!Array.isArray(activeSession.files)) activeSession.files = [];
-                activeSession.files.push({
-                    id: 'img_' + Date.now(),
-                    name: attachedName,
-                    ext: attachedExt,
-                    src: payloadImage,
-                    type: 'image',
-                    date: Date.now()
-                });
+            removeAttachment();
+            saveSession();
+
+            // Registrar l'arxiu a la sessió activa un cop desada
+            if (payloadImage) {
+                let activeSession = allSessions.find(s => s.id === currentSessionId);
+                if (activeSession) {
+                    if (!Array.isArray(activeSession.files)) activeSession.files = [];
+                    activeSession.files.push({
+                        id: 'img_' + Date.now(),
+                        name: attachedName,
+                        ext: attachedExt,
+                        src: payloadImage,
+                        type: 'image',
+                        date: Date.now()
+                    });
+                    saveSession(false);
+                }
             }
-            
-            removeAttachment(); 
-            saveSession(); 
+
             triggerAiResponse();
         });
 
@@ -15136,6 +15401,9 @@ ${parsedBody}
         function appendMessage(sender, text, searchQueries = [], sources = []) {
             const box = document.getElementById('chat-messages');
             if (!box) return;
+            if (sender === 'user') {
+                box.querySelectorAll('.mode-welcome-screen').forEach(el => el.remove());
+            }
             const div = document.createElement('div');
             if (sender === 'user') {
                 div.className = "flex justify-end w-full mb-3";

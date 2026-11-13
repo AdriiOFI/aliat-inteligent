@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { getDbClient, JWT_SECRET } = require('../db');
+const { getDbClient, JWT_SECRET } = require('../../lib/db');
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);

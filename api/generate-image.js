@@ -31,7 +31,7 @@ module.exports = async function generateImageHandler(req, res) {
     if (!apiKey && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
         try {
             const jwt = require('jsonwebtoken');
-            const { getDbClient, JWT_SECRET } = require('./db');
+            const { getDbClient, JWT_SECRET } = require('../lib/db');
             const decoded = jwt.verify(req.headers.authorization.split(' ')[1], JWT_SECRET);
             const client = getDbClient();
             const uRes = await client.execute({ sql: 'SELECT ai_api_key FROM users WHERE id = ?', args: [decoded.id] });

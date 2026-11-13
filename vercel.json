@@ -1,7 +1,21 @@
 {
   "functions": {
-    "api/**/*": {
+    "api/**/*.js": {
       "maxDuration": 60
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/auth/:action",
+      "destination": "/api/auth?action=:action"
+    },
+    {
+      "source": "/api/sessions/:action",
+      "destination": "/api/sessions?action=:action"
+    },
+    {
+      "source": "/api/workspace/:service",
+      "destination": "/api/workspace?service=:service"
+    }
+  ]
 }

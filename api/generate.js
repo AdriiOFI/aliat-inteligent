@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { GoogleGenAI } = require('@google/genai');
-const { getDbClient, JWT_SECRET } = require('./db');
+const { getDbClient, JWT_SECRET } = require('../lib/db');
 
 const quotaExceededKeys = new Set([
     '113fdc1f2f78da8d0a1a59e4c7a2d356d8c1b8ebe5ec3d25a9f590a9cecef809'

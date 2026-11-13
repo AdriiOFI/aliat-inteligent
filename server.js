@@ -1,21 +1,11 @@
 const express = require('express');
 const path = require('path');
 
-const loginHandler = require('./api/auth/login');
-const registerHandler = require('./api/auth/register');
-const googleHandler = require('./api/auth/google');
-const verifyHandler = require('./api/auth/verify');
+const authRouter = require('./api/auth');
+const sessionsRouter = require('./api/sessions');
+const workspaceRouter = require('./api/workspace');
 const generateHandler = require('./api/generate');
-const sessionsGetHandler = require('./api/sessions/get');
-const sessionsSaveHandler = require('./api/sessions/save');
-const sessionsDeleteHandler = require('./api/sessions/delete');
-const sessionsShareHandler = require('./api/sessions/share');
 const userSettingsHandler = require('./api/user/settings');
-const driveHandler = require('./api/workspace/drive');
-const docsHandler = require('./api/workspace/docs');
-const gmailHandler = require('./api/workspace/gmail');
-const calendarHandler = require('./api/workspace/calendar');
-const classroomHandler = require('./api/workspace/classroom');
 const generateVideoHandler = require('./api/generate-video');
 const generateImageHandler = require('./api/generate-image');
 const analyzeMultimodalHandler = require('./api/analyze-multimodal');
@@ -84,23 +74,16 @@ app.use('/api/', (req, res, next) => {
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 // API Routes
-app.all('/api/auth/login', (req, res) => loginHandler(req, res));
-app.all('/api/auth/register', (req, res) => registerHandler(req, res));
-app.all('/api/auth/google', (req, res) => googleHandler(req, res));
-app.all('/api/auth/verify', (req, res) => verifyHandler(req, res));
+app.all('/api/auth/:action', (req, res) => authRouter(req, res));
+app.all('/api/auth', (req, res) => authRouter(req, res));
 app.all('/api/generate', (req, res) => generateHandler(req, res));
-app.all('/api/sessions/get', (req, res) => sessionsGetHandler(req, res));
-app.all('/api/sessions/save', (req, res) => sessionsSaveHandler(req, res));
-app.all('/api/sessions/delete', (req, res) => sessionsDeleteHandler(req, res));
-app.all('/api/sessions/share', (req, res) => sessionsShareHandler(req, res));
+app.all('/api/sessions/:action', (req, res) => sessionsRouter(req, res));
+app.all('/api/sessions', (req, res) => sessionsRouter(req, res));
 app.all('/api/user/settings', (req, res) => userSettingsHandler(req, res));
 
 // Google Workspace 1P API Proxies
-app.all('/api/workspace/drive', (req, res) => driveHandler(req, res));
-app.all('/api/workspace/docs', (req, res) => docsHandler(req, res));
-app.all('/api/workspace/gmail', (req, res) => gmailHandler(req, res));
-app.all('/api/workspace/calendar', (req, res) => calendarHandler(req, res));
-app.all('/api/workspace/classroom', (req, res) => classroomHandler(req, res));
+app.all('/api/workspace/:service', (req, res) => workspaceRouter(req, res));
+app.all('/api/workspace', (req, res) => workspaceRouter(req, res));
 
 // Advanced AI Capabilities (Video, Image aspect ratios, Multimodal analysis)
 app.all('/api/generate-video', (req, res) => generateVideoHandler(req, res));

@@ -17699,10 +17699,10 @@ ${parsedBody}
             });
         };
 
-        window.copyRichMsgForGoogleDocs = async function(btn) {
-            const parentMsg = btn.closest('.chat-msg-ai');
-            if (!parentMsg) return;
-            const prose = parentMsg.querySelector('.prose');
+        window.copyRichMsgForGoogleDocs = async function(btnOrProse) {
+            const prose = (btnOrProse && btnOrProse.classList && btnOrProse.classList.contains('prose'))
+                ? btnOrProse
+                : btnOrProse?.closest?.('.chat-msg-ai')?.querySelector('.prose');
             if (!prose) return;
             const cleanText = prose.innerText;
             const htmlContent = prose.innerHTML;
@@ -17727,6 +17727,56 @@ ${parsedBody}
 
             navigator.clipboard.writeText(cleanText).then(() => {
                 showToast('Text copiat al porta-retalls!', 'success');
+            });
+        };
+
+        window.openDocumentExportModal = function(btn) {
+            const parentMsg = btn?.closest?.('.chat-msg-ai');
+            const prose = parentMsg?.querySelector('.prose');
+            if (!prose) {
+                showToast('No hi ha contingut disponible per exportar.', 'warning');
+                return;
+            }
+            Swal.fire({
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Exportar Document</div>',
+                html: `
+                    <div class="text-left space-y-2.5 pt-1">
+                        <button type="button" id="swal-export-word-btn" class="w-full p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800/80 flex items-center gap-3 text-left transition cursor-pointer group">
+                            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Exportar a Word (.doc)</div>
+                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400">Descarrega el document formatat per a Word o LibreOffice.</div>
+                            </div>
+                        </button>
+                        <button type="button" id="swal-copy-doc-btn" class="w-full p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800/80 flex items-center gap-3 text-left transition cursor-pointer group">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Copiar per a document</div>
+                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400">Copia amb format ric (taules, títols i negretes) per enganxar a Word o Google Docs.</div>
+                            </div>
+                        </button>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCloseButton: true,
+                customClass: {
+                    popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md w-full',
+                    title: 'font-black text-zinc-900 dark:text-white'
+                },
+                didOpen: () => {
+                    document.getElementById('swal-export-word-btn')?.addEventListener('click', () => {
+                        Swal.close();
+                        exportAsWordDocument(prose.innerText, 'document_aliat_intel_ligent.doc');
+                    });
+                    document.getElementById('swal-copy-doc-btn')?.addEventListener('click', async () => {
+                        Swal.close();
+                        await window.copyRichMsgForGoogleDocs(prose);
+                    });
+                }
             });
         };
 
@@ -17774,36 +17824,22 @@ ${parsedBody}
                         <button onclick="triggerAiResponse()" title="Regenerar resposta" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
                         </button>
-                        <button onclick="window.copyMsgText(this)" title="Copiar resposta (Text)" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
+                        <button onclick="window.copyMsgText(this)" title="Copiar text" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                        <button onclick="window.copyRichMsgForGoogleDocs(this)" title="Copiar amb format per a Google Docs / Word" class="p-1 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                         </button>
                         <button onclick="speakMessageText(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="Escoltar text complet" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                         </button>
-                        <button onclick="exportAsWordDocument(this.closest('.chat-msg-ai').querySelector('.prose').innerText, 'document_aliat_intel_ligent.doc')" title="Exportar a Word / LibreOffice (.doc)" class="p-1 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
+                        <button onclick="window.openDocumentExportModal(this)" title="Exportar a Word / Copiar per a document" class="p-1 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                         </button>
                         <button onclick="sendAsEmail(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="Enviar per Correu electrònic" class="p-1 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                         </button>
                         ${appMode === 'study' ? `
-                        <div class="inline-flex items-center gap-1 border-l border-zinc-200 dark:border-zinc-800 pl-1.5 ml-1">
-                            <button onclick="openBlurtingModal()" title="Repte Blurting (Avaluació ràpida)" class="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 rounded-lg text-[10px] font-bold transition cursor-pointer flex items-center gap-1">
-                                <span>Blurting</span>
-                            </button>
-                            <button onclick="startFeynmanTactic()" title="Tècnica Feynman" class="px-2 py-0.5 bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 text-purple-600 dark:text-purple-400 rounded-lg text-[10px] font-bold transition cursor-pointer flex items-center gap-1">
-                                <span>Feynman</span>
-                            </button>
-                            <button onclick="generateCornellNotes()" title="Format Cornell" class="px-2 py-0.5 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 rounded-lg text-[10px] font-bold transition cursor-pointer flex items-center gap-1">
-                                <span>Cornell</span>
-                            </button>
-                            <button onclick="promptGoogleCalendarReminder('Sessió d\'Estudi', this.closest('.chat-msg-ai').querySelector('.prose').innerText.slice(0, 300))" title="Afegir a Google Calendar" class="p-1 hover:text-blue-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            </button>
-                        </div>
+                        <button onclick="promptGoogleCalendarReminder('Sessió d\'Estudi', this.closest('.chat-msg-ai').querySelector('.prose').innerText.slice(0, 300))" title="Afegir a Google Calendar" class="p-1 hover:text-blue-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </button>
                         ` : ''}
                         ${appMode === 'daily_use' ? `
                         <button onclick="promptGoogleCalendarReminder('Tasca planificada', this.closest('.chat-msg-ai').querySelector('.prose').innerText.slice(0, 300))" title="Afegir a Google Calendar" class="p-1 hover:text-blue-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">

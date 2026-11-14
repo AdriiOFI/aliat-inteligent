@@ -2,12 +2,14 @@ const loginHandler = require('../lib/auth/login');
 const registerHandler = require('../lib/auth/register');
 const googleHandler = require('../lib/auth/google');
 const verifyHandler = require('../lib/auth/verify');
+const recaptchaHandler = require('../lib/auth/recaptcha');
 
 const ROUTES = {
     login: loginHandler,
     register: registerHandler,
     google: googleHandler,
-    verify: verifyHandler
+    verify: verifyHandler,
+    recaptcha: recaptchaHandler
 };
 
 module.exports = async function authRouter(req, res) {

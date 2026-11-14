@@ -7,6 +7,7 @@
     <meta name="description" content="Tutor virtual intel·ligent per crear plans d'estudi amb IA, tests de diagnòstic i xat interactiu.">
     <meta property="og:title" content="Aliat Intel·ligent">
     <meta property="og:description" content="Tutor virtual intel·ligent per crear plans d'estudi amb IA, tests de diagnòstic i xat interactiu.">
+    <meta name="google-site-verification" content="Ob_ohKErmz3FY-PLXlhVlvhEfIfz9cXYxspdz36I92c" />
     
     <!-- PWA & Android Web App Meta Tags -->
     <link rel="manifest" href="/manifest.json">
@@ -30,9 +31,10 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <!-- Google API Client & Identity Services -->
+    <!-- Google API Client, Identity Services & reCAPTCHA Enterprise -->
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
         
@@ -327,7 +329,179 @@
             position: static !important;
             transform: none !important;
         }
-        /* Botons de navegació (Pla d'estudis, xatbot, ús quotidià, historial) */
+        /* Efectes interactius per als modes del desplegable lateral (Pla d'Estudis, XatBot, Ús Quotidià, Historial) */
+        .sidebar-mode-btn {
+            position: relative;
+            border: 1px solid transparent;
+            transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+                        background-color 0.22s ease,
+                        border-color 0.22s ease,
+                        box-shadow 0.24s ease,
+                        color 0.2s ease !important;
+        }
+        body:not(.sidebar-collapsed) .sidebar-mode-btn:hover {
+            transform: translateX(4px);
+        }
+        body:not(.sidebar-collapsed) .sidebar-mode-btn:active {
+            transform: translateX(2px) scale(0.985);
+        }
+        .sidebar-mode-btn .sidebar-mode-icon {
+            transition: transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        background-color 0.22s ease,
+                        border-color 0.22s ease,
+                        box-shadow 0.22s ease,
+                        color 0.22s ease;
+        }
+        .sidebar-mode-btn:hover .sidebar-mode-icon {
+            transform: scale(1.1) rotate(-4deg);
+        }
+        .sidebar-mode-btn:active .sidebar-mode-icon {
+            transform: scale(0.95) rotate(0deg);
+        }
+        .sidebar-mode-bar {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleY(0);
+            width: 3.5px;
+            height: 16px;
+            border-radius: 0 999px 999px 0;
+            opacity: 0;
+            transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, height 0.24s ease;
+            pointer-events: none;
+        }
+        body:not(.sidebar-collapsed) .sidebar-mode-btn:hover .sidebar-mode-bar {
+            transform: translateY(-50%) scaleY(0.8);
+            opacity: 0.75;
+        }
+        body:not(.sidebar-collapsed) .sidebar-mode-btn.is-active-mode .sidebar-mode-bar {
+            transform: translateY(-50%) scaleY(1);
+            height: 20px;
+            opacity: 1;
+        }
+        .sidebar-mode-chevron {
+            margin-left: auto;
+            opacity: 0;
+            transform: translateX(-6px);
+            transition: opacity 0.22s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease;
+            flex-shrink: 0;
+        }
+        body:not(.sidebar-collapsed) .sidebar-mode-btn:hover .sidebar-mode-chevron,
+        body:not(.sidebar-collapsed) .sidebar-mode-btn.is-active-mode .sidebar-mode-chevron {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Variants de color per mode (Clar vs Fosc) */
+        /* 1. Pla d'Estudis (Blue / Sky) */
+        body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="study"]:hover {
+            background-color: rgba(239, 246, 255, 0.85);
+            border-color: rgba(191, 219, 254, 0.9);
+            box-shadow: 0 6px 16px -6px rgba(37, 99, 235, 0.18);
+        }
+        html.dark body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="study"]:hover {
+            background-color: rgba(23, 37, 84, 0.38);
+            border-color: rgba(56, 189, 248, 0.28);
+            box-shadow: 0 6px 18px -6px rgba(56, 189, 248, 0.22);
+        }
+        body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="study"].is-active-mode {
+            background-color: rgba(239, 246, 255, 0.95);
+            border-color: rgba(147, 197, 253, 0.95);
+            color: #1e3a8a;
+            box-shadow: 0 4px 14px -4px rgba(37, 99, 235, 0.16);
+        }
+        html.dark body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="study"].is-active-mode {
+            background-color: rgba(24, 24, 27, 0.95);
+            border-color: rgba(56, 189, 248, 0.45);
+            color: #f0f9ff;
+            box-shadow: 0 4px 16px -4px rgba(14, 165, 233, 0.22);
+        }
+        .sidebar-mode-btn[data-mode-nav="study"].is-active-mode .sidebar-mode-icon {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #1d4ed8 !important;
+            box-shadow: 0 3px 10px -2px rgba(37, 99, 235, 0.4);
+        }
+        html.dark .sidebar-mode-btn[data-mode-nav="study"].is-active-mode .sidebar-mode-icon {
+            background-color: #38bdf8 !important;
+            color: #09090b !important;
+            border-color: #7dd3fc !important;
+            box-shadow: 0 3px 12px -2px rgba(56, 189, 248, 0.45);
+        }
+
+        /* 2. XatBot (Emerald) */
+        body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="free"]:hover {
+            background-color: rgba(236, 253, 245, 0.85);
+            border-color: rgba(167, 243, 208, 0.9);
+            box-shadow: 0 6px 16px -6px rgba(16, 185, 129, 0.18);
+        }
+        html.dark body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="free"]:hover {
+            background-color: rgba(6, 78, 59, 0.35);
+            border-color: rgba(52, 211, 153, 0.28);
+            box-shadow: 0 6px 18px -6px rgba(52, 211, 153, 0.2);
+        }
+        body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="free"].is-active-mode {
+            background-color: rgba(236, 253, 245, 0.95);
+            border-color: rgba(110, 231, 183, 0.95);
+            color: #064e3b;
+            box-shadow: 0 4px 14px -4px rgba(16, 185, 129, 0.16);
+        }
+        html.dark body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="free"].is-active-mode {
+            background-color: rgba(24, 24, 27, 0.95);
+            border-color: rgba(52, 211, 153, 0.45);
+            color: #ecfdf5;
+            box-shadow: 0 4px 16px -4px rgba(16, 185, 129, 0.22);
+        }
+        .sidebar-mode-btn[data-mode-nav="free"].is-active-mode .sidebar-mode-icon {
+            background-color: #059669 !important;
+            color: #ffffff !important;
+            border-color: #047857 !important;
+            box-shadow: 0 3px 10px -2px rgba(16, 185, 129, 0.4);
+        }
+        html.dark .sidebar-mode-btn[data-mode-nav="free"].is-active-mode .sidebar-mode-icon {
+            background-color: #34d399 !important;
+            color: #09090b !important;
+            border-color: #6ee7b7 !important;
+            box-shadow: 0 3px 12px -2px rgba(52, 211, 153, 0.45);
+        }
+
+        /* 3. Ús Quotidià (Rose) */
+        body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="daily_use"]:hover {
+            background-color: rgba(255, 241, 242, 0.85);
+            border-color: rgba(254, 205, 211, 0.9);
+            box-shadow: 0 6px 16px -6px rgba(225, 29, 72, 0.16);
+        }
+        html.dark body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="daily_use"]:hover {
+            background-color: rgba(76, 5, 25, 0.38);
+            border-color: rgba(251, 113, 133, 0.28);
+            box-shadow: 0 6px 18px -6px rgba(251, 113, 133, 0.2);
+        }
+        body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="daily_use"].is-active-mode {
+            background-color: rgba(255, 241, 242, 0.95);
+            border-color: rgba(253, 164, 175, 0.95);
+            color: #881337;
+            box-shadow: 0 4px 14px -4px rgba(225, 29, 72, 0.16);
+        }
+        html.dark body:not(.sidebar-collapsed) .sidebar-mode-btn[data-mode-nav="daily_use"].is-active-mode {
+            background-color: rgba(24, 24, 27, 0.95);
+            border-color: rgba(251, 113, 133, 0.45);
+            color: #fff1f2;
+            box-shadow: 0 4px 16px -4px rgba(244, 63, 94, 0.22);
+        }
+        .sidebar-mode-btn[data-mode-nav="daily_use"].is-active-mode .sidebar-mode-icon {
+            background-color: #e11d48 !important;
+            color: #ffffff !important;
+            border-color: #be123c !important;
+            box-shadow: 0 3px 10px -2px rgba(225, 29, 72, 0.4);
+        }
+        html.dark .sidebar-mode-btn[data-mode-nav="daily_use"].is-active-mode .sidebar-mode-icon {
+            background-color: #fb7185 !important;
+            color: #09090b !important;
+            border-color: #fda4af !important;
+            box-shadow: 0 3px 12px -2px rgba(251, 113, 133, 0.45);
+        }
+
+        /* Botons de navegació (Pla d'estudis, xatbot, ús quotidià, historial) quan està col·lapsat */
         /* El button s'ajusta exactament al div interior de 2.5rem perquè concordin al 100% */
         body.sidebar-collapsed #sidebar button:not(#sidebar-toggle-btn):not(#sidebar-new-session-btn):not(#sidebar-pwa-install-btn) {
             justify-content: center !important;
@@ -342,6 +516,7 @@
             display: flex !important;
             background: transparent !important;
             border: none !important;
+            box-shadow: none !important;
             gap: 0 !important;
         }
         body.sidebar-collapsed #sidebar button:not(#sidebar-toggle-btn):not(#sidebar-new-session-btn):not(#sidebar-pwa-install-btn) > div {
@@ -355,6 +530,9 @@
             justify-content: center !important;
             border-radius: 0.85rem !important;
             flex-shrink: 0 !important;
+        }
+        body.sidebar-collapsed .sidebar-mode-btn:hover > div {
+            transform: translateY(-2px) scale(1.08) !important;
         }
         body.sidebar-collapsed #sidebar button svg {
             margin: 0 auto !important;
@@ -690,14 +868,18 @@
                         <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1 uppercase tracking-wide">Telèfon (Verificació Opcional)</label>
                         <input type="tel" id="auth-phone" placeholder="+34 600 000 000" class="w-full px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
                     </div>
+                    <!-- Google reCAPTCHA Enterprise Widget -->
+                    <div class="pt-1 flex flex-col items-center justify-center overflow-x-auto">
+                        <div id="auth-recaptcha-widget" class="g-recaptcha" data-sitekey="6LfJNiAuAAAAAILl7aJgmDSSyPpxr0jDzK6qbyga" data-action="LOGIN"></div>
+                    </div>
                 </div>
-                <button type="submit" id="auth-submit-btn" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md mt-5 flex items-center justify-center gap-2 cursor-pointer border border-zinc-900 dark:border-zinc-200">
+                <button type="submit" id="auth-submit-btn" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md mt-4 flex items-center justify-center gap-2 cursor-pointer border border-zinc-900 dark:border-zinc-200">
                     Accedir
                 </button>
                 <div class="mt-4 flex items-start gap-2 p-3 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-500 shrink-0 mt-0.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium leading-tight">
-                        Privadesa i Seguretat: Autenticació i verificació protegides amb Firebase Auth i Google OAuth 2.0.
+                        Privadesa i Seguretat: Autenticació protegida amb reCAPTCHA Enterprise, Firebase Auth i Google OAuth 2.0.
                     </p>
                 </div>
             </form>
@@ -736,34 +918,46 @@
                 </button>
             </div>
 
-            <div class="px-3 space-y-1 relative z-10 w-full">
-                <button type="button" onclick="startStudyMode(true)" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
-                    <div class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20 group-hover:scale-105 transition-transform">
+            <div class="px-3 space-y-1.5 relative z-10 w-full">
+                <button id="sidebar-mode-study" data-mode-nav="study" type="button" onclick="startStudyMode(true)" class="sidebar-mode-btn flex items-center justify-start gap-2.5 w-full py-2 px-2.5 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl text-xs group relative font-medium cursor-pointer text-left">
+                    <span class="sidebar-mode-bar sidebar-text bg-blue-600 dark:bg-sky-400"></span>
+                    <div class="sidebar-mode-icon w-7 h-7 rounded-lg bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center shrink-0 border border-blue-500/20 shadow-2xs">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                     </div>
-                    <span class="sidebar-text truncate font-medium">Pla d'Estudis</span>
+                    <span class="sidebar-text truncate font-semibold tracking-tight">Pla d'Estudis</span>
+                    <span class="sidebar-text sidebar-mode-chevron text-blue-600 dark:text-sky-400" aria-hidden="true">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Pla d'Estudis</span>
                 </button>
-                <button type="button" onclick="startFreeChatMode()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
-                    <div class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20 group-hover:scale-105 transition-transform">
+                <button id="sidebar-mode-free" data-mode-nav="free" type="button" onclick="startFreeChatMode()" class="sidebar-mode-btn flex items-center justify-start gap-2.5 w-full py-2 px-2.5 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl text-xs group relative font-medium cursor-pointer text-left">
+                    <span class="sidebar-mode-bar sidebar-text bg-emerald-600 dark:bg-emerald-400"></span>
+                    <div class="sidebar-mode-icon w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20 shadow-2xs">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
-                    <span class="sidebar-text truncate font-medium">XatBot</span>
+                    <span class="sidebar-text truncate font-semibold tracking-tight">XatBot</span>
+                    <span class="sidebar-text sidebar-mode-chevron text-emerald-600 dark:text-emerald-400" aria-hidden="true">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">XatBot</span>
                 </button>
 
-                <button type="button" onclick="startDailyUseMode()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
-                    <div class="w-7 h-7 rounded-lg bg-red-500/15 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 border border-red-500/20 group-hover:scale-105 transition-transform">
+                <button id="sidebar-mode-daily" data-mode-nav="daily_use" type="button" onclick="startDailyUseMode()" class="sidebar-mode-btn flex items-center justify-start gap-2.5 w-full py-2 px-2.5 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl text-xs group relative font-medium cursor-pointer text-left">
+                    <span class="sidebar-mode-bar sidebar-text bg-rose-600 dark:bg-rose-400"></span>
+                    <div class="sidebar-mode-icon w-7 h-7 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/20 shadow-2xs">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
                     </div>
-                    <span class="sidebar-text truncate font-medium">Ús Quotidià</span>
+                    <span class="sidebar-text truncate font-semibold tracking-tight">Ús Quotidià</span>
+                    <span class="sidebar-text sidebar-mode-chevron text-rose-600 dark:text-rose-400" aria-hidden="true">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Ús Quotidià</span>
                 </button>
-                <button id="sidebar-nav-history-btn" type="button" onclick="openChatHistoryModal()" class="flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
-                    <div class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/20 group-hover:scale-105 transition-transform">
+                <button id="sidebar-nav-history-btn" type="button" onclick="openChatHistoryModal()" class="sidebar-mode-btn flex items-center justify-start gap-2.5 w-full py-2 px-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white rounded-xl transition-all text-xs group relative font-medium cursor-pointer text-left">
+                    <div class="sidebar-mode-icon w-7 h-7 rounded-lg bg-zinc-200/70 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center justify-center shrink-0 border border-zinc-300/70 dark:border-zinc-700">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     </div>
-                    <span class="sidebar-text truncate font-medium">Historial</span>
+                    <span class="sidebar-text truncate font-semibold tracking-tight">Historial</span>
                     <span class="sidebar-tooltip absolute left-[4.5rem] bg-zinc-800 border border-zinc-700 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-[100] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none font-medium">Historial de Converses</span>
                 </button>
             </div>
@@ -4025,21 +4219,53 @@
         window.confirmEmailVerificationCode = confirmEmailVerificationCode;
 
         let authMode = 'login';
+        const RECAPTCHA_ENTERPRISE_SITE_KEY = '6LfJNiAuAAAAAILl7aJgmDSSyPpxr0jDzK6qbyga';
+
+        function getRecaptchaEnterpriseToken(expectedAction = 'LOGIN') {
+            try {
+                if (window.grecaptcha && window.grecaptcha.enterprise && typeof window.grecaptcha.enterprise.getResponse === 'function') {
+                    const token = window.grecaptcha.enterprise.getResponse();
+                    if (token) return token;
+                }
+                if (window.grecaptcha && typeof window.grecaptcha.getResponse === 'function') {
+                    const token = window.grecaptcha.getResponse();
+                    if (token) return token;
+                }
+                const responseField = document.querySelector('[name="g-recaptcha-response"]');
+                if (responseField && responseField.value) {
+                    return responseField.value;
+                }
+            } catch (_) {}
+            return '';
+        }
+
+        function resetRecaptchaEnterpriseWidget() {
+            try {
+                if (window.grecaptcha && window.grecaptcha.enterprise && typeof window.grecaptcha.enterprise.reset === 'function') {
+                    window.grecaptcha.enterprise.reset();
+                } else if (window.grecaptcha && typeof window.grecaptcha.reset === 'function') {
+                    window.grecaptcha.reset();
+                }
+            } catch (_) {}
+        }
         
         function switchAuthTab(mode) {
             authMode = mode;
             const tabLogin = document.getElementById('tab-login');
             const tabRegister = document.getElementById('tab-register');
             const btnSubmit = document.getElementById('auth-submit-btn');
+            const recaptchaEl = document.getElementById('auth-recaptcha-widget');
             
             if(mode === 'login') {
                 tabLogin.className = "flex-1 py-2 text-sm font-bold bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all";
                 tabRegister.className = "flex-1 py-2 text-sm font-bold text-zinc-500 dark:text-zinc-400 rounded-lg hover:text-zinc-700 dark:hover:text-zinc-300 transition-all";
                 btnSubmit.innerText = "Accedir";
+                if (recaptchaEl) recaptchaEl.setAttribute('data-action', 'LOGIN');
             } else {
                 tabRegister.className = "flex-1 py-2 text-sm font-bold bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all";
                 tabLogin.className = "flex-1 py-2 text-sm font-bold text-zinc-500 dark:text-zinc-400 rounded-lg hover:text-zinc-700 dark:hover:text-zinc-300 transition-all";
                 btnSubmit.innerText = "Registrar-se";
+                if (recaptchaEl) recaptchaEl.setAttribute('data-action', 'REGISTER');
             }
         }
 
@@ -4055,6 +4281,22 @@
                 showToast("Introdueix el teu correu i contrasenya", "warning");
                 return;
             }
+
+            const expectedAction = authMode === 'login' ? 'LOGIN' : 'REGISTER';
+            const recaptchaWidgetEl = document.getElementById('auth-recaptcha-widget');
+            const hasRenderedCaptchaIframe = !!(recaptchaWidgetEl && recaptchaWidgetEl.querySelector('iframe'));
+            const recaptchaToken = getRecaptchaEnterpriseToken(expectedAction);
+
+            if (hasRenderedCaptchaIframe && !recaptchaToken) {
+                showToast("Si us plau, completa la casella reCAPTCHA abans de continuar", "warning");
+                return;
+            }
+
+            const recaptchaEventPayload = {
+                token: recaptchaToken || '',
+                expectedAction: expectedAction,
+                siteKey: RECAPTCHA_ENTERPRISE_SITE_KEY
+            };
 
             btn.innerHTML = "⏳ Espera...";
             btn.disabled = true;
@@ -4080,7 +4322,12 @@
                     let res = await fetch('/api/auth/login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
+                        body: JSON.stringify({
+                            email,
+                            password,
+                            recaptchaToken,
+                            event: recaptchaEventPayload
+                        })
                     });
                     let data = await res.json();
                     if (!res.ok || data.error) throw new Error(data.error || "Correu o contrasenya incorrectes");
@@ -4109,7 +4356,12 @@
                     let res = await fetch('/api/auth/register', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
+                        body: JSON.stringify({
+                            email,
+                            password,
+                            recaptchaToken,
+                            event: recaptchaEventPayload
+                        })
                     });
                     let data = await res.json();
                     
@@ -4118,7 +4370,16 @@
                             const loginRes = await fetch('/api/auth/login', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ email, password })
+                                body: JSON.stringify({
+                                    email,
+                                    password,
+                                    recaptchaToken,
+                                    event: {
+                                        token: recaptchaToken || '',
+                                        expectedAction: 'LOGIN',
+                                        siteKey: RECAPTCHA_ENTERPRISE_SITE_KEY
+                                    }
+                                })
                             });
                             const loginData = await loginRes.json();
                             if (loginRes.ok && loginData.token) {
@@ -4142,6 +4403,7 @@
                     }
                 }
             } catch(err) {
+                resetRecaptchaEnterpriseWidget();
                 Swal.fire({
                     title: 'Avís d\'Accés',
                     text: err.message,
@@ -4938,6 +5200,114 @@
                     ${prefItems.join('')}
                 </div>` : '';
 
+            // --- NOVA SECCIÓ: CONCEPTES ESTUDIATS, TEMPS DEDICAT I PROGRÉS DEL PLA VS DATA OBJECTIU ---
+            const studiedConceptSet = new Set();
+            if (Array.isArray(mem.learnedConcepts)) {
+                mem.learnedConcepts.forEach(c => { if (c && String(c).trim()) studiedConceptSet.add(String(c).trim()); });
+            }
+            if (Array.isArray(mem.strengths)) {
+                mem.strengths.forEach(s => { if (s && String(s).trim()) studiedConceptSet.add(String(s).trim()); });
+            }
+            const calendarArr = Array.isArray(generatedCalendarArray) ? generatedCalendarArray : [];
+            calendarArr.forEach(item => {
+                if (item && item.completed && item.tema) {
+                    studiedConceptSet.add(String(item.tema).trim());
+                }
+            });
+            const uniqueStudiedList = Array.from(studiedConceptSet);
+            const totalStudiedConceptsCount = Math.max(
+                uniqueStudiedList.length,
+                (mem.learnedConcepts ? mem.learnedConcepts.length : 0) + (mem.stats && mem.stats.flashcardsMastered ? mem.stats.flashcardsMastered : 0)
+            );
+
+            const hoursSpent = Math.floor(totalMins / 60);
+            const remMinsSpent = totalMins % 60;
+            const formattedTimeSpent = hoursSpent > 0
+                ? `${hoursSpent}h ${remMinsSpent}m`
+                : (totalMins > 0 ? `${totalMins} min` : (totalSecs > 0 ? `${totalSecs} s` : '0 min'));
+
+            const totalPlanSessions = calendarArr.length;
+            const manuallyCompletedSessions = calendarArr.filter(s => s && s.completed).length;
+            const inferredCompletedSessions = totalPlanSessions > 0
+                ? Math.min(
+                    totalPlanSessions,
+                    manuallyCompletedSessions > 0
+                        ? manuallyCompletedSessions
+                        : Math.min(totalPlanSessions, Math.floor((uniqueStudiedList.length + (mem.stats?.gamesPlayed || 0) + (totalQuestionsTested > 0 ? 1 : 0)) / 2))
+                  )
+                : 0;
+            const planCompletionPct = totalPlanSessions > 0
+                ? Math.min(100, Math.round((inferredCompletedSessions / totalPlanSessions) * 100))
+                : (totalStudiedConceptsCount > 0 ? Math.min(100, totalStudiedConceptsCount * 20) : 0);
+
+            // Càlcul de la data objectiu (target date) i comparativa de ritme
+            const rawTargetDate = (prefs && prefs.examDate) || (document.getElementById('exam-date') && document.getElementById('exam-date').value) || '';
+            let targetDateFormatted = 'No definida';
+            let daysRemaining = null;
+            let expectedPctByDate = 0;
+            let paceBadgeHtml = `<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">Sense data límit</span>`;
+            let paceComparisonNote = totalPlanSessions > 0
+                ? `Has completat ${inferredCompletedSessions} de ${totalPlanSessions} sessions del pla d'estudi.`
+                : `Genera un Pla d'Estudis amb data d'examen per comparar el teu ritme amb la data objectiu.`;
+
+            if (rawTargetDate) {
+                const targetDateObj = new Date(rawTargetDate + 'T23:59:59');
+                if (!isNaN(targetDateObj.getTime())) {
+                    const nowObj = new Date();
+                    const diffMs = targetDateObj.getTime() - nowObj.getTime();
+                    daysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                    const [yyyy, mm, dd] = String(rawTargetDate).split('-');
+                    targetDateFormatted = (dd && mm && yyyy) ? `${dd}/${mm}/${yyyy}` : rawTargetDate;
+
+                    const activeSess = allSessions.find(s => s.id === currentSessionId);
+                    const startMs = (activeSess && activeSess.createdAt)
+                        ? new Date(activeSess.createdAt).getTime()
+                        : (nowObj.getTime() - (Math.max(1, totalPlanSessions) * 86400000));
+                    const totalSpanMs = Math.max(86400000, targetDateObj.getTime() - startMs);
+                    const elapsedMs = Math.max(0, nowObj.getTime() - startMs);
+                    expectedPctByDate = daysRemaining <= 0
+                        ? 100
+                        : Math.min(100, Math.max(5, Math.round((elapsedMs / totalSpanMs) * 100)));
+
+                    const deltaPct = planCompletionPct - expectedPctByDate;
+                    if (daysRemaining < 0) {
+                        paceBadgeHtml = `<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">Data objectiu assolida (${targetDateFormatted})</span>`;
+                        paceComparisonNote = `La data objectiu (${targetDateFormatted}) ja ha arribat · Pla completat al ${planCompletionPct}%.`;
+                    } else if (deltaPct >= 5) {
+                        paceBadgeHtml = `<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">⚡ Per davant del calendari (+${deltaPct}%)</span>`;
+                        paceComparisonNote = `Vas un ${deltaPct}% per davant del ritme previst per a la data objectiu (${targetDateFormatted}, falten ${daysRemaining} ${daysRemaining === 1 ? 'dia' : 'dies'}).`;
+                    } else if (deltaPct >= -12) {
+                        paceBadgeHtml = `<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-700 dark:text-sky-300 border border-blue-500/30">✓ Al dia amb la data objectiu</span>`;
+                        paceComparisonNote = `Ritme òptim per arribar al 100% abans del ${targetDateFormatted} (${daysRemaining} ${daysRemaining === 1 ? 'dia restant' : 'dies restants'}).`;
+                    } else {
+                        paceBadgeHtml = `<span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30">⚠️ Cal accelerar (${Math.abs(deltaPct)}% per sota)</span>`;
+                        paceComparisonNote = `Falten ${daysRemaining} ${daysRemaining === 1 ? 'dia' : 'dies'} per al ${targetDateFormatted}. Completa més sessions per atrapar el ritme previst (${expectedPctByDate}%).`;
+                    }
+                }
+            }
+
+            const planSessionsChecklistHtml = totalPlanSessions > 0 ? `
+                <div class="pt-2 border-t border-zinc-200/80 dark:border-zinc-800 space-y-1.5">
+                    <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                        <span>Sessions del Pla (marca les completades)</span>
+                        <span>${inferredCompletedSessions}/${totalPlanSessions} completades</span>
+                    </div>
+                    <div class="max-h-28 overflow-y-auto space-y-1 pr-1">
+                        ${calendarArr.map((item, idx) => {
+                            const isDone = !!item.completed || (manuallyCompletedSessions === 0 && idx < inferredCompletedSessions);
+                            return `
+                            <button type="button" onclick="window.toggleStudyPlanSessionCompleted(${idx}, true)" class="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl border text-left transition cursor-pointer ${isDone ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/70 text-emerald-900 dark:text-emerald-200' : 'bg-zinc-50 dark:bg-zinc-950/70 border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400'}">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="w-4 h-4 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${isDone ? 'bg-emerald-600 text-white' : 'border border-zinc-300 dark:border-zinc-600 text-transparent'}">✓</span>
+                                    <span class="text-xs font-semibold truncate ${isDone ? 'line-through opacity-80' : ''}">S${item.num || (idx + 1)}: ${escapeHtml(item.tema || 'Sessió')}</span>
+                                </div>
+                                <span class="text-[10px] font-medium text-zinc-400 dark:text-zinc-500 shrink-0">${escapeHtml(item.dia_real || '')}</span>
+                            </button>`;
+                        }).join('')}
+                    </div>
+                </div>
+            ` : '';
+
             let htmlContent = `
             <div class="space-y-4 text-left mt-2 max-h-[75vh] overflow-y-auto pr-1">
                 ${prefsBlockHtml}
@@ -4955,6 +5325,61 @@
                         <span class="bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 text-xs font-extrabold px-3 py-1 rounded-full shadow-2xs">${mem.level}</span>
                     </div>
                     ${masterySectionHtml}
+                </div>
+
+                <!-- NOVA SECCIÓ: CONCEPTES ESTUDIATS, TEMPS DEDICAT I % COMPLETAT DEL PLA VS DATA OBJECTIU -->
+                <div class="bg-white dark:bg-zinc-900/90 p-4 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 shadow-2xs space-y-3">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700 dark:text-sky-400 flex items-center gap-1.5">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span>Progrés del Pla d'Estudi i Conceptes</span>
+                        </span>
+                        ${paceBadgeHtml}
+                    </div>
+
+                    <!-- 3 mètriques clau: Conceptes estudiats, Temps invertit, % Completat del Pla -->
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-zinc-50 dark:bg-zinc-950 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                            <div class="text-base font-black text-zinc-900 dark:text-white tabular-nums">${totalStudiedConceptsCount}</div>
+                            <div class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase mt-0.5">Conceptes Estudiats</div>
+                        </div>
+                        <div class="bg-zinc-50 dark:bg-zinc-950 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                            <div class="text-base font-black text-emerald-600 dark:text-emerald-400 tabular-nums">${formattedTimeSpent}</div>
+                            <div class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase mt-0.5">Temps Dedicat</div>
+                        </div>
+                        <div class="bg-zinc-50 dark:bg-zinc-950 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                            <div class="text-base font-black text-blue-700 dark:text-sky-400 tabular-nums">${planCompletionPct}%</div>
+                            <div class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase mt-0.5">Pla Completat</div>
+                        </div>
+                    </div>
+
+                    <!-- Comparativa visual: % Completat del Pla vs Data Objectiu -->
+                    <div class="space-y-2 pt-1">
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-bold text-zinc-800 dark:text-zinc-200">Completat del Pla d'Estudi</span>
+                                <span class="font-black text-blue-700 dark:text-sky-400 tabular-nums">${planCompletionPct}% ${totalPlanSessions > 0 ? `(${inferredCompletedSessions}/${totalPlanSessions})` : ''}</span>
+                            </div>
+                            <div class="w-full bg-zinc-200 dark:bg-zinc-800 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-zinc-900 dark:bg-sky-400 h-full rounded-full transition-all duration-700" style="width: ${planCompletionPct}%"></div>
+                            </div>
+                        </div>
+
+                        ${rawTargetDate ? `
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="font-semibold text-zinc-500 dark:text-zinc-400">Temps transcorregut fins a la Data Objectiu (${escapeHtml(targetDateFormatted)})</span>
+                                <span class="font-bold text-zinc-700 dark:text-zinc-300 tabular-nums">${expectedPctByDate}% ${daysRemaining !== null && daysRemaining >= 0 ? `· ${daysRemaining}d restants` : ''}</span>
+                            </div>
+                            <div class="w-full bg-zinc-200/80 dark:bg-zinc-800/80 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-amber-500 dark:bg-amber-400 h-full rounded-full transition-all duration-700" style="width: ${expectedPctByDate}%"></div>
+                            </div>
+                        </div>` : ''}
+
+                        <p class="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium leading-snug">${paceComparisonNote}</p>
+                    </div>
+
+                    ${planSessionsChecklistHtml}
                 </div>
 
                 <!-- BLOC 2: EFICIÈNCIA I TEMPS D'ESTUDI (HORARI DISPONIBLE) -->
@@ -5102,16 +5527,34 @@
             </div>`;
 
             Swal.fire({
-                title: '<div class="flex items-center justify-center gap-2.5 text-zinc-900 dark:text-white"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.2"><path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-3 3.87A4 4 0 0 0 2 15a4 4 0 0 0 4 4h1a4 4 0 0 0 3.87 3 4 4 0 0 0 4.26-3H16a4 4 0 0 0 4-4 4 4 0 0 0-1-2.87A4 4 0 0 0 22 11a4 4 0 0 0-3-3.87V6a4 4 0 0 0-4-4h-3z"/></svg> <span>Memòria, Eficiència i Resultats</span></div>',
+                title: '<div class="flex items-center justify-center gap-2.5 text-zinc-900 dark:text-white"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-3 3.87A4 4 0 0 0 2 15a4 4 0 0 0 4 4h1a4 4 0 0 0 3.87 3 4 4 0 0 0 4.26-3H16a4 4 0 0 0 4-4 4 4 0 0 0-1-2.87A4 4 0 0 0 22 11a4 4 0 0 0-3-3.87V6a4 4 0 0 0-4-4h-3z"/></svg> <span>Memòria, Eficiència i Resultats</span></div>',
                 html: htmlContent,
                 showCloseButton: true,
                 confirmButtonText: 'Tancar',
-                confirmButtonColor: '#2563eb',
+                confirmButtonColor: '#18181b',
                 customClass: { popup: 'rounded-[1.75rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg w-full', title: 'font-black text-zinc-900 dark:text-white' },
                 didOpen: () => {
                     renderMemoryD3LineChart(userPoints, mem);
                 }
             });
+        };
+
+        window.toggleStudyPlanSessionCompleted = function(idx, reopenMemory = true) {
+            if (!Array.isArray(generatedCalendarArray) || !generatedCalendarArray[idx]) return;
+            const item = generatedCalendarArray[idx];
+            item.completed = !item.completed;
+            if (item.completed && item.tema) {
+                const mem = getStudentMemory();
+                const cleanTopic = String(item.tema).trim();
+                if (cleanTopic && !mem.learnedConcepts.includes(cleanTopic)) {
+                    mem.learnedConcepts.push(cleanTopic);
+                    saveStudentMemory(mem);
+                }
+            }
+            saveSession();
+            if (reopenMemory) {
+                showMemoryModal();
+            }
         };
 
         function renderMemoryD3LineChart(currentPoints, mem) {
@@ -13401,6 +13844,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 }
 
                 updateHeaderButtonsVisibility();
+                if (typeof updateSidebarActiveModeUI === 'function') updateSidebarActiveModeUI(appMode);
                 document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
                 
                 setTimeout(() => {
@@ -13533,7 +13977,27 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             }
         }
 
+        function updateSidebarActiveModeUI(forcedMode = null) {
+            const welcomeEl = document.getElementById('welcome-view');
+            const isWelcomeVisible = welcomeEl && !welcomeEl.classList.contains('hidden');
+            const activeMode = forcedMode !== null
+                ? forcedMode
+                : (isWelcomeVisible ? 'welcome' : (appMode || 'study'));
+
+            document.querySelectorAll('.sidebar-mode-btn[data-mode-nav]').forEach(btn => {
+                const btnMode = btn.getAttribute('data-mode-nav');
+                if (btnMode === activeMode) {
+                    btn.classList.add('is-active-mode');
+                    btn.setAttribute('aria-current', 'page');
+                } else {
+                    btn.classList.remove('is-active-mode');
+                    btn.removeAttribute('aria-current');
+                }
+            });
+        }
+
         function renderSidebarHistory() {
+            updateSidebarActiveModeUI();
             const list = document.getElementById('history-list');
             if (!list) return;
             const scrollContainer = document.getElementById('sidebar-history-container');

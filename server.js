@@ -93,8 +93,8 @@ app.get('/firebase-applet-config.json', (req, res) => {
     }
 });
 
-// Explicitly serve main entry HTML and privacy policy page
-app.get('/', (req, res) => {
+// Explicitly serve main entry HTML, login route, and privacy policy page
+app.get(['/', '/login'], (req, res) => {
     return res.sendFile(path.join(__dirname, 'index.html'));
 });
 app.get(['/privacidad.html', '/privacidad'], (req, res) => {

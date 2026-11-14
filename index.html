@@ -788,8 +788,10 @@
         }
     </script>
     <style>
-        /* Si l'usuari ja està loguejat, amaguem el Login completament des del milisegon 0 */
-        html.is-logged-in #auth-view { display: none !important; }
+        /* Si l'usuari ja està loguejat, amaguem la Landing Pública i el Login completament des del milisegon 0 */
+        html.is-logged-in #public-landing-view,
+        html.is-logged-in #auth-view,
+        html.is-logged-in #guest-mode-banner { display: none !important; }
         html.is-logged-in #app-container { display: flex !important; opacity: 1 !important; }
     </style>
 </head>
@@ -801,19 +803,198 @@
         }
     </script>
 
+    <!-- ========================================================================= -->
+    <!-- PANTALLA INICIAL PÚBLICA (LANDING PAGE INFORMATIVA D'ALIAT INTEL·LIGENT) -->
+    <!-- ========================================================================= -->
+    <div id="public-landing-view" class="fixed inset-0 z-[95] overflow-y-auto bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 transition-opacity duration-300">
+        <!-- Barra de navegació superior -->
+        <header class="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200/90 dark:border-zinc-800">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center p-1.5 shrink-0 shadow-2xs">
+                        <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150">
+                    </div>
+                    <div class="truncate">
+                        <span class="font-extrabold text-sm sm:text-base text-zinc-900 dark:text-white tracking-tight block leading-none">Aliat Intel·ligent</span>
+                        <span class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium hidden sm:inline">Tutor Virtual i Planificador d'Estudi amb IA</span>
+                    </div>
+                </div>
+
+                <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
+                    <a href="#landing-que-es" class="hover:text-zinc-900 dark:hover:text-white transition">¿Qué es Aliat?</a>
+                    <a href="#landing-modos" class="hover:text-zinc-900 dark:hover:text-white transition">Modos de Chat</a>
+                    <a href="#landing-privacidad" class="hover:text-zinc-900 dark:hover:text-white transition">Seguridad y Datos</a>
+                    <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 hover:underline font-bold">Política de Privacidad</a>
+                </nav>
+
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer" title="Cambiar tema claro/oscuro" aria-label="Cambiar tema">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+                    </button>
+                    <button type="button" onclick="enterGuestMode('free')" class="px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition cursor-pointer">
+                        Probar sin sesión
+                    </button>
+                    <button type="button" onclick="openAuthModal('login')" class="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        <span>Acceder</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contingut principal públic llegible per Google i visitants -->
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-16">
+            <!-- HERO SECTION -->
+            <section id="landing-que-es" class="text-center max-w-3xl mx-auto space-y-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300 shadow-2xs">
+                    <span class="w-2 h-2 rounded-full bg-blue-600 dark:bg-sky-400"></span>
+                    <span>Plataforma Educativa de Tutoría y Productividad con IA</span>
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-[1.12]">
+                    ¿Qué es <span class="text-blue-700 dark:text-sky-300">Aliat Intel·ligent</span>?
+                </h1>
+                <p class="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    <strong>Aliat Intel·ligent</strong> es un asistente académico y tutor virtual diseñado para ayudar a estudiantes y profesionales a organizar su estudio a partir de sus propios apuntes, generar planes de trabajo adaptados a su fecha de examen, practicar con tests interactivos y redactar documentos cotidianos con integración opcional en <strong>Google Workspace</strong>.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                    <button type="button" onclick="openAuthModal('login')" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold text-sm transition shadow-sm cursor-pointer flex items-center justify-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        <span>Acceder / Iniciar Sesión</span>
+                    </button>
+                    <button type="button" onclick="enterGuestMode()" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 font-bold text-sm transition cursor-pointer flex items-center justify-center gap-2">
+                        <span>Acceder sin iniciar sesión (Modo Chat Básico)</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </div>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                    En el modo sin sesión puedes probar los modos de chat básicos. Para desbloquear botones de herramientas, subida de PDFs, memoria de progreso y Google Workspace, inicia sesión.
+                </p>
+            </section>
+
+            <!-- 3 MODOS DE TRABAJO -->
+            <section id="landing-modos" class="space-y-6">
+                <div class="text-center max-w-2xl mx-auto space-y-2">
+                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-blue-700 dark:text-sky-400">Espacios de Trabajo</span>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight">Tres modos adaptados a cada necesidad</h2>
+                    <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Puedes probar el chat de cualquiera de los tres modos ahora mismo sin cuenta o iniciar sesión para usar todas sus herramientas.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- Modo 1: Pla d'Estudis -->
+                    <div class="bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 flex flex-col justify-between gap-5 shadow-2xs">
+                        <div class="space-y-3">
+                            <div class="w-11 h-11 rounded-2xl bg-blue-500/15 text-blue-600 dark:text-sky-400 border border-blue-500/20 flex items-center justify-center">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                            </div>
+                            <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">1. Pla d'Estudis</h3>
+                            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                Organiza tus sesiones hasta la fecha del examen, genera flashcards, esquemas visuales, cuestionarios tipo test y seguimiento del porcentaje completado del temario.
+                            </p>
+                        </div>
+                        <button type="button" onclick="enterGuestMode('study')" class="w-full py-2.5 px-4 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-bold transition cursor-pointer flex items-center justify-between">
+                            <span>Probar chat de Pla d'Estudis</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                    <!-- Modo 2: XatBot -->
+                    <div class="bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 flex flex-col justify-between gap-5 shadow-2xs">
+                        <div class="space-y-3">
+                            <div class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            </div>
+                            <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">2. XatBot Acadèmic</h3>
+                            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                Resuelve dudas al instante, pide explicaciones paso a paso con ejemplos sencillos, practica con preguntas socráticas o analiza ejercicios complejos.
+                            </p>
+                        </div>
+                        <button type="button" onclick="enterGuestMode('free')" class="w-full py-2.5 px-4 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-bold transition cursor-pointer flex items-center justify-between">
+                            <span>Probar XatBot sin sesión</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+
+                    <!-- Modo 3: Ús Quotidià -->
+                    <div class="bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 flex flex-col justify-between gap-5 shadow-2xs">
+                        <div class="space-y-3">
+                            <div class="w-11 h-11 rounded-2xl bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20 flex items-center justify-center">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                            </div>
+                            <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">3. Ús Quotidià i Documents</h3>
+                            <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                Redacta correos formales, informes ejecutivos listos para Word o Google Docs y planifica tus tareas y bloques de tiempo diarios.
+                            </p>
+                        </div>
+                        <button type="button" onclick="enterGuestMode('daily_use')" class="w-full py-2.5 px-4 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-bold transition cursor-pointer flex items-center justify-between">
+                            <span>Probar Ús Quotidià sin sesión</span>
+                            <span>→</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN DE TRANSPARENCIA, PRIVACIDAD Y DATOS -->
+            <section id="landing-privacidad" class="bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200/80 dark:border-zinc-800 pb-5">
+                    <div class="space-y-1">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-700 dark:text-sky-400">Privacidad y Seguridad Transparente</span>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-zinc-900 dark:text-white">¿Cómo protege Aliat Intel·ligent tu información?</h2>
+                    </div>
+                    <a href="/privacidad.html" class="px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-sky-300 text-xs font-bold transition shrink-0 inline-flex items-center gap-1.5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span>Leer Política de Privacidad Completa (privacidad.html) ↗</span>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200/70 dark:border-zinc-800/80 space-y-1.5">
+                        <div class="font-bold text-zinc-900 dark:text-white">Datos recogidos</div>
+                        <p>Recogemos únicamente tu correo electrónico y nombre de perfil al iniciar sesión, junto con los planes de estudio y conversaciones que decidas guardar.</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200/70 dark:border-zinc-800/80 space-y-1.5">
+                        <div class="font-bold text-zinc-900 dark:text-white">Uso exclusivo para el usuario</div>
+                        <p>Utilizamos tus datos para autenticar tu sesión, sincronizar tu progreso académico y, solo con tu permiso explícito, conectar tus herramientas de Google Workspace.</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200/70 dark:border-zinc-800/80 space-y-1.5">
+                        <div class="font-bold text-zinc-900 dark:text-white">Protección técnica</div>
+                        <p>Contraseñas cifradas con <code>bcrypt</code>, sesiones protegidas con <code>JWT</code>, Firebase Auth, Google OAuth 2.0 oficial y verificación reCAPTCHA Enterprise.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FOOTER PÚBLICO -->
+            <footer class="pt-4 pb-8 border-t border-zinc-200/80 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 dark:text-zinc-400">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-zinc-800 dark:text-zinc-200">Aliat Intel·ligent</span>
+                    <span>·</span>
+                    <span>Tutor virtual i planificador d'estudis amb IA</span>
+                </div>
+                <div class="flex items-center gap-4 font-semibold">
+                    <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 hover:underline">Política de Privacidad</a>
+                    <button type="button" onclick="enterGuestMode('free')" class="hover:text-zinc-900 dark:hover:text-white cursor-pointer">Modo Invitado</button>
+                    <button type="button" onclick="openAuthModal('login')" class="hover:text-zinc-900 dark:hover:text-white cursor-pointer">Acceder / Login</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
     <!-- ============================================== -->
-    <!-- PANTALLA D'AUTENTICACIÓ (LOGIN / REGISTRE)     -->
+    <!-- PANTALLA D'AUTENTICACIÓ (MODAL D'ACCÉS / LOGIN)-->
     <!-- ============================================== -->
-    <div id="auth-view" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-950 dark:to-zinc-900 transition-opacity duration-500">
-        <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl p-6 md:p-10 w-full max-w-md relative overflow-hidden">
+    <div id="auth-view" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity duration-300">
+        <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl p-6 md:p-9 w-full max-w-md max-h-[94dvh] overflow-y-auto relative">
+            <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer" title="Volver a la página principal" aria-label="Cerrar acceso">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
             <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-zinc-500/10 to-transparent rounded-bl-full -z-10"></div>
             
-            <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-200/90 dark:border-zinc-700/80 text-zinc-900 dark:text-white rounded-2xl flex items-center justify-center shadow-sm mx-auto mb-4 transition-transform overflow-hidden p-2">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-200/90 dark:border-zinc-700/80 text-zinc-900 dark:text-white rounded-2xl flex items-center justify-center shadow-sm mx-auto mb-3 transition-transform overflow-hidden p-2">
                     <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain dark:invert dark:brightness-150">
                 </div>
-                <h1 class="text-2xl font-black text-zinc-900 dark:text-white">Aliat Intel·ligent</h1>
-                <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1 font-medium">Inicia sessió per sincronitzar els teus estudis</p>
+                <h2 class="text-2xl font-black text-zinc-900 dark:text-white">Aliat Intel·ligent</h2>
+                <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1 font-medium">Inicia sessió per desbloquejar totes les eines i sincronitzar els teus estudis</p>
             </div>
 
             <!-- Botó Oficial d'Autenticació de Google (OAuth 2.0 + Workspace) -->
@@ -996,6 +1177,22 @@
         </aside>
 
         <main class="flex-1 flex flex-col relative w-full h-full overflow-hidden bg-zinc-50 dark:bg-zinc-950">
+            <!-- BANNER INFORMATIU DE MODE CONVIDAT (SENSE SESSIÓ INICIADA) -->
+            <div id="guest-mode-banner" class="hidden bg-amber-50/95 dark:bg-zinc-900 border-b border-amber-200/90 dark:border-zinc-800 px-3 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-2 z-30 shrink-0">
+                <div class="flex items-center gap-2 text-xs text-amber-900 dark:text-zinc-200 min-w-0">
+                    <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-800 dark:text-amber-300 font-extrabold text-[10px] uppercase tracking-wider shrink-0">Modo sin sesión</span>
+                    <span class="truncate font-medium">Solo están activos los modos de chat básicos. Los botones de herramientas, apuntes, guardado y Google Workspace requieren iniciar sesión.</span>
+                </div>
+                <div class="flex items-center gap-2 shrink-0 ml-auto">
+                    <button type="button" onclick="showPublicLanding()" class="px-2.5 py-1 rounded-lg border border-amber-300 dark:border-zinc-700 hover:bg-amber-100/70 dark:hover:bg-zinc-800 text-amber-900 dark:text-zinc-300 text-[11px] font-bold transition cursor-pointer">
+                        Información
+                    </button>
+                    <button type="button" onclick="openAuthModal('login')" class="px-3 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-[11px] font-bold transition cursor-pointer shadow-2xs">
+                        Acceder / Iniciar Sesión
+                    </button>
+                </div>
+            </div>
+
             <button id="global-menu-btn" onclick="toggleSidebar()" class="absolute top-3 left-3 md:top-5 md:left-5 z-20 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 p-2 rounded-xl shadow-xs hover:bg-zinc-50 dark:hover:bg-zinc-800 transition md:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
             </button>
@@ -3285,11 +3482,20 @@
             }
 
             if (!authToken) {
-                document.getElementById('auth-view').classList.remove('hidden');
-                document.getElementById('app-container').classList.add('hidden');
+                // Per defecte mostrem la Landing Page informativa pública (llegible per Google)
+                document.getElementById('public-landing-view')?.classList.remove('hidden');
+                document.getElementById('auth-view')?.classList.add('hidden');
+                document.getElementById('app-container')?.classList.add('hidden');
+                updateProfileUI();
+                // Si l'URL és /login o ?login=1, obrim també el modal d'accés damunt la landing
+                if (window.location.pathname === '/login' || window.location.search.includes('login=1') || window.location.hash === '#login') {
+                    openAuthModal('login');
+                }
             } else {
                 updateProfileUI();
-                document.getElementById('auth-view').classList.add('hidden');
+                document.getElementById('public-landing-view')?.classList.add('hidden');
+                document.getElementById('auth-view')?.classList.add('hidden');
+                document.getElementById('guest-mode-banner')?.classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
                 setTimeout(() => document.getElementById('app-container').classList.remove('opacity-0'), 50);
                 
@@ -3324,6 +3530,112 @@
             }
         };
 
+        window.openAuthModal = function(mode = 'login') {
+            if (typeof switchAuthTab === 'function') switchAuthTab(mode);
+            const authView = document.getElementById('auth-view');
+            if (authView) {
+                authView.classList.remove('hidden');
+            }
+        };
+
+        window.closeAuthModal = function() {
+            const authView = document.getElementById('auth-view');
+            if (authView) {
+                authView.classList.add('hidden');
+            }
+        };
+
+        window.showPublicLanding = function() {
+            const landing = document.getElementById('public-landing-view');
+            if (landing) landing.classList.remove('hidden');
+            const authView = document.getElementById('auth-view');
+            if (authView) authView.classList.add('hidden');
+        };
+
+        window.enterGuestMode = function(initialMode = null) {
+            document.getElementById('public-landing-view')?.classList.add('hidden');
+            document.getElementById('auth-view')?.classList.add('hidden');
+            const appContainer = document.getElementById('app-container');
+            if (appContainer) {
+                appContainer.classList.remove('hidden');
+                setTimeout(() => appContainer.classList.remove('opacity-0'), 30);
+            }
+            if (!authToken) {
+                document.getElementById('guest-mode-banner')?.classList.remove('hidden');
+            }
+            updateProfileUI();
+            renderSidebarHistory();
+            if (initialMode === 'study') {
+                startStudyMode(true);
+            } else if (initialMode === 'free') {
+                startFreeChatMode();
+            } else if (initialMode === 'daily_use') {
+                startDailyUseMode();
+            }
+        };
+
+        window.promptGuestLoginRequired = function() {
+            Swal.fire({
+                title: 'Inicia sessió per utilitzar aquesta funció',
+                html: `
+                    <div class="text-xs text-zinc-600 dark:text-zinc-300 space-y-2.5 leading-relaxed">
+                        <p>Estàs utilitzant <strong>Aliat Intel·ligent en mode sense sessió</strong>, on només estan disponibles els modes de xat bàsics.</p>
+                        <p>Inicia sessió o crea un compte gratuït per desbloquejar totes les eines, pujada d'apunts en PDF, memòria d'estudi, historial al núvol i Google Workspace.</p>
+                    </div>
+                `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Accedir / Iniciar Sessió',
+                cancelButtonText: 'Continuar al xat',
+                confirmButtonColor: '#18181b',
+                customClass: { popup: 'rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    openAuthModal('login');
+                }
+            });
+        };
+
+        // En mode sense sessió (!authToken), només permetem canviar entre els modes de xat i enviar missatges de xat;
+        // qualsevol altre botó mostra l'avís d'iniciar sessió.
+        document.addEventListener('click', function(e) {
+            if (authToken) return;
+            const appContainer = document.getElementById('app-container');
+            if (!appContainer || appContainer.classList.contains('hidden')) return;
+            const btn = e.target && e.target.closest ? e.target.closest('button, [onclick*="openSettings"]') : null;
+            if (!btn || !appContainer.contains(btn)) return;
+
+            const id = btn.id || '';
+            const onclickAttr = btn.getAttribute('onclick') || '';
+            const typeAttr = (btn.getAttribute('type') || '').toLowerCase();
+
+            const isAllowedInGuest =
+                id === 'send-btn' ||
+                (typeAttr === 'submit' && btn.closest('#chat-form')) ||
+                id === 'sidebar-new-session-btn' ||
+                id === 'sidebar-mode-study' ||
+                id === 'sidebar-mode-free' ||
+                id === 'sidebar-mode-daily' ||
+                id === 'sidebar-toggle-btn' ||
+                id === 'global-menu-btn' ||
+                onclickAttr.includes('startStudyMode') ||
+                onclickAttr.includes('startFreeChatMode') ||
+                onclickAttr.includes('startDailyUseMode') ||
+                onclickAttr.includes('newSession') ||
+                onclickAttr.includes('startChatbotWithPrompt') ||
+                onclickAttr.includes('startDailyUseWithTopic') ||
+                onclickAttr.includes('openAuthModal') ||
+                onclickAttr.includes('showPublicLanding') ||
+                onclickAttr.includes('toggleSidebar');
+
+            if (!isAllowedInGuest) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+                window.promptGuestLoginRequired();
+            }
+        }, true);
+
         function applyAuthSuccess(token, user, welcomeMessage = "Sessió iniciada correctament!") {
             authToken = token;
             authUser = user;
@@ -3333,6 +3645,8 @@
             if (user && user.photoURL) localStorage.setItem('aliat_user_photo', user.photoURL);
 
             document.documentElement.classList.add('is-logged-in');
+            document.getElementById('public-landing-view')?.classList.add('hidden');
+            document.getElementById('guest-mode-banner')?.classList.add('hidden');
             const authView = document.getElementById('auth-view');
             if (authView) authView.classList.add('hidden');
             const appContainer = document.getElementById('app-container');
@@ -4609,7 +4923,18 @@
         window.saveSettings = saveSettings;
 
         function updateProfileUI() {
-            if (!authUser) return;
+            if (!authUser || !authToken) {
+                const emailEl = document.getElementById('profile-email');
+                if (emailEl) emailEl.innerText = 'Convidat (Sense sessió)';
+                const initialEl = document.getElementById('profile-initial');
+                if (initialEl) {
+                    initialEl.innerText = '?';
+                    initialEl.className = "w-8 h-8 rounded-full bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center font-bold shrink-0 shadow-2xs text-xs";
+                }
+                const welcomeNameEl = document.getElementById('welcome-user-name');
+                if (welcomeNameEl) welcomeNameEl.innerText = '';
+                return;
+            }
             let savedName = localStorage.getItem('aliat_user_name');
             let displayName = savedName ? savedName : (authUser.name || authUser.email.split('@')[0]);
             let photoUrl = (authUser && (authUser.photoURL || authUser.photo_url)) || localStorage.getItem('aliat_user_photo') || '';
@@ -14340,12 +14665,48 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             
             document.getElementById('daily-use-banner')?.classList.add('hidden');
             document.getElementById('welcome-view')?.classList.add('hidden');
-            document.getElementById('chat-view')?.classList.add('hidden');
-            document.getElementById('chat-view')?.classList.remove('flex');
             document.getElementById('quiz-view')?.classList.add('hidden');
             document.getElementById('quiz-view')?.classList.remove('flex');
-            document.getElementById('setup-view')?.classList.remove('hidden'); 
-            document.getElementById('setup-view')?.classList.add('flex'); 
+
+            // Si l'usuari no ha iniciat sessió (Mode Convidat), obrim el xat de Pla d'Estudis directament
+            // perquè pugui xatejar, mentre que els botons de configuració/PDF demanen iniciar sessió
+            if (!authToken) {
+                document.getElementById('setup-view')?.classList.add('hidden');
+                document.getElementById('setup-view')?.classList.remove('flex');
+                document.getElementById('global-menu-btn')?.classList.add('hidden');
+                document.getElementById('chat-view')?.classList.remove('hidden');
+                document.getElementById('chat-view')?.classList.add('flex');
+                document.getElementById('chat-form')?.classList.remove('hidden');
+                updateHeaderButtonsVisibility();
+                document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
+                const label = document.getElementById('chat-mode-label');
+                if (label) label.innerText = "Pla d'Estudis (Xat)";
+                const box = document.getElementById('chat-messages');
+                if (box && chatHistory.length === 0) {
+                    box.innerHTML = `
+                        <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-8 px-4 space-y-5 animate-fade-in">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/70 text-blue-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Pla d'Estudis (Modo sin sesión)</h2>
+                                    <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Escriu qualsevol tema al xat per estudiar. Per pujar apunts PDF, generar el calendari d'examen i fer tests diagnòstics, inicia sessió.</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="promptGuestLoginRequired()" class="w-full p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-500 transition cursor-pointer flex items-center justify-between gap-3 text-left">
+                                <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">📄 Pujar apunts PDF i configurar data d'examen (Requereix iniciar sessió)</span>
+                                <span class="text-xs font-bold text-blue-600 dark:text-sky-400">Accedir →</span>
+                            </button>
+                        </div>
+                    `;
+                }
+            } else {
+                document.getElementById('chat-view')?.classList.add('hidden');
+                document.getElementById('chat-view')?.classList.remove('flex');
+                document.getElementById('setup-view')?.classList.remove('hidden'); 
+                document.getElementById('setup-view')?.classList.add('flex'); 
+            }
 
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('sidebar');

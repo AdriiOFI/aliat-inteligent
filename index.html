@@ -829,15 +829,19 @@
                 </nav>
 
                 <div class="flex items-center gap-2 shrink-0">
-                    <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer" title="Cambiar tema claro/oscuro" aria-label="Cambiar tema">
+                    <div class="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 p-0.5 text-xs font-bold">
+                        <button type="button" data-lang-btn="ca" onclick="setAppLanguage('ca', true)" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">CA</button>
+                        <button type="button" data-lang-btn="es" onclick="setAppLanguage('es', true)" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">ES</button>
+                    </div>
+                    <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer" title="Canviar tema clar/fosc · Cambiar tema claro/oscuro" aria-label="Canviar tema">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
                     </button>
-                    <button type="button" onclick="enterGuestMode('free')" class="px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition cursor-pointer">
+                    <button type="button" onclick="enterGuestMode('free')" data-i18n-ca="Provar sense sessió" data-i18n-es="Probar sin sesión" class="px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition cursor-pointer">
                         Probar sin sesión
                     </button>
                     <button type="button" onclick="openAuthModal('login')" class="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                        <span>Acceder</span>
+                        <span data-i18n-ca="Accedir" data-i18n-es="Acceder">Acceder</span>
                     </button>
                 </div>
             </div>
@@ -2387,34 +2391,61 @@
             <div class="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
                 <!-- Nom / Compte -->
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">El teu Compte (Nom Públic)</label>
+                    <label id="setting-label-account" class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">El teu Compte (Nom Públic)</label>
                     <input type="text" id="setting-name" placeholder="Com vols que et diguem?" class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all text-sm font-medium shadow-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600">
+                </div>
+
+                <!-- Idioma de l'Aplicació (Català / Español) — Guardat per sempre -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <label id="setting-label-lang" class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Idioma de l'Aplicació (Català / Español)</label>
+                        <span id="setting-badge-lang-saved" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">Guardat per sempre</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button type="button" id="setting-lang-ca-btn" data-lang-btn="ca" onclick="setAppLanguage('ca', true)" class="px-4 py-3 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-between gap-2 shadow-2xs">
+                            <span class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-lg bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center font-extrabold text-[10px]">CA</span>
+                                <span>Català</span>
+                            </span>
+                            <span id="setting-lang-ca-check" class="text-xs font-extrabold">✓</span>
+                        </button>
+                        <button type="button" id="setting-lang-es-btn" data-lang-btn="es" onclick="setAppLanguage('es', true)" class="px-4 py-3 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-between gap-2 shadow-2xs">
+                            <span class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-lg bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center font-extrabold text-[10px]">ES</span>
+                                <span>Español</span>
+                            </span>
+                            <span id="setting-lang-es-check" class="text-xs font-extrabold hidden">✓</span>
+                        </button>
+                    </div>
+                    <p id="setting-lang-helper" class="text-[11px] text-zinc-500 dark:text-zinc-400">
+                        L'idioma i tota la teva configuració es desen de manera permanent al dispositiu i al teu compte.
+                    </p>
                 </div>
 
                 <!-- Instal·lar l'App (Entre el Compte i la Configuració general) -->
                 <div class="space-y-2 pwa-hide-on-standalone">
-                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Instal·lar l'App</label>
+                    <label id="setting-label-install" class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Instal·lar l'App</label>
                     <button type="button" onclick="installPWA()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50/80 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all cursor-pointer group shadow-sm">
                         <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2.5">
                             <span class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             </span>
-                            Instal·lar l'App (Mòbil / Escriptori)
+                            <span id="setting-btn-install-label">Instal·lar l'App (Mòbil / Escriptori)</span>
                         </span>
-                        <span class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-white dark:bg-zinc-900 px-3 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">Instal·lar</span>
+                        <span id="setting-btn-install-pill" class="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-white dark:bg-zinc-900 px-3 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">Instal·lar</span>
                     </button>
                 </div>
 
                 <!-- Aparença -->
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Configuració d'Aparença</label>
+                    <label id="setting-label-appearance" class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">Configuració d'Aparença</label>
                     <button type="button" onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 hover:border-blue-500/40 transition-all cursor-pointer group shadow-sm">
                         <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-500"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-                            Canviar Tema (Clar / Fosc)
+                            <span id="setting-btn-theme-label">Canviar Tema (Clar / Fosc)</span>
                         </span>
                         <div class="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400 bg-white dark:bg-zinc-800 px-3 py-1 rounded-lg border border-zinc-200 dark:border-zinc-700/60 group-hover:border-blue-500/40 transition">
-                            <span>Alternar</span>
+                            <span id="setting-btn-theme-toggle">Alternar</span>
                             <svg id="theme-icon-modal" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500 dark:text-zinc-400 group-hover:text-blue-500"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                         </div>
                     </button>
@@ -3353,25 +3384,422 @@
         let authToken = localStorage.getItem('aliat_token');
         let authUser = JSON.parse(localStorage.getItem('aliat_user') || 'null');
 
+        // --- SISTEMA D'IDIOMA PERMANENT (CATALÀ / ESPAÑOL) SENSE FALTES D'ORTOGRAFIA ---
+        window.getAppLanguage = function() {
+            const ls = localStorage.getItem('aliat_lang');
+            if (ls === 'es' || ls === 'ca') return ls;
+            const m = document.cookie.match(/(?:^|;\s*)aliat_lang=(ca|es)/);
+            return m ? m[1] : 'ca';
+        };
+
+        window.t = function(caText, esText) {
+            return window.getAppLanguage() === 'es' ? esText : caText;
+        };
+
+        window.persistPermanentPreference = function(key, val) {
+            if (val === undefined || val === null) return;
+            try { localStorage.setItem(key, String(val)); } catch (_) {}
+            try {
+                document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(String(val))}; path=/; max-age=315360000; SameSite=Lax`;
+            } catch (_) {}
+        };
+
+        const WELCOME_PHRASES_I18N = {
+            ca: [
+                "El teu aliat acadèmic és aquí! En què et puc ajudar avui?",
+                "Quin tipus d'ajuda necessites avui?",
+                "Organitza el teu pla d'estudis o resol dubtes a l'instant!",
+                "Tria un mode d'estudi, obre el xatbot o prepara la teva activitat diària.",
+                "Preparat/da per assolir els teus objectius acadèmics?"
+            ],
+            es: [
+                "¡Tu aliado académico está aquí! ¿En qué puedo ayudarte hoy?",
+                "¿Qué tipo de ayuda necesitas hoy?",
+                "¡Organiza tu plan de estudios o resuelve dudas al instante!",
+                "Elige un modo de estudio, abre el chatbot o prepara tu actividad diaria.",
+                "¿Preparado/a para alcanzar tus objetivos académicos?"
+            ]
+        };
+
+        let welcomePhrases = WELCOME_PHRASES_I18N[window.getAppLanguage()] || WELCOME_PHRASES_I18N.ca;
+
+        function initWelcomeSubtextOnReload() {
+            const subtextEl = document.getElementById('welcome-subtext');
+            if (!subtextEl) return;
+            const lang = window.getAppLanguage();
+            welcomePhrases = WELCOME_PHRASES_I18N[lang] || WELCOME_PHRASES_I18N.ca;
+            let lastIdx = parseInt(localStorage.getItem('aliat_welcome_subtext_idx') || '0', 10);
+            if (isNaN(lastIdx) || lastIdx < 0) lastIdx = 0;
+            let nextIdx = (lastIdx + 1) % welcomePhrases.length;
+            localStorage.setItem('aliat_welcome_subtext_idx', nextIdx.toString());
+            subtextEl.innerText = welcomePhrases[lastIdx % welcomePhrases.length];
+        }
+
+        window.applyAppLanguageUI = function() {
+            const lang = window.getAppLanguage();
+            const isEs = lang === 'es';
+            document.documentElement.lang = lang;
+            welcomePhrases = WELCOME_PHRASES_I18N[lang] || WELCOME_PHRASES_I18N.ca;
+
+            // 1. Elements amb data-i18n-ca / data-i18n-es
+            document.querySelectorAll('[data-i18n-ca][data-i18n-es]').forEach(el => {
+                el.textContent = isEs ? el.getAttribute('data-i18n-es') : el.getAttribute('data-i18n-ca');
+            });
+
+            // 2. Botons selectors d'idioma (Header + Modal de Configuració)
+            document.querySelectorAll('[data-lang-btn]').forEach(btn => {
+                const bLang = btn.getAttribute('data-lang-btn');
+                const active = bLang === lang;
+                if (btn.id === 'setting-lang-ca-btn' || btn.id === 'setting-lang-es-btn') {
+                    btn.className = active
+                        ? 'px-4 py-3 rounded-xl border-2 border-blue-600 dark:border-sky-400 bg-blue-50/70 dark:bg-blue-950/40 text-blue-900 dark:text-sky-200 text-xs font-bold transition-all cursor-pointer flex items-center justify-between gap-2 shadow-2xs'
+                        : 'px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/70 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-bold transition-all cursor-pointer flex items-center justify-between gap-2 shadow-2xs';
+                } else {
+                    btn.className = active
+                        ? 'px-2.5 py-1.5 rounded-lg transition cursor-pointer bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs'
+                        : 'px-2.5 py-1.5 rounded-lg transition cursor-pointer text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
+                }
+            });
+            document.getElementById('setting-lang-ca-check')?.classList.toggle('hidden', isEs);
+            document.getElementById('setting-lang-es-check')?.classList.toggle('hidden', !isEs);
+
+            // 3. Landing Page Pública (#public-landing-view)
+            const landingView = document.getElementById('public-landing-view');
+            if (landingView) {
+                const headerSub = landingView.querySelector('header .truncate span:nth-child(2)');
+                if (headerSub) {
+                    headerSub.textContent = isEs
+                        ? 'Tutor Virtual y Planificador de Estudio con IA'
+                        : "Tutor Virtual i Planificador d'Estudi amb IA";
+                }
+                const navLinks = landingView.querySelectorAll('header nav a');
+                if (navLinks.length >= 5) {
+                    navLinks[0].textContent = isEs ? '¿Qué es Aliat?' : 'Què és Aliat?';
+                    navLinks[1].textContent = isEs ? 'Modos de Chat' : 'Modes de Xat';
+                    navLinks[2].textContent = isEs ? 'Seguridad y Datos' : 'Seguretat i Dades';
+                    navLinks[3].textContent = isEs ? 'Política de Privacidad' : 'Política de Privadesa';
+                    navLinks[4].textContent = isEs ? 'Condiciones de Uso' : "Condicions d'Ús";
+                }
+                const heroBadgeSpan = landingView.querySelector('#landing-que-es .inline-flex span:nth-child(2)');
+                if (heroBadgeSpan) {
+                    heroBadgeSpan.textContent = isEs
+                        ? 'Plataforma Educativa de Tutoría y Productividad con IA'
+                        : 'Plataforma Educativa de Tutoria i Productivitat amb IA';
+                }
+                const heroTitle = landingView.querySelector('#landing-que-es h1');
+                if (heroTitle) {
+                    heroTitle.innerHTML = isEs
+                        ? '¿Qué es <span class="text-blue-700 dark:text-sky-300">Aliat Intel·ligent</span>?'
+                        : 'Què és <span class="text-blue-700 dark:text-sky-300">Aliat Intel·ligent</span>?';
+                }
+                const heroParagraphs = landingView.querySelectorAll('#landing-que-es p');
+                if (heroParagraphs.length >= 2) {
+                    heroParagraphs[0].innerHTML = isEs
+                        ? '<strong>Aliat Intel·ligent</strong> es un asistente académico y tutor virtual diseñado para ayudar a estudiantes y profesionales a organizar su estudio a partir de sus propios apuntes, generar planes de trabajo adaptados a su fecha de examen, practicar con tests interactivos y redactar documentos cotidianos con integración opcional en <strong>Google Workspace</strong>.'
+                        : '<strong>Aliat Intel·ligent</strong> és un assistent acadèmic i tutor virtual dissenyat per ajudar estudiants i professionals a organitzar el seu estudi a partir dels seus propis apunts, generar plans de treball adaptats a la seva data d\'examen, practicar amb tests interactius i redactar documents quotidians amb integració opcional a <strong>Google Workspace</strong>.';
+                    heroParagraphs[1].textContent = isEs
+                        ? 'En el modo sin sesión puedes probar los modos de chat básicos. Para desbloquear botones de herramientas, subida de PDFs, memoria de progreso y Google Workspace, inicia sesión.'
+                        : 'En el mode sense sessió pots provar els modes de xat bàsics. Per desbloquejar els botons d\'eines, la pujada de PDFs, la memòria de progrés i Google Workspace, inicia sessió.';
+                }
+                const heroBtns = landingView.querySelectorAll('#landing-que-es button span');
+                if (heroBtns.length >= 2) {
+                    heroBtns[0].textContent = isEs ? 'Acceder / Iniciar Sesión' : 'Accedir / Iniciar Sessió';
+                    heroBtns[1].textContent = isEs ? 'Acceder sin iniciar sesión (Modo Chat Básico)' : 'Accedir sense iniciar sessió (Mode Xat Bàsic)';
+                }
+
+                // Secció 3 modes (#landing-modos)
+                const modosSec = document.getElementById('landing-modos');
+                if (modosSec) {
+                    const mKicker = modosSec.querySelector('.text-center > span');
+                    const mTitle = modosSec.querySelector('.text-center > h2');
+                    const mDesc = modosSec.querySelector('.text-center > p');
+                    if (mKicker) mKicker.textContent = isEs ? 'Espacios de Trabajo' : 'Espais de Treball';
+                    if (mTitle) mTitle.textContent = isEs ? 'Tres modos adaptados a cada necesidad' : 'Tres modes adaptats a cada necessitat';
+                    if (mDesc) mDesc.textContent = isEs
+                        ? 'Puedes probar el chat de cualquiera de los tres modos ahora mismo sin cuenta o iniciar sesión para usar todas sus herramientas.'
+                        : 'Pots provar el xat de qualsevol dels tres modes ara mateix sense compte o iniciar sessió per utilitzar totes les seves eines.';
+                    const modeCards = modosSec.querySelectorAll('.grid > div');
+                    if (modeCards.length >= 3) {
+                        const c0h = modeCards[0].querySelector('h3');
+                        const c0p = modeCards[0].querySelector('p');
+                        const c0b = modeCards[0].querySelector('button span');
+                        if (c0h) c0h.textContent = isEs ? '1. Plan de Estudios' : "1. Pla d'Estudis";
+                        if (c0p) c0p.textContent = isEs
+                            ? 'Organiza tus sesiones hasta la fecha del examen, genera flashcards, esquemas visuales, cuestionarios tipo test y seguimiento del porcentaje completado del temario.'
+                            : "Organitza les teves sessions fins a la data de l'examen, genera flashcards, esquemes visuals, qüestionaris tipus test i seguiment del percentatge completat del temari.";
+                        if (c0b) c0b.textContent = isEs ? 'Probar chat de Plan de Estudios' : "Provar xat de Pla d'Estudis";
+
+                        const c1h = modeCards[1].querySelector('h3');
+                        const c1p = modeCards[1].querySelector('p');
+                        const c1b = modeCards[1].querySelector('button span');
+                        if (c1h) c1h.textContent = isEs ? '2. ChatBot Académico' : '2. XatBot Acadèmic';
+                        if (c1p) c1p.textContent = isEs
+                            ? 'Resuelve dudas al instante, pide explicaciones paso a paso con ejemplos sencillos, practica con preguntas socráticas o analiza ejercicios complejos.'
+                            : "Resol dubtes a l'instant, demana explicacions pas a pas amb exemples senzills, practica amb preguntes socràtiques o analitza exercicis complexos.";
+                        if (c1b) c1b.textContent = isEs ? 'Probar ChatBot sin sesión' : 'Provar XatBot sense sessió';
+
+                        const c2h = modeCards[2].querySelector('h3');
+                        const c2p = modeCards[2].querySelector('p');
+                        const c2b = modeCards[2].querySelector('button span');
+                        if (c2h) c2h.textContent = isEs ? '3. Uso Cotidiano y Documentos' : '3. Ús Quotidià i Documents';
+                        if (c2p) c2p.textContent = isEs
+                            ? 'Redacta correos formales, informes ejecutivos listos para Word o Google Docs y planifica tus tareas y bloques de tiempo diarios.'
+                            : 'Redacta correus formals, informes executius llestos per a Word o Google Docs i planifica les teves tasques i blocs de temps diaris.';
+                        if (c2b) c2b.textContent = isEs ? 'Probar Uso Cotidiano sin sesión' : 'Provar Ús Quotidià sense sessió';
+                    }
+                }
+
+                // Secció Privadesa (#landing-privacidad)
+                const privSec = document.getElementById('landing-privacidad');
+                if (privSec) {
+                    const pKicker = privSec.querySelector('.space-y-1 > span');
+                    const pTitle = privSec.querySelector('.space-y-1 > h2');
+                    if (pKicker) pKicker.textContent = isEs ? 'Privacidad, Seguridad y Condiciones Legales' : 'Privadesa, Seguretat i Condicions Legals';
+                    if (pTitle) pTitle.textContent = isEs ? '¿Cómo protege Aliat Intel·ligent tu información?' : 'Com protegeix Aliat Intel·ligent la teva informació?';
+                    const pLinks = privSec.querySelectorAll('a span');
+                    if (pLinks.length >= 2) {
+                        pLinks[0].textContent = isEs ? 'Política de Privacidad ↗' : 'Política de Privadesa ↗';
+                        pLinks[1].textContent = isEs ? 'Condiciones de Uso ↗' : "Condicions d'Ús ↗";
+                    }
+                    const pBoxes = privSec.querySelectorAll('.grid > div');
+                    if (pBoxes.length >= 3) {
+                        const b0t = pBoxes[0].querySelector('.font-bold');
+                        const b0p = pBoxes[0].querySelector('p');
+                        if (b0t) b0t.textContent = isEs ? 'Datos recogidos' : 'Dades recollides';
+                        if (b0p) b0p.textContent = isEs
+                            ? 'Recogemos únicamente tu correo electrónico y nombre de perfil al iniciar sesión, junto con los planes de estudio y conversaciones que decidas guardar.'
+                            : 'Recollim únicament el teu correu electrònic i el nom de perfil en iniciar sessió, juntament amb els plans d\'estudi i converses que decideixis desar.';
+
+                        const b1t = pBoxes[1].querySelector('.font-bold');
+                        const b1p = pBoxes[1].querySelector('p');
+                        if (b1t) b1t.textContent = isEs ? 'Uso exclusivo para el usuario' : "Ús exclusiu per a l'usuari";
+                        if (b1p) b1p.textContent = isEs
+                            ? 'Utilizamos tus datos para autenticar tu sesión, sincronizar tu progreso académico y, solo con tu permiso explícito, conectar tus herramientas de Google Workspace.'
+                            : 'Utilitzem les teves dades per autenticar la teva sessió, sincronitzar el teu progrés acadèmic i, només amb el teu permís explícit, connectar les teves eines de Google Workspace.';
+
+                        const b2t = pBoxes[2].querySelector('.font-bold');
+                        const b2p = pBoxes[2].querySelector('p');
+                        if (b2t) b2t.textContent = isEs ? 'Protección técnica' : 'Protecció tècnica';
+                        if (b2p) b2p.innerHTML = isEs
+                            ? 'Contraseñas cifradas con <code>bcrypt</code>, sesiones protegidas con <code>JWT</code>, Firebase Auth, Google OAuth 2.0 oficial y verificación reCAPTCHA Enterprise.'
+                            : 'Contrasenyes xifrades amb <code>bcrypt</code>, sessions protegides amb <code>JWT</code>, Firebase Auth, Google OAuth 2.0 oficial i verificació reCAPTCHA Enterprise.';
+                    }
+                }
+
+                // Footer públic
+                const footerEl = landingView.querySelector('footer');
+                if (footerEl) {
+                    const fLinks = footerEl.querySelectorAll('.font-semibold a, .font-semibold button');
+                    if (fLinks.length >= 4) {
+                        fLinks[0].textContent = isEs ? 'Política de Privacidad' : 'Política de Privadesa';
+                        fLinks[1].textContent = isEs ? 'Condiciones de Uso' : "Condicions d'Ús";
+                        fLinks[2].textContent = isEs ? 'Modo Invitado' : 'Mode Convidat';
+                        fLinks[3].textContent = isEs ? 'Acceder / Login' : 'Accedir / Login';
+                    }
+                }
+            }
+
+            // 3b. Pantalla d'Autenticació (#auth-view)
+            const authView = document.getElementById('auth-view');
+            if (authView) {
+                const authSub = authView.querySelector('.text-center p');
+                if (authSub) authSub.textContent = isEs
+                    ? 'Inicia sesión para desbloquear todas las herramientas y sincronizar tus estudios'
+                    : 'Inicia sessió per desbloquejar totes les eines i sincronitzar els teus estudis';
+                const gBtnSpan = authView.querySelector('.gsi-material-button-contents');
+                if (gBtnSpan) gBtnSpan.textContent = isEs ? 'Inicia sesión con Google' : 'Inicia sessió amb Google';
+                const tabLogin = document.getElementById('tab-login');
+                const tabReg = document.getElementById('tab-register');
+                if (tabLogin) tabLogin.textContent = isEs ? 'Iniciar Sesión' : 'Iniciar Sessió';
+                if (tabReg) tabReg.textContent = isEs ? 'Crear Cuenta' : 'Crear Compte';
+                const authBtn = document.getElementById('auth-submit-btn');
+                if (authBtn && !authBtn.disabled) {
+                    authBtn.textContent = (typeof authMode !== 'undefined' && authMode === 'register')
+                        ? (isEs ? 'Registrarse' : 'Registrar-se')
+                        : (isEs ? 'Acceder' : 'Accedir');
+                }
+            }
+
+            // 4. Banner de Mode Convidat (#guest-mode-banner)
+            const guestBanner = document.getElementById('guest-mode-banner');
+            if (guestBanner) {
+                const spans = guestBanner.querySelectorAll('span');
+                if (spans.length >= 2) {
+                    spans[0].textContent = isEs ? 'Modo sin sesión' : 'Mode sense sessió';
+                    spans[1].textContent = isEs
+                        ? 'Solo están activos los modos de chat básicos. Los botones de herramientas, apuntes, guardado y Google Workspace requieren iniciar sesión.'
+                        : 'Només estan actius els modes de xat bàsics. Els botons d\'eines, apunts, desament i Google Workspace requereixen iniciar sessió.';
+                }
+                const btns = guestBanner.querySelectorAll('button');
+                if (btns.length >= 2) {
+                    btns[0].textContent = isEs ? 'Información' : 'Informació';
+                    btns[1].textContent = isEs ? 'Acceder / Iniciar Sesión' : 'Accedir / Iniciar Sessió';
+                }
+            }
+
+            // 5. Barra Lateral (#sidebar)
+            const newSessSpan = document.querySelector('#sidebar-new-session-btn .sidebar-text');
+            if (newSessSpan) newSessSpan.textContent = isEs ? 'Nueva conversación' : 'Nova conversa';
+            const modeStudySpan = document.querySelector('#sidebar-mode-study .sidebar-text.truncate');
+            if (modeStudySpan) modeStudySpan.textContent = isEs ? 'Plan de Estudios' : "Pla d'Estudis";
+            const modeFreeSpan = document.querySelector('#sidebar-mode-free .sidebar-text.truncate');
+            if (modeFreeSpan) modeFreeSpan.textContent = isEs ? 'ChatBot' : 'XatBot';
+            const modeDailySpan = document.querySelector('#sidebar-mode-daily .sidebar-text.truncate');
+            if (modeDailySpan) modeDailySpan.textContent = isEs ? 'Uso Cotidiano' : 'Ús Quotidià';
+            const recentsHeader = document.querySelector('#sidebar-history-container h3');
+            if (recentsHeader) recentsHeader.textContent = isEs ? 'Recientes' : 'Recents';
+
+            // 6. Pantalla de Benvinguda (#welcome-view)
+            const welcomeView = document.getElementById('welcome-view');
+            if (welcomeView) {
+                const h1 = welcomeView.querySelector('h1');
+                if (h1) {
+                    const userName = document.getElementById('welcome-user-name')?.textContent || '';
+                    h1.innerHTML = `${isEs ? 'Bienvenido/a' : 'Benvingut/da'} <span id="welcome-user-name" class="text-blue-700 dark:text-sky-300">${escapeHtml(userName)}</span>`;
+                }
+                const cards = welcomeView.querySelectorAll('.grid > button');
+                if (cards.length >= 3) {
+                    const c1Title = cards[0].querySelector('h3');
+                    const c1Desc = cards[0].querySelector('p');
+                    const c1Cta = cards[0].querySelector('div.mt-4 span');
+                    if (c1Title) c1Title.textContent = isEs ? 'Plan de Estudios' : "Pla d'Estudis";
+                    if (c1Desc) c1Desc.textContent = isEs ? 'Calendario de estudio personalizado, análisis de apuntes y simulacros de examen.' : "Calendari d'estudi personalitzat, anàlisi d'apunts i simulacres d'examen.";
+                    if (c1Cta) c1Cta.textContent = isEs ? 'Comenzar plan' : 'Començar pla';
+
+                    const c2Title = cards[1].querySelector('h3');
+                    const c2Desc = cards[1].querySelector('p');
+                    const c2Cta = cards[1].querySelector('div.mt-4 span');
+                    if (c2Title) c2Title.textContent = isEs ? 'ChatBot' : 'XatBot';
+                    if (c2Desc) c2Desc.textContent = isEs ? 'Resolución de dudas, explicaciones paso a paso y apoyo en cualquier tema.' : 'Resolució de dubtes, explicacions pas a pas i suport en qualsevol tema.';
+                    if (c2Cta) c2Cta.textContent = isEs ? 'Abrir chat' : 'Obrir xat';
+
+                    const c3Title = cards[2].querySelector('h3');
+                    const c3Desc = cards[2].querySelector('p');
+                    const c3Cta = cards[2].querySelector('div.mt-4 span');
+                    if (c3Title) c3Title.textContent = isEs ? 'Uso Cotidiano' : 'Ús Quotidià';
+                    if (c3Desc) c3Desc.textContent = isEs ? 'Redacción de documentos, correos, informes y organización diaria.' : 'Redacció de documents, correus, informes i organització diària.';
+                    if (c3Cta) c3Cta.textContent = isEs ? 'Acceder' : 'Accedir';
+                }
+            }
+
+            // 7. Chat Input & Disclaimer
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.placeholder = isEs ? 'Pregunta a Aliat sobre tu temario o cualquier duda...' : 'Pregunta a Aliat sobre el teu temari o qualsevol dubte...';
+            }
+            const chatDisclaimer = document.querySelector('#chat-form + p');
+            if (chatDisclaimer) {
+                chatDisclaimer.textContent = isEs
+                    ? 'Aliat Intel·ligent puede cometer errores, verifica la información importante.'
+                    : 'Aliat Intel·ligent pot cometre errors, verifica la informació important.';
+            }
+            const calHeaderBtnSpan = document.querySelector('#calendar-header-btn span');
+            if (calHeaderBtnSpan) calHeaderBtnSpan.textContent = isEs ? 'Calendario' : 'Calendari';
+            const toolsHeaderBtnSpan = document.querySelector('#tools-header-btn span');
+            if (toolsHeaderBtnSpan) toolsHeaderBtnSpan.textContent = isEs ? 'Herramientas' : 'Eines';
+            const memHeaderBtnSpan = document.querySelector('#memory-header-btn span');
+            if (memHeaderBtnSpan) memHeaderBtnSpan.textContent = isEs ? 'Memoria' : 'Memòria';
+
+            // 8. Modal de Configuració (#settings-modal)
+            const setModal = document.getElementById('settings-modal');
+            if (setModal) {
+                const titleEl = setModal.querySelector('h3');
+                const subEl = titleEl?.nextElementSibling;
+                if (titleEl) titleEl.textContent = isEs ? 'Configuración de la Cuenta' : 'Configuració del Compte';
+                if (subEl) subEl.textContent = isEs ? 'Personaliza el idioma, la apariencia, el motor de IA y la privacidad' : "Personalitza l'idioma, l'aparença, el motor d'IA i la privadesa";
+
+                const accLabel = document.getElementById('setting-label-account');
+                if (accLabel) accLabel.textContent = isEs ? 'Tu Cuenta (Nombre Público)' : 'El teu Compte (Nom Públic)';
+                const nameInput = document.getElementById('setting-name');
+                if (nameInput) nameInput.placeholder = isEs ? '¿Cómo quieres que te llamemos?' : 'Com vols que et diguem?';
+
+                const langLabel = document.getElementById('setting-label-lang');
+                if (langLabel) langLabel.textContent = isEs ? 'Idioma de la Aplicación (Català / Español)' : "Idioma de l'Aplicació (Català / Español)";
+                const langBadge = document.getElementById('setting-badge-lang-saved');
+                if (langBadge) langBadge.textContent = isEs ? 'Guardado para siempre' : 'Guardat per sempre';
+                const langHelper = document.getElementById('setting-lang-helper');
+                if (langHelper) langHelper.textContent = isEs
+                    ? 'El idioma y toda tu configuración se guardan permanentemente en tu dispositivo y en tu cuenta.'
+                    : "L'idioma i tota la teva configuració es desen de manera permanent al teu dispositiu i al teu compte.";
+
+                const instLabel = document.getElementById('setting-label-install');
+                if (instLabel) instLabel.textContent = isEs ? 'Instalar la App' : "Instal·lar l'App";
+                const instBtnLabel = document.getElementById('setting-btn-install-label');
+                if (instBtnLabel) instBtnLabel.textContent = isEs ? 'Instalar la App (Móvil / Escritorio)' : "Instal·lar l'App (Mòbil / Escriptori)";
+                const instPill = document.getElementById('setting-btn-install-pill');
+                if (instPill) instPill.textContent = isEs ? 'Instalar' : 'Instal·lar';
+
+                const appLabel = document.getElementById('setting-label-appearance');
+                if (appLabel) appLabel.textContent = isEs ? 'Configuración de Apariencia' : "Configuració d'Aparença";
+                const themeBtnLabel = document.getElementById('setting-btn-theme-label');
+                if (themeBtnLabel) themeBtnLabel.textContent = isEs ? 'Cambiar Tema (Claro / Oscuro)' : 'Canviar Tema (Clar / Fosc)';
+                const themeToggleSpan = document.getElementById('setting-btn-theme-toggle');
+                if (themeToggleSpan) themeToggleSpan.textContent = isEs ? 'Alternar' : 'Alternar';
+
+                const logoutSpan = setModal.querySelector('button[onclick="logout()"] span');
+                if (logoutSpan) logoutSpan.textContent = isEs ? 'Cerrar Sesión' : 'Tancar Sessió';
+                const saveSpan = setModal.querySelector('button[onclick="saveSettings()"] span');
+                if (saveSpan) saveSpan.textContent = isEs ? 'Guardar Cambios' : 'Guardar Canvis';
+            }
+
+            if (typeof updateProfileUI === 'function') updateProfileUI();
+        };
+
+        window.setAppLanguage = function(lang, notify = false) {
+            const norm = lang === 'es' ? 'es' : 'ca';
+            window.persistPermanentPreference('aliat_lang', norm);
+            window.applyAppLanguageUI();
+            const subtextEl = document.getElementById('welcome-subtext');
+            if (subtextEl) {
+                const idx = parseInt(localStorage.getItem('aliat_welcome_subtext_idx') || '0', 10) || 0;
+                const list = WELCOME_PHRASES_I18N[norm] || WELCOME_PHRASES_I18N.ca;
+                subtextEl.innerText = list[idx % list.length];
+            }
+            if (authToken) {
+                fetch('/api/user/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                    body: JSON.stringify({
+                        name: localStorage.getItem('aliat_user_name') || '',
+                        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+                        lang: norm,
+                        ai_provider: localStorage.getItem('aliat_ai_provider') || 'gemini',
+                        ai_api_key: localStorage.getItem('aliat_ai_key') || '',
+                        ai_model: localStorage.getItem('aliat_ai_model') || ''
+                    })
+                }).catch(() => {});
+            }
+            if (typeof syncUserSettingsToFirestore === 'function') {
+                syncUserSettingsToFirestore({ lang: norm }).catch(() => {});
+            }
+            if (notify && typeof showToast === 'function') {
+                showToast(norm === 'es' ? 'Idioma cambiado a Español (guardado para siempre)' : 'Idioma canviat a Català (guardat per sempre)', 'success');
+            }
+        };
+
         // --- INICIALITZACIÓ ---
         async function syncUserSettings() {
             try {
                 const res = await fetch('/api/user/settings', { headers: { 'Authorization': 'Bearer ' + authToken } });
                 const data = await res.json();
                 if (data.success) {
-                    if (data.name) localStorage.setItem('aliat_user_name', data.name);
+                    if (data.name) window.persistPermanentPreference('aliat_user_name', data.name);
                     if (data.theme) {
-                        localStorage.setItem('aliat_theme', data.theme);
+                        window.persistPermanentPreference('aliat_theme', data.theme);
                         if (data.theme === 'dark') document.documentElement.classList.add('dark');
                         else document.documentElement.classList.remove('dark');
                         updateThemeIcon();
                     }
-                    if (data.ai_provider) localStorage.setItem('aliat_ai_provider', data.ai_provider);
+                    if (data.lang === 'es' || data.lang === 'ca') {
+                        window.persistPermanentPreference('aliat_lang', data.lang);
+                    }
+                    if (data.ai_provider) window.persistPermanentPreference('aliat_ai_provider', data.ai_provider);
                     if (data.ai_api_key) localStorage.setItem('aliat_ai_key', data.ai_api_key);
-                    if (data.ai_model) localStorage.setItem('aliat_ai_model', data.ai_model);
+                    if (data.ai_model) window.persistPermanentPreference('aliat_ai_model', data.ai_model);
+                    window.applyAppLanguageUI();
                     updateProfileUI();
                 }
-            } catch(e) { console.error("Error carregant settings de la nube:", e); }
+            } catch(e) { console.error("Error carregant settings del núvol:", e); }
         }
 
         /* HELPER POPUPS I ANIMACIONS DE DESPLEGABLES */
@@ -3392,24 +3820,6 @@
                 }
             }, 180);
         };
-
-        let welcomePhrases = [
-            "El teu aliat està aquí! En què et puc ajudar?",
-            "Quin tipus d'ajuda necessites avui?",
-            "Organitza el teu pla d'estudis o resol dubtes a l'instant!",
-            "Tria un minijoc, obre el xatbot o prepara la teva activitat diària.",
-            "Preparat per assolir els teus objectius acadèmics?"
-        ];
-
-        function initWelcomeSubtextOnReload() {
-            const subtextEl = document.getElementById('welcome-subtext');
-            if (!subtextEl) return;
-            // Canvia només quan es recarrega la pàgina (guarda l'índex a localStorage o en tria un seqüencialment per reload)
-            let lastIdx = parseInt(localStorage.getItem('aliat_welcome_subtext_idx') || '0', 10);
-            let nextIdx = (lastIdx + 1) % welcomePhrases.length;
-            localStorage.setItem('aliat_welcome_subtext_idx', nextIdx.toString());
-            subtextEl.innerText = welcomePhrases[lastIdx];
-        }
         window.rotateWelcomeSubtext = function() {}; // Ja no rota contínuament ni en canvis de vista
         function initPomodoroGlobal() {
             if (typeof updateHeaderPomodoroDisplay === 'function') updateHeaderPomodoroDisplay();
@@ -3621,18 +4031,24 @@
         };
 
         window.promptGuestLoginRequired = function() {
+            const isEs = window.getAppLanguage() === 'es';
             Swal.fire({
-                title: 'Inicia sessió per utilitzar aquesta funció',
-                html: `
+                title: isEs ? 'Inicia sesión para utilizar esta función' : 'Inicia sessió per utilitzar aquesta funció',
+                html: isEs ? `
+                    <div class="text-xs text-zinc-600 dark:text-zinc-300 space-y-2.5 leading-relaxed">
+                        <p>Estás utilizando <strong>Aliat Intel·ligent en modo sin sesión</strong>, donde únicamente están disponibles los modos de chat básicos.</p>
+                        <p>Inicia sesión o crea una cuenta gratuita para desbloquear todas las herramientas, subida de apuntes en PDF, memoria de estudio, historial en la nube y Google Workspace.</p>
+                    </div>
+                ` : `
                     <div class="text-xs text-zinc-600 dark:text-zinc-300 space-y-2.5 leading-relaxed">
                         <p>Estàs utilitzant <strong>Aliat Intel·ligent en mode sense sessió</strong>, on només estan disponibles els modes de xat bàsics.</p>
-                        <p>Inicia sessió o crea un compte gratuït per desbloquejar totes les eines, pujada d'apunts en PDF, memòria d'estudi, historial al núvol i Google Workspace.</p>
+                        <p>Inicia sessió o crea un compte gratuït per desbloquejar totes les eines, la pujada d'apunts en PDF, la memòria d'estudi, l'historial al núvol i Google Workspace.</p>
                     </div>
                 `,
                 icon: 'info',
                 showCancelButton: true,
-                confirmButtonText: 'Accedir / Iniciar Sessió',
-                cancelButtonText: 'Continuar al xat',
+                confirmButtonText: isEs ? 'Acceder / Iniciar Sesión' : 'Accedir / Iniciar Sessió',
+                cancelButtonText: isEs ? 'Continuar en el chat' : 'Continuar al xat',
                 confirmButtonColor: '#18181b',
                 customClass: { popup: 'rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }
             }).then((res) => {
@@ -3664,6 +4080,7 @@
                 id === 'sidebar-mode-daily' ||
                 id === 'sidebar-toggle-btn' ||
                 id === 'global-menu-btn' ||
+                onclickAttr.includes('setAppLanguage') ||
                 onclickAttr.includes('startStudyMode') ||
                 onclickAttr.includes('startFreeChatMode') ||
                 onclickAttr.includes('startDailyUseMode') ||
@@ -4788,8 +5205,20 @@
                     await firebaseAuthExports.signOut(firebaseAuth);
                 }
             } catch (_) {}
-            // Això esborra ABSOLUTAMENT TOTA la memòria local (zombis inclosos)
+            // Preservem les preferències de configuració permanents (idioma, tema, motor d'IA, barra lateral)
+            const preservedLang = window.getAppLanguage();
+            const preservedTheme = localStorage.getItem('aliat_theme');
+            const preservedAiProvider = localStorage.getItem('aliat_ai_provider');
+            const preservedAiModel = localStorage.getItem('aliat_ai_model');
+            const preservedSidebar = localStorage.getItem('aliat_sidebar_collapsed');
+
             localStorage.clear();
+
+            if (preservedLang) window.persistPermanentPreference('aliat_lang', preservedLang);
+            if (preservedTheme) window.persistPermanentPreference('aliat_theme', preservedTheme);
+            if (preservedAiProvider) window.persistPermanentPreference('aliat_ai_provider', preservedAiProvider);
+            if (preservedAiModel) window.persistPermanentPreference('aliat_ai_model', preservedAiModel);
+            if (preservedSidebar) localStorage.setItem('aliat_sidebar_collapsed', preservedSidebar);
             location.reload();
         }
 
@@ -4901,6 +5330,7 @@
             if (modelInput) modelInput.value = localStorage.getItem('aliat_ai_model') || '';
 
             updateModelSuggestions();
+            if (typeof window.applyAppLanguageUI === 'function') window.applyAppLanguageUI();
             if (typeof updateWorkspaceStatusUI === 'function') updateWorkspaceStatusUI();
             if (typeof updateFirebaseVerificationStatusUI === 'function') updateFirebaseVerificationStatusUI();
 
@@ -4920,6 +5350,7 @@
             const newName = document.getElementById('setting-name').value.trim();
             const isDark = document.documentElement.classList.contains('dark');
             const themeStr = isDark ? 'dark' : 'light';
+            const currentLang = window.getAppLanguage();
 
             const provSelect = document.getElementById('setting-ai-provider');
             const aiProvider = provSelect ? provSelect.value : 'gemini';
@@ -4930,15 +5361,17 @@
             const modelInput = document.getElementById('setting-ai-model');
             const aiModel = modelInput ? modelInput.value.trim() : '';
             
-            localStorage.setItem('aliat_user_name', newName);
-            localStorage.setItem('aliat_theme', themeStr);
-            localStorage.setItem('aliat_ai_provider', aiProvider);
+            window.persistPermanentPreference('aliat_user_name', newName);
+            window.persistPermanentPreference('aliat_theme', themeStr);
+            window.persistPermanentPreference('aliat_lang', currentLang);
+            window.persistPermanentPreference('aliat_ai_provider', aiProvider);
             localStorage.setItem('aliat_ai_key', aiKey);
-            localStorage.setItem('aliat_ai_model', aiModel);
+            window.persistPermanentPreference('aliat_ai_model', aiModel);
+            window.applyAppLanguageUI();
             updateProfileUI();
             
             // Sync non-secret preferences to Firestore when Firebase user is verified
-            syncUserSettingsToFirestore({ theme: themeStr, aiProvider, aiModel }).catch(() => {});
+            syncUserSettingsToFirestore({ theme: themeStr, lang: currentLang, aiProvider, aiModel }).catch(() => {});
 
             // Guardar al núvol immediatament
             if (authToken) {
@@ -4949,6 +5382,7 @@
                         body: JSON.stringify({ 
                             name: newName, 
                             theme: themeStr,
+                            lang: currentLang,
                             ai_provider: aiProvider,
                             ai_api_key: aiKey,
                             ai_model: aiModel
@@ -4956,22 +5390,31 @@
                     });
                     const data = await res.json();
                     if(data.error) {
-                        Swal.fire('Error de Turso', data.error, 'error');
+                        Swal.fire('Error', data.error, 'error');
                         return; // No tanquem el modal si hi ha error
                     }
                 } catch(e) { console.error(e); }
             }
             closeSettings();
-            Swal.fire({ title: 'Guardat!', text: 'La teva configuració s\'ha actualitzat.', icon: 'success', timer: 1500, showConfirmButton: false, customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }});
+            const isEs = currentLang === 'es';
+            Swal.fire({
+                title: isEs ? '¡Guardado!' : 'Guardat!',
+                text: isEs ? 'Tu configuración e idioma se han guardado permanentemente.' : "La teva configuració i l'idioma s'han desat permanentment.",
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+                customClass: { popup: 'rounded-[1.5rem] dark:bg-zinc-900 dark:text-white border dark:border-zinc-800' }
+            });
         }
         window.openSettings = openSettings;
         window.closeSettings = closeSettings;
         window.saveSettings = saveSettings;
 
         function updateProfileUI() {
+            const isEs = typeof window.getAppLanguage === 'function' && window.getAppLanguage() === 'es';
             if (!authUser || !authToken) {
                 const emailEl = document.getElementById('profile-email');
-                if (emailEl) emailEl.innerText = 'Convidat (Sense sessió)';
+                if (emailEl) emailEl.innerText = isEs ? 'Invitado (Sin sesión)' : 'Convidat (Sense sessió)';
                 const initialEl = document.getElementById('profile-initial');
                 if (initialEl) {
                     initialEl.innerText = '?';
@@ -12218,15 +12661,18 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             const userAiProvider = localStorage.getItem('aliat_ai_provider') || '';
             const userAiKey = localStorage.getItem('aliat_ai_key') || '';
             const userAiModel = localStorage.getItem('aliat_ai_model') || '';
+            const preferredLang = typeof window.getAppLanguage === 'function' ? window.getAppLanguage() : 'ca';
 
             const headers = { 'Content-Type': 'application/json' };
             if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
             if (userAiProvider) headers['x-ai-provider'] = userAiProvider;
             if (userAiKey) headers['x-ai-key'] = userAiKey;
             if (userAiModel) headers['x-ai-model'] = userAiModel;
+            headers['x-app-lang'] = preferredLang;
 
             const fullPayload = {
                 ...bodyPayload,
+                lang: preferredLang,
                 ai_provider: userAiProvider,
                 ai_api_key: userAiKey,
                 ai_model: userAiModel,
@@ -14644,15 +15090,28 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             });
         }
 
-        // --- SISTEMA DE PREFERÈNCIES (Tema i Sidebar) ---
+        // --- SISTEMA DE PREFERÈNCIES PERMANENTS (Tema, Idioma i Sidebar) ---
         function initPreferences() {
-            const savedTheme = localStorage.getItem('aliat_theme');
+            let savedTheme = localStorage.getItem('aliat_theme');
+            if (!savedTheme) {
+                const m = document.cookie.match(/(?:^|;\s*)aliat_theme=(dark|light)/);
+                if (m) {
+                    savedTheme = m[1];
+                    try { localStorage.setItem('aliat_theme', savedTheme); } catch (_) {}
+                }
+            }
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
             }
             updateThemeIcon();
+
+            const savedLang = window.getAppLanguage();
+            window.persistPermanentPreference('aliat_lang', savedLang);
+            if (typeof window.applyAppLanguageUI === 'function') {
+                window.applyAppLanguageUI();
+            }
 
             const sidebarCollapsed = localStorage.getItem('aliat_sidebar_collapsed');
             if (sidebarCollapsed === 'true' && window.innerWidth >= 768) {
@@ -14663,7 +15122,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('aliat_theme', isDark ? 'dark' : 'light');
+            window.persistPermanentPreference('aliat_theme', isDark ? 'dark' : 'light');
             updateThemeIcon();
         }
 

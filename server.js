@@ -98,9 +98,13 @@ app.get(['/', '/login'], (req, res) => {
     return res.sendFile(path.join(__dirname, 'index.html'));
 });
 app.get(['/privacidad.html', '/privacidad'], (req, res) => {
+    const rootFile = path.join(__dirname, 'privacidad.html');
+    if (fs.existsSync(rootFile)) return res.sendFile(rootFile);
     return res.sendFile(path.join(__dirname, 'public', 'privacidad.html'));
 });
 app.get(['/condiciones.html', '/condiciones', '/terminos.html', '/terminos'], (req, res) => {
+    const rootFile = path.join(__dirname, 'condiciones.html');
+    if (fs.existsSync(rootFile)) return res.sendFile(rootFile);
     return res.sendFile(path.join(__dirname, 'public', 'condiciones.html'));
 });
 

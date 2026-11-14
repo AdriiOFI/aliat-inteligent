@@ -14,31 +14,46 @@ module.exports = async function handler(req, res) {
         const client = getDbClient();
 
         if (req.method === 'POST') {
-            const { name, theme, ai_provider, ai_api_key, ai_model } = req.body || {};
+            const { name, theme, lang, ai_provider, ai_api_key, ai_model } = req.body || {};
+            const normalizedLang = lang === 'es' ? 'es' : 'ca';
             try {
                 await client.execute({
-                    sql: 'UPDATE users SET name = ?, theme = ?, ai_provider = ?, ai_api_key = ?, ai_model = ? WHERE id = ?',
-                    args: [name || '', theme || 'light', ai_provider || '', ai_api_key || '', ai_model || '', user.id]
+                    sql: 'UPDATE users SET name = ?, theme = ?, lang = ?, ai_provider = ?, ai_api_key = ?, ai_model = ? WHERE id = ?',
+                    args: [name || '', theme || 'light', normalizedLang, ai_provider || '', ai_api_key || '', ai_model || '', user.id]
                 });
             } catch (updateErr) {
-                await client.execute({
-                    sql: 'UPDATE users SET name = ?, theme = ? WHERE id = ?',
-                    args: [name || '', theme || 'light', user.id]
-                });
+                try {
+                    await client.execute({
+                        sql: 'UPDATE users SET name = ?, theme = ?, ai_provider = ?, ai_api_key = ?, ai_model = ? WHERE id = ?',
+                        args: [name || '', theme || 'light', ai_provider || '', ai_api_key || '', ai_model || '', user.id]
+                    });
+                } catch (_) {
+                    await client.execute({
+                        sql: 'UPDATE users SET name = ?, theme = ? WHERE id = ?',
+                        args: [name || '', theme || 'light', user.id]
+                    });
+                }
             }
-            return res.status(200).json({ success: true });
+            return res.status(200).json({ success: true, lang: normalizedLang });
         } else if (req.method === 'GET') {
             let result;
             try {
                 result = await client.execute({
-                    sql: 'SELECT name, theme, ai_provider, ai_api_key, ai_model FROM users WHERE id = ?',
+                    sql: 'SELECT name, theme, lang, ai_provider, ai_api_key, ai_model FROM users WHERE id = ?',
                     args: [user.id]
                 });
             } catch (selectErr) {
-                result = await client.execute({
-                    sql: 'SELECT name, theme FROM users WHERE id = ?',
-                    args: [user.id]
-                });
+                try {
+                    result = await client.execute({
+                        sql: 'SELECT name, theme, ai_provider, ai_api_key, ai_model FROM users WHERE id = ?',
+                        args: [user.id]
+                    });
+                } catch (_) {
+                    result = await client.execute({
+                        sql: 'SELECT name, theme FROM users WHERE id = ?',
+                        args: [user.id]
+                    });
+                }
             }
             if (result.rows && result.rows.length > 0) {
                 const u = result.rows[0];
@@ -46,6 +61,7 @@ module.exports = async function handler(req, res) {
                     success: true,
                     name: u.name || '',
                     theme: u.theme || 'light',
+                    lang: u.lang === 'es' ? 'es' : (u.lang === 'ca' ? 'ca' : ''),
                     ai_provider: u.ai_provider || '',
                     ai_api_key: u.ai_api_key || '',
                     ai_model: u.ai_model || ''
@@ -55,6 +71,7 @@ module.exports = async function handler(req, res) {
                 success: true,
                 name: user.email ? user.email.split('@')[0] : '',
                 theme: 'light',
+                lang: '',
                 ai_provider: '',
                 ai_api_key: '',
                 ai_model: ''

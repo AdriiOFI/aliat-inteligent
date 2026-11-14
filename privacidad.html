@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="ca">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Política de Privacidad · Aliat Intel·ligent</title>
-    <meta name="description" content="Política de privacidad básica de Aliat Intel·ligent: qué datos recogemos, para qué los usamos y cómo los protegemos.">
+    <title>Política de Privadesa / Privacidad · Aliat Intel·ligent</title>
+    <meta name="description" content="Política de privadesa d'Aliat Intel·ligent en català i espanyol: quines dades recollim, per a què les utilitzem i com les protegim.">
+    <link rel="icon" type="image/png" href="/assets/aistudio/logoOFI_048f1d3b.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,88 +19,179 @@
             document.documentElement.classList.add('dark');
         }
     </script>
-    <link rel="icon" type="image/png" href="/assets/aistudio/logoOFI_048f1d3b.png">
 </head>
 <body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
     <header class="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-            <a href="/" class="flex items-center gap-3 group">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+            <a href="/" class="flex items-center gap-3 group min-w-0">
                 <div class="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 flex items-center justify-center p-1.5 shadow-2xs shrink-0">
                     <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat Intel·ligent" class="w-full h-full object-contain drop-shadow-2xs dark:brightness-[1.85] dark:contrast-125">
                 </div>
-                <div>
+                <div class="truncate">
                     <span class="font-extrabold text-sm sm:text-base text-zinc-900 dark:text-white tracking-tight block leading-none">Aliat Intel·ligent</span>
-                    <span class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Política de Privacidad y Protección de Datos</span>
+                    <span class="lang-ca text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Política de Privadesa i Protecció de Dades</span>
+                    <span class="lang-es hidden text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Política de Privacidad y Protección de Datos</span>
                 </div>
             </a>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 shrink-0">
+                <!-- Selector d'idioma permanent (Català / Español) -->
+                <div class="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 p-0.5 text-xs font-bold">
+                    <button type="button" id="btn-lang-ca" onclick="setPageLang('ca')" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">Català</button>
+                    <button type="button" id="btn-lang-es" onclick="setPageLang('es')" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">Español</button>
+                </div>
                 <a href="/condiciones.html" class="hidden sm:inline-flex px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold transition">
-                    Condiciones de Uso
+                    <span class="lang-ca">Condicions d'Ús</span>
+                    <span class="lang-es hidden">Condiciones de Uso</span>
                 </a>
-                <button type="button" onclick="document.documentElement.classList.toggle('dark'); localStorage.setItem('aliat_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer" title="Cambiar tema">
-                    Tema Claro / Oscuro
+                <button type="button" onclick="togglePageTheme()" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer" title="Canviar tema / Cambiar tema">
+                    <span class="lang-ca">Tema Clar / Fosc</span>
+                    <span class="lang-es hidden">Tema Claro / Oscuro</span>
                 </button>
                 <a href="/" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-bold transition shadow-2xs">
-                    ← Volver a la App
+                    <span class="lang-ca">← Tornar a l'App</span>
+                    <span class="lang-es hidden">← Volver a la App</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
-        <!-- Hero Banner -->
+    <!-- ========================================== -->
+    <!-- VERSIÓ EN CATALÀ (NORMATIU, SENSE FALTES)  -->
+    <!-- ========================================== -->
+    <main class="lang-ca max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
         <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-xs space-y-3">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/70 text-blue-700 dark:text-sky-300 text-xs font-bold">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <span>Documento Oficial de Privacidad · Última actualización: Noviembre 2026</span>
+                <span>Document Oficial de Privadesa · Última actualització: Novembre del 2026</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
+                Política de Privadesa d'Aliat Intel·ligent
+            </h1>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                A <strong>Aliat Intel·ligent</strong> ens prenem molt seriosament la privadesa dels estudiants i dels usuaris. Aquesta política explica de manera clara, rigorosa i transparent quines dades personals recollim, amb quina finalitat les tractem i quines mesures tècniques utilitzem per protegir-les en tot moment.
+            </p>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
+                <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center font-bold">1</div>
+                <h2 class="text-sm font-bold text-zinc-900 dark:text-white">Quines dades recollim?</h2>
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    Únicament el teu <strong>correu electrònic</strong>, el teu <strong>nom</strong> de perfil (en iniciar sessió amb Google o crear un compte) i el contingut d'estudi que decideixis desar (plans, apunts, sessions i preferències d'idioma i tema).
+                </p>
+            </div>
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
+                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">2</div>
+                <h2 class="text-sm font-bold text-zinc-900 dark:text-white">Per a què les fem servir?</h2>
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    Exclusivament per a l'<strong>inici de sessió</strong>, l'<strong>emmagatzematge i la sincronització dels teus estudis</strong>, els recordatoris acadèmics i la connexió opcional amb el teu compte de Google Workspace sota el teu permís exprés.
+                </p>
+            </div>
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">3</div>
+                <h2 class="text-sm font-bold text-zinc-900 dark:text-white">Com les protegim?</h2>
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    Mitjançant xifratge de contrasenyes (<code>bcrypt</code>), testimonis signats (<code>JWT</code>), <strong>Firebase Authentication</strong>, <strong>Google OAuth 2.0</strong> en memòria i protecció contra bots <strong>reCAPTCHA Enterprise</strong>.
+                </p>
+            </div>
+        </div>
+
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-6 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <div class="space-y-2">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">1. Dades que recopilem</h3>
+                <p>Recollim únicament la informació mínima indispensable perquè puguis utilitzar l'assistent d'estudi amb totes les seves funcionalitats:</p>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li><strong>Dades d'identificació i de compte:</strong> Adreça de correu electrònic (<code>email</code>), nom d'usuari o nom públic del perfil (proporcionat directament per tu o mitjançant l'inici de sessió oficial amb Google) i configuració d'idioma (català o espanyol) i aparença. De manera opcional, pots indicar un telèfon o correu destinatari per rebre recordatoris d'estudi.</li>
+                    <li><strong>Dades acadèmiques i d'estudi:</strong> Els plans d'estudi generats, les dates d'examen, el progrés de les sessions completades, els resultats dels qüestionaris diagnòstics, l'historial de converses amb el tutor virtual i els fitxers PDF, imatges o vídeos d'apunts que pugis voluntàriament per a la seva anàlisi.</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">2. Finalitat del tractament (Per a què utilitzem les teves dades?)</h3>
+                <p>Les teves dades s'utilitzen estrictament per prestar les funcionalitats de l'aplicació:</p>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li><strong>Inici de sessió i gestió del compte:</strong> Autenticar la teva identitat de manera segura, conservar la teva configuració permanent (idioma, tema visual i preferències) i evitar accessos no autoritzats.</li>
+                    <li><strong>Emmagatzematge i sincronització d'estudis:</strong> Conservar les teves sessions de xat, calendaris d'estudi, targetes de memòria (<em>flashcards</em>) dominades, estadístiques de progrés i recordatoris perquè puguis continuar estudiant des de qualsevol dispositiu.</li>
+                    <li><strong>Integració amb Google Workspace (amb el teu permís explícit):</strong> Si autoritzes la connexió amb Google Calendar, Google Drive, Google Docs, Google Sheets, Google Slides, Google Classroom o Gmail, l'aplicació utilitza la teva sessió autoritzada únicament per executar les accions que sol·licitis en pantalla (com ara sincronitzar l'agenda d'estudi amb el teu calendari oficial o exportar resums a Google Docs).</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">3. Mesures de seguretat (Com protegim les teves dades?)</h3>
+                <p>Apliquem mesures de seguretat tècniques i organitzatives estàndard de la indústria:</p>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li><strong>Xifratge de contrasenyes:</strong> Les contrasenyes no es desaran mai en text pla; s'emmagatzemen amb un resum criptogràfic irreversible mitjançant <code>bcrypt</code>.</li>
+                    <li><strong>Autenticació segura i testimonis efímers:</strong> Utilitzem <strong>Firebase Authentication</strong>, <strong>Google OAuth 2.0</strong> i testimonis <code>JWT</code> signats al servidor. Els testimonis d'accés a Google Workspace es mantenen únicament a la memòria activa del navegador i s'eliminen en tancar la sessió.</li>
+                    <li><strong>Prevenció d'abús i de bots:</strong> L'accés i el registre d'usuaris estan protegits mitjançant <strong>Google reCAPTCHA Enterprise</strong>.</li>
+                    <li><strong>Comunicacions xifrades i no-cessió a tercers:</strong> Tot el trànsit viatja xifrat mitjançant HTTPS/TLS. <strong>No venem, lloguem ni cedim mai les teves dades personals a tercers amb finalitats publicitàries o comercials.</strong></li>
+                </ul>
+            </div>
+
+            <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">4. Control i drets de l'usuari (Accés, Rectificació i Supressió)</h3>
+                <p class="text-xs sm:text-sm">
+                    Tens el control total sobre la teva informació en tot moment. Des de la mateixa interfície d'<strong>Aliat Intel·ligent</strong> pots eliminar converses individuals, reiniciar la memòria d'estudi, desvincular el teu compte de Google o tancar la sessió. Així mateix, pots exercir els teus drets d'accés, rectificació, portabilitat o supressió escrivint a l'administrador de l'aplicació.
+                </p>
+            </div>
+        </section>
+
+        <footer class="text-center text-xs text-zinc-500 dark:text-zinc-400 pb-8 space-x-2">
+            <span>© 2026 Aliat Intel·ligent</span>
+            <span>·</span>
+            <a href="/condiciones.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Condicions d'Ús</a>
+            <span>·</span>
+            <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Tornar a l'inici</a>
+        </footer>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- VERSIÓN EN ESPAÑOL (NORMATIVO, SIN FALTAS) -->
+    <!-- ========================================== -->
+    <main class="lang-es hidden max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-xs space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/70 text-blue-700 dark:text-sky-300 text-xs font-bold">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Documento Oficial de Privacidad · Última actualización: Noviembre de 2026</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
                 Política de Privacidad de Aliat Intel·ligent
             </h1>
             <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                En <strong>Aliat Intel·ligent</strong> nos tomamos muy en serio la privacidad de los estudiantes y usuarios. Esta política explica de forma clara y transparente qué datos personales recogemos, con qué finalidad los utilizamos y qué medidas técnicas empleamos para protegerlos.
+                En <strong>Aliat Intel·ligent</strong> nos tomamos muy en serio la privacidad de los estudiantes y usuarios. Esta política explica de forma clara, rigurosa y transparente qué datos personales recogemos, con qué finalidad los utilizamos y qué medidas técnicas empleamos para protegerlos en todo momento.
             </p>
         </section>
 
-        <!-- 3 Pilares Principales -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
-                <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center font-bold">
-                    1
-                </div>
+                <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center font-bold">1</div>
                 <h2 class="text-sm font-bold text-zinc-900 dark:text-white">¿Qué datos recogemos?</h2>
                 <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    Únicamente tu <strong>correo electrónico</strong>, tu <strong>nombre</strong> de perfil (al iniciar sesión con Google o crear cuenta) y el contenido de estudio que decides guardar (planes, apuntes y sesiones).
+                    Únicamente tu <strong>correo electrónico</strong>, tu <strong>nombre</strong> de perfil (al iniciar sesión con Google o crear una cuenta) y el contenido de estudio que decidas guardar (planes, apuntes, sesiones y preferencias de idioma y tema).
                 </p>
             </div>
             <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
-                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                    2
-                </div>
+                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">2</div>
                 <h2 class="text-sm font-bold text-zinc-900 dark:text-white">¿Para qué los usamos?</h2>
                 <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    Exclusivamente para el <strong>inicio de sesión</strong>, el <strong>guardado y sincronización de tus estudios</strong>, recordatorios académicos y la conexión opcional con tu cuenta de Google Workspace bajo tu permiso.
+                    Exclusivamente para el <strong>inicio de sesión</strong>, el <strong>guardado y la sincronización de tus estudios</strong>, los recordatorios académicos y la conexión opcional con tu cuenta de Google Workspace bajo tu permiso expreso.
                 </p>
             </div>
             <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
-                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
-                    3
-                </div>
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">3</div>
                 <h2 class="text-sm font-bold text-zinc-900 dark:text-white">¿Cómo los protegemos?</h2>
                 <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    Mediante cifrado de contraseñas (<code>bcrypt</code>), tokens firmados (<code>JWT</code>), <strong>Firebase Auth</strong>, <strong>Google OAuth 2.0</strong> en memoria y protección <strong>reCAPTCHA Enterprise</strong>.
+                    Mediante cifrado de contraseñas (<code>bcrypt</code>), tokens firmados (<code>JWT</code>), <strong>Firebase Authentication</strong>, <strong>Google OAuth 2.0</strong> en memoria y protección contra bots <strong>reCAPTCHA Enterprise</strong>.
                 </p>
             </div>
         </div>
 
-        <!-- Desglose detallado -->
         <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-6 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
             <div class="space-y-2">
                 <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">1. Datos que recopilamos</h3>
-                <p>Recogemos únicamente la información mínima necesaria para que puedas utilizar el asistente de estudio:</p>
+                <p>Recogemos únicamente la información mínima indispensable para que puedas utilizar el asistente de estudio con todas sus funcionalidades:</p>
                 <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                    <li><strong>Datos de identificación y cuenta:</strong> Dirección de correo electrónico (<code>email</code>) y nombre de usuario o nombre público del perfil (proporcionado directamente por ti o mediante el inicio de sesión oficial con Google). De forma opcional, puedes indicar un teléfono o correo destinatario para recordatorios de estudio.</li>
-                    <li><strong>Datos académicos y de estudio:</strong> Los planes de estudio generados, fechas de examen, progreso de sesiones, resultados de cuestionarios diagnósticos, historial de conversaciones con el tutor virtual y archivos o imágenes de apuntes que subas voluntariamente para su análisis.</li>
+                    <li><strong>Datos de identificación y de cuenta:</strong> Dirección de correo electrónico (<code>email</code>), nombre de usuario o nombre público del perfil (proporcionado directamente por ti o mediante el inicio de sesión oficial con Google) y configuración de idioma (catalán o español) y apariencia. De forma opcional, puedes indicar un teléfono o correo destinatario para recibir recordatorios de estudio.</li>
+                    <li><strong>Datos académicos y de estudio:</strong> Los planes de estudio generados, las fechas de examen, el progreso de las sesiones completadas, los resultados de los cuestionarios diagnósticos, el historial de conversaciones con el tutor virtual y los archivos PDF, imágenes o vídeos de apuntes que subas voluntariamente para su análisis.</li>
                 </ul>
             </div>
 
@@ -107,8 +199,8 @@
                 <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">2. Finalidad del tratamiento (¿Para qué usamos tus datos?)</h3>
                 <p>Tus datos se utilizan estrictamente para prestar las funcionalidades de la aplicación:</p>
                 <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                    <li><strong>Inicio de sesión y gestión de cuenta:</strong> Autenticar tu identidad de forma segura y evitar accesos no autorizados.</li>
-                    <li><strong>Guardado y sincronización de estudios:</strong> Conservar tus sesiones de chat, calendarios de estudio, flashcards dominadas, estadísticas de memoria y recordatorios para que puedas continuar estudiando desde cualquier dispositivo.</li>
+                    <li><strong>Inicio de sesión y gestión de la cuenta:</strong> Autenticar tu identidad de forma segura, conservar tu configuración permanente (idioma, tema visual y preferencias) y evitar accesos no autorizados.</li>
+                    <li><strong>Guardado y sincronización de estudios:</strong> Conservar tus sesiones de chat, calendarios de estudio, tarjetas de memoria (<em>flashcards</em>) dominadas, estadísticas de progreso y recordatorios para que puedas continuar estudiando desde cualquier dispositivo.</li>
                     <li><strong>Integración con Google Workspace (con tu permiso explícito):</strong> Si autorizas la conexión con Google Calendar, Google Drive, Google Docs, Google Sheets, Google Slides, Google Classroom o Gmail, la aplicación utiliza tu sesión autorizada únicamente para ejecutar las acciones que solicites en pantalla (como sincronizar tu agenda de estudio con tu calendario oficial o exportar resúmenes a Google Docs).</li>
                 </ul>
             </div>
@@ -118,8 +210,8 @@
                 <p>Aplicamos medidas de seguridad técnicas y organizativas estándar de la industria:</p>
                 <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
                     <li><strong>Cifrado de contraseñas:</strong> Las contraseñas nunca se guardan en texto plano; se almacenan con hash criptográfico irreversible mediante <code>bcrypt</code>.</li>
-                    <li><strong>Autenticación segura y tokens efímeros:</strong> Utilizamos <strong>Firebase Authentication</strong>, <strong>Google OAuth 2.0</strong> y tokens <code>JWT</code> firmados en el servidor. Los tokens de acceso a Google Workspace se mantienen únicamente en la memoria activa de tu navegador y se eliminan al cerrar sesión.</li>
-                    <li><strong>Prevención de abuso y bots:</strong> El acceso y registro están protegidos mediante <strong>Google reCAPTCHA Enterprise</strong>.</li>
+                    <li><strong>Autenticación segura y tokens efímeros:</strong> Utilizamos <strong>Firebase Authentication</strong>, <strong>Google OAuth 2.0</strong> y tokens <code>JWT</code> firmados en el servidor. Los tokens de acceso a Google Workspace se mantienen únicamente en la memoria activa de tu navegador y se eliminan al cerrar la sesión.</li>
+                    <li><strong>Prevención de abuso y bots:</strong> El acceso y el registro de usuarios están protegidos mediante <strong>Google reCAPTCHA Enterprise</strong>.</li>
                     <li><strong>Comunicaciones cifradas y no cesión a terceros:</strong> Todo el tráfico viaja cifrado mediante HTTPS/TLS. <strong>Nunca vendemos, alquilamos ni cedemos tus datos personales a terceros con fines publicitarios o comerciales.</strong></li>
                 </ul>
             </div>
@@ -127,7 +219,7 @@
             <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
                 <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">4. Control y derechos del usuario (Acceso, Rectificación y Eliminación)</h3>
                 <p class="text-xs sm:text-sm">
-                    Tienes control total sobre tu información en todo momento. Desde la propia interfaz de <strong>Aliat Intel·ligent</strong> puedes eliminar conversaciones individuales, reiniciar la memoria de estudio, desconectar tu cuenta de Google o cerrar sesión limpiando todos los datos locales. Asimismo, puedes ejercer tus derechos de acceso, rectificación, portabilidad o supresión escribiendo al administrador de la aplicación.
+                    Tienes el control total sobre tu información en todo momento. Desde la propia interfaz de <strong>Aliat Intel·ligent</strong> puedes eliminar conversaciones individuales, reiniciar la memoria de estudio, desconectar tu cuenta de Google o cerrar la sesión. Asimismo, puedes ejercer tus derechos de acceso, rectificación, portabilidad o supresión escribiendo al administrador de la aplicación.
                 </p>
             </div>
         </section>
@@ -140,5 +232,39 @@
             <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Volver al inicio</a>
         </footer>
     </main>
+
+    <script>
+        function getSavedLang() {
+            const ls = localStorage.getItem('aliat_lang');
+            if (ls === 'es' || ls === 'ca') return ls;
+            const m = document.cookie.match(/(?:^|;\s*)aliat_lang=(ca|es)/);
+            return m ? m[1] : 'ca';
+        }
+        function setPageLang(lang) {
+            const norm = lang === 'es' ? 'es' : 'ca';
+            localStorage.setItem('aliat_lang', norm);
+            document.cookie = 'aliat_lang=' + norm + '; path=/; max-age=315360000; SameSite=Lax';
+            document.documentElement.lang = norm;
+            document.querySelectorAll('.lang-ca').forEach(el => el.classList.toggle('hidden', norm !== 'ca'));
+            document.querySelectorAll('.lang-es').forEach(el => el.classList.toggle('hidden', norm !== 'es'));
+            const btnCa = document.getElementById('btn-lang-ca');
+            const btnEs = document.getElementById('btn-lang-es');
+            if (btnCa && btnEs) {
+                btnCa.className = norm === 'ca'
+                    ? 'px-2.5 py-1.5 rounded-lg transition cursor-pointer bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs'
+                    : 'px-2.5 py-1.5 rounded-lg transition cursor-pointer text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
+                btnEs.className = norm === 'es'
+                    ? 'px-2.5 py-1.5 rounded-lg transition cursor-pointer bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs'
+                    : 'px-2.5 py-1.5 rounded-lg transition cursor-pointer text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
+            }
+        }
+        function togglePageTheme() {
+            document.documentElement.classList.toggle('dark');
+            const t = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('aliat_theme', t);
+            document.cookie = 'aliat_theme=' + t + '; path=/; max-age=315360000; SameSite=Lax';
+        }
+        setPageLang(getSavedLang());
+    </script>
 </body>
 </html>

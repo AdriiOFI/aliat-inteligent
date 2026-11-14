@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="ca">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Condiciones de Uso y Términos del Servicio · Aliat Intel·ligent</title>
-    <meta name="description" content="Condiciones de Uso de Aliat Intel·ligent: modalidades de acceso, tutoría con IA, integración con Google Workspace y normas de uso responsable.">
+    <title>Condicions d'Ús / Condiciones de Uso · Aliat Intel·ligent</title>
+    <meta name="description" content="Condicions d'Ús i Termes del Servei d'Aliat Intel·ligent en català i espanyol: modalitats d'accés, tutoria amb IA, integració amb Google Workspace i ús responsable.">
     <link rel="icon" type="image/png" href="/assets/aistudio/logoOFI_048f1d3b.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,69 +22,185 @@
 </head>
 <body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
     <header class="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-            <a href="/" class="flex items-center gap-3 group">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+            <a href="/" class="flex items-center gap-3 group min-w-0">
                 <div class="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 flex items-center justify-center p-1.5 shadow-2xs shrink-0">
                     <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain drop-shadow-2xs dark:brightness-[1.85] dark:contrast-125">
                 </div>
-                <div>
+                <div class="truncate">
                     <span class="font-extrabold text-sm sm:text-base text-zinc-900 dark:text-white tracking-tight block leading-none">Aliat Intel·ligent</span>
-                    <span class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Condiciones de Uso y Términos del Servicio</span>
+                    <span class="lang-ca text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Condicions d'Ús i Termes del Servei</span>
+                    <span class="lang-es hidden text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Condiciones de Uso y Términos del Servicio</span>
                 </div>
             </a>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 shrink-0">
+                <!-- Selector d'idioma permanent (Català / Español) -->
+                <div class="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 p-0.5 text-xs font-bold">
+                    <button type="button" id="btn-lang-ca" onclick="setPageLang('ca')" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">Català</button>
+                    <button type="button" id="btn-lang-es" onclick="setPageLang('es')" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">Español</button>
+                </div>
                 <a href="/privacidad.html" class="hidden sm:inline-flex px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold transition">
-                    Política de Privacidad
+                    <span class="lang-ca">Política de Privadesa</span>
+                    <span class="lang-es hidden">Política de Privacidad</span>
                 </a>
-                <button type="button" onclick="document.documentElement.classList.toggle('dark'); localStorage.setItem('aliat_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer" title="Cambiar tema">
-                    Tema Claro / Oscuro
+                <button type="button" onclick="togglePageTheme()" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer" title="Canviar tema / Cambiar tema">
+                    <span class="lang-ca">Tema Clar / Fosc</span>
+                    <span class="lang-es hidden">Tema Claro / Oscuro</span>
                 </button>
                 <a href="/" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-bold transition shadow-2xs">
-                    ← Volver a la App
+                    <span class="lang-ca">← Tornar a l'App</span>
+                    <span class="lang-es hidden">← Volver a la App</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
-        <!-- Hero Banner -->
+    <!-- ========================================== -->
+    <!-- VERSIÓ EN CATALÀ (NORMATIU, SENSE FALTES)  -->
+    <!-- ========================================== -->
+    <main class="lang-ca max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
         <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-xs space-y-3">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/70 text-blue-700 dark:text-sky-300 text-xs font-bold">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                <span>Términos Oficiales del Servicio · Última actualización: Noviembre 2026</span>
+                <span>Termes Oficials del Servei · Última actualització: Novembre del 2026</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
+                Condicions d'Ús d'Aliat Intel·ligent
+            </h1>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                Benvingut/da a <strong>Aliat Intel·ligent</strong>. Les presents Condicions d'Ús regulen l'accés i la utilització de la plataforma web i aplicació progressiva (PWA) de tutoria virtual, planificació d'estudis amb Intel·ligència Artificial, productivitat quotidiana i integració amb eines de Google Workspace. En accedir a l'aplicació o utilitzar-la —ja sigui en mode sense sessió o mitjançant un compte registrat— acceptes aquestes condicions.
+            </p>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
+                <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center font-bold">1</div>
+                <h2 class="text-sm font-bold text-zinc-900 dark:text-white">Propòsit Educatiu</h2>
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    Eina de suport a l'estudi, generació de plans fins a la data d'examen, qüestionaris interactius, resums i redacció de documents.
+                </p>
+            </div>
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
+                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">2</div>
+                <h2 class="text-sm font-bold text-zinc-900 dark:text-white">Els teus Apunts són Teus</h2>
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    Conserves el 100% de la propietat intel·lectual sobre els teus PDFs, fotografies d'apunts, vídeos, esquemes i documents exportats a Word o Google Workspace.
+                </p>
+            </div>
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">3</div>
+                <h2 class="text-sm font-bold text-zinc-900 dark:text-white">IA Responsable</h2>
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    La IA és un assistent d'aprenentatge i pot cometre errors; l'usuari ha de verificar les dates d'examen i els continguts crítics abans del seu lliurament oficial.
+                </p>
+            </div>
+        </div>
+
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-6 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <div class="space-y-2">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">1. Descripció del Servei i Mòduls Disponibles</h3>
+                <p><strong>Aliat Intel·ligent</strong> ofereix tres espais principals de treball assistits per Intel·ligència Artificial:</p>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li><strong>Pla d'Estudis:</strong> Creació de calendaris d'estudi personalitzats segons la data límit o d'examen i els dies disponibles de la setmana, pujada i extracció d'apunts en PDF, anàlisi multimodal d'imatges i vídeos d'apunts, tests de diagnòstic inicial, targetes de memòria (<em>flashcards</em>) interactives, mapes conceptuals visuals, temporitzador Pomodoro, recordatoris programats i panell de <em>Memòria</em> amb seguiment del percentatge completat del pla i conceptes estudiats.</li>
+                    <li><strong>XatBot Acadèmic:</strong> Tutor conversacional per a la resolució de dubtes pas a pas, debats argumentatius, explicacions adaptades al nivell de l'estudiant, generació d'imatges educatives i trucades de veu en directe amb IA.</li>
+                    <li><strong>Ús Quotidià i Documents:</strong> Assistent de redacció (en mode directe o guiat) per a correus formals, informes executius exportables a Word/PDF/Google Docs i planificació de tasques diàries.</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">2. Modalitats d'Accés: Mode sense Sessió i Compte Registrat</h3>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li><strong>Mode sense sessió (Convidat):</strong> Permet consultar la informació pública de la plataforma i provar gratuïtament la conversa bàsica de text en els tres modes de xat (<em>Pla d'Estudis</em>, <em>XatBot</em> i <em>Ús Quotidià</em>). En aquest mode, els botons d'eines avançades, pujada d'arxius, memòria de progrés, recordatoris, configuració del compte i sincronització al núvol romanen bloquejats i sol·liciten iniciar sessió.</li>
+                    <li><strong>Compte Registrat:</strong> El registre i l'inici de sessió es poden fer mitjançant correu electrònic i contrasenya o a través de <strong>Google OAuth 2.0 / Firebase Authentication</strong>, protegits contra accessos automatitzats mitjançant <strong>Google reCAPTCHA Enterprise</strong>. L'usuari és responsable de mantenir la confidencialitat de les seves credencials.</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">3. Condicions de la Integració amb Google Workspace</h3>
+                <p>Si l'usuari decideix connectar el seu compte de Google des del panell de Configuració o el Hub de Google Workspace:</p>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li>L'autorització s'atorga mitjançant el flux oficial de <strong>Google Identity Services (OAuth 2.0)</strong> per interactuar, únicament quan l'usuari ho sol·liciti en pantalla, amb <strong>Google Calendar</strong>, <strong>Google Drive &amp; Picker</strong>, <strong>Google Docs</strong>, <strong>Google Sheets</strong>, <strong>Google Slides</strong>, <strong>Google Classroom</strong> i <strong>Gmail</strong>.</li>
+                    <li><strong>Aliat Intel·ligent</strong> no modifica, elimina ni envia correus o esdeveniments sense una acció expressa iniciada per l'usuari.</li>
+                    <li>Pots desvincular l'accés a Google Workspace en qualsevol moment des del botó <em>Desvincular</em> a <strong>Configuració del Compte</strong> o des de la pàgina de seguretat del teu compte de Google.</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">4. Ús d'Intel·ligència Artificial i Proveïdors de Contingència</h3>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li><strong>Caràcter orientatiu de les respostes:</strong> El contingut generat per la IA (explicacions, plans d'estudi, tests, resums o esborranys) té una finalitat de suport educatiu i productiu. Els models generatius poden produir imprecisions; l'usuari ha de revisar sempre l'exactitud de les dades abans de presentar-les en exàmens, lliuraments acadèmics o comunicacions oficials.</li>
+                    <li><strong>Motor d'IA i claus opcionals:</strong> La plataforma utilitza per defecte models de Google Gemini. Opcionalment, a <em>Configuració &rarr; Motor d'IA &amp; Contingència</em>, l'usuari pot seleccionar proveïdors alternatius (Groq, OpenRouter, OpenAI, DeepSeek o Mistral) i introduir la seva pròpia clau API sota la seva exclusiva responsabilitat i subjecta als termes del proveïdor corresponent.</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">5. Propietat Intel·lectual i Contingut de l'Usuari</h3>
+                <p class="text-xs sm:text-sm">
+                    L'usuari manté en tot moment els drets de propietat intel·lectual sobre els documents PDF, fotografies, vídeos d'apunts, missatges i treballs que pugi o redacti a la plataforma. En pujar arxius per a la seva anàlisi, l'usuari declara que disposa dels drets o permisos necessaris per utilitzar-los amb finalitats d'estudi personal. El disseny, logotip oficial, codi font i marca d'<strong>Aliat Intel·ligent</strong> pertanyen als seus creadors.
+                </p>
+            </div>
+
+            <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">6. Normes de Conducta i Ús Acceptable</h3>
+                <p>Queda estrictament prohibit utilitzar <strong>Aliat Intel·ligent</strong> per a:</p>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li>Generar o difondre contingut il·legal, difamatori, nociu, fraudulent o que vulneri drets de tercers.</li>
+                    <li>Intentar vulnerar les mesures de seguretat, eludir la verificació de <strong>reCAPTCHA Enterprise</strong>, fer enginyeria inversa o saturar deliberadament els punts d'accés de l'API.</li>
+                    <li>Suplantar la identitat d'altres estudiants, professors o tercers en utilitzar les funcions d'exportació o d'enviament de recordatoris.</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">7. Baixa del Servei, Privadesa i Modificacions</h3>
+                <p class="text-xs sm:text-sm">
+                    L'usuari pot deixar d'utilitzar la plataforma, esborrar les seves converses, reiniciar la memòria d'estudi o tancar la sessió en qualsevol moment. La configuració d'idioma i de tema visual es conserva desada de manera permanent per a la teva comoditat. El tractament de les dades personals es regeix per la nostra <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 font-bold hover:underline">Política de Privadesa</a>. Ens reservem el dret d'actualitzar aquestes Condicions d'Ús per reflectir millores funcionals o canvis normatius, indicant sempre la data d'última actualització a la part superior.
+                </p>
+            </div>
+        </section>
+
+        <footer class="text-center text-xs text-zinc-500 dark:text-zinc-400 pb-8 space-x-2">
+            <span>© 2026 Aliat Intel·ligent</span>
+            <span>·</span>
+            <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Política de Privadesa</a>
+            <span>·</span>
+            <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Tornar a l'inici</a>
+        </footer>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- VERSIÓN EN ESPAÑOL (NORMATIVO, SIN FALTAS) -->
+    <!-- ========================================== -->
+    <main class="lang-es hidden max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-xs space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/70 text-blue-700 dark:text-sky-300 text-xs font-bold">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>Términos Oficiales del Servicio · Última actualización: Noviembre de 2026</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
                 Condiciones de Uso de Aliat Intel·ligent
             </h1>
             <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                Bienvenido/a a <strong>Aliat Intel·ligent</strong>. Las presentes Condiciones de Uso regulan el acceso y la utilización de la plataforma web y aplicación progresiva (PWA) de tutoría virtual, planificación de estudios con Inteligencia Artificial, productividad cotidiana e integración con herramientas de Google Workspace. Al acceder o utilizar la aplicación —ya sea en modo sin sesión o mediante cuenta registrada— aceptas estas condiciones.
+                Bienvenido/a a <strong>Aliat Intel·ligent</strong>. Las presentes Condiciones de Uso regulan el acceso y la utilización de la plataforma web y aplicación progresiva (PWA) de tutoría virtual, planificación de estudios con Inteligencia Artificial, productividad cotidiana e integración con herramientas de Google Workspace. Al acceder o utilizar la aplicación —ya sea en modo sin sesión o mediante una cuenta registrada— aceptas estas condiciones.
             </p>
         </section>
 
-        <!-- Resumen en 3 bloques -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
-                <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center font-bold">
-                    1
-                </div>
+                <div class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center font-bold">1</div>
                 <h2 class="text-sm font-bold text-zinc-900 dark:text-white">Propósito Educativo</h2>
                 <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Herramienta de apoyo al estudio, generación de planes hasta la fecha de examen, cuestionarios interactivos, resúmenes y redacción de documentos.
                 </p>
             </div>
             <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
-                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                    2
-                </div>
+                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">2</div>
                 <h2 class="text-sm font-bold text-zinc-900 dark:text-white">Tus Apuntes son Tuyos</h2>
                 <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Conservas el 100% de la propiedad intelectual sobre tus PDFs, fotos de apuntes, vídeos, esquemas y documentos exportados a Word o Google Workspace.
                 </p>
             </div>
             <div class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl p-5 space-y-2">
-                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
-                    3
-                </div>
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">3</div>
                 <h2 class="text-sm font-bold text-zinc-900 dark:text-white">IA Responsable</h2>
                 <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     La IA es un asistente de aprendizaje y puede cometer errores; el usuario debe verificar fechas de examen y contenidos críticos antes de su entrega oficial.
@@ -92,22 +208,21 @@
             </div>
         </div>
 
-        <!-- Articulado detallado acorde a todas las funciones de la app -->
         <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-6 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
             <div class="space-y-2">
                 <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">1. Descripción del Servicio y Módulos Disponibles</h3>
                 <p><strong>Aliat Intel·ligent</strong> ofrece tres espacios principales de trabajo asistidos por Inteligencia Artificial:</p>
                 <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                    <li><strong>Pla d'Estudis:</strong> Creación de calendarios de estudio personalizados según la fecha límite o de examen y los días disponibles de la semana, subida y extracción de apuntes en PDF, análisis multimodal de imágenes y vídeos de apuntes, tests de diagnóstico inicial, flashcards interactivas, mapas conceptuales visuales, temporizador Pomodoro, recordatorios programados y panel de <em>Memòria</em> con seguimiento del porcentaje completado del plan y conceptos estudiados.</li>
-                    <li><strong>XatBot Acadèmic:</strong> Tutor conversacional para resolución de dudas paso a paso, debates argumentativos, explicaciones adaptadas al nivel del estudiante, generación de imágenes educativas y llamadas de voz en directo con IA.</li>
-                    <li><strong>Ús Quotidià i Documents:</strong> Asistente de redacción (modo directo o guiado) para correos formales, informes ejecutivos exportables a Word/PDF/Google Docs y planificación de tareas diarias.</li>
+                    <li><strong>Plan de Estudios (<em>Pla d'Estudis</em>):</strong> Creación de calendarios de estudio personalizados según la fecha límite o de examen y los días disponibles de la semana, subida y extracción de apuntes en PDF, análisis multimodal de imágenes y vídeos de apuntes, tests de diagnóstico inicial, tarjetas de memoria (<em>flashcards</em>) interactivas, mapas conceptuales visuales, temporizador Pomodoro, recordatorios programados y panel de <em>Memoria</em> con seguimiento del porcentaje completado del plan y conceptos estudiados.</li>
+                    <li><strong>ChatBot Académico (<em>XatBot</em>):</strong> Tutor conversacional para la resolución de dudas paso a paso, debates argumentativos, explicaciones adaptadas al nivel del estudiante, generación de imágenes educativas y llamadas de voz en directo con IA.</li>
+                    <li><strong>Uso Cotidiano y Documentos (<em>Ús Quotidià</em>):</strong> Asistente de redacción (en modo directo o guiado) para correos formales, informes ejecutivos exportables a Word/PDF/Google Docs y planificación de tareas diarias.</li>
                 </ul>
             </div>
 
             <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
                 <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">2. Modalidades de Acceso: Modo sin Sesión y Cuenta Registrada</h3>
                 <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                    <li><strong>Modo sin sesión (Invitado):</strong> Permite consultar la información pública de la plataforma y probar de forma gratuita la conversación básica de texto en los tres modos de chat (<em>Pla d'Estudis</em>, <em>XatBot</em> y <em>Ús Quotidià</em>). En este modo, los botones de herramientas avanzadas, subida de archivos, memoria de progreso, recordatorios, configuración y sincronización en la nube permanecen bloqueados y solicitan iniciar sesión.</li>
+                    <li><strong>Modo sin sesión (Invitado):</strong> Permite consultar la información pública de la plataforma y probar de forma gratuita la conversación básica de texto en los tres modos de chat (<em>Plan de Estudios</em>, <em>ChatBot</em> y <em>Uso Cotidiano</em>). En este modo, los botones de herramientas avanzadas, subida de archivos, memoria de progreso, recordatorios, configuración de la cuenta y sincronización en la nube permanecen bloqueados y solicitan iniciar sesión.</li>
                     <li><strong>Cuenta Registrada:</strong> El registro e inicio de sesión pueden realizarse mediante correo electrónico y contraseña o a través de <strong>Google OAuth 2.0 / Firebase Authentication</strong>, protegidos contra accesos automatizados mediante <strong>Google reCAPTCHA Enterprise</strong>. El usuario es responsable de mantener la confidencialidad de sus credenciales.</li>
                 </ul>
             </div>
@@ -116,9 +231,9 @@
                 <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">3. Condiciones de la Integración con Google Workspace</h3>
                 <p>Si el usuario decide conectar su cuenta de Google desde el panel de Configuración o el Hub de Google Workspace:</p>
                 <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
-                    <li>La autorización se otorga mediante el flujo oficial de <strong>Google Identity Services (OAuth 2.0)</strong> para interactuar, únicamente cuando el usuario lo solicite en pantalla, con <strong>Google Calendar</strong>, <strong>Google Drive & Picker</strong>, <strong>Google Docs</strong>, <strong>Google Sheets</strong>, <strong>Google Slides</strong>, <strong>Google Classroom</strong> y <strong>Gmail</strong>.</li>
+                    <li>La autorización se otorga mediante el flujo oficial de <strong>Google Identity Services (OAuth 2.0)</strong> para interactuar, únicamente cuando el usuario lo solicite en pantalla, con <strong>Google Calendar</strong>, <strong>Google Drive &amp; Picker</strong>, <strong>Google Docs</strong>, <strong>Google Sheets</strong>, <strong>Google Slides</strong>, <strong>Google Classroom</strong> y <strong>Gmail</strong>.</li>
                     <li><strong>Aliat Intel·ligent</strong> no modifica, elimina ni envía correos o eventos sin una acción expresa iniciada por el usuario.</li>
-                    <li>Puedes desvincular el acceso a Google Workspace en cualquier momento desde el botón <em>Desvincular</em> en <strong>Configuració del Compte</strong> o desde la página de seguridad de tu cuenta de Google.</li>
+                    <li>Puedes desvincular el acceso a Google Workspace en cualquier momento desde el botón <em>Desvincular</em> en <strong>Configuración de la Cuenta</strong> o desde la página de seguridad de tu cuenta de Google.</li>
                 </ul>
             </div>
 
@@ -126,7 +241,7 @@
                 <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">4. Uso de Inteligencia Artificial y Proveedores de Contingencia</h3>
                 <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
                     <li><strong>Carácter orientativo de las respuestas:</strong> El contenido generado por la IA (explicaciones, planes de estudio, tests, resúmenes o borradores) tiene finalidad de apoyo educativo y productivo. Los modelos generativos pueden producir imprecisiones; el usuario debe revisar siempre la exactitud de los datos antes de presentarlos en exámenes, entregas académicas o comunicaciones oficiales.</li>
-                    <li><strong>Motor de IA y claves opcionales:</strong> La plataforma utiliza por defecto modelos de Google Gemini. Opcionalmente, en <em>Configuració &rarr; Motor d'IA &amp; Contingència</em>, el usuario puede seleccionar proveedores alternativos (Groq, OpenRouter, OpenAI, DeepSeek o Mistral) e introducir su propia clave API bajo su exclusiva responsabilidad y sujeta a los términos del proveedor correspondiente.</li>
+                    <li><strong>Motor de IA y claves opcionales:</strong> La plataforma utiliza por defecto modelos de Google Gemini. Opcionalmente, en <em>Configuración &rarr; Motor de IA y Contingencia</em>, el usuario puede seleccionar proveedores alternativos (Groq, OpenRouter, OpenAI, DeepSeek o Mistral) e introducir su propia clave API bajo su exclusiva responsabilidad y sujeta a los términos del proveedor correspondiente.</li>
                 </ul>
             </div>
 
@@ -150,7 +265,7 @@
             <div class="space-y-2 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
                 <h3 class="text-base font-extrabold text-zinc-900 dark:text-white">7. Baja del Servicio, Privacidad y Modificaciones</h3>
                 <p class="text-xs sm:text-sm">
-                    El usuario puede dejar de utilizar la plataforma, borrar sus conversaciones, reiniciar su memoria de estudio o cerrar sesión en cualquier momento. El tratamiento de los datos personales se rige por nuestra <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 font-bold hover:underline">Política de Privacidad</a>. Nos reservamos el derecho de actualizar estas Condiciones de Uso para reflejar mejoras funcionales o cambios normativos, indicando siempre la fecha de última actualización en la parte superior.
+                    El usuario puede dejar de utilizar la plataforma, borrar sus conversaciones, reiniciar su memoria de estudio o cerrar la sesión en cualquier momento. La configuración de idioma y de tema visual se conserva guardada de forma permanente para tu comodidad. El tratamiento de los datos personales se rige por nuestra <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 font-bold hover:underline">Política de Privacidad</a>. Nos reservamos el derecho de actualizar estas Condiciones de Uso para reflejar mejoras funcionales o cambios normativos, indicando siempre la fecha de última actualización en la parte superior.
                 </p>
             </div>
         </section>
@@ -163,5 +278,39 @@
             <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Volver al inicio</a>
         </footer>
     </main>
+
+    <script>
+        function getSavedLang() {
+            const ls = localStorage.getItem('aliat_lang');
+            if (ls === 'es' || ls === 'ca') return ls;
+            const m = document.cookie.match(/(?:^|;\s*)aliat_lang=(ca|es)/);
+            return m ? m[1] : 'ca';
+        }
+        function setPageLang(lang) {
+            const norm = lang === 'es' ? 'es' : 'ca';
+            localStorage.setItem('aliat_lang', norm);
+            document.cookie = 'aliat_lang=' + norm + '; path=/; max-age=315360000; SameSite=Lax';
+            document.documentElement.lang = norm;
+            document.querySelectorAll('.lang-ca').forEach(el => el.classList.toggle('hidden', norm !== 'ca'));
+            document.querySelectorAll('.lang-es').forEach(el => el.classList.toggle('hidden', norm !== 'es'));
+            const btnCa = document.getElementById('btn-lang-ca');
+            const btnEs = document.getElementById('btn-lang-es');
+            if (btnCa && btnEs) {
+                btnCa.className = norm === 'ca'
+                    ? 'px-2.5 py-1.5 rounded-lg transition cursor-pointer bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs'
+                    : 'px-2.5 py-1.5 rounded-lg transition cursor-pointer text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
+                btnEs.className = norm === 'es'
+                    ? 'px-2.5 py-1.5 rounded-lg transition cursor-pointer bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs'
+                    : 'px-2.5 py-1.5 rounded-lg transition cursor-pointer text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
+            }
+        }
+        function togglePageTheme() {
+            document.documentElement.classList.toggle('dark');
+            const t = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('aliat_theme', t);
+            document.cookie = 'aliat_theme=' + t + '; path=/; max-age=315360000; SameSite=Lax';
+        }
+        setPageLang(getSavedLang());
+    </script>
 </body>
 </html>

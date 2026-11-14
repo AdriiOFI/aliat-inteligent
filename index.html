@@ -880,6 +880,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-500 shrink-0 mt-0.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium leading-tight">
                         Privadesa i Seguretat: Autenticació protegida amb reCAPTCHA Enterprise, Firebase Auth i Google OAuth 2.0.
+                        <a href="/privacidad.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-sky-400 font-bold hover:underline ml-1">Política de Privacidad ↗</a>
                     </p>
                 </div>
             </form>
@@ -9318,16 +9319,6 @@
 
         // --- GOOGLE CALENDAR (ESDEVENIMENTS, RUTINES & ÚS QUOTIDIÀ) ---
         window.openGoogleCalendarModal = async function() {
-            const token = await window.getGoogleWorkspaceToken();
-            if (!token) {
-                window.promptGoogleWorkspaceConnect(
-                    "📅 Accés a Google Calendar",
-                    "Connecta el teu compte de Google per veure la teva agenda, agendar rutines diàries i sincronitzar el pla d'estudis.",
-                    () => window.openGoogleCalendarModal()
-                );
-                return;
-            }
-
             // Data i hora suggerida: d'aquí 15 minuts
             const defaultStart = new Date(Date.now() + 15 * 60 * 1000);
             defaultStart.setMinutes(Math.ceil(defaultStart.getMinutes() / 5) * 5);
@@ -9512,7 +9503,34 @@
             const listEl = document.getElementById('cal-events-list');
             if (!listEl) return;
             const token = await window.getGoogleWorkspaceToken();
-            if (!token) return;
+            const localPlanItems = Array.isArray(generatedCalendarArray) ? generatedCalendarArray : [];
+
+            if (!token) {
+                const localPlanHtml = localPlanItems.length > 0
+                    ? `<div class="space-y-1.5 text-left mb-3">
+                        <div class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-sky-400">Agenda de l'Aliat llesta per sincronitzar (${localPlanItems.length} sessions):</div>
+                        ${localPlanItems.slice(0, 5).map(item => `
+                            <div class="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/70 flex items-center justify-between gap-2 text-xs">
+                                <span class="font-semibold text-zinc-800 dark:text-zinc-100 truncate">S${item.num}: ${escapeHtml(item.tema)}</span>
+                                <span class="text-[10px] text-zinc-500 shrink-0">${escapeHtml(item.dia_real || '')}</span>
+                            </div>
+                        `).join('')}
+                       </div>`
+                    : '';
+
+                listEl.innerHTML = `
+                    <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 text-center space-y-3">
+                        ${localPlanHtml}
+                        <div class="text-xs font-semibold text-zinc-700 dark:text-zinc-200">
+                            Connecta el teu compte de Google per carregar i sincronitzar els esdeveniments amb el teu Google Calendar oficial.
+                        </div>
+                        <button type="button" onclick="window.promptGoogleWorkspaceConnect('📅 Accés a Google Calendar', 'Connecta el teu compte de Google per veure la teva agenda i sincronitzar el pla d\\'estudis.', () => window.openGoogleCalendarModal())" class="w-full py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold rounded-xl text-xs transition cursor-pointer shadow-xs">
+                            Connectar amb Google Calendar
+                        </button>
+                    </div>
+                `;
+                return;
+            }
 
             try {
                 const res = await fetch('/api/workspace/calendar', {
@@ -17764,6 +17782,44 @@ ${parsedBody}
             e.preventDefault(); const input = document.getElementById('chat-input'); const msg = input.value.trim();
             if (!msg && !currentAttachmentBase64) return;
             
+            // Detecció d'intenció d'obrir el modal de Google Calendar o l'eina d'Anàlisi Multimodal des del xat
+            const isCalendarModalIntent = /(?:obre|obrir|abre|abrir|mostra|sincronitz).*google\s*calendar/i.test(msg) || /agenda\s+de\s+l'aliat.*calendari/i.test(msg);
+            const isMultimodalToolIntent = /(?:obre|obrir|abre|abrir).*an[aà]lisi\s+multimodal/i.test(msg) || /(?:pujar|subir)\s+una\s+foto\s+o\s+v[ií]deo\s+d'apunts/i.test(msg);
+
+            if ((isCalendarModalIntent || isMultimodalToolIntent) && !currentAttachmentBase64) {
+                input.value = '';
+                input.style.height = 'auto';
+                appendMessage('user', msg);
+                const replyParts = [];
+                if (isCalendarModalIntent) {
+                    replyParts.push(`📅 **Google Calendar i Agenda de l'Aliat:** He obert el modal de Google Calendar perquè puguis sincronitzar les teves sessions i esdeveniments amb el teu calendari oficial.`);
+                }
+                if (isMultimodalToolIntent) {
+                    replyParts.push(`🔍 **Anàlisi Multimodal (Foto i Vídeo d'Apunts):** Pots pujar qualsevol imatge o vídeo d'apunts per analitzar-lo amb Gemini.`);
+                }
+                replyParts.push(`
+<div class="flex flex-wrap gap-2 mt-3 not-prose">
+    <button type="button" onclick="openGoogleCalendarModal()" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-bold transition cursor-pointer shadow-xs flex items-center gap-1.5">
+        📅 Obrir Modal Google Calendar
+    </button>
+    <button type="button" onclick="openAnalyzeMediaModal()" class="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold transition cursor-pointer shadow-xs flex items-center gap-1.5">
+        🔍 Obrir Eina d'Anàlisi Multimodal
+    </button>
+    <a href="/privacidad.html" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
+        🔒 Política de Privacidad (privacidad.html) ↗
+    </a>
+</div>`);
+                appendMessage('ai', replyParts.join('\n\n'));
+                if (isCalendarModalIntent && isMultimodalToolIntent) {
+                    openAnalyzeMediaModal();
+                } else if (isCalendarModalIntent) {
+                    openGoogleCalendarModal();
+                } else if (isMultimodalToolIntent) {
+                    openAnalyzeMediaModal();
+                }
+                return;
+            }
+
             // Detecció d'intenció de Quiz/Test per xat ("fes-me un quizz", "fes un quiz", "hazme un quiz", etc.)
             const isQuizIntent = /(?:fes-me|fes|hazme|haz|crea|vull|fa'm|hacer)\s+(?:un|una)?\s*(?:quizz?|quiz|test|examen)/i.test(msg) || /^(?:quizz?|quiz)$/i.test(msg);
             if (isQuizIntent && !currentAttachmentBase64) {

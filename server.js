@@ -93,12 +93,15 @@ app.get('/firebase-applet-config.json', (req, res) => {
     }
 });
 
-// Explicitly serve main entry HTML, login route, and privacy policy page
+// Explicitly serve main entry HTML, login route, privacy policy, and terms of use pages
 app.get(['/', '/login'], (req, res) => {
     return res.sendFile(path.join(__dirname, 'index.html'));
 });
 app.get(['/privacidad.html', '/privacidad'], (req, res) => {
     return res.sendFile(path.join(__dirname, 'public', 'privacidad.html'));
+});
+app.get(['/condiciones.html', '/condiciones', '/terminos.html', '/terminos'], (req, res) => {
+    return res.sendFile(path.join(__dirname, 'public', 'condiciones.html'));
 });
 
 // Static assets: ONLY serve the dedicated public directory (never expose root source/data files)

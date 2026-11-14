@@ -18,13 +18,14 @@
             document.documentElement.classList.add('dark');
         }
     </script>
+    <link rel="icon" type="image/png" href="/assets/aistudio/logoOFI_048f1d3b.png">
 </head>
 <body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
     <header class="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
             <a href="/" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center p-1.5 shadow-2xs">
-                    <img src="/assets/aistudio/logo.png_2356bbb3.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logo.png_2356bbb3.png';}" alt="Aliat Intel·ligent" class="w-full h-full object-contain dark:invert dark:brightness-150">
+                <div class="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 flex items-center justify-center p-1.5 shadow-2xs shrink-0">
+                    <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat Intel·ligent" class="w-full h-full object-contain drop-shadow-2xs dark:brightness-[1.85] dark:contrast-125">
                 </div>
                 <div>
                     <span class="font-extrabold text-sm sm:text-base text-zinc-900 dark:text-white tracking-tight block leading-none">Aliat Intel·ligent</span>
@@ -32,6 +33,9 @@
                 </div>
             </a>
             <div class="flex items-center gap-2">
+                <a href="/condiciones.html" class="hidden sm:inline-flex px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold transition">
+                    Condiciones de Uso
+                </a>
                 <button type="button" onclick="document.documentElement.classList.toggle('dark'); localStorage.setItem('aliat_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer" title="Cambiar tema">
                     Tema Claro / Oscuro
                 </button>
@@ -128,8 +132,12 @@
             </div>
         </section>
 
-        <footer class="text-center text-xs text-zinc-500 dark:text-zinc-400 pb-8">
-            © 2026 Aliat Intel·ligent · Plataforma de Tutoría y Estudio Inteligente · <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Volver al inicio</a>
+        <footer class="text-center text-xs text-zinc-500 dark:text-zinc-400 pb-8 space-x-2">
+            <span>© 2026 Aliat Intel·ligent</span>
+            <span>·</span>
+            <a href="/condiciones.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Condiciones de Uso</a>
+            <span>·</span>
+            <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Volver al inicio</a>
         </footer>
     </main>
 </body>

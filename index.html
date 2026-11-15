@@ -2052,6 +2052,18 @@
                                                 <div class="text-[10px] text-zinc-500 truncate">Pluja d'idees i consells pràctics</div>
                                             </div>
                                         </button>
+                                        <button type="button" onclick="closeDailyToolsMenu(); openResponsibleAiGuideModal('consciencia');" class="w-full p-2 bg-indigo-50/90 hover:bg-indigo-100/90 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/50 border border-indigo-200/80 dark:border-indigo-800/60 rounded-xl flex items-center gap-2.5 text-left cursor-pointer transition shadow-2xs">
+                                            <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                                            </span>
+                                            <div class="min-w-0 flex-1">
+                                                <div class="font-bold text-indigo-950 dark:text-indigo-200 text-xs flex items-center gap-1.5">
+                                                    <span class="truncate">Bon Ús, Criteri i Tècniques d'IA</span>
+                                                    <span class="px-1.5 py-0.5 text-[8.5px] font-black uppercase rounded-md bg-indigo-600 text-white shrink-0">Guia</span>
+                                                </div>
+                                                <div class="text-[10px] text-indigo-700/80 dark:text-indigo-300/80 truncate">Política, verificació de fonts i com preguntar bé</div>
+                                            </div>
+                                        </button>
 
                                         <!-- SUBMENÚ: RECORDATORIS PERIÒDICS D'ESTUDI (PUSH & CORREU) -->
                                         <div class="pt-1.5 mt-1 border-t border-zinc-100 dark:border-zinc-800">
@@ -2892,100 +2904,183 @@
     <!-- ============================================== -->
     <!-- MODAL TRUCADA DE VEU EN DIRECTE AMB IA          -->
     <!-- ============================================== -->
-    <div id="voice-call-modal" class="fixed inset-0 bg-zinc-950/95 z-[120] hidden flex flex-col items-center justify-between p-4 md:p-8 backdrop-blur-2xl opacity-0 transition-opacity duration-300 overflow-hidden text-white select-none text-center">
+    <div id="voice-call-modal" class="fixed inset-0 bg-[#090a0f]/95 z-[120] hidden flex flex-col items-center justify-between p-3 sm:p-6 md:p-8 backdrop-blur-2xl opacity-0 transition-opacity duration-300 overflow-hidden text-white select-none text-center">
         <!-- Background Ambient Animated Glowing Orbs -->
-        <div id="voice-call-bg-orb1" class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-gradient-to-tr from-cyan-500/20 via-blue-600/20 to-indigo-600/10 rounded-full blur-3xl pointer-events-none transition-all duration-700 animate-pulse"></div>
-        <div id="voice-call-bg-orb2" class="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-[380px] h-[380px] bg-gradient-to-br from-emerald-500/15 via-teal-500/15 to-purple-600/10 rounded-full blur-3xl pointer-events-none transition-all duration-700"></div>
+        <div id="voice-call-bg-orb1" class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[360px] sm:w-[480px] h-[360px] sm:h-[480px] bg-gradient-to-tr from-cyan-500/18 via-blue-600/15 to-indigo-600/10 rounded-full blur-3xl pointer-events-none transition-all duration-700"></div>
+        <div id="voice-call-bg-orb2" class="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-[320px] sm:w-[400px] h-[320px] sm:h-[400px] bg-gradient-to-br from-emerald-500/15 via-teal-500/12 to-sky-600/10 rounded-full blur-3xl pointer-events-none transition-all duration-700"></div>
 
-        <!-- Header Bar Centered -->
-        <div class="relative z-10 flex items-center justify-between w-full max-w-3xl mx-auto pt-2">
-            <div class="flex items-center gap-3 text-left">
-                <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-400/30">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span class="text-xs font-black tracking-wider uppercase text-emerald-400">Trucada en directe</span>
+        <!-- Top Bar: Brand, Persona Mode Selector, Timer, Minimize & Close -->
+        <div class="relative z-10 w-full max-w-3xl mx-auto flex flex-col gap-2.5 pt-1">
+            <div class="flex items-center justify-between w-full gap-2">
+                <div class="flex items-center gap-2.5 sm:gap-3 text-left min-w-0">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/35 text-emerald-400 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                     </div>
-                    <h2 class="text-base md:text-lg font-bold text-white leading-tight">Aliat Intel·ligent</h2>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400">
+                            <span id="voice-call-live-label">Trucada en directe</span>
+                            <span aria-hidden="true">·</span>
+                            <span id="voice-call-lang-indicator" class="text-zinc-300 font-medium">Català</span>
+                        </div>
+                        <h2 id="voice-call-title" class="text-sm sm:text-base md:text-lg font-bold text-white leading-tight truncate">Aliat Intel·ligent</h2>
+                    </div>
+                </div>
+
+                <!-- Call Timer, Minimize (PiP) & End Call -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <div class="px-3 py-1.5 rounded-xl bg-zinc-900/90 border border-zinc-800 text-xs font-mono tabular-nums text-zinc-200 flex items-center gap-1.5 shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" class="text-emerald-400 shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span id="voice-call-timer" class="font-bold tabular-nums">00:00</span>
+                    </div>
+                    <button type="button" id="voice-call-minimize-btn" onclick="minimizeVoiceCall()" class="w-9 h-9 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center transition cursor-pointer" title="Minimitzar trucada (seguir navegant)">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                    </button>
+                    <button type="button" onclick="endVoiceCall()" class="w-9 h-9 rounded-xl bg-zinc-900/90 hover:bg-red-950/80 border border-zinc-800 hover:border-red-500/40 text-zinc-400 hover:text-red-300 flex items-center justify-center transition cursor-pointer" title="Finalitzar trucada">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
                 </div>
             </div>
 
-            <!-- Call Timer & Close -->
-            <div class="flex items-center gap-3">
-                <div class="px-3.5 py-1.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-xs font-mono text-zinc-300 flex items-center gap-2 shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-emerald-400"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span id="voice-call-timer" class="font-bold">00:00</span>
+            <!-- Interactive Call Persona / Mode Selector -->
+            <div class="flex items-center justify-center w-full">
+                <div id="voice-call-persona-bar" class="inline-flex items-center gap-1 p-1 rounded-2xl bg-zinc-900/90 border border-zinc-800/90 max-w-full overflow-x-auto no-scrollbar">
+                    <button type="button" data-persona="natural" onclick="setVoiceCallPersona('natural')" class="voice-persona-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer whitespace-nowrap bg-indigo-600 text-white shadow-xs flex items-center gap-1.5">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span id="voice-persona-label-natural">Conversa</span>
+                    </button>
+                    <button type="button" data-persona="tutor" onclick="setVoiceCallPersona('tutor')" class="voice-persona-btn px-3 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer whitespace-nowrap text-zinc-400 hover:text-white flex items-center gap-1.5">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        <span id="voice-persona-label-tutor">Examen Oral</span>
+                    </button>
+                    <button type="button" data-persona="language" onclick="setVoiceCallPersona('language')" class="voice-persona-btn px-3 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer whitespace-nowrap text-zinc-400 hover:text-white flex items-center gap-1.5">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        <span id="voice-persona-label-language">Speaking</span>
+                    </button>
+                    <button type="button" data-persona="brainstorm" onclick="setVoiceCallPersona('brainstorm')" class="voice-persona-btn px-3 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer whitespace-nowrap text-zinc-400 hover:text-white flex items-center gap-1.5">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                        <span id="voice-persona-label-brainstorm">Idees</span>
+                    </button>
                 </div>
-                <button type="button" onclick="endVoiceCall()" class="w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer" title="Minimitzar o Tancar Trucada">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
             </div>
         </div>
 
-        <!-- Center AI Orb Visualizer - Pure Minimal & Elegant -->
-        <div class="relative z-10 flex flex-col items-center justify-center my-auto py-6 text-center mx-auto w-full">
-            <div id="voice-call-orb-wrapper" class="relative w-44 h-44 md:w-56 md:h-56 flex items-center justify-center mx-auto mb-6">
-                <!-- Outer Pulse Rings -->
-                <div id="voice-call-ring1" class="absolute inset-0 rounded-full border-2 border-cyan-500/40 animate-ping opacity-75"></div>
-                <div id="voice-call-ring2" class="absolute -inset-4 rounded-full border border-blue-500/30 animate-pulse opacity-60"></div>
+        <!-- Center AI Orb Visualizer & Real-Time Captions -->
+        <div class="relative z-10 flex flex-col items-center justify-center my-auto py-2 sm:py-4 text-center mx-auto w-full max-w-2xl px-2">
+            <div id="voice-call-orb-wrapper" class="relative w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 flex items-center justify-center mx-auto mb-4">
+                <!-- Outer Harmonic Rings -->
+                <div id="voice-call-ring1" class="absolute inset-0 rounded-full border-2 border-cyan-500/35 transition-transform duration-150 opacity-75"></div>
+                <div id="voice-call-ring2" class="absolute -inset-3.5 rounded-full border border-blue-500/25 transition-transform duration-200 opacity-60"></div>
                 
-                <!-- Main Glowing Orb Sphere (Clickable to interrupt/send voice immediately) -->
-                <div id="voice-call-orb" onclick="triggerVoiceCallSend()" class="w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-[0_0_70px_rgba(6,182,212,0.65)] flex items-center justify-center transition-all duration-500 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105 active:scale-95" title="Prem per enviar la teva veu ara mateix">
-                    <div class="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-black/40 mix-blend-overlay"></div>
-                    <div id="voice-call-orb-inner" class="w-20 h-20 rounded-full bg-white/20 blur-md animate-pulse"></div>
-                    <svg id="voice-call-status-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white relative z-10 drop-shadow-md"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                <!-- Main Interactive Orb Sphere (Click to send immediately or interrupt AI) -->
+                <div id="voice-call-orb" onclick="handleVoiceCallOrbClick()" class="w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-[0_0_65px_rgba(6,182,212,0.55)] flex flex-col items-center justify-center gap-2 transition-all duration-300 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105 active:scale-95" title="Toca per enviar ara o interrompre la veu">
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-black/40 mix-blend-overlay"></div>
+                    <div id="voice-call-orb-inner" class="absolute w-20 h-20 rounded-full bg-white/15 blur-md"></div>
+                    <svg id="voice-call-status-icon" xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white relative z-10 drop-shadow-md"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    <!-- Reactive 7-bar audio equalizer inside the orb -->
+                    <div id="voice-call-wave-bars" class="relative z-10 flex items-end justify-center gap-1 h-5 px-2">
+                        <span class="vc-wave-bar w-1 bg-white/85 rounded-full transition-all duration-75" style="height: 5px;"></span>
+                        <span class="vc-wave-bar w-1 bg-white/90 rounded-full transition-all duration-75" style="height: 8px;"></span>
+                        <span class="vc-wave-bar w-1 bg-white rounded-full transition-all duration-75" style="height: 12px;"></span>
+                        <span class="vc-wave-bar w-1 bg-white rounded-full transition-all duration-75" style="height: 16px;"></span>
+                        <span class="vc-wave-bar w-1 bg-white rounded-full transition-all duration-75" style="height: 12px;"></span>
+                        <span class="vc-wave-bar w-1 bg-white/90 rounded-full transition-all duration-75" style="height: 8px;"></span>
+                        <span class="vc-wave-bar w-1 bg-white/85 rounded-full transition-all duration-75" style="height: 5px;"></span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Single Minimal Status Pill -->
-            <div class="flex items-center justify-center">
-                <span id="voice-call-status-pill" class="inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <!-- Status Indicator & Action Hint -->
+            <div class="flex flex-col items-center justify-center gap-1.5 mb-3">
+                <div id="voice-call-status-pill" class="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-xl bg-emerald-500/12 border border-emerald-500/30 text-emerald-300 text-xs sm:text-sm font-semibold tracking-wide mx-auto">
                     <span id="voice-call-status-text">Escoltant...</span>
-                </span>
+                </div>
+                <p id="voice-call-orb-hint" class="text-[11px] text-zinc-400 font-medium">Parla amb naturalitat · Toca l'esfera per enviar al moment</p>
+            </div>
+
+            <!-- Real-Time Live Captions / Subtitles Card -->
+            <div id="voice-call-live-caption-box" class="w-full max-w-xl mx-auto min-h-[64px] bg-zinc-900/75 border border-zinc-800/90 rounded-2xl px-4 py-3 text-left backdrop-blur-md shadow-lg flex flex-col justify-between gap-2 transition-all">
+                <div class="flex items-start gap-2.5">
+                    <span id="voice-call-caption-speaker" class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 shrink-0 mt-0.5">Aliat</span>
+                    <p id="voice-call-caption-text" class="text-xs sm:text-sm text-zinc-100 font-medium leading-relaxed line-clamp-3">Hola! Sóc l'Aliat. T'estic escoltant en directe.</p>
+                </div>
+                <div class="w-full h-1 bg-zinc-800 rounded-full overflow-hidden hidden" id="voice-call-silence-progress-wrap">
+                    <div id="voice-call-silence-progress" class="h-full bg-cyan-400 rounded-full transition-all duration-100" style="width: 0%;"></div>
+                </div>
             </div>
 
             <!-- Permission Warning (Only shown if mic permission is blocked) -->
-            <div id="voice-call-permission-banner" class="hidden mt-4 mx-auto max-w-sm bg-amber-950/80 border border-amber-500/50 p-3 rounded-2xl text-amber-200 text-xs text-center flex flex-col items-center gap-2 shadow-xl backdrop-blur-md">
-                <p>El micròfon necessita permís per escoltar:</p>
-                <button type="button" onclick="requestVoiceCallMicPermission()" class="px-4 py-1.5 rounded-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs transition shadow active:scale-95 cursor-pointer">
-                    Activar Micròfon
-                </button>
+            <div id="voice-call-permission-banner" class="hidden mt-3 mx-auto max-w-sm bg-amber-950/90 border border-amber-500/50 p-3 rounded-2xl text-amber-200 text-xs text-center flex flex-col items-center gap-2 shadow-xl backdrop-blur-md">
+                <p id="voice-call-perm-text">El micròfon necessita permís per escoltar-te o pots escriure des de Transcripció:</p>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="requestVoiceCallMicPermission()" class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs transition shadow active:scale-95 cursor-pointer">
+                        Activar Micròfon
+                    </button>
+                    <button type="button" onclick="toggleVoiceCallTranscript()" class="px-3.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs transition border border-zinc-700 cursor-pointer">
+                        Escriure Text
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Clean Floating Control Bar -->
-        <div class="relative z-10 w-full max-w-md mx-auto flex items-center justify-center gap-4 md:gap-6 pb-6 text-center">
-            <!-- Mute/Unmute Mic Button -->
-            <button type="button" id="voice-call-mic-btn" onclick="toggleVoiceCallMic()" class="w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-white flex flex-col items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Silenciar / Activar Micròfon">
-                <svg id="voice-call-mic-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-            </button>
+        <!-- Clean Floating Control Dock with Clear Labels -->
+        <div class="relative z-10 w-full max-w-xl mx-auto flex items-center justify-center gap-2.5 sm:gap-4 pb-2 sm:pb-4 text-center">
+            <!-- 1. Mute/Unmute Mic Button -->
+            <div class="flex flex-col items-center gap-1">
+                <button type="button" id="voice-call-mic-btn" onclick="toggleVoiceCallMic()" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-white flex items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Silenciar / Activar Micròfon">
+                    <svg id="voice-call-mic-icon" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                </button>
+                <span id="voice-call-mic-label" class="text-[10px] font-medium text-zinc-400 whitespace-nowrap">Micròfon</span>
+            </div>
 
-            <!-- Veu i Idioma Button (Opens Settings Modal) -->
-            <button type="button" id="voice-call-settings-btn" onclick="openVoiceCallSettingsModal()" class="w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-indigo-400 flex flex-col items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Configuració de Veu i Idioma">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            </button>
+            <!-- 2. Mute/Unmute Speaker Button -->
+            <div class="flex flex-col items-center gap-1">
+                <button type="button" id="voice-call-speaker-btn" onclick="toggleVoiceCallSpeaker()" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-emerald-400 flex items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Silenciar / Activar Altaveu">
+                    <svg id="voice-call-speaker-icon" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                </button>
+                <span id="voice-call-speaker-label" class="text-[10px] font-medium text-zinc-400 whitespace-nowrap">Altaveu</span>
+            </div>
 
-            <!-- Transcripció Button (Opens Drawer) -->
-            <button type="button" id="voice-call-transcript-btn" onclick="toggleVoiceCallTranscript()" class="w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-cyan-400 flex flex-col items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Veure Transcripció">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            </button>
+            <!-- 3. Interrupt / Send Now Action Button -->
+            <div class="flex flex-col items-center gap-1">
+                <button type="button" id="voice-call-action-btn" onclick="handleVoiceCallOrbClick()" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-cyan-950/80 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 flex items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Enviar ara o Interrompre la IA">
+                    <svg id="voice-call-action-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+                <span id="voice-call-action-label" class="text-[10px] font-medium text-cyan-300 whitespace-nowrap">Enviar ara</span>
+            </div>
 
-            <!-- Penjar Trucada Button (Red) -->
-            <button type="button" onclick="endVoiceCall()" class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white flex items-center justify-center transition-all shadow-xl shadow-red-600/40 border border-red-400/50 active:scale-95 cursor-pointer shrink-0" title="Penjar trucada">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="rotate-[135deg]"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            </button>
+            <!-- 4. Veu, Velocitat i Idioma Button -->
+            <div class="flex flex-col items-center gap-1">
+                <button type="button" id="voice-call-settings-btn" onclick="openVoiceCallSettingsModal()" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-indigo-400 flex items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0" title="Configuració de Veu, Velocitat i Idioma">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </button>
+                <span id="voice-call-settings-label" class="text-[10px] font-medium text-zinc-400 whitespace-nowrap">Ajustos</span>
+            </div>
+
+            <!-- 5. Transcripció & Teclat Button -->
+            <div class="flex flex-col items-center gap-1 relative">
+                <button type="button" id="voice-call-transcript-btn" onclick="toggleVoiceCallTranscript()" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-cyan-400 flex items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0 relative" title="Veure Transcripció i Teclat">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="13" y2="13"/></svg>
+                    <span id="voice-call-transcript-count" class="hidden absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-cyan-500 text-zinc-950 font-bold text-[10px] flex items-center justify-center tabular-nums">1</span>
+                </button>
+                <span id="voice-call-transcript-label" class="text-[10px] font-medium text-zinc-400 whitespace-nowrap">Xat / Text</span>
+            </div>
+
+            <!-- 6. Penjar Trucada Button (Red) -->
+            <div class="flex flex-col items-center gap-1">
+                <button type="button" onclick="endVoiceCall()" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white flex items-center justify-center transition-all shadow-xl shadow-red-600/35 border border-red-400/50 active:scale-95 cursor-pointer shrink-0" title="Penjar trucada">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="rotate-[135deg]"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </button>
+                <span id="voice-call-end-label" class="text-[10px] font-semibold text-red-400 whitespace-nowrap">Penjar</span>
+            </div>
         </div>
 
-        <!-- POPUP 1: MODAL CONFIGURACIÓ DE VEU I IDIOMA (On Demand) -->
-        <div id="voice-call-settings-sheet" class="hidden absolute inset-0 z-40 bg-zinc-950/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div class="bg-zinc-900 border border-zinc-700/80 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-5 text-left text-white">
+        <!-- POPUP 1: MODAL CONFIGURACIÓ DE VEU, VELOCITAT I IDIOMA -->
+        <div id="voice-call-settings-sheet" onclick="if(event.target === this) closeVoiceCallSettingsModal();" class="hidden absolute inset-0 z-40 bg-zinc-950/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="bg-zinc-900 border border-zinc-700/80 rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl space-y-4 text-left text-white max-h-[88dvh] overflow-y-auto">
                 <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
                     <div class="flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-400"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                        <h3 class="font-bold text-base">Veu i Idioma de la Trucada</h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" class="text-indigo-400"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <h3 id="voice-settings-modal-title" class="font-bold text-base">Ajustos de Veu i Trucada</h3>
                     </div>
                     <button type="button" onclick="closeVoiceCallSettingsModal()" class="w-8 h-8 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -2993,8 +3088,8 @@
                 </div>
 
                 <!-- Selector d'Idioma -->
-                <div class="space-y-2">
-                    <label class="text-xs font-semibold text-zinc-300 block">Idioma de conversa:</label>
+                <div class="space-y-1.5">
+                    <label id="voice-settings-lang-label" class="text-xs font-semibold text-zinc-300 block">Idioma de conversa:</label>
                     <div class="grid grid-cols-3 gap-2">
                         <button type="button" id="voice-sheet-lang-ca" onclick="selectVoiceCallLanguage('ca-ES')" class="py-2 px-3 rounded-xl border border-indigo-500 bg-indigo-600/30 text-indigo-200 font-bold text-xs text-center transition cursor-pointer">Català</button>
                         <button type="button" id="voice-sheet-lang-es" onclick="selectVoiceCallLanguage('es-ES')" class="py-2 px-3 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 hover:text-white font-medium text-xs text-center transition cursor-pointer">Español</button>
@@ -3002,9 +3097,30 @@
                     </div>
                 </div>
 
+                <!-- Velocitat de la veu -->
+                <div class="space-y-1.5">
+                    <label id="voice-settings-speed-label" class="text-xs font-semibold text-zinc-300 block">Velocitat de veu de la IA:</label>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button type="button" data-rate="0.9" onclick="setVoiceCallSpeechRate(0.9)" class="voice-rate-btn py-1.5 px-2 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 text-xs font-medium transition cursor-pointer tabular-nums">0.9x</button>
+                        <button type="button" data-rate="1" onclick="setVoiceCallSpeechRate(1.0)" class="voice-rate-btn py-1.5 px-2 rounded-xl border border-indigo-500 bg-indigo-600/30 text-indigo-200 text-xs font-bold transition cursor-pointer tabular-nums">1.0x</button>
+                        <button type="button" data-rate="1.15" onclick="setVoiceCallSpeechRate(1.15)" class="voice-rate-btn py-1.5 px-2 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 text-xs font-medium transition cursor-pointer tabular-nums">1.15x</button>
+                        <button type="button" data-rate="1.3" onclick="setVoiceCallSpeechRate(1.3)" class="voice-rate-btn py-1.5 px-2 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 text-xs font-medium transition cursor-pointer tabular-nums">1.3x</button>
+                    </div>
+                </div>
+
+                <!-- Temps de pausa abans d'enviar automàticament -->
+                <div class="space-y-1.5">
+                    <label id="voice-settings-silence-label" class="text-xs font-semibold text-zinc-300 block">Temps de pausa per enviar resposta:</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" data-silence="1200" onclick="setVoiceCallSilenceDelay(1200)" class="voice-silence-btn py-1.5 px-2 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 text-xs font-medium transition cursor-pointer">Ràpid (1.2s)</button>
+                        <button type="button" data-silence="1700" onclick="setVoiceCallSilenceDelay(1700)" class="voice-silence-btn py-1.5 px-2 rounded-xl border border-indigo-500 bg-indigo-600/30 text-indigo-200 text-xs font-bold transition cursor-pointer">Normal (1.7s)</button>
+                        <button type="button" data-silence="2600" onclick="setVoiceCallSilenceDelay(2600)" class="voice-silence-btn py-1.5 px-2 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 text-xs font-medium transition cursor-pointer">Pausat (2.6s)</button>
+                    </div>
+                </div>
+
                 <!-- Selector de Veu de la IA -->
-                <div class="space-y-2">
-                    <label class="text-xs font-semibold text-zinc-300 block">Veu de la IA (Síntesi de Veu):</label>
+                <div class="space-y-1.5">
+                    <label id="voice-settings-synth-label" class="text-xs font-semibold text-zinc-300 block">Veu del sistema (Síntesi):</label>
                     <select id="voice-call-voice-select" onchange="changeVoiceCallVoice(this.value)" class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white outline-none cursor-pointer">
                         <option value="">Carregant veus del sistema...</option>
                     </select>
@@ -3013,39 +3129,74 @@
                 <div class="flex items-center justify-between pt-2">
                     <button type="button" onclick="testCurrentVoice()" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                        <span>Provar Veu</span>
+                        <span id="voice-settings-test-btn">Provar Veu</span>
                     </button>
                     <button type="button" onclick="closeVoiceCallSettingsModal()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition cursor-pointer shadow">
-                        Acceptar
+                        <span id="voice-settings-done-btn">Fet</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- POPUP 2: SHEET TRANCRIPCIÓ I TEXT (On Demand) -->
-        <div id="voice-call-transcript-sheet" class="hidden absolute inset-x-0 bottom-0 z-40 bg-zinc-950/95 border-t border-zinc-800 rounded-t-3xl max-h-[60vh] flex flex-col p-4 shadow-2xl backdrop-blur-xl transition-all duration-300">
-            <div class="flex items-center justify-between pb-3 border-b border-zinc-800/80 w-full mb-3">
+        <!-- POPUP 2: SHEET TRANSCRIPCIÓ I TEXT (On Demand) -->
+        <div id="voice-call-transcript-sheet" class="hidden absolute inset-x-0 bottom-0 z-40 bg-zinc-950/95 border-t border-zinc-800 rounded-t-3xl max-h-[65dvh] flex flex-col p-4 shadow-2xl backdrop-blur-xl transition-all duration-300">
+            <div class="flex items-center justify-between pb-3 border-b border-zinc-800/80 w-full mb-3 gap-2">
                 <span class="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-indigo-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    Transcripció de la Trucada
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-cyan-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span id="voice-transcript-sheet-title">Transcripció en directe</span>
                 </span>
-                <button type="button" onclick="toggleVoiceCallTranscript()" class="w-7 h-7 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
+                <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="copyVoiceCallTranscript()" class="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold transition flex items-center gap-1 cursor-pointer" title="Copiar conversa">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        <span id="voice-transcript-copy-btn">Copiar</span>
+                    </button>
+                    <button type="button" onclick="toggleVoiceCallTranscript()" class="w-7 h-7 rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Scrollable Messages -->
-            <div id="voice-call-transcript" class="flex-1 overflow-y-auto space-y-2.5 pr-1 text-xs md:text-sm flex flex-col w-full min-h-[160px] max-h-[36vh]">
+            <div id="voice-call-transcript" class="flex-1 overflow-y-auto space-y-2.5 pr-1 text-xs md:text-sm flex flex-col w-full min-h-[160px] max-h-[38dvh]">
             </div>
 
-            <!-- Optional text input at bottom of transcript -->
-            <form id="voice-call-text-form" onsubmit="event.preventDefault(); submitVoiceCallText();" class="mt-3 flex items-center gap-2 bg-zinc-900 border border-zinc-700/80 rounded-full px-3 py-1.5 shadow-lg">
-                <input type="text" id="voice-call-text-input" placeholder="O escriu aquí si no pots parlar..." class="flex-1 bg-transparent border-none text-xs md:text-sm text-white placeholder-zinc-500 outline-none px-2 py-1 font-medium">
-                <button type="submit" class="px-4 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition shadow cursor-pointer active:scale-95 flex items-center gap-1 shrink-0">
-                    <span>Enviar</span>
+            <!-- Text input at bottom of transcript -->
+            <form id="voice-call-text-form" onsubmit="event.preventDefault(); submitVoiceCallText();" class="mt-3 flex items-center gap-2 bg-zinc-900 border border-zinc-700/80 rounded-2xl px-3 py-1.5 shadow-lg">
+                <input type="text" id="voice-call-text-input" placeholder="Escriu un missatge a la trucada..." class="flex-1 bg-transparent border-none text-xs md:text-sm text-white placeholder-zinc-500 outline-none px-2 py-1 font-medium">
+                <button type="submit" class="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition shadow cursor-pointer active:scale-95 flex items-center gap-1 shrink-0">
+                    <span id="voice-transcript-send-btn">Enviar</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FLOATING PICTURE-IN-PICTURE CALL WIDGET         -->
+    <!-- ============================================== -->
+    <div id="voice-call-pip" class="hidden fixed bottom-20 right-3 sm:bottom-6 sm:right-6 z-[125] bg-zinc-950/95 border border-zinc-700/90 text-white rounded-2xl p-3 shadow-2xl backdrop-blur-xl flex items-center gap-3 max-w-[calc(100vw-1.5rem)] transition-all duration-200">
+        <button type="button" onclick="restoreVoiceCallModal()" class="flex items-center gap-2.5 text-left cursor-pointer group min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-md relative">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" class="text-white"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="min-w-0 pr-1">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-white truncate group-hover:text-cyan-300 transition-colors">Aliat en línia</span>
+                    <span id="voice-call-pip-timer" class="text-[11px] font-mono tabular-nums text-emerald-400 font-semibold">00:00</span>
+                </div>
+                <p id="voice-call-pip-status" class="text-[11px] text-zinc-400 truncate max-w-[140px] sm:max-w-[180px]">Escoltant...</p>
+            </div>
+        </button>
+        <div class="flex items-center gap-1.5 shrink-0 border-l border-zinc-800 pl-2.5">
+            <button type="button" id="voice-call-pip-mic-btn" onclick="toggleVoiceCallMic()" class="w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center transition cursor-pointer" title="Micròfon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+            </button>
+            <button type="button" onclick="restoreVoiceCallModal()" class="w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-cyan-400 flex items-center justify-center transition cursor-pointer" title="Obrir pantalla completa">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            </button>
+            <button type="button" onclick="endVoiceCall()" class="w-8 h-8 rounded-xl bg-red-600 hover:bg-red-500 text-white flex items-center justify-center transition cursor-pointer" title="Penjar">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" class="rotate-[135deg]"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </button>
         </div>
     </div>
 
@@ -7302,6 +7453,7 @@
         // CONTROLLER DE TRUCADA DE VEU EN DIRECTE AMB IA
         // ==============================================
         let isVoiceCallActive = false;
+        let isVoiceCallMinimized = false;
         let voiceCallRecognition = null;
         let isVoiceCallMicMuted = false;
         let isVoiceCallSpeakerMuted = false;
@@ -7313,34 +7465,289 @@
         let voiceCallCurrentInterimBubble = null;
         let voiceCallSelectedLang = localStorage.getItem('aliat_selected_voice_lang') || 'ca-ES';
         let voiceCallSelectedVoiceURI = localStorage.getItem('aliat_selected_voice_uri') || '';
+        let voiceCallSpeechRate = parseFloat(localStorage.getItem('aliat_voice_call_rate') || '1.0') || 1.0;
+        let voiceCallSilenceDelay = parseInt(localStorage.getItem('aliat_voice_call_silence') || '1700', 10) || 1700;
+        let voiceCallPersona = localStorage.getItem('aliat_voice_call_persona') || 'natural';
         let voiceAudioContext = null;
         let voiceAudioAnalyser = null;
         let voiceAudioAnimFrame = null;
         let voiceCallActiveStream = null;
         let voiceCallSilenceTimer = null;
+        let voiceCallSilenceProgressTimer = null;
+        let voiceCallSpeakWatchdog = null;
         let voiceCallLastUserText = '';
         let voiceCallHistory = [];
+        let voiceCallSessionMessageCount = 0;
+
+        function isCallUISpanish() {
+            const appLang = (typeof currentAppLang !== 'undefined' && currentAppLang) || localStorage.getItem('aliat_app_language') || 'ca';
+            return appLang === 'es' || voiceCallSelectedLang === 'es-ES';
+        }
+
+        function playVoiceCallTone(type) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                if (!voiceAudioContext || voiceAudioContext.state === 'closed') {
+                    voiceAudioContext = new AudioCtx();
+                }
+                if (voiceAudioContext.state === 'suspended') {
+                    voiceAudioContext.resume();
+                }
+                const now = voiceAudioContext.currentTime;
+                const osc = voiceAudioContext.createOscillator();
+                const gain = voiceAudioContext.createGain();
+                osc.connect(gain);
+                gain.connect(voiceAudioContext.destination);
+
+                if (type === 'connect') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(587.33, now + 0.14);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                    osc.start(now);
+                    osc.stop(now + 0.22);
+                } else if (type === 'send') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.09);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'interrupt' || type === 'mute') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(360, now);
+                    osc.frequency.exponentialRampToValueAtTime(260, now + 0.1);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'end') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(293.66, now + 0.18);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                    osc.start(now);
+                    osc.stop(now + 0.22);
+                }
+            } catch (e) {}
+        }
+
+        function setVoiceCallLiveCaption(speaker, text, isUser) {
+            const speakerEl = document.getElementById('voice-call-caption-speaker');
+            const textEl = document.getElementById('voice-call-caption-text');
+            const boxEl = document.getElementById('voice-call-live-caption-box');
+            if (!speakerEl || !textEl) return;
+
+            speakerEl.textContent = speaker;
+            speakerEl.className = isUser
+                ? "text-[11px] font-bold uppercase tracking-wider text-cyan-400 shrink-0 mt-0.5"
+                : "text-[11px] font-bold uppercase tracking-wider text-emerald-400 shrink-0 mt-0.5";
+            textEl.textContent = text || '';
+            if (boxEl) {
+                boxEl.className = isUser
+                    ? "w-full max-w-xl mx-auto min-h-[64px] bg-cyan-950/35 border border-cyan-500/35 rounded-2xl px-4 py-3 text-left backdrop-blur-md shadow-lg flex flex-col justify-between gap-2 transition-all"
+                    : "w-full max-w-xl mx-auto min-h-[64px] bg-zinc-900/75 border border-zinc-800/90 rounded-2xl px-4 py-3 text-left backdrop-blur-md shadow-lg flex flex-col justify-between gap-2 transition-all";
+            }
+        }
+
+        function clearSilenceProgressUI() {
+            if (voiceCallSilenceProgressTimer) {
+                clearInterval(voiceCallSilenceProgressTimer);
+                voiceCallSilenceProgressTimer = null;
+            }
+            const wrap = document.getElementById('voice-call-silence-progress-wrap');
+            const bar = document.getElementById('voice-call-silence-progress');
+            if (wrap) wrap.classList.add('hidden');
+            if (bar) bar.style.width = '0%';
+        }
+
+        function startSilenceProgressUI(durationMs) {
+            clearSilenceProgressUI();
+            const wrap = document.getElementById('voice-call-silence-progress-wrap');
+            const bar = document.getElementById('voice-call-silence-progress');
+            if (!wrap || !bar) return;
+            wrap.classList.remove('hidden');
+            const startTime = Date.now();
+            voiceCallSilenceProgressTimer = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const pct = Math.min(100, (elapsed / durationMs) * 100);
+                bar.style.width = `${pct}%`;
+                if (pct >= 100) clearSilenceProgressUI();
+            }, 60);
+        }
+
+        window.interruptVoiceCallAI = function() {
+            if (!isVoiceCallAiSpeaking) return false;
+            try {
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            } catch (e) {}
+            if (voiceCallSpeakWatchdog) {
+                clearTimeout(voiceCallSpeakWatchdog);
+                voiceCallSpeakWatchdog = null;
+            }
+            isVoiceCallAiSpeaking = false;
+            playVoiceCallTone('interrupt');
+            setVoiceCallOrbState('listening');
+            startVoiceCallRecognition();
+            return true;
+        };
+
+        window.handleVoiceCallOrbClick = function() {
+            if (isVoiceCallAiSpeaking) {
+                window.interruptVoiceCallAI();
+                showToast(isCallUISpanish() ? 'Voz interrumpida. Te escucho.' : 'Veu interrompuda. T\'escolto.');
+                return;
+            }
+            window.triggerVoiceCallSend();
+        };
 
         window.triggerVoiceCallSend = function() {
-            if (isVoiceCallAiProcessing || isVoiceCallAiSpeaking) return;
+            if (isVoiceCallAiProcessing) return;
+            if (isVoiceCallAiSpeaking) {
+                window.interruptVoiceCallAI();
+                return;
+            }
             if (voiceCallLastUserText && voiceCallLastUserText.trim()) {
                 let textToSend = voiceCallLastUserText.trim();
                 voiceCallLastUserText = '';
                 if (voiceCallSilenceTimer) { clearTimeout(voiceCallSilenceTimer); voiceCallSilenceTimer = null; }
+                clearSilenceProgressUI();
                 if (voiceCallCurrentInterimBubble) {
                     voiceCallCurrentInterimBubble.remove();
                     voiceCallCurrentInterimBubble = null;
                 }
-                appendVoiceCallTranscriptMessage('Tu', textToSend, 'user');
+                playVoiceCallTone('send');
+                appendVoiceCallTranscriptMessage(isCallUISpanish() ? 'Tú' : 'Tu', textToSend, 'user');
                 processVoiceCallUserUtterance(textToSend);
             } else {
                 const input = document.getElementById('voice-call-text-input');
                 if (input && input.value.trim()) {
                     submitVoiceCallText();
                 } else {
-                    showToast('🎙️ Escoltant... Parla de qualsevol cosa!', 'info');
+                    showToast(isCallUISpanish() ? 'Escuchando... Habla con naturalidad o escribe en Chat / Texto.' : 'Escoltant... Parla amb naturalitat o escriu a Xat / Text.', 'info');
                 }
             }
+        };
+
+        window.setVoiceCallPersona = function(persona) {
+            voiceCallPersona = persona || 'natural';
+            localStorage.setItem('aliat_voice_call_persona', voiceCallPersona);
+            updateVoicePersonaButtonsUI();
+            const es = isCallUISpanish();
+            const labels = {
+                natural: es ? 'Modo: Conversación fluida' : 'Mode: Conversa fluida',
+                tutor: es ? 'Modo: Examen Oral y Repaso' : 'Mode: Examen Oral i Repàs',
+                language: es ? 'Modo: Práctica de Idiomas (Speaking)' : 'Mode: Pràctica d\'Idiomes (Speaking)',
+                brainstorm: es ? 'Modo: Lluvia de Ideas y Tareas' : 'Mode: Pluja d\'Idees i Tasques'
+            };
+            showToast(labels[voiceCallPersona] || labels.natural);
+        };
+
+        function updateVoicePersonaButtonsUI() {
+            document.querySelectorAll('.voice-persona-btn').forEach(btn => {
+                const isActive = btn.dataset.persona === voiceCallPersona;
+                btn.className = isActive
+                    ? "voice-persona-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer whitespace-nowrap bg-indigo-600 text-white shadow-xs flex items-center gap-1.5"
+                    : "voice-persona-btn px-3 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer whitespace-nowrap text-zinc-400 hover:text-white flex items-center gap-1.5";
+            });
+        }
+
+        window.setVoiceCallSpeechRate = function(rate) {
+            voiceCallSpeechRate = parseFloat(rate) || 1.0;
+            localStorage.setItem('aliat_voice_call_rate', String(voiceCallSpeechRate));
+            updateVoiceCallSettingsButtonsUI();
+            showToast((isCallUISpanish() ? 'Velocidad de voz: ' : 'Velocitat de veu: ') + voiceCallSpeechRate + 'x');
+        };
+
+        window.setVoiceCallSilenceDelay = function(ms) {
+            voiceCallSilenceDelay = parseInt(ms, 10) || 1700;
+            localStorage.setItem('aliat_voice_call_silence', String(voiceCallSilenceDelay));
+            updateVoiceCallSettingsButtonsUI();
+        };
+
+        function updateVoiceCallSettingsButtonsUI() {
+            const activeCls = "py-1.5 px-2 rounded-xl border border-indigo-500 bg-indigo-600/30 text-indigo-200 text-xs font-bold transition cursor-pointer tabular-nums";
+            const inactiveCls = "py-1.5 px-2 rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 hover:text-white text-xs font-medium transition cursor-pointer tabular-nums";
+
+            document.querySelectorAll('.voice-rate-btn').forEach(btn => {
+                const r = parseFloat(btn.dataset.rate);
+                btn.className = `voice-rate-btn ${Math.abs(r - voiceCallSpeechRate) < 0.03 ? activeCls : inactiveCls}`;
+            });
+            document.querySelectorAll('.voice-silence-btn').forEach(btn => {
+                const s = parseInt(btn.dataset.silence, 10);
+                btn.className = `voice-silence-btn ${s === voiceCallSilenceDelay ? activeCls : inactiveCls}`;
+            });
+        }
+
+        function syncVoiceCallLocalizedLabels() {
+            const es = isCallUISpanish();
+            const setTxt = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+            setTxt('header-voice-call-label', es ? 'Llamada' : 'Trucada');
+            setTxt('voice-call-live-label', es ? 'Llamada en directo' : 'Trucada en directe');
+            const langIndicator = voiceCallSelectedLang === 'es-ES' ? 'Español' : (voiceCallSelectedLang === 'en-US' ? 'English' : 'Català');
+            setTxt('voice-call-lang-indicator', langIndicator);
+            setTxt('voice-persona-label-natural', es ? 'Conversación' : 'Conversa');
+            setTxt('voice-persona-label-tutor', es ? 'Examen Oral' : 'Examen Oral');
+            setTxt('voice-persona-label-language', 'Speaking');
+            setTxt('voice-persona-label-brainstorm', es ? 'Ideas' : 'Idees');
+            setTxt('voice-call-mic-label', es ? 'Micrófono' : 'Micròfon');
+            setTxt('voice-call-speaker-label', es ? 'Altavoz' : 'Altaveu');
+            setTxt('voice-call-settings-label', es ? 'Ajustes' : 'Ajustos');
+            setTxt('voice-call-transcript-label', es ? 'Chat / Texto' : 'Xat / Text');
+            setTxt('voice-call-end-label', es ? 'Colgar' : 'Penjar');
+            setTxt('voice-settings-modal-title', es ? 'Ajustes de Voz y Llamada' : 'Ajustos de Veu i Trucada');
+            setTxt('voice-settings-lang-label', es ? 'Idioma de conversación:' : 'Idioma de conversa:');
+            setTxt('voice-settings-speed-label', es ? 'Velocidad de voz de la IA:' : 'Velocitat de veu de la IA:');
+            setTxt('voice-settings-silence-label', es ? 'Tiempo de pausa para enviar respuesta:' : 'Temps de pausa per enviar resposta:');
+            setTxt('voice-settings-synth-label', es ? 'Voz del sistema (Síntesis):' : 'Veu del sistema (Síntesi):');
+            setTxt('voice-settings-test-btn', es ? 'Probar Voz' : 'Provar Veu');
+            setTxt('voice-settings-done-btn', es ? 'Listo' : 'Fet');
+            setTxt('voice-transcript-sheet-title', es ? 'Transcripción en directo' : 'Transcripció en directe');
+            setTxt('voice-transcript-copy-btn', es ? 'Copiar' : 'Copiar');
+            setTxt('voice-transcript-send-btn', es ? 'Enviar' : 'Enviar');
+            const input = document.getElementById('voice-call-text-input');
+            if (input) input.placeholder = es ? 'Escribe un mensaje en la llamada...' : 'Escriu un missatge a la trucada...';
+        }
+
+        window.minimizeVoiceCall = function() {
+            if (!isVoiceCallActive) return;
+            isVoiceCallMinimized = true;
+            const modal = document.getElementById('voice-call-modal');
+            const pip = document.getElementById('voice-call-pip');
+            if (modal) {
+                modal.classList.add('opacity-0');
+                setTimeout(() => modal.classList.add('hidden'), 200);
+            }
+            if (pip) pip.classList.remove('hidden');
+        };
+
+        window.restoreVoiceCallModal = function() {
+            if (!isVoiceCallActive) return;
+            isVoiceCallMinimized = false;
+            const modal = document.getElementById('voice-call-modal');
+            const pip = document.getElementById('voice-call-pip');
+            if (pip) pip.classList.add('hidden');
+            if (modal) {
+                modal.classList.remove('hidden');
+                requestAnimationFrame(() => modal.classList.remove('opacity-0'));
+            }
+        };
+
+        window.copyVoiceCallTranscript = function() {
+            if (!Array.isArray(voiceCallHistory) || voiceCallHistory.length === 0) {
+                showToast(isCallUISpanish() ? 'Aún no hay mensajes para copiar.' : 'Encara no hi ha missatges per copiar.');
+                return;
+            }
+            const text = voiceCallHistory.map(m => `${m.role === 'user' ? (isCallUISpanish() ? 'Tú' : 'Tu') : 'Aliat'}: ${m.content}`).join('\n\n');
+            navigator.clipboard?.writeText(text);
+            showToast(isCallUISpanish() ? 'Transcripción copiada al portapapeles' : 'Transcripció copiada al porta-retalls');
         };
 
         // --- GESTIÓ DE VEU I IDIOMA (POPUP CONFIGURACIÓ) ---
@@ -7348,6 +7755,7 @@
             const sheet = document.getElementById('voice-call-settings-sheet');
             if (!sheet) return;
             updateVoiceLangButtonsUI();
+            updateVoiceCallSettingsButtonsUI();
             populateVoiceSelect();
             sheet.classList.remove('hidden');
         };
@@ -7360,10 +7768,11 @@
         window.selectVoiceCallLanguage = function(lang) {
             voiceCallSelectedLang = lang;
             localStorage.setItem('aliat_selected_voice_lang', lang);
-            voiceCallSelectedVoiceURI = ''; // Resetejar per agafar la millor veu del nou idioma
+            voiceCallSelectedVoiceURI = '';
             localStorage.removeItem('aliat_selected_voice_uri');
 
             updateVoiceLangButtonsUI();
+            syncVoiceCallLocalizedLabels();
             populateVoiceSelect();
 
             if (voiceCallRecognition && isVoiceCallActive) {
@@ -7374,7 +7783,7 @@
             }
 
             const langLabel = lang === 'ca-ES' ? 'Català' : (lang === 'es-ES' ? 'Español' : 'English');
-            showToast(`🌐 Idioma de veu: ${langLabel}`);
+            showToast(`${isCallUISpanish() ? 'Idioma de llamada' : 'Idioma de trucada'}: ${langLabel}`);
         };
 
         function updateVoiceLangButtonsUI() {
@@ -7396,7 +7805,7 @@
 
             const voices = window.speechSynthesis.getVoices();
             if (!voices || voices.length === 0) {
-                select.innerHTML = '<option value="">Veus per defecte del navegador</option>';
+                select.innerHTML = `<option value="">${isCallUISpanish() ? 'Voces por defecto del navegador' : 'Veus per defecte del navegador'}</option>`;
                 return;
             }
 
@@ -7439,7 +7848,7 @@
         window.changeVoiceCallVoice = function(voiceURI) {
             voiceCallSelectedVoiceURI = voiceURI;
             localStorage.setItem('aliat_selected_voice_uri', voiceURI);
-            showToast("Veu de la IA actualitzada");
+            showToast(isCallUISpanish() ? "Voz de la IA actualizada" : "Veu de la IA actualitzada");
         };
 
         window.testCurrentVoice = function() {
@@ -7512,6 +7921,17 @@
             };
         }
 
+        function animateVoiceWaveBars(level) {
+            const bars = document.querySelectorAll('#voice-call-wave-bars .vc-wave-bar');
+            if (!bars || bars.length === 0) return;
+            const weights = [0.45, 0.7, 0.95, 1.15, 0.95, 0.7, 0.45];
+            bars.forEach((bar, idx) => {
+                const jitter = 0.8 + Math.sin(Date.now() / 90 + idx * 1.1) * 0.25;
+                const h = Math.max(4, Math.min(22, Math.round(4 + level * weights[idx % weights.length] * jitter)));
+                bar.style.height = `${h}px`;
+            });
+        }
+
         function setupVoiceCallAudioMeter(stream) {
             try {
                 if (voiceAudioAnimFrame) {
@@ -7546,24 +7966,32 @@
                     const ring1 = document.getElementById('voice-call-ring1');
                     const ring2 = document.getElementById('voice-call-ring2');
                     const statusText = document.getElementById('voice-call-status-text');
+                    const es = isCallUISpanish();
 
-                    if (orb && !isVoiceCallAiSpeaking && !isVoiceCallAiProcessing && !isVoiceCallMicMuted && !isVoiceCallMicPermissionDenied) {
-                        if (average > 10) {
-                            const scale = 1 + Math.min(average / 160, 0.35);
+                    if (isVoiceCallAiSpeaking) {
+                        const simLevel = 10 + Math.abs(Math.sin(Date.now() / 120)) * 8;
+                        animateVoiceWaveBars(simLevel);
+                    } else if (orb && !isVoiceCallAiProcessing && !isVoiceCallMicMuted && !isVoiceCallMicPermissionDenied) {
+                        if (average > 9) {
+                            const scale = 1 + Math.min(average / 160, 0.28);
                             orb.style.transform = `scale(${scale})`;
-                            if (ring1) ring1.style.transform = `scale(${scale + 0.15})`;
-                            if (ring2) ring2.style.transform = `scale(${scale + 0.25})`;
-                            if (statusText && !statusText.innerText.includes('parlant')) {
-                                statusText.innerText = "Escoltant la teva veu...";
+                            if (ring1) ring1.style.transform = `scale(${scale + 0.12})`;
+                            if (ring2) ring2.style.transform = `scale(${scale + 0.22})`;
+                            animateVoiceWaveBars(Math.min(18, average / 3.5));
+                            if (statusText && !statusText.innerText.includes('parlant') && !statusText.innerText.includes('hablando')) {
+                                statusText.innerText = es ? "Escuchando tu voz..." : "Escoltant la teva veu...";
                             }
                         } else {
                             orb.style.transform = 'scale(1)';
                             if (ring1) ring1.style.transform = 'scale(1)';
                             if (ring2) ring2.style.transform = 'scale(1)';
-                            if (statusText && statusText.innerText.includes('la teva veu')) {
-                                statusText.innerText = "Escoltant...";
+                            animateVoiceWaveBars(2);
+                            if (statusText && (statusText.innerText.includes('la teva veu') || statusText.innerText.includes('tu voz'))) {
+                                statusText.innerText = es ? "Escuchando..." : "Escoltant...";
                             }
                         }
+                    } else {
+                        animateVoiceWaveBars(1);
                     }
                     voiceAudioAnimFrame = requestAnimationFrame(updateVolume);
                 };
@@ -7578,7 +8006,12 @@
             if (!input || !input.value.trim()) return;
             const text = input.value.trim();
             input.value = '';
-            appendVoiceCallTranscriptMessage('Tu', text, 'user');
+            if (isVoiceCallAiSpeaking) {
+                window.interruptVoiceCallAI();
+            }
+            playVoiceCallTone('send');
+            appendVoiceCallTranscriptMessage(isCallUISpanish() ? 'Tú' : 'Tu', text, 'user');
+            setVoiceCallLiveCaption(isCallUISpanish() ? 'Tú' : 'Tu', text, true);
             processVoiceCallUserUtterance(text);
         };
 
@@ -7591,7 +8024,7 @@
                     isVoiceCallMicPermissionDenied = false;
                     const banner = document.getElementById('voice-call-permission-banner');
                     if (banner) banner.classList.add('hidden');
-                    showToast('Permís de micròfon concedit!');
+                    showToast(isCallUISpanish() ? '¡Micrófono activado!' : 'Micròfon activat!');
                     startVoiceCallRecognition();
                 } else {
                     throw new Error("getUserMedia not supported");
@@ -7604,14 +8037,18 @@
         };
 
         window.openVoiceCallModal = async function() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                showToast('⚠️ El teu navegador no suporta reconeixement de veu en directe. Utilitza Chrome, Edge o Safari.', 'error');
+            if (isVoiceCallActive && isVoiceCallMinimized) {
+                window.restoreVoiceCallModal();
                 return;
             }
 
             const modal = document.getElementById('voice-call-modal');
             if (!modal) return;
+
+            const appLang = (typeof currentAppLang !== 'undefined' && currentAppLang) || localStorage.getItem('aliat_app_language') || 'ca';
+            if (!localStorage.getItem('aliat_selected_voice_lang')) {
+                voiceCallSelectedLang = appLang === 'es' ? 'es-ES' : 'ca-ES';
+            }
 
             if ('speechSynthesis' in window) {
                 try {
@@ -7622,20 +8059,41 @@
             if (speechRecognitionObj) { try { speechRecognitionObj.stop(); } catch(e){} }
 
             isVoiceCallActive = true;
+            isVoiceCallMinimized = false;
             isVoiceCallMicMuted = false;
             isVoiceCallSpeakerMuted = false;
             isVoiceCallAiProcessing = false;
             isVoiceCallAiSpeaking = false;
             isVoiceCallMicPermissionDenied = false;
             voiceCallCurrentInterimBubble = null;
+            voiceCallSessionMessageCount = 0;
+
+            // Seed call history with recent active chat context so the call continues naturally
             voiceCallHistory = [];
+            if (typeof chatHistory !== 'undefined' && Array.isArray(chatHistory) && chatHistory.length > 0) {
+                const recent = chatHistory.slice(-6).filter(m => m && m.content && typeof m.content === 'string');
+                recent.forEach(m => {
+                    voiceCallHistory.push({
+                        role: m.role === 'user' ? 'user' : 'assistant',
+                        content: m.content.substring(0, 600),
+                        fromPriorChat: true
+                    });
+                });
+            }
+
+            document.getElementById('voice-call-pip')?.classList.add('hidden');
+            syncVoiceCallLocalizedLabels();
+            updateVoicePersonaButtonsUI();
+            updateVoiceCallSettingsButtonsUI();
 
             modal.classList.remove('hidden');
             requestAnimationFrame(() => {
                 modal.classList.remove('opacity-0');
             });
 
-            // Demanar flux de micròfon per l'analitzador visual
+            playVoiceCallTone('connect');
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -7646,6 +8104,9 @@
                     isVoiceCallMicPermissionDenied = true;
                     setVoiceCallOrbState('permission_denied');
                 }
+            } else if (!SpeechRecognition) {
+                isVoiceCallMicPermissionDenied = true;
+                setVoiceCallOrbState('permission_denied');
             }
 
             voiceCallSeconds = 0;
@@ -7656,23 +8117,30 @@
                 updateVoiceCallTimerUI();
             }, 1000);
 
-            // Salutació inicial càlida, humana i directa segons l'idioma seleccionat
-            let greeting = "Hola! Sóc l'Aliat. T'estic escoltant en directe. Com et va el dia? De què et ve de gust parlar?";
+            let greeting = "Hola! Sóc l'Aliat. T'estic escoltant en directe. De què volies parlar avui?";
             if (voiceCallSelectedLang === 'es-ES') {
                 greeting = "¡Hola! Soy Aliat. Te escucho en directo, ¿de qué te apetece hablar hoy?";
             } else if (voiceCallSelectedLang === 'en-US') {
                 greeting = "Hello! I'm Aliat. I'm listening live, what would you like to talk about today?";
             }
+            if (voiceCallPersona === 'tutor') {
+                greeting = voiceCallSelectedLang === 'es-ES'
+                    ? "¡Hola! Empezamos el repaso oral. Dime qué tema quieres repasar y te haré preguntas de examen."
+                    : "Hola! Comencem el repàs oral. Digues-me quin tema vols repassar i et faré preguntes d'examen.";
+            } else if (voiceCallPersona === 'language') {
+                greeting = voiceCallSelectedLang === 'en-US'
+                    ? "Hi there! Let's practice your English speaking skills. How has your day been so far?"
+                    : (voiceCallSelectedLang === 'es-ES'
+                        ? "¡Hola! Practiquemos conversación en español. ¿Qué tal ha ido tu día?"
+                        : "Hola! Practiquem conversa en català. Com t'ha anat el dia fins ara?");
+            }
 
             const transcriptBox = document.getElementById('voice-call-transcript');
             if (transcriptBox) {
-                transcriptBox.innerHTML = `
-                    <div class="w-full max-w-xl mx-auto flex items-center justify-center gap-2 text-emerald-300 bg-emerald-950/60 border border-emerald-500/30 p-2.5 rounded-xl font-medium animate-fadeIn text-center">
-                        <span class="font-bold text-emerald-400 shrink-0">Aliat:</span>
-                        <span>${escapeHtml(greeting)}</span>
-                    </div>
-                `;
+                transcriptBox.innerHTML = '';
             }
+            appendVoiceCallTranscriptMessage('Aliat', greeting, 'ai');
+            setVoiceCallLiveCaption('Aliat', greeting, false);
 
             speakVoiceCallResponse(greeting);
             startVoiceCallRecognition();
@@ -7681,20 +8149,27 @@
         };
 
         function updateVoiceCallTimerUI() {
-            const el = document.getElementById('voice-call-timer');
-            if (!el) return;
             const mins = Math.floor(voiceCallSeconds / 60).toString().padStart(2, '0');
             const secs = (voiceCallSeconds % 60).toString().padStart(2, '0');
-            el.innerText = `${mins}:${secs}`;
+            const formatted = `${mins}:${secs}`;
+            const el = document.getElementById('voice-call-timer');
+            if (el) el.innerText = formatted;
+            const pipEl = document.getElementById('voice-call-pip-timer');
+            if (pipEl) pipEl.innerText = formatted;
         }
 
         function setVoiceCallOrbState(state) {
             const orb = document.getElementById('voice-call-orb');
             const statusPill = document.getElementById('voice-call-status-pill');
             const statusText = document.getElementById('voice-call-status-text');
+            const pipStatus = document.getElementById('voice-call-pip-status');
+            const orbHint = document.getElementById('voice-call-orb-hint');
             const ring1 = document.getElementById('voice-call-ring1');
             const ring2 = document.getElementById('voice-call-ring2');
             const banner = document.getElementById('voice-call-permission-banner');
+            const actionLabel = document.getElementById('voice-call-action-label');
+            const actionBtn = document.getElementById('voice-call-action-btn');
+            const es = isCallUISpanish();
 
             if (!orb || !statusText) return;
 
@@ -7704,38 +8179,47 @@
             }
 
             if (state === 'listening') {
-                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-[0_0_70px_rgba(6,182,212,0.65)] flex items-center justify-center transition-all duration-500 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105 active:scale-95";
-                orb.onclick = window.triggerVoiceCallSend;
-                statusText.innerText = "Escoltant...";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
-                if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-cyan-500/40 animate-ping opacity-75";
-                if (ring2) ring2.className = "absolute -inset-4 rounded-full border border-blue-500/30 animate-pulse opacity-60";
+                orb.className = "w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-[0_0_65px_rgba(6,182,212,0.55)] flex flex-col items-center justify-center gap-2 transition-all duration-300 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105 active:scale-95";
+                statusText.innerText = es ? "Escuchando..." : "Escoltant...";
+                if (pipStatus) pipStatus.innerText = statusText.innerText;
+                if (orbHint) orbHint.innerText = es ? "Habla con naturalidad · Toca el orbe para enviar ya" : "Parla amb naturalitat · Toca l'esfera per enviar al moment";
+                if (actionLabel) actionLabel.innerText = es ? "Enviar ya" : "Enviar ara";
+                if (actionBtn) actionBtn.className = "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-cyan-950/80 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 flex items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-xl bg-emerald-500/12 border border-emerald-500/30 text-emerald-300 text-xs sm:text-sm font-semibold tracking-wide mx-auto";
+                if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-cyan-500/40 transition-transform duration-150 opacity-75";
+                if (ring2) ring2.className = "absolute -inset-3.5 rounded-full border border-blue-500/30 transition-transform duration-200 opacity-60";
             } else if (state === 'speaking') {
-                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-cyan-500 shadow-[0_0_80px_rgba(16,185,129,0.8)] flex items-center justify-center transition-all duration-500 scale-105 relative overflow-hidden animate-pulse mx-auto cursor-pointer";
-                orb.onclick = null;
-                statusText.innerText = "L'Aliat està parlant...";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
-                if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-emerald-400/60 animate-ping opacity-90";
-                if (ring2) ring2.className = "absolute -inset-4 rounded-full border border-teal-400/40 animate-pulse opacity-80";
+                orb.className = "w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-emerald-400 via-teal-500 to-cyan-500 shadow-[0_0_75px_rgba(16,185,129,0.75)] flex flex-col items-center justify-center gap-2 transition-all duration-300 scale-105 relative overflow-hidden mx-auto cursor-pointer hover:scale-100 active:scale-95";
+                statusText.innerText = es ? "Aliat está hablando..." : "L'Aliat està parlant...";
+                if (pipStatus) pipStatus.innerText = statusText.innerText;
+                if (orbHint) orbHint.innerText = es ? "Toca el orbe o 'Interrumpir' para hablar ahora" : "Toca l'esfera o 'Interrompre' per parlar ara";
+                if (actionLabel) actionLabel.innerText = es ? "Interrumpir" : "Interrompre";
+                if (actionBtn) actionBtn.className = "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-950/80 hover:bg-amber-900/80 border border-amber-500/40 text-amber-300 flex items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-200 text-xs sm:text-sm font-semibold tracking-wide mx-auto";
+                if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-emerald-400/60 transition-transform duration-150 opacity-90";
+                if (ring2) ring2.className = "absolute -inset-3.5 rounded-full border border-teal-400/40 transition-transform duration-200 opacity-80";
             } else if (state === 'processing') {
-                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-slate-700 via-blue-700 to-sky-600 shadow-[0_0_50px_rgba(14,165,233,0.45)] flex items-center justify-center transition-all duration-500 scale-95 relative overflow-hidden animate-spin duration-3000 mx-auto cursor-pointer";
-                orb.onclick = null;
-                statusText.innerText = "Pensant...";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-sky-500/20 border border-sky-500/40 text-sky-300 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
-                if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-sky-500/50 animate-ping opacity-50";
-                if (ring2) ring2.className = "absolute -inset-4 rounded-full border border-blue-500/40 animate-pulse opacity-50";
+                orb.className = "w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-slate-700 via-blue-700 to-sky-600 shadow-[0_0_50px_rgba(14,165,233,0.45)] flex flex-col items-center justify-center gap-2 transition-all duration-300 scale-95 relative overflow-hidden mx-auto cursor-pointer";
+                statusText.innerText = es ? "Pensando respuesta..." : "Pensant resposta...";
+                if (pipStatus) pipStatus.innerText = statusText.innerText;
+                if (orbHint) orbHint.innerText = es ? "Generando respuesta en directo..." : "Generant resposta en directe...";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-300 text-xs sm:text-sm font-semibold tracking-wide mx-auto";
+                if (ring1) ring1.className = "absolute inset-0 rounded-full border-2 border-sky-500/50 opacity-50";
+                if (ring2) ring2.className = "absolute -inset-3.5 rounded-full border border-blue-500/40 opacity-50";
             } else if (state === 'muted') {
-                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-zinc-700 via-zinc-800 to-zinc-900 shadow-none flex items-center justify-center transition-all duration-500 scale-90 relative overflow-hidden mx-auto cursor-pointer";
-                orb.onclick = null;
-                statusText.innerText = "Micròfon Silenciat";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto";
+                orb.className = "w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-zinc-700 via-zinc-800 to-zinc-900 shadow-none flex flex-col items-center justify-center gap-2 transition-all duration-300 scale-95 relative overflow-hidden mx-auto cursor-pointer";
+                statusText.innerText = es ? "Micrófono silenciado" : "Micròfon silenciat";
+                if (pipStatus) pipStatus.innerText = statusText.innerText;
+                if (orbHint) orbHint.innerText = es ? "Pulsa el botón Micrófono para volver a hablar" : "Prem el botó Micròfon per tornar a parlar";
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-400 text-xs sm:text-sm font-semibold tracking-wide mx-auto";
                 if (ring1) ring1.className = "hidden";
                 if (ring2) ring2.className = "hidden";
             } else if (state === 'permission_denied') {
-                orb.className = "w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-amber-600 via-red-600 to-rose-700 shadow-[0_0_60px_rgba(239,68,68,0.6)] flex items-center justify-center transition-all duration-500 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105";
+                orb.className = "w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-amber-600 via-red-600 to-rose-700 shadow-[0_0_50px_rgba(239,68,68,0.5)] flex flex-col items-center justify-center gap-2 transition-all duration-300 scale-100 relative overflow-hidden mx-auto cursor-pointer hover:scale-105";
                 orb.onclick = requestVoiceCallMicPermission;
-                statusText.innerText = "Falta permís de micròfon (Clica per activar)";
-                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2.5 px-5 py-2 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs sm:text-sm font-semibold tracking-wide shadow-xs mx-auto cursor-pointer";
+                statusText.innerText = es ? "Activa el micrófono o usa el teclado" : "Activa el micròfon o utilitza el teclat";
+                if (pipStatus) pipStatus.innerText = statusText.innerText;
+                if (statusPill) statusPill.className = "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs sm:text-sm font-semibold tracking-wide mx-auto cursor-pointer";
                 if (ring1) ring1.className = "hidden";
                 if (ring2) ring2.className = "hidden";
             }
@@ -7794,19 +8278,23 @@
                 if (!currentSpeech) return;
 
                 voiceCallLastUserText = currentSpeech;
+                const userLabel = isCallUISpanish() ? 'Tú' : 'Tu';
+                setVoiceCallLiveCaption(userLabel, currentSpeech + '...', true);
 
                 if (transcriptBox) {
                     if (!voiceCallCurrentInterimBubble) {
                         voiceCallCurrentInterimBubble = document.createElement('div');
-                        voiceCallCurrentInterimBubble.className = "w-full max-w-xl mx-auto flex items-center justify-center gap-2 text-cyan-300 bg-cyan-950/40 border border-cyan-500/30 p-2.5 rounded-xl transition-all text-center";
+                        voiceCallCurrentInterimBubble.className = "w-full max-w-xl mx-auto flex items-start gap-2 text-cyan-200 bg-cyan-950/40 border border-cyan-500/30 p-2.5 rounded-xl transition-all text-left";
                         transcriptBox.appendChild(voiceCallCurrentInterimBubble);
                     }
-                    voiceCallCurrentInterimBubble.innerHTML = `<span class="font-bold text-cyan-400 shrink-0">Tu:</span> <span>${escapeHtml(currentSpeech)}...</span>`;
+                    voiceCallCurrentInterimBubble.innerHTML = `<span class="font-bold text-cyan-400 shrink-0">${userLabel}:</span> <span>${escapeHtml(currentSpeech)}...</span>`;
                     transcriptBox.scrollTop = transcriptBox.scrollHeight;
                 }
 
                 if (voiceCallSilenceTimer) clearTimeout(voiceCallSilenceTimer);
+                startSilenceProgressUI(voiceCallSilenceDelay);
                 voiceCallSilenceTimer = setTimeout(() => {
+                    clearSilenceProgressUI();
                     if (voiceCallLastUserText.trim() && isVoiceCallActive && !isVoiceCallAiProcessing && !isVoiceCallAiSpeaking) {
                         let textToSend = voiceCallLastUserText.trim();
                         voiceCallLastUserText = '';
@@ -7815,19 +8303,19 @@
                             voiceCallCurrentInterimBubble.remove();
                             voiceCallCurrentInterimBubble = null;
                         }
-                        appendVoiceCallTranscriptMessage('Tu', textToSend, 'user');
+                        playVoiceCallTone('send');
+                        appendVoiceCallTranscriptMessage(userLabel, textToSend, 'user');
+                        setVoiceCallLiveCaption(userLabel, textToSend, true);
                         processVoiceCallUserUtterance(textToSend);
                     }
-                }, 1600);
+                }, voiceCallSilenceDelay);
             };
 
             voiceCallRecognition.onerror = function(e) {
-                console.log("Voice Call recognition error:", e.error);
                 if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
                     isVoiceCallMicPermissionDenied = true;
                     setVoiceCallOrbState('permission_denied');
                 } else if (e.error === 'language-not-supported' && voiceCallSelectedLang === 'ca-ES') {
-                    console.log("Catalan speech recognition not supported natively in browser, falling back to Spanish es-ES");
                     voiceCallSelectedLang = 'es-ES';
                     startVoiceCallRecognition();
                 }
@@ -7837,7 +8325,7 @@
                 if (isVoiceCallActive && !isVoiceCallMicPermissionDenied && !isVoiceCallMicMuted && !isVoiceCallAiSpeaking && !isVoiceCallAiProcessing) {
                     setTimeout(() => {
                         try { voiceCallRecognition.start(); } catch(err){}
-                    }, 300);
+                    }, 280);
                 }
             };
 
@@ -7852,19 +8340,27 @@
 
             const div = document.createElement('div');
             if (type === 'user') {
-                div.className = "w-full max-w-xl mx-auto flex items-center justify-center gap-2 text-cyan-200 bg-cyan-950/60 border border-cyan-500/30 p-2.5 rounded-xl font-medium animate-fadeIn text-center";
-                div.innerHTML = `<span class="font-bold text-cyan-400 shrink-0">Tu:</span> <span>${escapeHtml(text)}</span>`;
+                div.className = "w-full max-w-xl mx-auto flex items-start gap-2 text-cyan-100 bg-cyan-950/55 border border-cyan-500/30 p-2.5 rounded-xl font-medium animate-fadeIn text-left";
+                div.innerHTML = `<span class="font-bold text-cyan-400 shrink-0">${escapeHtml(sender)}:</span> <span>${escapeHtml(text)}</span>`;
             } else {
-                div.className = "w-full max-w-xl mx-auto flex items-center justify-center gap-2 text-emerald-300 bg-emerald-950/60 border border-emerald-500/30 p-2.5 rounded-xl font-medium animate-fadeIn text-center";
-                div.innerHTML = `<span class="font-bold text-emerald-400 shrink-0">Aliat:</span> <span>${escapeHtml(text)}</span>`;
+                div.className = "w-full max-w-xl mx-auto flex items-start gap-2 text-emerald-100 bg-emerald-950/55 border border-emerald-500/30 p-2.5 rounded-xl font-medium animate-fadeIn text-left";
+                div.innerHTML = `<span class="font-bold text-emerald-400 shrink-0">${escapeHtml(sender)}:</span> <span>${escapeHtml(text)}</span>`;
             }
 
             transcriptBox.appendChild(div);
             transcriptBox.scrollTop = transcriptBox.scrollHeight;
+
+            voiceCallSessionMessageCount++;
+            const badge = document.getElementById('voice-call-transcript-count');
+            if (badge) {
+                badge.textContent = String(voiceCallSessionMessageCount);
+                badge.classList.remove('hidden');
+            }
         }
 
         async function processVoiceCallUserUtterance(userText) {
             if (voiceCallSilenceTimer) { clearTimeout(voiceCallSilenceTimer); voiceCallSilenceTimer = null; }
+            clearSilenceProgressUI();
             isVoiceCallAiProcessing = true;
             setVoiceCallOrbState('processing');
 
@@ -7876,18 +8372,19 @@
                 if (!Array.isArray(voiceCallHistory)) voiceCallHistory = [];
                 voiceCallHistory.push({ role: 'user', content: userText });
 
-                const isStudy = (typeof appMode !== 'undefined' && appMode === 'study');
+                const isStudy = (typeof appMode !== 'undefined' && appMode === 'study') || voiceCallPersona === 'tutor';
                 const actionType = isStudy ? 'chat' : 'free_chat';
                 const langLabel = (voiceCallSelectedLang === 'es-ES' ? 'castellà' : (voiceCallSelectedLang === 'en-US' ? 'anglès' : 'català'));
 
                 const res = await callGenerateApi({
                     action: actionType,
-                    chatHistory: voiceCallHistory,
+                    chatHistory: voiceCallHistory.map(m => ({ role: m.role, content: m.content })),
                     pdfText: (typeof finalStudyText !== 'undefined') ? finalStudyText : '',
                     studentContext: (typeof studentContext !== 'undefined') ? studentContext : '',
                     tutorMode: (typeof currentTutorMode !== 'undefined') ? currentTutorMode : 'standard',
                     isVoiceCall: true,
-                    callLanguage: langLabel
+                    callLanguage: langLabel,
+                    callPersona: voiceCallPersona
                 });
 
                 const data = await res.json();
@@ -7897,6 +8394,7 @@
 
                 voiceCallHistory.push({ role: 'assistant', content: aiReply });
                 appendVoiceCallTranscriptMessage('Aliat', aiReply, 'ai');
+                setVoiceCallLiveCaption('Aliat', aiReply, false);
 
                 isVoiceCallAiProcessing = false;
                 speakVoiceCallResponse(aiReply);
@@ -7904,21 +8402,21 @@
             } catch(err) {
                 console.error("Error processing voice call utterance:", err);
                 isVoiceCallAiProcessing = false;
-                const errFallback = (voiceCallSelectedLang === 'es-ES' ? "Perdona, se ha cortado la conexión. ¿Me escuchas?" : (voiceCallSelectedLang === 'en-US' ? "Sorry, connection dropped for a moment. Can you hear me?" : "Perdona, s'ha tallat un moment la connexió. Em sents bé?"));
+                const errFallback = (voiceCallSelectedLang === 'es-ES' ? "Perdona, se ha cortado la conexión un segundo. ¿Me escuchas?" : (voiceCallSelectedLang === 'en-US' ? "Sorry, connection dropped for a moment. Can you hear me?" : "Perdona, s'ha tallat un moment la connexió. Em sents bé?"));
                 appendVoiceCallTranscriptMessage('Aliat', errFallback, 'ai');
+                setVoiceCallLiveCaption('Aliat', errFallback, false);
                 setVoiceCallOrbState('listening');
                 startVoiceCallRecognition();
             }
         }
 
         function speakVoiceCallResponse(text) {
-            if (!('speechSynthesis' in window)) {
-                setVoiceCallOrbState('listening');
-                startVoiceCallRecognition();
-                return;
+            if (voiceCallSpeakWatchdog) {
+                clearTimeout(voiceCallSpeakWatchdog);
+                voiceCallSpeakWatchdog = null;
             }
 
-            if (isVoiceCallSpeakerMuted) {
+            if (!('speechSynthesis' in window) || isVoiceCallSpeakerMuted) {
                 setVoiceCallOrbState('listening');
                 startVoiceCallRecognition();
                 return;
@@ -7936,24 +8434,31 @@
                 return;
             }
 
-            let utterance = new SpeechSynthesisUtterance(cleanText.substring(0, 800));
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
+            // Split long text into natural sentence chunks to prevent Chrome TTS 15-second freeze
+            const rawSentences = cleanText.substring(0, 900).match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [cleanText.substring(0, 900)];
+            const chunks = [];
+            let currentChunk = '';
+            rawSentences.forEach(s => {
+                const trimmed = s.trim();
+                if (!trimmed) return;
+                if ((currentChunk + ' ' + trimmed).trim().length <= 180) {
+                    currentChunk = (currentChunk + ' ' + trimmed).trim();
+                } else {
+                    if (currentChunk) chunks.push(currentChunk);
+                    currentChunk = trimmed;
+                }
+            });
+            if (currentChunk) chunks.push(currentChunk);
+            if (chunks.length === 0) chunks.push(cleanText.substring(0, 220));
 
-            let bestVoice = getBestAvailableVoice();
-            if (bestVoice) {
-                utterance.voice = bestVoice;
-                utterance.lang = bestVoice.lang;
-            } else {
-                utterance.lang = voiceCallSelectedLang || 'ca-ES';
-            }
+            const bestVoice = getBestAvailableVoice();
+            let chunkIndex = 0;
 
-            utterance.onstart = function() {
-                isVoiceCallAiSpeaking = true;
-                setVoiceCallOrbState('speaking');
-            };
-
-            utterance.onend = function() {
+            const finishSpeaking = () => {
+                if (voiceCallSpeakWatchdog) {
+                    clearTimeout(voiceCallSpeakWatchdog);
+                    voiceCallSpeakWatchdog = null;
+                }
                 isVoiceCallAiSpeaking = false;
                 if (isVoiceCallActive) {
                     setVoiceCallOrbState('listening');
@@ -7961,26 +8466,51 @@
                 }
             };
 
-            utterance.onerror = function(err) {
-                console.log("Speech synthesis error:", err);
-                isVoiceCallAiSpeaking = false;
-                if (isVoiceCallActive) {
-                    setVoiceCallOrbState('listening');
-                    startVoiceCallRecognition();
+            const speakNextChunk = () => {
+                if (!isVoiceCallActive || isVoiceCallSpeakerMuted || chunkIndex >= chunks.length) {
+                    finishSpeaking();
+                    return;
                 }
-            };
+                const part = chunks[chunkIndex++];
+                const utterance = new SpeechSynthesisUtterance(part);
+                utterance.rate = voiceCallSpeechRate || 1.0;
+                utterance.pitch = 1.0;
 
-            setTimeout(() => {
+                if (bestVoice) {
+                    utterance.voice = bestVoice;
+                    utterance.lang = bestVoice.lang;
+                } else {
+                    utterance.lang = voiceCallSelectedLang || 'ca-ES';
+                }
+
+                if (voiceCallSpeakWatchdog) clearTimeout(voiceCallSpeakWatchdog);
+                const estDurationMs = Math.max(4000, Math.min(16000, part.length * 95));
+                voiceCallSpeakWatchdog = setTimeout(() => {
+                    speakNextChunk();
+                }, estDurationMs);
+
+                utterance.onstart = function() {
+                    isVoiceCallAiSpeaking = true;
+                    setVoiceCallOrbState('speaking');
+                };
+
+                utterance.onend = function() {
+                    speakNextChunk();
+                };
+
+                utterance.onerror = function() {
+                    speakNextChunk();
+                };
+
                 try {
                     window.speechSynthesis.resume();
                     window.speechSynthesis.speak(utterance);
                 } catch(e) {
-                    console.error("Speak error:", e);
-                    isVoiceCallAiSpeaking = false;
-                    setVoiceCallOrbState('listening');
-                    startVoiceCallRecognition();
+                    finishSpeaking();
                 }
-            }, 50);
+            };
+
+            setTimeout(speakNextChunk, 40);
         }
 
         window.toggleVoiceCallMic = function() {
@@ -7989,72 +8519,93 @@
                 return;
             }
             isVoiceCallMicMuted = !isVoiceCallMicMuted;
+            playVoiceCallTone('mute');
             updateVoiceCallControlsUI();
+            const es = isCallUISpanish();
             if (isVoiceCallMicMuted) {
                 if (voiceCallRecognition) { try { voiceCallRecognition.stop(); } catch(e){} }
                 setVoiceCallOrbState('muted');
-                showToast('Micròfon silenciat');
+                showToast(es ? 'Micrófono silenciado' : 'Micròfon silenciat');
             } else {
                 setVoiceCallOrbState('listening');
                 startVoiceCallRecognition();
-                showToast('Micròfon activat');
+                showToast(es ? 'Micrófono activado' : 'Micròfon activat');
             }
         };
 
         window.toggleVoiceCallSpeaker = function() {
             isVoiceCallSpeakerMuted = !isVoiceCallSpeakerMuted;
+            playVoiceCallTone('mute');
             updateVoiceCallControlsUI();
+            const es = isCallUISpanish();
             if (isVoiceCallSpeakerMuted) {
                 if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-                showToast('Altaveu silenciat');
+                isVoiceCallAiSpeaking = false;
+                setVoiceCallOrbState('listening');
+                startVoiceCallRecognition();
+                showToast(es ? 'Altavoz silenciado' : 'Altaveu silenciat');
             } else {
-                showToast('Altaveu activat');
+                showToast(es ? 'Altavoz activado' : 'Altaveu activat');
             }
         };
 
         function updateVoiceCallControlsUI() {
             const micBtn = document.getElementById('voice-call-mic-btn');
             const micIcon = document.getElementById('voice-call-mic-icon');
+            const pipMicBtn = document.getElementById('voice-call-pip-mic-btn');
             const spkBtn = document.getElementById('voice-call-speaker-btn');
+            const spkIcon = document.getElementById('voice-call-speaker-icon');
 
             if (micBtn) {
                 if (isVoiceCallMicMuted) {
-                    micBtn.className = "w-13 h-13 md:w-14 md:h-14 rounded-full bg-red-600/90 hover:bg-red-500 text-white flex flex-col items-center justify-center transition-all shadow-xl shadow-red-600/40 border border-red-400/40 active:scale-95 cursor-pointer shrink-0";
+                    micBtn.className = "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-600/90 hover:bg-red-500 text-white flex items-center justify-center transition-all shadow-xl shadow-red-600/35 border border-red-400/40 active:scale-95 cursor-pointer shrink-0";
                     if (micIcon) micIcon.innerHTML = `<path d="m12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><line x1="2" y1="2" x2="22" y2="22"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>`;
                 } else {
-                    micBtn.className = "w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-white flex flex-col items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0";
+                    micBtn.className = "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-white flex items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0";
                     if (micIcon) micIcon.innerHTML = `<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>`;
                 }
+            }
+            if (pipMicBtn) {
+                pipMicBtn.className = isVoiceCallMicMuted
+                    ? "w-8 h-8 rounded-xl bg-red-600 hover:bg-red-500 text-white flex items-center justify-center transition cursor-pointer"
+                    : "w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center transition cursor-pointer";
             }
 
             if (spkBtn) {
                 if (isVoiceCallSpeakerMuted) {
-                    spkBtn.className = "w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer shrink-0";
+                    spkBtn.className = "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer shrink-0";
+                    if (spkIcon) spkIcon.innerHTML = `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>`;
                 } else {
-                    spkBtn.className = "w-13 h-13 md:w-14 md:h-14 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-emerald-400 flex items-center justify-center transition-all shadow-lg active:scale-95 cursor-pointer shrink-0";
+                    spkBtn.className = "w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-emerald-400 flex items-center justify-center transition-all shadow-xl active:scale-95 cursor-pointer shrink-0";
+                    if (spkIcon) spkIcon.innerHTML = `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>`;
                 }
             }
         }
 
         function saveVoiceCallTranscriptToChat() {
-            if (!Array.isArray(voiceCallHistory) || voiceCallHistory.length === 0) return;
-
-            const callMessages = [...voiceCallHistory];
+            const newCallMessages = Array.isArray(voiceCallHistory)
+                ? voiceCallHistory.filter(m => m && m.content && !m.fromPriorChat)
+                : [];
             voiceCallHistory = [];
+            if (newCallMessages.length === 0) return;
 
-            const isAlreadyInFreeChat = (typeof appMode !== 'undefined' && appMode === 'free') && 
-                                        document.getElementById('chat-view') && 
-                                        !document.getElementById('chat-view').classList.contains('hidden');
+            const chatViewEl = document.getElementById('chat-view');
+            const isChatOpen = chatViewEl && !chatViewEl.classList.contains('hidden');
+            const es = isCallUISpanish();
+            const mins = Math.floor(voiceCallSeconds / 60).toString().padStart(2, '0');
+            const secs = (voiceCallSeconds % 60).toString().padStart(2, '0');
+            const bannerLabel = es
+                ? `Llamada de Voz (${mins}:${secs})`
+                : `Trucada de Veu (${mins}:${secs})`;
 
-            if (isAlreadyInFreeChat) {
+            if (isChatOpen) {
                 const bannerDiv = document.createElement('div');
                 bannerDiv.className = "flex justify-center w-full my-3";
-                bannerDiv.innerHTML = `<span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold">🎙️ Transcripció de la Trucada de Veu</span>`;
+                bannerDiv.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-xs font-semibold"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>${bannerLabel}</span></span>`;
                 const box = document.getElementById('chat-messages');
                 if (box) box.appendChild(bannerDiv);
 
-                callMessages.forEach(msg => {
-                    if (!msg || !msg.content) return;
+                newCallMessages.forEach(msg => {
                     const role = msg.role === 'user' ? 'user' : 'assistant';
                     chatHistory.push({ role, content: msg.content });
                     appendMessage(role === 'user' ? 'user' : 'ai', msg.content);
@@ -8062,7 +8613,7 @@
 
                 saveCurrentChatSession();
             } else {
-                appMode = 'free';
+                if (typeof appMode === 'undefined' || !appMode) appMode = 'free';
                 currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
                 chatHistory = [];
 
@@ -8084,12 +8635,11 @@
                     box.innerHTML = '';
                     const bannerDiv = document.createElement('div');
                     bannerDiv.className = "flex justify-center w-full my-3";
-                    bannerDiv.innerHTML = `<span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold">🎙️ Transcripció de la Trucada de Veu</span>`;
+                    bannerDiv.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-xs font-semibold"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>${bannerLabel}</span></span>`;
                     box.appendChild(bannerDiv);
                 }
 
-                callMessages.forEach(msg => {
-                    if (!msg || !msg.content) return;
+                newCallMessages.forEach(msg => {
                     const role = msg.role === 'user' ? 'user' : 'assistant';
                     chatHistory.push({ role, content: msg.content });
                     appendMessage(role === 'user' ? 'user' : 'ai', msg.content);
@@ -8097,9 +8647,9 @@
 
                 const activeSession = {
                     id: currentSessionId,
-                    mode: 'free',
+                    mode: appMode,
                     history: chatHistory,
-                    title: 'Trucada de Veu'
+                    title: es ? 'Llamada de Voz' : 'Trucada de Veu'
                 };
                 const smartTitle = generateSmartTitle(activeSession);
                 document.getElementById('chat-mode-label').innerText = smartTitle;
@@ -8110,7 +8660,15 @@
         }
 
         window.endVoiceCall = function() {
+            if (!isVoiceCallActive) return;
             isVoiceCallActive = false;
+            isVoiceCallMinimized = false;
+            playVoiceCallTone('end');
+            clearSilenceProgressUI();
+            if (voiceCallSpeakWatchdog) {
+                clearTimeout(voiceCallSpeakWatchdog);
+                voiceCallSpeakWatchdog = null;
+            }
             if (voiceCallTimerInterval) clearInterval(voiceCallTimerInterval);
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             if (voiceCallRecognition) {
@@ -8125,6 +8683,7 @@
                 voiceAudioAnimFrame = null;
             }
 
+            document.getElementById('voice-call-pip')?.classList.add('hidden');
             const modal = document.getElementById('voice-call-modal');
             if (modal) {
                 modal.classList.add('opacity-0');
@@ -8133,11 +8692,14 @@
                 }, 300);
             }
 
-            if (Array.isArray(voiceCallHistory) && voiceCallHistory.length > 0) {
+            const hasNewMessages = Array.isArray(voiceCallHistory) && voiceCallHistory.some(m => m && !m.fromPriorChat);
+            const es = isCallUISpanish();
+            if (hasNewMessages) {
                 saveVoiceCallTranscriptToChat();
-                showToast('Trucada finalitzada. S\'ha desat la conversa al xat.');
+                showToast(es ? 'Llamada finalizada. Conversación guardada en el chat.' : 'Trucada finalitzada. S\'ha desat la conversa al xat.');
             } else {
-                showToast('Trucada finalitzada.');
+                voiceCallHistory = [];
+                showToast(es ? 'Llamada finalizada.' : 'Trucada finalitzada.');
             }
         };
 
@@ -12261,6 +12823,23 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                         </div>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
+
+                    <!-- ACCÉS DIRECTE: CONSCIENCIACIÓ, CRITERI PROPI I TÈCNIQUES D'IA -->
+                    <button type="button" onclick="Swal.close(); openResponsibleAiGuideModal('consciencia');" class="w-full p-3.5 bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/90 dark:border-indigo-800/70 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-400 transition-all group flex items-center justify-between gap-3 text-left cursor-pointer">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors flex items-center gap-2">
+                                    <span>Conscienciació i Tècniques d'IA</span>
+                                    <span class="text-[9px] bg-indigo-100 dark:bg-indigo-900/80 text-indigo-700 dark:text-indigo-200 font-extrabold px-1.5 py-0.5 rounded-md">Ús Quotidià</span>
+                                </div>
+                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Política i vot, verificació d'internet, privacitat i com preguntar bé</div>
+                            </div>
+                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
                 </div>
 
                 <!-- SUB-CARPETA 1: EINES D'ESTUDI & TESTS -->
@@ -15679,7 +16258,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                             </span>
                         </button>
                     </div>
-                    <div class="pt-1">
+                    <div class="pt-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <button type="button" onclick="openGoogleWorkspaceHubModal('daily')" class="w-full p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-400 dark:hover:border-blue-500/70 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 transition cursor-pointer group flex items-center justify-between gap-3 text-left shadow-2xs active:scale-[0.99]">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
@@ -15687,13 +16266,30 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                                 </div>
                                 <div class="min-w-0">
                                     <div class="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex items-center gap-2">
-                                        <span>Google Workspace</span>
-                                        <span class="text-[9px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-extrabold px-1.5 py-0.5 rounded-md">8 eines</span>
+                                        <span class="truncate">Google Workspace</span>
+                                        <span class="text-[9px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-extrabold px-1.5 py-0.5 rounded-md shrink-0">8 eines</span>
                                     </div>
-                                    <div class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Calendar, Classroom, Picker, Drive, Gmail, Docs, Slides i Sheets</div>
+                                    <div class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Calendar, Classroom, Drive, Gmail, Docs...</div>
                                 </div>
                             </div>
                             <span class="text-zinc-300 dark:text-zinc-600 group-hover:text-blue-500 group-hover:translate-x-1 transition-all shrink-0" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </span>
+                        </button>
+                        <button type="button" onclick="openResponsibleAiGuideModal('consciencia')" class="w-full p-3 sm:p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/90 dark:border-indigo-800/70 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-indigo-100/50 dark:hover:bg-indigo-900/40 transition cursor-pointer group flex items-center justify-between gap-3 text-left shadow-2xs active:scale-[0.99]">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs sm:text-sm font-bold text-indigo-950 dark:text-indigo-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors flex items-center gap-2">
+                                        <span class="truncate">Bon Ús i Tècniques d'IA</span>
+                                        <span class="text-[9px] bg-indigo-600 text-white font-extrabold px-1.5 py-0.5 rounded-md shrink-0">Criteri</span>
+                                    </div>
+                                    <div class="text-[11px] text-indigo-700/80 dark:text-indigo-300/80 truncate">Política i vot, fonts d'internet i com preguntar bé</div>
+                                </div>
+                            </div>
+                            <span class="text-indigo-400 dark:text-indigo-500 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all shrink-0" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                             </span>
                         </button>
@@ -15857,6 +16453,349 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     title: 'font-black text-zinc-900 dark:text-white'
                 }
             });
+        };
+
+        // =========================================================================
+        // GUIA D'ÚS RESPONSABLE, CONSCIENCIACIÓ I TÈCNIQUES PER UTILITZAR BÉ LA IA
+        // =========================================================================
+        window.openResponsibleAiGuideModal = function(initialTab = 'consciencia') {
+            const lang = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es' ? 'es' : 'ca';
+            const isEs = lang === 'es';
+
+            const copy = {
+                title: isEs ? 'Buen Uso, Criterio Propio y Técnicas de IA' : 'Bon Ús, Criteri Propi i Tècniques d\'IA',
+                subtitle: isEs
+                    ? 'Guía práctica en Uso Cotidiano para mantener tu pensamiento crítico, informarte bien y aprovechar la IA con seguridad.'
+                    : 'Guia pràctica en Ús Quotidià per mantenir el teu pensament crític, informar-te bé i aprofitar la IA amb seguretat.',
+                tab1: isEs ? '1. Concienciación y Criterio Propio' : '1. Conscienciació i Criteri Propi',
+                tab2: isEs ? '2. Técnicas para Usar Bien la IA' : '2. Tècniques per Utilitzar Bé la IA',
+                bannerTitle: isEs ? 'Principio fundamental: La IA es un copiloto, nunca decide por ti' : 'Principi fonamental: La IA és un copilot, mai decideix per tu',
+                bannerDesc: isEs
+                    ? 'La Inteligencia Artificial recopila y sintetiza patrones e información de internet. Puede contener sesgos, datos desactualizados o simplificaciones. En decisiones ciudadanas, éticas o personales, el criterio final siempre es tuyo.'
+                    : 'La Intel·ligència Artificial recopila i sintetitza patrons i informació d\'internet. Pot contenir biaixos, dades desactualitzades o simplificacions. En decisions ciutadanes, ètiques o personals, el criteri final sempre és teu.',
+                tryBtn: isEs ? 'Usar ejemplo en el chat' : 'Provar exemple al xat',
+                awarenessCards: isEs ? [
+                    {
+                        badge: 'Política y Voto Ciudadano',
+                        badgeColor: 'bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+                        title: 'Nunca pidas a la IA a quién votar: infórmate y contrasta fuentes',
+                        dontDo: '❌ No preguntes: "¿A qué partido político debería votar?" ni delegues tu ideología en un chat.',
+                        why: 'La IA extrae textos de internet (medios, foros, artículos con distintas tendencias) y no tiene valores ciudadanos ni vive tu realidad. Confiar tu voto a la IA te expone a sesgos invisibles.',
+                        doInstead: '✅ Úsala para resumir programas electorales oficiales, comparar qué propone cada candidatura sobre vivienda, sanidad o educación de forma neutral, y acude siempre a debates y fuentes originales.',
+                        prompt: 'Compara de forma totalmente neutral, objetiva y sin tomar partido cuáles son los principales enfoques sobre [tema: vivienda / educación / empleo], indicando qué puntos conviene verificar en los programas oficiales de cada candidatura.'
+                    },
+                    {
+                        badge: 'Fuentes de Internet y Verificación',
+                        badgeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+                        title: 'La IA coge información de internet y puede equivocarse ("Alucinaciones")',
+                        dontDo: '❌ No des por cierta una cifra, ley o noticia importante sin comprobar de dónde sale.',
+                        why: 'Los modelos de lenguaje predicen palabras probables combinando datos de la red. Pueden mezclar fechas, confundir normativas locales o citar datos que han cambiado recientemente.',
+                        doInstead: '✅ Pide siempre qué fuentes oficiales respaldan un dato y contrasta en boletines oficiales, medios contrastados o webs institucionales.',
+                        prompt: 'Explícame las claves sobre [tema o noticia actual] separando claramente: 1) Hechos verificables, 2) Diferentes interpretaciones existentes y 3) Qué fuentes oficiales debería consultar para confirmar los datos.'
+                    },
+                    {
+                        badge: 'Salud Física y Mental',
+                        badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+                        title: 'No sustituye a médicos, psicólogos ni diagnósticos profesionales',
+                        dontDo: '❌ No uses la IA para autodiagnosticarte síntomas graves ni para cambiar medicación.',
+                        why: 'Un síntoma depende de tu historial clínico, analíticas y exploración presencial que ninguna IA puede realizar.',
+                        doInstead: '✅ Úsala para entender términos médicos complejos de un informe o preparar una lista de preguntas claras para tu próxima consulta médica.',
+                        prompt: 'Tengo una consulta médica próximamente sobre [motivo general]. Ayúdame a preparar una lista de 5 preguntas claras y útiles para hacerle al profesional sanitario y entender mejor sus indicaciones.'
+                    },
+                    {
+                        badge: 'Privacidad y Datos Sensibles',
+                        badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+                        title: 'Protege tu identidad, contraseñas y datos bancarios o de terceros',
+                        dontDo: '❌ Nunca escribas en el chat tu DNI completo, cuentas bancarias, contraseñas, direcciones privadas ni datos confidenciales de otras personas.',
+                        why: 'La seguridad digital empieza por minimizar la huella de datos personales sensibles que compartes en servicios en línea.',
+                        doInstead: '✅ Sustituye siempre los datos reales por etiquetas entre corchetes como [NOMBRE], [DNI] o [EMPRESA] al redactar correos o reclamaciones.',
+                        prompt: 'Redacta una reclamación formal dirigida a [EMPRESA] por un cobro indebido en la factura del mes de [MES], dejando huecos con corchetes [NOMBRE] y [NÚMERO DE CONTRATO] para que yo los rellene en privado.'
+                    },
+                    {
+                        badge: 'Decisiones Legales, Fiscales y Financieras',
+                        badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+                        title: 'No firmes contratos ni inviertas dinero basándote solo en la IA',
+                        dontDo: '❌ No preguntes "¿En qué invierto mis ahorros?" ni uses un contrato generado sin revisión legal.',
+                        why: 'Las leyes cambian según la comunidad autónoma, el país y el año fiscal, y las recomendaciones financieras en internet suelen ocultar riesgos.',
+                        doInstead: '✅ Pide a la IA que te explique cláusulas difíciles en lenguaje llano para saber qué preguntar a un asesor o abogado colegiado.',
+                        prompt: 'Explícame en lenguaje sencillo qué significan habitualmente las cláusulas de permanencia, penalización y fianza en un contrato de [alquiler / trabajo], y qué puntos debería revisar con atención antes de firmar.'
+                    },
+                    {
+                        badge: 'Pensamiento Crítico vs. Copia Pasiva',
+                        badgeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+                        title: 'Que la IA entrene tu mente en lugar de apagarla',
+                        dontDo: '❌ No copies y pegues textos enteros sin leerlos, comprenderlos ni darles tu voz.',
+                        why: 'Si delegas todo el esfuerzo de pensar y redactar, pierdes capacidad de argumentación, vocabulario y criterio propio.',
+                        doInstead: '✅ Escribe primero tu idea o borrador y pídele a la IA que actúe como editor crítico señalando puntos débiles o mejoras de claridad.',
+                        prompt: 'He escrito este borrador de opinión/texto: "[pega aquí tu idea]". No me lo reescribas entero; dime 3 puntos donde mi argumento sea flojo y hazme 2 preguntas para que yo mismo lo mejore.'
+                    }
+                ] : [
+                    {
+                        badge: 'Política i Vot Ciutadà',
+                        badgeColor: 'bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+                        title: 'Mai demanis a la IA a qui votar: informa\'t bé i contrasta fonts',
+                        dontDo: '❌ No preguntis: "A quin partit polític hauria de votar?" ni deleguis la teva ideologia en un xat.',
+                        why: 'La IA agafa i sintetitza informació d\'internet (mitjans, fòrums, articles amb diferents tendències) i no té valors ciutadans ni viu la teva realitat. Confiar el teu vot a la IA t\'exposa a biaixos invisibles.',
+                        doInstead: '✅ Utilitza-la per resumir programes electorals oficials, comparar què proposa cada candidatura sobre habitatge, sanitat o educació de forma neutral, i consulta sempre debats i fonts originals.',
+                        prompt: 'Compara de forma totalment neutral, objectiva i sense prendre partit quins són els principals enfocaments sobre [tema: habitatge / educació / ocupació], indicant quins punts convé verificar als programes oficials de cada candidatura.'
+                    },
+                    {
+                        badge: 'Fonts d\'Internet i Verificació',
+                        badgeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+                        title: 'La IA recull dades d\'internet i pot equivocar-se ("Al·lucinacions")',
+                        dontDo: '❌ No donis per certa una xifra, llei o notícia important sense comprovar d\'on surt.',
+                        why: 'Els models de llenguatge prediuen paraules probables combinant dades de la xarxa. Poden barrejar dates, confondre normatives locals o citar dades que han canviat recentment.',
+                        doInstead: '✅ Demana sempre quines fonts oficials avalen una dada i contrasta-ho en butlletins oficials, mitjans contrastats o webs institucionals.',
+                        prompt: 'Explica\'m les claus sobre [tema o notícia actual] separant clarament: 1) Fets verificables, 2) Diferents interpretacions existents i 3) Quines fonts oficials hauria de consultar per confirmar les dades.'
+                    },
+                    {
+                        badge: 'Salut Física i Mental',
+                        badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+                        title: 'No substitueix metges, psicòlegs ni diagnòstics professionals',
+                        dontDo: '❌ No facis servir la IA per autodiagnosticar-te símptomes greus ni per canviar medicació.',
+                        why: 'Un símptoma depèn del teu historial clínic, analítiques i exploració presencial que cap IA pot realitzar.',
+                        doInstead: '✅ Fes-la servir per entendre termes mèdics complexos d\'un informe o preparar una llista de preguntes clares per a la teva propera visita mèdica.',
+                        prompt: 'Tinc una visita mèdica properament sobre [motiu general]. Ajuda\'m a preparar una llista de 5 preguntes clares i útils per fer-li al professional sanitari i entendre millor les seves indicacions.'
+                    },
+                    {
+                        badge: 'Privacitat i Dades Sensibles',
+                        badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+                        title: 'Protegeix la teva identitat, contrasenyes i dades bancàries o de tercers',
+                        dontDo: '❌ Mai escriguis al xat el teu DNI complet, comptes bancaris, contrasenyes, adreces privades ni dades confidencials d\'altres persones.',
+                        why: 'La seguretat digital comença per minimitzar l\'empremta de dades personals sensibles que comparteixes en serveis en línia.',
+                        doInstead: '✅ Substitueix sempre les dades reals per etiquetes entre claudàtors com [NOM], [DNI] o [EMPRESA] quan redactis correus o reclamacions.',
+                        prompt: 'Redacta una reclamació formal dirigida a [EMPRESA] per un cobrament indegut a la factura del mes de [MES], deixant buits amb claudàtors [NOM] i [NÚMERO DE CONTRACTE] perquè jo els ompli en privat.'
+                    },
+                    {
+                        badge: 'Decisions Legals, Fiscals i Financeres',
+                        badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+                        title: 'No signis contractes ni inverteixis diners basant-te només en la IA',
+                        dontDo: '❌ No preguntis "On inverteixo els meus estalvis?" ni utilitzis un contracte generat sense revisió legal.',
+                        why: 'Les lleis canvien segons el territori i l\'any fiscal, i les recomanacions financeres a internet solen amagar riscos.',
+                        doInstead: '✅ Demana a la IA que t\'expliqui clàusules difícils en llenguatge planer per saber què preguntar a un assessor o advocat col·legiat.',
+                        prompt: 'Explica\'m en llenguatge senzill què signifiquen habitualment les clàusules de permanència, penalització i fiança en un contracte de [lloguer / feina], i quins punts hauria de revisar amb atenció abans de signar.'
+                    },
+                    {
+                        badge: 'Pensament Crític vs. Còpia Passiva',
+                        badgeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+                        title: 'Fes que la IA entreni la teva ment en lloc d\'apagar-la',
+                        dontDo: '❌ No copiïs i enganxis textos sencers sense llegir-los, comprendre\'ls ni donar-los la teva pròpia veu.',
+                        why: 'Si delegues tot l\'esforç de pensar i redactar, perds capacitat d\'argumentació, vocabulari i criteri propi.',
+                        doInstead: '✅ Escriu primer la teva idea o esborrany i demana a la IA que actuï com a editor crític assenyalant punts febles o millores de claredat.',
+                        prompt: 'He escrit aquest esborrany d\'opinió/text: "[enganxa aquí la teva idea]". No me\'l reescriguis sencer; digues-me 3 punts on el meu argument sigui fluix i fes-me 2 preguntes perquè jo mateix el millori.'
+                    }
+                ],
+                techniqueCards: isEs ? [
+                    {
+                        step: 'TÉCNICA 1',
+                        title: 'Fórmula C.R.O.F. (Contexto + Rol + Objetivo + Formato)',
+                        desc: 'Cuanto más contexto des a la IA, menos inventará. Especifica siempre tu situación (Contexto), cómo quieres que actúe (Rol), qué necesitas exactamente (Objetivo) y cómo debe presentarlo (Formato).',
+                        example: 'Contexto: Soy estudiante/profesional preparando [tema]. Rol: Actúa como un experto divulgador. Objetivo: Explícame los 4 puntos clave sin tecnicismos. Formato: Tabla comparativa y resumen final.',
+                        prompt: 'Contexto: Estoy organizando [proyecto o tarea cotidiana]. Rol: Actúa como un especialista en organización y comunicación clara. Objetivo: Ayúdame a estructurar los pasos principales y prever posibles imprevistos. Formato: Lista numerada con tiempos estimados y una tabla resumen.'
+                    },
+                    {
+                        step: 'TÉCNICA 2',
+                        title: 'Contraste Neutral y "Abogado del Diablo" (Ideal para política y debates)',
+                        desc: 'Para evitar cámaras de eco y sesgos de internet en temas sociales, políticos o económicos, pide explícitamente a la IA que presente los mejores argumentos de todas las posturas sin inclinarse por ninguna.',
+                        example: 'En lugar de preguntar "¿Es buena esta ley?", pide: "Dame los 3 argumentos principales a favor y los 3 en contra con datos objetivos".',
+                        prompt: 'Sobre el debate actual acerca de [medida política, social o económica], expón de manera estrictamente neutral: 1) Los 3 argumentos más sólidos a favor, 2) Los 3 argumentos más sólidos en contra, y 3) Qué datos objetivos debería buscar en fuentes independientes para formarme mi propia opinión.'
+                    },
+                    {
+                        step: 'TÉCNICA 3',
+                        title: 'Auditoría de Fuentes y Verificación de Datos',
+                        desc: 'Obliga a la IA a separar lo que sabe con certeza de lo que es aproximado, pidiéndole que indique dónde puedes comprobar cada afirmación en internet.',
+                        example: '"Indica el nivel de certeza de cada punto y qué organismo oficial publica el dato real".',
+                        prompt: 'Necesito informarme con rigor sobre [tema]. Dame las claves principales e incluye al final de cada punto: el organismo o fuente oficial donde puedo verificar el dato original y qué aspectos podrían haber cambiado recientemente.'
+                    },
+                    {
+                        step: 'TÉCNICA 4',
+                        title: 'Razonamiento Paso a Paso (Pensamiento Estructurado)',
+                        desc: 'Para resolver problemas cotidianos, presupuestos o planificación, pide a la IA que desglose el razonamiento paso a paso antes de darte el resultado final.',
+                        example: '"Razona paso a paso las ventajas, costes e inconvenientes antes de proponer una solución".',
+                        prompt: 'Quiero tomar una decisión informada sobre [comparar dos opciones / organizar un presupuesto / planificar una semana]. Analiza paso a paso las variables importantes, los pros y contras de cada alternativa y qué preguntas clave debo hacerme antes de decidir.'
+                    },
+                    {
+                        step: 'TÉCNICA 5',
+                        title: 'Técnica Socrática y Editor Crítico',
+                        desc: 'Usa la IA para aprender de verdad y mejorar tus propios textos: pídele que te haga preguntas o que critique constructivamente tu borrador en vez de hacerlo todo por ti.',
+                        example: '"Hazme 3 preguntas clave para detectar si he entendido bien este tema".',
+                        prompt: 'Quiero comprobar si domino bien el tema de [tema] sin copiar. Explícame primero la base en 5 líneas y luego hazme 3 preguntas de reflexión crítica para poner a prueba mi comprensión.'
+                    },
+                    {
+                        step: 'TÉCNICA 6',
+                        title: 'Plantillas con Variables Seguras [CORCHETES]',
+                        desc: 'Para redactar correos, instancias o currículums cuidando tu privacidad al 100%, usa variables entre corchetes para rellenar tus datos personales fuera del chat.',
+                        example: 'Usa [MI_NOMBRE], [EMPRESA_DESTINO], [IMPORTE] en lugar de datos reales.',
+                        prompt: 'Redacta una plantilla profesional de correo para solicitar [motivo: información / reunión / revisión de factura] usando marcadores entre corchetes como [NOMBRE], [FECHA] y [REFERENCIA] para mantener mi privacidad.'
+                    }
+                ] : [
+                    {
+                        step: 'TÈCNICA 1',
+                        title: 'Fórmula C.R.O.F. (Context + Rol + Objectiu + Format)',
+                        desc: 'Com més context donis a la IA, menys s\'inventarà. Especifica sempre la teva situació (Context), com vols que actuï (Rol), què necessites exactament (Objectiu) i com ho ha de presentar (Format).',
+                        example: 'Context: Soc estudiant/professional preparant [tema]. Rol: Actua com un divulgador rigorós. Objectiu: Explica\'m els 4 punts clau sense tecnicismes. Format: Taula comparativa i resum final.',
+                        prompt: 'Context: Estic organitzant [projecte o tasca quotidiana]. Rol: Actua com un especialista en organització i comunicació clara. Objectiu: Ajuda\'m a estructurar els passos principals i preveure possibles imprevistos. Format: Llista numerada amb temps estimats i una taula resum.'
+                    },
+                    {
+                        step: 'TÈCNICA 2',
+                        title: 'Contrast Neutral i "Advocat del Diable" (Ideal per a política i debats)',
+                        desc: 'Per evitar cambres d\'eco i biaixos d\'internet en temes socials, polítics o econòmics, demana explícitament a la IA que presenti els millors arguments de totes les postures sense inclinar-se per cap.',
+                        example: 'En lloc de preguntar "És bona aquesta llei?", demana: "Dóna\'m els 3 arguments principals a favor i els 3 en contra amb dades objectives".',
+                        prompt: 'Sobre el debat actual al voltant de [mesura política, social o econòmica], exposa de manera estrictament neutral: 1) Els 3 arguments més sòlids a favor, 2) Els 3 arguments més sòlids en contra, i 3) Quines dades objectives hauria de cercar en fonts independents per formar-me la meva pròpia opinió.'
+                    },
+                    {
+                        step: 'TÈCNICA 3',
+                        title: 'Auditoria de Fonts i Verificació de Dades',
+                        desc: 'Obliga la IA a separar el que és un fet verificable del que és una estimació, demanant-li que indiqui on pots comprovar cada afirmació a internet.',
+                        example: '"Indica el nivell de certesa de cada punt i quin organisme oficial publica la dada real".',
+                        prompt: 'Necessito informar-me amb rigor sobre [tema]. Dóna\'m les claus principals i inclou al final de cada punt: l\'organisme o font oficial on puc verificar la dada original i quins aspectes podrien haver canviat recentment.'
+                    },
+                    {
+                        step: 'TÈCNICA 4',
+                        title: 'Raonament Pas a Pas (Pensament Estructurat)',
+                        desc: 'Per resoldre problemes quotidians, pressupostos o planificació, demana a la IA que desglossi el raonament pas a pas abans de donar-te el resultat final.',
+                        example: '"Raona pas a pas els avantatges, costos i inconvenients abans de proposar una solució".',
+                        prompt: 'Vull prendre una decisió informada sobre [comparar dues opcions / organitzar un pressupost / planificar una setmana]. Analitza pas a pas les variables importants, els pros i contres de cada alternativa i quines preguntes clau m\'he de fer abans de decidir.'
+                    },
+                    {
+                        step: 'TÈCNICA 5',
+                        title: 'Tècnica Socràtica i Editor Crític',
+                        desc: 'Fes servir la IA per aprendre de debò i millorar els teus propis textos: demana-li que et faci preguntes o que critiqui constructivament el teu esborrany en lloc de fer-ho tot per tu.',
+                        example: '"Fes-me 3 preguntes clau per detectar si he entès bé aquest tema".',
+                        prompt: 'Vull comprovar si domino bé el tema de [tema] sense copiar. Explica\'m primer la base en 5 línies i després fes-me 3 preguntes de reflexió crítica per posar a prova la meva comprensió.'
+                    },
+                    {
+                        step: 'TÈCNICA 6',
+                        title: 'Plantilles amb Variables Segures [CLAUDÀTORS]',
+                        desc: 'Per redactar correus, instàncies o currículums cuidant la teva privacitat al 100%, utilitza variables entre claudàtors per omplir les teves dades personals fora del xat.',
+                        example: 'Fes servir [EL_MEU_NOM], [EMPRESA_DESTÍ], [IMPORT] en lloc de dades reals.',
+                        prompt: 'Redacta una plantilla professional de correu per sol·licitar [motiu: informació / reunió / revisió de factura] utilitzant marcadors entre claudàtors com [NOM], [DATA] i [REFERÈNCIA] per mantenir la meva privacitat.'
+                    }
+                ]
+            };
+
+            window._responsibleAiPrompts = {
+                awareness: copy.awarenessCards.map(c => c.prompt),
+                techniques: copy.techniqueCards.map(c => c.prompt)
+            };
+
+            const awarenessHtml = copy.awarenessCards.map((c, idx) => `
+                <div class="p-3.5 sm:p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/90 border border-zinc-200/90 dark:border-zinc-800 flex flex-col justify-between gap-2.5 text-left shadow-2xs">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-lg border ${c.badgeColor}">${c.badge}</span>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 leading-snug">${c.title}</h4>
+                        <div class="p-2 rounded-xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-900/50 text-[11px] text-rose-800 dark:text-rose-200 font-medium leading-relaxed">${c.dontDo}</div>
+                        <p class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">${c.why}</p>
+                        <div class="p-2 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/50 text-[11px] text-emerald-800 dark:text-emerald-200 font-medium leading-relaxed">${c.doInstead}</div>
+                    </div>
+                    <button type="button" onclick="applyResponsibleAiPrompt('awareness', ${idx})" class="mt-1 w-full py-2 px-3 rounded-xl bg-white hover:bg-indigo-50 dark:bg-zinc-900 dark:hover:bg-indigo-950/50 border border-zinc-200 dark:border-zinc-700 hover:border-indigo-400 text-indigo-600 dark:text-indigo-300 text-[11px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span>${copy.tryBtn}</span>
+                    </button>
+                </div>
+            `).join('');
+
+            const techniquesHtml = copy.techniqueCards.map((t, idx) => `
+                <div class="p-3.5 sm:p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/90 border border-zinc-200/90 dark:border-zinc-800 flex flex-col justify-between gap-2.5 text-left shadow-2xs">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="px-2 py-0.5 text-[10px] font-black rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">${t.step}</span>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 leading-snug">${t.title}</h4>
+                        <p class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">${t.desc}</p>
+                        <div class="p-2.5 rounded-xl bg-zinc-100/90 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-[10.5px] font-mono text-zinc-700 dark:text-zinc-300 leading-relaxed">${t.example}</div>
+                    </div>
+                    <button type="button" onclick="applyResponsibleAiPrompt('techniques', ${idx})" class="mt-1 w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-2xs">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        <span>${copy.tryBtn}</span>
+                    </button>
+                </div>
+            `).join('');
+
+            const activeConsciencia = initialTab !== 'tecniques';
+
+            Swal.fire({
+                title: `<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white text-base sm:text-lg"><span class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span><span>${copy.title}</span></div>`,
+                html: `
+                    <div class="mt-1 text-left space-y-3">
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 text-center max-w-xl mx-auto leading-relaxed">${copy.subtitle}</p>
+
+                        <!-- Banner de conscienciació -->
+                        <div class="p-3 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/70 flex items-start gap-2.5">
+                            <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            </span>
+                            <div class="min-w-0">
+                                <div class="text-xs font-extrabold text-indigo-950 dark:text-indigo-200">${copy.bannerTitle}</div>
+                                <div class="text-[11px] text-indigo-800/90 dark:text-indigo-300/90 leading-relaxed mt-0.5">${copy.bannerDesc}</div>
+                            </div>
+                        </div>
+
+                        <!-- Selector de pestanyes -->
+                        <div class="grid grid-cols-2 gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-950 rounded-2xl border border-zinc-200/80 dark:border-zinc-800">
+                            <button type="button" id="resp-ai-tab-consciencia" onclick="switchResponsibleAiTab('consciencia')" class="py-2 px-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${activeConsciencia ? 'bg-indigo-600 text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                <span class="truncate">${copy.tab1}</span>
+                            </button>
+                            <button type="button" id="resp-ai-tab-tecniques" onclick="switchResponsibleAiTab('tecniques')" class="py-2 px-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${!activeConsciencia ? 'bg-indigo-600 text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                <span class="truncate">${copy.tab2}</span>
+                            </button>
+                        </div>
+
+                        <!-- Contingut Pestanya 1: Conscienciació -->
+                        <div id="resp-ai-panel-consciencia" class="${activeConsciencia ? 'grid' : 'hidden'} grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[54vh] overflow-y-auto pr-1 custom-scrollbar">
+                            ${awarenessHtml}
+                        </div>
+
+                        <!-- Contingut Pestanya 2: Tècniques -->
+                        <div id="resp-ai-panel-tecniques" class="${!activeConsciencia ? 'grid' : 'hidden'} grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[54vh] overflow-y-auto pr-1 custom-scrollbar">
+                            ${techniquesHtml}
+                        </div>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCloseButton: true,
+                customClass: {
+                    popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-3xl w-full',
+                    title: 'font-black text-zinc-900 dark:text-white'
+                }
+            });
+        };
+
+        window.switchResponsibleAiTab = function(tab) {
+            const btn1 = document.getElementById('resp-ai-tab-consciencia');
+            const btn2 = document.getElementById('resp-ai-tab-tecniques');
+            const panel1 = document.getElementById('resp-ai-panel-consciencia');
+            const panel2 = document.getElementById('resp-ai-panel-tecniques');
+            if (!btn1 || !btn2 || !panel1 || !panel2) return;
+
+            const isConsciencia = tab === 'consciencia';
+            btn1.className = `py-2 px-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${isConsciencia ? 'bg-indigo-600 text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}`;
+            btn2.className = `py-2 px-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${!isConsciencia ? 'bg-indigo-600 text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}`;
+
+            panel1.classList.toggle('hidden', !isConsciencia);
+            panel1.classList.toggle('grid', isConsciencia);
+            panel2.classList.toggle('hidden', isConsciencia);
+            panel2.classList.toggle('grid', !isConsciencia);
+        };
+
+        window.applyResponsibleAiPrompt = function(group, idx) {
+            const list = window._responsibleAiPrompts && window._responsibleAiPrompts[group];
+            const promptText = Array.isArray(list) ? list[idx] : '';
+            if (!promptText) return;
+            if (typeof Swal !== 'undefined') Swal.close();
+            if (typeof setStudyMode === 'function' && typeof currentStudyMode !== 'undefined' && currentStudyMode !== 'daily') {
+                setStudyMode('daily');
+            }
+            const input = document.getElementById('chat-input');
+            if (input) {
+                input.value = promptText;
+                input.focus();
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
         };
 
         window.startDailyUseWithTopic = function(key) {

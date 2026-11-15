@@ -97,20 +97,6 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        /* En versió web mòbil (<768px), força que el menú lateral obert sempre mostri tots els textos i amplada completa */
-        @media (max-width: 767px) {
-            body.sidebar-collapsed #sidebar {
-                width: 85% !important;
-                max-width: 280px !important;
-            }
-            body.sidebar-collapsed #sidebar .sidebar-text {
-                display: inline !important;
-                opacity: 1 !important;
-            }
-            body.sidebar-collapsed #sidebar #sidebar-history-container {
-                display: block !important;
-            }
-        }
         button, a, input, select, textarea, .interactive-btn {
             touch-action: manipulation;
         }
@@ -973,6 +959,88 @@
         .gsi-material-button:active .gsi-material-button-state {
             opacity: 0.12;
         }
+
+        /* GARANTIA DE PANTALLA COMPLETA AL 100% PER AL XAT I CONTENIDORS PRINCIPALS */
+        #welcome-view.hidden,
+        #setup-view.hidden,
+        #quiz-view.hidden,
+        #chat-view.hidden,
+        #guest-mode-banner.hidden,
+        #public-landing-view.hidden,
+        #auth-view.hidden {
+            display: none !important;
+        }
+        #app-container:not(.hidden) {
+            display: flex !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100dvh !important;
+            min-height: 100dvh !important;
+        }
+        #app-container > main {
+            flex: 1 1 0% !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
+            min-width: 0 !important;
+            min-height: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        #chat-view:not(.hidden) {
+            display: flex !important;
+            flex-direction: column !important;
+            flex: 1 1 0% !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
+            min-height: 0 !important;
+            min-width: 0 !important;
+        }
+        #chat-messages {
+            flex: 1 1 0% !important;
+            width: 100% !important;
+            min-height: 0 !important;
+            min-width: 0 !important;
+        }
+
+        /* ADAPTACIÓ VERTICAL WEB MÒBIL (<768px): SIDEBAR SEMPRE FIXED FORA DEL FLUX PERQUÈ EL XAT OCUPI TOTA LA PANTALLA */
+        @media (max-width: 767px) {
+            #sidebar,
+            body.sidebar-collapsed #sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                z-index: 50 !important;
+                width: 85vw !important;
+                max-width: 280px !important;
+                height: 100dvh !important;
+            }
+            #sidebar.-translate-x-full,
+            body.sidebar-collapsed #sidebar.-translate-x-full {
+                transform: translateX(-105%) !important;
+                pointer-events: none !important;
+            }
+            body.sidebar-collapsed #sidebar .sidebar-text {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                width: auto !important;
+                max-width: 200px !important;
+                position: static !important;
+                pointer-events: auto !important;
+            }
+            body.sidebar-collapsed #sidebar #sidebar-history-container,
+            body.sidebar-collapsed #sidebar #sidebar-history-container *,
+            body.sidebar-collapsed #sidebar #history-list {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                height: auto !important;
+                max-height: none !important;
+            }
+        }
     </style>
     <script>
         // Override de SweetAlert2 per evitar que modifiqui l'alçada del body i provoqui salts de scroll al capdamunt
@@ -1318,7 +1386,7 @@
         
         <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm transition-opacity opacity-0 md:hidden"></div>
 
-        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-[85%] max-w-[280px] md:w-[270px] h-full rounded-r-2xl md:rounded-r-2xl bg-white dark:bg-[#121217] text-zinc-800 dark:text-zinc-300 flex flex-col shrink-0 transition-all duration-300 ease-in-out -translate-x-full md:translate-x-0 border-r border-zinc-200 dark:border-zinc-800/80 shadow-2xl md:shadow-none overflow-hidden relative backdrop-blur-xl">
+        <aside id="sidebar" class="fixed md:relative inset-y-0 left-0 z-50 w-[85%] max-w-[280px] md:w-[270px] md:max-w-none h-full rounded-r-2xl md:rounded-r-2xl bg-white dark:bg-[#121217] text-zinc-800 dark:text-zinc-300 flex flex-col shrink-0 transition-all duration-300 ease-in-out -translate-x-full md:translate-x-0 border-r border-zinc-200 dark:border-zinc-800/80 shadow-2xl md:shadow-none overflow-hidden backdrop-blur-xl">
             <!-- Subtle ambient backdrop -->
             <div class="absolute -top-12 -right-12 w-44 h-44 bg-gradient-to-br from-zinc-300/20 via-zinc-200/10 to-transparent dark:from-zinc-800/20 dark:via-zinc-900/10 rounded-full blur-2xl pointer-events-none -z-0"></div>
             
@@ -1800,55 +1868,55 @@
             </div>
 
             <!-- XAT VIEW -->
-            <div id="chat-view" class="hidden flex-1 flex-col min-h-0 w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 relative">
-                <!-- 1. HEADER BAR (Sleek Gemini-style Header adaptable a web mòbil sense retalls) -->
-                <div class="px-2.5 py-2 sm:px-4 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200/80 dark:border-zinc-800/80 z-30 w-full shrink-0">
-                    <div class="w-full flex flex-wrap sm:flex-nowrap justify-between items-center gap-y-1.5 gap-x-2">
+            <div id="chat-view" class="hidden flex-1 flex-col h-full min-h-0 w-full min-w-0 overflow-hidden bg-zinc-50 dark:bg-zinc-950 relative">
+                <!-- 1. HEADER BAR (Sleek Gemini-style Header adaptable a web mòbil vertical ocupant tota l'amplada) -->
+                <div class="px-3 py-2.5 sm:px-4 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200/80 dark:border-zinc-800/80 z-30 w-full shrink-0">
+                    <div class="w-full flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2 min-w-0 flex-1 justify-start">
-                            <button onclick="toggleSidebar()" class="p-1.5 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition md:hidden shrink-0 border border-zinc-200 dark:border-zinc-800 flex items-center gap-1" aria-label="Menú">
+                            <button onclick="toggleSidebar()" class="p-1.5 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition md:hidden shrink-0 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center" aria-label="Menú">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
                             </button>
-                            <div class="font-semibold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 text-xs sm:text-sm min-w-0 truncate justify-start text-left">
+                            <div class="font-semibold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 text-xs sm:text-sm min-w-0 flex-1 truncate justify-start text-left">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span> 
-                                <span id="chat-mode-label" class="truncate max-w-[210px] xs:max-w-[260px] sm:max-w-xs">Classe Activa</span>
-                                <span id="context-aware-badge" title="Context Intel·ligent Actiu (Gemini 3.8 Flash)" class="hidden xs:inline-flex sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/15 dark:bg-blue-400/20 text-blue-600 dark:text-blue-300 border border-blue-500/30 text-[10px] font-bold tracking-tight shadow-2xs shrink-0 cursor-default">
+                                <span id="chat-mode-label" class="truncate">Classe Activa</span>
+                                <span id="context-aware-badge" title="Context Intel·ligent Actiu (Gemini 3.8 Flash)" class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/15 dark:bg-blue-400/20 text-blue-600 dark:text-blue-300 border border-blue-500/30 text-[10px] font-bold tracking-tight shadow-2xs shrink-0 cursor-default">
                                     <svg class="w-2.5 h-2.5 text-blue-500 animate-pulse" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-                                    <span class="hidden sm:inline">Context Gemini</span>
+                                    <span class="hidden lg:inline">Context Gemini</span>
                                 </span>
-                                <span id="chat-header-pinned-badge" class="hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/15 dark:bg-amber-400/20 text-amber-600 dark:text-amber-300 border border-amber-500/30 text-[10px] font-bold tracking-tight shadow-[0_0_10px_rgba(245,158,11,0.2)] shrink-0">
+                                <span id="chat-header-pinned-badge" class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/15 dark:bg-amber-400/20 text-amber-600 dark:text-amber-300 border border-amber-500/30 text-[10px] font-bold tracking-tight shadow-[0_0_10px_rgba(245,158,11,0.2)] shrink-0">
                                     <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3l5 5-1.5 1.5-1.5-.5-3.5 3.5 1.5 5.5-2 2-4-6-5 5-1.5-1.5 5-5-6-4 2-2 5.5 1.5 3.5-3.5-.5-1.5L16 3z"/></svg>
                                     <span class="hidden sm:inline">Fixada</span>
                                 </span>
                             </div>
                         </div>
                         
-                        <div class="flex items-center justify-end gap-1 sm:gap-1.5 shrink-0 w-full sm:w-auto pt-1 sm:pt-0 border-t border-zinc-200/50 dark:border-zinc-800/50 sm:border-none overflow-x-auto no-scrollbar">
+                        <div class="flex items-center justify-end gap-1 sm:gap-1.5 shrink-0">
                             <button id="header-pomodoro-pill" onclick="openPomodoroModal()" title="Temporitzador Pomodoro & Tàctiques d'Estudi" class="hidden text-xs bg-rose-50 hover:bg-rose-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-rose-200/80 dark:border-zinc-800 text-rose-700 dark:text-rose-300 font-medium py-1 px-2 sm:px-2.5 rounded-xl transition items-center gap-1.5 whitespace-nowrap cursor-pointer group shrink-0">
                                 <span id="pomo-pill-dot" class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
                                 <span id="header-pomodoro-timer" class="font-mono text-[11px] sm:text-xs">25:00</span>
                                 <span class="hidden lg:inline text-[11px] text-rose-600 dark:text-rose-400">Pomodoro</span>
                             </button>
-                            <button id="calendar-header-btn" onclick="showCalendarModal()" title="Calendari d'Estudi" class="text-xs bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200/80 dark:border-zinc-800 text-blue-700 dark:text-blue-300 font-medium py-1 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
+                            <button id="calendar-header-btn" onclick="showCalendarModal()" title="Calendari d'Estudi" class="text-xs bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200/80 dark:border-zinc-800 text-blue-700 dark:text-blue-300 font-medium py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                <span class="inline text-[11px] sm:text-xs">Calendari</span>
+                                <span class="hidden xs:inline sm:inline text-[11px] sm:text-xs">Calendari</span>
                             </button>
-                            <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 border border-zinc-900 dark:border-zinc-700 font-medium py-1 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shadow-2xs cursor-pointer shrink-0">
+                            <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 border border-zinc-900 dark:border-zinc-700 font-medium py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shadow-2xs cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-amber-400 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                                 <span class="inline text-[11px] sm:text-xs">Eines</span>
                             </button>
-                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria i Resultats" class="text-xs bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium py-1 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-sky-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
-                                <span class="inline text-[11px] sm:text-xs">Memòria</span>
+                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria i Resultats" class="text-xs bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-sky-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58A2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
+                                <span class="hidden xs:inline sm:inline text-[11px] sm:text-xs">Memòria</span>
                             </button>
                             <!-- BOTÓ D'EINES D'ÚS QUOTIDIÀ (NOMÉS A MÒDUL D'ÚS QUOTIDIÀ) -->
                             <div class="relative inline-block text-left shrink-0">
-                                <button id="daily-tools-header-btn" onclick="toggleDailyToolsMenu(event)" title="Eines i Integracions d'Ús Quotidià" class="hidden text-xs bg-red-50 hover:bg-red-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-red-200/80 dark:border-zinc-800 text-red-700 dark:text-red-400 font-bold py-1 px-2 sm:px-2.5 rounded-xl transition items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shadow-2xs">
+                                <button id="daily-tools-header-btn" onclick="toggleDailyToolsMenu(event)" title="Eines i Integracions d'Ús Quotidià" class="hidden text-xs bg-red-50 hover:bg-red-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-red-200/80 dark:border-zinc-800 text-red-700 dark:text-red-400 font-bold py-1.5 px-2.5 rounded-xl transition items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shadow-2xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-red-600 dark:text-red-400 shrink-0"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
-                                    <span class="inline sm:hidden text-[11px]">Eines Quotidià</span>
+                                    <span class="inline sm:hidden text-[11px]">Eines</span>
                                     <span class="hidden sm:inline">💡 Eines Ús Quotidià</span>
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="shrink-0 text-red-500"><polyline points="6 9 12 15 18 9"/></svg>
                                 </button>
-                                <div id="daily-tools-dropdown" class="hidden fixed sm:absolute left-2.5 right-2.5 sm:left-auto sm:right-0 top-24 sm:top-full sm:mt-2 w-auto sm:w-80 max-h-[72dvh] overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-2.5 z-50 transition-all duration-200 text-xs font-medium">
+                                <div id="daily-tools-dropdown" class="hidden fixed sm:absolute left-2.5 right-2.5 sm:left-auto sm:right-0 top-14 sm:top-full sm:mt-2 w-auto sm:w-80 max-h-[75dvh] overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-2.5 z-50 transition-all duration-200 text-xs font-medium">
                                     <div class="px-2 py-1.5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between mb-2 sticky top-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md z-10">
                                         <span class="font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5 text-xs">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red-500"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
@@ -2048,7 +2116,7 @@
                                 </button>
 
                                 <!-- DROPDOWN MENU OPCIONS DE LA CONVERSA -->
-                                <div id="chat-header-menu-dropdown" class="hidden fixed sm:absolute right-2.5 sm:right-0 top-24 sm:top-full sm:mt-2 w-64 max-w-[calc(100vw-1.25rem)] max-h-[75dvh] overflow-y-auto bg-zinc-900/95 border border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-1.5 z-50 text-zinc-200 text-xs sm:text-sm font-medium transition-all duration-200 transform opacity-0 scale-95 origin-top-right">
+                                <div id="chat-header-menu-dropdown" class="hidden fixed sm:absolute right-2.5 sm:right-0 top-14 sm:top-full sm:mt-2 w-64 max-w-[calc(100vw-1.25rem)] max-h-[75dvh] overflow-y-auto bg-zinc-900/95 border border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-1.5 z-50 text-zinc-200 text-xs sm:text-sm font-medium transition-all duration-200 transform opacity-0 scale-95 origin-top-right">
                                     <button onclick="handleHeaderMenuShare()" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-zinc-800/80 rounded-xl transition text-left cursor-pointer group">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400 shrink-0 group-hover:scale-110 transition-transform"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                                         <span>Compartir conversa</span>
@@ -14852,8 +14920,8 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 const savedHtml = activeSession.html || localStorage.getItem('aliat_local_html_' + currentSessionId) || '';
                 if (chatMessagesEl) {
                     chatMessagesEl.innerHTML = savedHtml;
-                    // Si l'HTML es va compactar per límit d'espai però tenim l'historial de missatges, reconstruïm tots els missatges al DOM
-                    if ((!savedHtml || savedHtml.trim().length < 20) && Array.isArray(chatHistory) && chatHistory.length > 0) {
+                    const hasLegacyMarkup = savedHtml && !savedHtml.includes('chat-msg-ai-card') && !savedHtml.includes('data:image');
+                    if (((!savedHtml || savedHtml.trim().length < 20) || hasLegacyMarkup) && Array.isArray(chatHistory) && chatHistory.length > 0) {
                         chatMessagesEl.innerHTML = '';
                         chatHistory.forEach(msg => {
                             if (!msg || !msg.content) return;
@@ -15393,6 +15461,12 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 }
             }
         }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth < 768) {
+                document.body.classList.remove('sidebar-collapsed');
+            }
+        });
 
         // --- RUTES D'INICI DE L'APP ---
         async function startStudyMode(forceNew = false) { 
@@ -20133,12 +20207,12 @@ ${parsedBody}
                 const remLabel = window.t ? window.t("Recorda'm (25m)", "Recuérdame (25m)") : "Recorda'm (25m)";
 
                 div.innerHTML = `
-                <div class="relative shrink-0 mt-1 hidden xs:block sm:block">
+                <div class="relative shrink-0 mt-1 hidden sm:block">
                     <div class="w-8 h-8 rounded-2xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 p-1.5 flex items-center justify-center shadow-xs overflow-hidden">
                         <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat IA" class="w-full h-full object-contain dark:brightness-[1.85] dark:contrast-125">
                     </div>
                 </div>
-                <div class="flex-1 min-w-0 max-w-full sm:max-w-[92%] text-zinc-900 dark:text-zinc-100 overflow-hidden group">
+                <div class="flex-1 min-w-0 w-full max-w-full sm:max-w-[92%] text-zinc-900 dark:text-zinc-100 overflow-hidden group">
                     <div class="chat-msg-ai-card px-3.5 py-3.5 sm:px-5 sm:py-4">
                         <div class="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-zinc-100 dark:border-zinc-800/70">
                             <div class="flex items-center gap-2 min-w-0">

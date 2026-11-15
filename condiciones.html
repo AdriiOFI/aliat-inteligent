@@ -22,34 +22,35 @@
 </head>
 <body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
     <header class="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-            <a href="/" class="flex items-center gap-3 group min-w-0">
-                <div class="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 flex items-center justify-center p-1.5 shadow-2xs shrink-0">
+        <div class="max-w-4xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
+            <a href="/" class="flex items-center gap-2 sm:gap-3 group min-w-0">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 flex items-center justify-center p-1.5 shadow-2xs shrink-0">
                     <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain drop-shadow-2xs dark:brightness-[1.85] dark:contrast-125">
                 </div>
                 <div class="truncate">
-                    <span class="font-extrabold text-sm sm:text-base text-zinc-900 dark:text-white tracking-tight block leading-none">Aliat Intel·ligent</span>
-                    <span class="lang-ca text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Condicions d'Ús i Termes del Servei</span>
-                    <span class="lang-es hidden text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Condiciones de Uso y Términos del Servicio</span>
+                    <span class="font-extrabold text-xs sm:text-base text-zinc-900 dark:text-white tracking-tight block leading-none truncate">Aliat Intel·ligent</span>
+                    <span class="lang-ca text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium block truncate">Condicions d'Ús</span>
+                    <span class="lang-es hidden text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium block truncate">Condiciones de Uso</span>
                 </div>
             </a>
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <!-- Selector d'idioma permanent (Català / Español) -->
-                <div class="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 p-0.5 text-xs font-bold">
-                    <button type="button" id="btn-lang-ca" onclick="setPageLang('ca')" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">Català</button>
-                    <button type="button" id="btn-lang-es" onclick="setPageLang('es')" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">Español</button>
+                <div class="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 p-0.5 text-[11px] sm:text-xs font-bold" role="group" aria-label="Selector d'idioma">
+                    <button type="button" id="btn-lang-ca" onclick="setPageLang('ca')" class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition cursor-pointer"><span class="sm:hidden">CA</span><span class="hidden sm:inline">Català</span></button>
+                    <button type="button" id="btn-lang-es" onclick="setPageLang('es')" class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition cursor-pointer"><span class="sm:hidden">ES</span><span class="hidden sm:inline">Español</span></button>
                 </div>
-                <a href="/privacidad.html" class="hidden sm:inline-flex px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold transition">
+                <a href="/privacidad.html" class="hidden md:inline-flex px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold transition">
                     <span class="lang-ca">Política de Privadesa</span>
                     <span class="lang-es hidden">Política de Privacidad</span>
                 </a>
-                <button type="button" onclick="togglePageTheme()" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer" title="Canviar tema / Cambiar tema">
-                    <span class="lang-ca">Tema Clar / Fosc</span>
-                    <span class="lang-es hidden">Tema Claro / Oscuro</span>
+                <button type="button" onclick="togglePageTheme()" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5" title="Canviar tema / Cambiar tema" aria-label="Canviar tema">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+                    <span class="lang-ca hidden sm:inline">Tema</span>
+                    <span class="lang-es hidden">Tema</span>
                 </button>
-                <a href="/" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-bold transition shadow-2xs">
-                    <span class="lang-ca">← Tornar a l'App</span>
-                    <span class="lang-es hidden">← Volver a la App</span>
+                <a href="/" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-bold transition shadow-2xs whitespace-nowrap">
+                    <span class="lang-ca"><span class="sm:hidden">← App</span><span class="hidden sm:inline">← Tornar a l'App</span></span>
+                    <span class="lang-es hidden"><span class="sm:hidden">← App</span><span class="hidden sm:inline">← Volver a la App</span></span>
                 </a>
             </div>
         </div>

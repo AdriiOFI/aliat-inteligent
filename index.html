@@ -40,7 +40,13 @@
         
         tailwind.config = { 
             darkMode: 'class', 
-            theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] } } } 
+            theme: { 
+                extend: { 
+                    screens: { xs: '400px' },
+                    spacing: { '13': '3.25rem', '84': '21rem' },
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] } 
+                } 
+            } 
         }
     </script>
     <style>
@@ -71,23 +77,98 @@
         html {
             -webkit-text-size-adjust: 100%;
             height: 100%;
+            height: 100dvh;
+            overflow-x: hidden;
         }
         body {
             overscroll-behavior-y: contain;
             -webkit-tap-highlight-color: transparent;
+            height: 100%;
+            height: 100dvh;
             min-height: 100%;
             min-height: 100dvh;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* En versió web mòbil (<768px), força que el menú lateral obert sempre mostri tots els textos i amplada completa */
+        @media (max-width: 767px) {
+            body.sidebar-collapsed #sidebar {
+                width: 85% !important;
+                max-width: 280px !important;
+            }
+            body.sidebar-collapsed #sidebar .sidebar-text {
+                display: inline !important;
+                opacity: 1 !important;
+            }
+            body.sidebar-collapsed #sidebar #sidebar-history-container {
+                display: block !important;
+            }
         }
         button, a, input, select, textarea, .interactive-btn {
             touch-action: manipulation;
         }
-        /* Evita que iOS Safari o Chrome Android facin zoom automàtic en prémer un input */
+        /* Accessibilitat per teclat: focus visible nítid en tots els botons, enllaços i controls */
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible,
+        .aliat-select-trigger:focus-visible {
+            outline: 2px solid #3b82f6 !important;
+            outline-offset: 2px !important;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+        /* Evita que iOS Safari o Chrome Android facin zoom automàtic en prémer un input i adapta taules/modals a web mòbil */
         @media (max-width: 640px) {
             input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
             textarea,
             select {
                 font-size: 16px !important;
             }
+            .swal2-popup {
+                width: calc(100vw - 1.25rem) !important;
+                max-width: calc(100vw - 1.25rem) !important;
+                max-height: 92dvh !important;
+                overflow-y: auto !important;
+                padding: 1.15rem !important;
+                border-radius: 1.5rem !important;
+            }
+            .swal2-html-container {
+                max-height: 70dvh !important;
+                overflow-y: auto !important;
+                padding-left: 0.15rem !important;
+                padding-right: 0.15rem !important;
+            }
+            .chat-msg-ai .prose th,
+            .chat-msg-ai .prose td {
+                padding: 0.5rem 0.65rem !important;
+                font-size: 0.78rem !important;
+                word-break: break-word;
+            }
+            .chat-msg-ai-card {
+                padding: 0.9rem 0.95rem !important;
+                border-radius: 0.25rem 1.25rem 1.25rem 1.25rem !important;
+            }
+        }
+        /* Oculta sempre el select intern buit de SweetAlert2 perquè mai aparegui el desplegable "Sense opcions disponibles" */
+        .swal2-select,
+        button.swal2-select,
+        .aliat-select-trigger[data-empty="1"] {
+            display: none !important;
         }
         .pb-safe {
             padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px)) !important;
@@ -100,6 +181,135 @@
             .pwa-hide-on-standalone {
                 display: none !important;
             }
+        }
+
+        /* ESTILS VISUALS ORGÀNICS DEL XAT (MENYS RECTES, MÉS FLUIDS I EN CAPES) */
+        @keyframes chatMsgReveal {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-msg-ai, .chat-msg-user {
+            animation: chatMsgReveal 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .chat-msg-ai-card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(228, 228, 231, 0.9);
+            border-radius: 1.5rem;
+            border-top-left-radius: 0.55rem;
+            box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .dark .chat-msg-ai-card {
+            background: rgba(20, 21, 29, 0.92);
+            border-color: rgba(39, 39, 42, 0.95);
+            box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.45);
+        }
+        .chat-msg-ai .prose h1,
+        .chat-msg-ai .prose h2,
+        .chat-msg-ai .prose h3 {
+            margin-top: 1.1rem !important;
+            margin-bottom: 0.5rem !important;
+            letter-spacing: -0.015em;
+            line-height: 1.3;
+        }
+        .chat-msg-ai .prose > :first-child {
+            margin-top: 0 !important;
+        }
+        .chat-msg-ai .prose > :last-child {
+            margin-bottom: 0 !important;
+        }
+        .chat-msg-ai .prose blockquote {
+            border-left: 3.5px solid #3b82f6 !important;
+            background: rgba(59, 130, 246, 0.06);
+            border-radius: 1rem;
+            padding: 0.8rem 1.05rem !important;
+            margin: 0.85rem 0 !important;
+            font-style: normal !important;
+            color: #27272a !important;
+            border-top: 1px solid rgba(59, 130, 246, 0.14);
+            border-right: 1px solid rgba(59, 130, 246, 0.14);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.14);
+        }
+        .dark .chat-msg-ai .prose blockquote {
+            border-left-color: #60a5fa !important;
+            background: rgba(30, 58, 138, 0.18);
+            color: #e4e4e7 !important;
+            border-top-color: rgba(96, 165, 250, 0.16);
+            border-right-color: rgba(96, 165, 250, 0.16);
+            border-bottom-color: rgba(96, 165, 250, 0.16);
+        }
+        .chat-msg-ai .prose blockquote p {
+            margin: 0.25rem 0 !important;
+        }
+        .chat-msg-ai .prose blockquote p::before,
+        .chat-msg-ai .prose blockquote p::after {
+            content: none !important;
+        }
+        .chat-msg-ai .prose .chat-table-wrapper {
+            margin: 0.95rem 0 !important;
+            border-radius: 1.1rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid rgba(228, 228, 231, 0.95);
+            background: rgba(250, 250, 250, 0.85);
+            box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.03);
+        }
+        .dark .chat-msg-ai .prose .chat-table-wrapper {
+            border-color: rgba(39, 39, 42, 0.95);
+            background: rgba(24, 24, 27, 0.78);
+            box-shadow: 0 4px 14px -3px rgba(0, 0, 0, 0.35);
+        }
+        .chat-msg-ai .prose table {
+            margin: 0 !important;
+            width: 100%;
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            font-size: 0.8125rem;
+        }
+        .chat-msg-ai .prose thead th {
+            background: rgba(244, 244, 245, 0.95);
+            color: #18181b !important;
+            font-weight: 700 !important;
+            padding: 0.65rem 0.9rem !important;
+            border-bottom: 1px solid rgba(228, 228, 231, 0.95) !important;
+            text-align: left;
+        }
+        .dark .chat-msg-ai .prose thead th {
+            background: rgba(39, 39, 42, 0.85);
+            color: #f4f4f5 !important;
+            border-bottom-color: rgba(63, 63, 70, 0.8) !important;
+        }
+        .chat-msg-ai .prose tbody td {
+            padding: 0.65rem 0.9rem !important;
+            border-bottom: 1px solid rgba(228, 228, 231, 0.6) !important;
+            vertical-align: top;
+        }
+        .dark .chat-msg-ai .prose tbody td {
+            border-bottom-color: rgba(39, 39, 42, 0.8) !important;
+        }
+        .chat-msg-ai .prose tbody tr:last-child td {
+            border-bottom: none !important;
+        }
+        .chat-msg-ai .prose tbody tr:hover td {
+            background: rgba(59, 130, 246, 0.035);
+        }
+        .dark .chat-msg-ai .prose tbody tr:hover td {
+            background: rgba(59, 130, 246, 0.06);
+        }
+        .chat-msg-ai .prose hr {
+            border: 0 !important;
+            height: 1px;
+            margin: 1.15rem 0 !important;
+            background: linear-gradient(90deg, transparent, rgba(161, 161, 170, 0.35), transparent);
+        }
+        .chat-msg-ai .prose ul > li::marker,
+        .chat-msg-ai .prose ol > li::marker {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+        .dark .chat-msg-ai .prose ul > li::marker,
+        .dark .chat-msg-ai .prose ol > li::marker {
+            color: #60a5fa;
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -806,21 +1016,21 @@
     <!-- ========================================================================= -->
     <!-- PANTALLA INICIAL PÚBLICA (LANDING PAGE INFORMATIVA D'ALIAT INTEL·LIGENT) -->
     <!-- ========================================================================= -->
-    <div id="public-landing-view" class="fixed inset-0 z-[95] overflow-y-auto bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 transition-opacity duration-300">
+    <div id="public-landing-view" class="fixed inset-0 z-[95] overflow-y-auto overflow-x-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 transition-opacity duration-300">
         <!-- Barra de navegació superior -->
-        <header class="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200/90 dark:border-zinc-800">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 flex items-center justify-center p-1.5 shrink-0 shadow-2xs">
+        <header class="sticky top-0 z-30 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-zinc-200/90 dark:border-zinc-800">
+            <div class="max-w-6xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 flex items-center justify-center p-1.5 shrink-0 shadow-2xs">
                         <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain drop-shadow-2xs dark:brightness-[1.85] dark:contrast-125">
                     </div>
-                    <div class="truncate">
-                        <span class="font-extrabold text-sm sm:text-base text-zinc-900 dark:text-white tracking-tight block leading-none">Aliat Intel·ligent</span>
-                        <span class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium hidden sm:inline">Tutor Virtual i Planificador d'Estudi amb IA</span>
+                    <div class="min-w-0">
+                        <span class="font-extrabold text-xs sm:text-base text-zinc-900 dark:text-white tracking-tight block leading-tight truncate">Aliat Intel·ligent</span>
+                        <span class="text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium block truncate">Tutor Virtual i Planificador IA</span>
                     </div>
                 </div>
 
-                <nav class="hidden md:flex items-center gap-5 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
+                <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
                     <a href="#landing-que-es" class="hover:text-zinc-900 dark:hover:text-white transition">¿Qué es Aliat?</a>
                     <a href="#landing-modos" class="hover:text-zinc-900 dark:hover:text-white transition">Modos de Chat</a>
                     <a href="#landing-privacidad" class="hover:text-zinc-900 dark:hover:text-white transition">Seguridad y Datos</a>
@@ -828,54 +1038,66 @@
                     <a href="/condiciones.html" class="text-blue-600 dark:text-sky-400 hover:underline font-bold">Condiciones de Uso</a>
                 </nav>
 
-                <div class="flex items-center gap-2 shrink-0">
-                    <div class="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 p-0.5 text-xs font-bold">
-                        <button type="button" data-lang-btn="ca" onclick="setAppLanguage('ca', true)" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">CA</button>
-                        <button type="button" data-lang-btn="es" onclick="setAppLanguage('es', true)" class="px-2.5 py-1.5 rounded-lg transition cursor-pointer">ES</button>
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <div class="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 p-0.5 text-[11px] sm:text-xs font-bold">
+                        <button type="button" data-lang-btn="ca" onclick="setAppLanguage('ca', true)" class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition cursor-pointer">CA</button>
+                        <button type="button" data-lang-btn="es" onclick="setAppLanguage('es', true)" class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition cursor-pointer">ES</button>
                     </div>
-                    <button type="button" onclick="toggleTheme()" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer" title="Canviar tema clar/fosc · Cambiar tema claro/oscuro" aria-label="Canviar tema">
+                    <button type="button" onclick="toggleTheme()" class="p-1.5 sm:p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer" title="Canviar tema clar/fosc · Cambiar tema claro/oscuro" aria-label="Canviar tema">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
                     </button>
-                    <button type="button" onclick="enterGuestMode('free')" data-i18n-ca="Provar sense sessió" data-i18n-es="Probar sin sesión" class="px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition cursor-pointer">
+                    <button type="button" onclick="enterGuestMode('free')" data-i18n-ca="Provar sense sessió" data-i18n-es="Probar sin sesión" class="hidden sm:inline-flex px-3 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition cursor-pointer">
                         Probar sin sesión
                     </button>
-                    <button type="button" onclick="openAuthModal('login')" class="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5">
+                    <button type="button" onclick="openAuthModal('login')" class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                         <span data-i18n-ca="Accedir" data-i18n-es="Acceder">Acceder</span>
                     </button>
                 </div>
             </div>
+            <!-- Barra de navegació ràpida visible a web mòbil i tauleta (< 1024px) perquè es vegi tot sense retalls -->
+            <div class="lg:hidden border-t border-zinc-200/70 dark:border-zinc-800/80 bg-zinc-50/95 dark:bg-zinc-950/90 px-3 py-1.5 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar text-[11px] font-semibold text-zinc-600 dark:text-zinc-300">
+                <div class="flex items-center gap-3 shrink-0">
+                    <a href="#landing-que-es" class="hover:text-zinc-900 dark:hover:text-white whitespace-nowrap">¿Qué es Aliat?</a>
+                    <a href="#landing-modos" class="hover:text-zinc-900 dark:hover:text-white whitespace-nowrap">3 Modos</a>
+                    <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 font-bold whitespace-nowrap">Privacidad</a>
+                    <a href="/condiciones.html" class="text-blue-600 dark:text-sky-400 font-bold whitespace-nowrap">Condiciones</a>
+                </div>
+                <button type="button" onclick="enterGuestMode('free')" data-i18n-ca="Provar sense sessió" data-i18n-es="Probar sin sesión" class="sm:hidden px-2.5 py-1 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 text-[11px] font-bold shrink-0 cursor-pointer">
+                    Probar sin sesión
+                </button>
+            </div>
         </header>
 
         <!-- Contingut principal públic llegible per Google i visitants -->
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-16">
+        <div class="max-w-6xl mx-auto px-3.5 sm:px-6 py-6 sm:py-16 space-y-10 sm:space-y-16">
             <!-- HERO SECTION -->
-            <section id="landing-que-es" class="text-center max-w-3xl mx-auto space-y-6">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-md mx-auto flex items-center justify-center p-3.5 select-none">
+            <section id="landing-que-es" class="text-center max-w-3xl mx-auto space-y-4 sm:space-y-6">
+                <div class="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-md mx-auto flex items-center justify-center p-3 sm:p-3.5 select-none">
                     <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Logo Oficial Aliat Intel·ligent" class="w-full h-full object-contain drop-shadow-xs dark:brightness-[1.85] dark:contrast-125">
                 </div>
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300 shadow-2xs">
-                    <span class="w-2 h-2 rounded-full bg-blue-600 dark:bg-sky-400"></span>
-                    <span>Plataforma Educativa de Tutoría y Productividad con IA</span>
+                <div class="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-2xl sm:rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] sm:text-xs font-bold text-zinc-700 dark:text-zinc-300 shadow-2xs max-w-full">
+                    <span class="w-2 h-2 rounded-full bg-blue-600 dark:bg-sky-400 shrink-0"></span>
+                    <span class="leading-snug">Plataforma Educativa de Tutoría y Productividad con IA</span>
                 </div>
-                <h1 class="text-3xl sm:text-5xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-[1.12]">
+                <h1 class="text-2xl sm:text-5xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-[1.15]">
                     ¿Qué es <span class="text-blue-700 dark:text-sky-300">Aliat Intel·ligent</span>?
                 </h1>
-                <p class="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                <p class="text-xs sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed px-1">
                     <strong>Aliat Intel·ligent</strong> es un asistente académico y tutor virtual diseñado para ayudar a estudiantes y profesionales a organizar su estudio a partir de sus propios apuntes, generar planes de trabajo adaptados a su fecha de examen, practicar con tests interactivos y redactar documentos cotidianos con integración opcional en <strong>Google Workspace</strong>.
                 </p>
 
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                    <button type="button" onclick="openAuthModal('login')" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold text-sm transition shadow-sm cursor-pointer flex items-center justify-center gap-2">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 pt-1">
+                    <button type="button" onclick="openAuthModal('login')" class="w-full sm:w-auto px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold text-xs sm:text-sm transition shadow-sm cursor-pointer flex items-center justify-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" class="shrink-0"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                         <span>Acceder / Iniciar Sesión</span>
                     </button>
-                    <button type="button" onclick="enterGuestMode()" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 font-bold text-sm transition cursor-pointer flex items-center justify-center gap-2">
-                        <span>Acceder sin iniciar sesión (Modo Chat Básico)</span>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    <button type="button" onclick="enterGuestMode()" class="w-full sm:w-auto px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 font-bold text-xs sm:text-sm transition cursor-pointer flex items-center justify-center gap-2">
+                        <span>Acceder sin iniciar sesión (Modo Chat)</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="shrink-0"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </button>
                 </div>
-                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                <p class="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 px-1">
                     En el modo sin sesión puedes probar los modos de chat básicos. Para desbloquear botones de herramientas, subida de PDFs, memoria de progreso y Google Workspace, inicia sesión.
                 </p>
             </section>
@@ -1000,23 +1222,23 @@
     <!-- ============================================== -->
     <!-- PANTALLA D'AUTENTICACIÓ (MODAL D'ACCÉS / LOGIN)-->
     <!-- ============================================== -->
-    <div id="auth-view" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity duration-300">
-        <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-2xl p-6 md:p-9 w-full max-w-md max-h-[94dvh] overflow-y-auto relative">
-            <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer" title="Volver a la página principal" aria-label="Cerrar acceso">
+    <div id="auth-view" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-2.5 sm:p-4 bg-black/60 backdrop-blur-md transition-opacity duration-300">
+        <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-3xl sm:rounded-[2rem] shadow-2xl p-4 sm:p-6 md:p-9 w-full max-w-md max-h-[94dvh] overflow-y-auto overflow-x-hidden relative">
+            <button type="button" onclick="closeAuthModal()" class="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer" title="Volver a la página principal" aria-label="Cerrar acceso">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
             <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-zinc-500/10 to-transparent rounded-bl-full -z-10"></div>
             
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700/80 text-zinc-900 dark:text-white rounded-2xl flex items-center justify-center shadow-sm mx-auto mb-3 transition-transform overflow-hidden p-2">
+            <div class="text-center mb-4 sm:mb-6">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700/80 text-zinc-900 dark:text-white rounded-2xl flex items-center justify-center shadow-sm mx-auto mb-2.5 sm:mb-3 transition-transform overflow-hidden p-2">
                     <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain drop-shadow-2xs dark:brightness-[1.85] dark:contrast-125">
                 </div>
-                <h2 class="text-2xl font-black text-zinc-900 dark:text-white">Aliat Intel·ligent</h2>
-                <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1 font-medium">Inicia sessió per desbloquejar totes les eines i sincronitzar els teus estudis</p>
+                <h2 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white">Aliat Intel·ligent</h2>
+                <p class="text-zinc-500 dark:text-zinc-400 text-xs sm:text-sm mt-1 font-medium">Inicia sessió per desbloquejar totes les eines i sincronitzar els teus estudis</p>
             </div>
 
             <!-- Botó Oficial d'Autenticació de Google (OAuth 2.0 + Workspace) -->
-            <div class="mb-5 space-y-2.5">
+            <div class="mb-4 sm:mb-5 space-y-2">
                 <button type="button" onclick="handleGoogleLogin()" class="gsi-material-button">
                     <div class="gsi-material-button-state"></div>
                     <div class="gsi-material-button-content-wrapper">
@@ -1034,30 +1256,30 @@
                 <p class="text-[10.5px] text-center text-zinc-500 dark:text-zinc-400">Inici segur amb verificació oficial OAuth per a Gmail, Drive i Classroom</p>
             </div>
 
-            <div class="relative flex items-center justify-center my-4">
+            <div class="relative flex items-center justify-center my-3.5 sm:my-4">
                 <div class="border-t border-zinc-200 dark:border-zinc-800 w-full"></div>
                 <span class="bg-white dark:bg-zinc-900 px-3 text-[10px] uppercase tracking-widest text-zinc-400 font-bold shrink-0">O amb correu / contrasenya</span>
             </div>
 
             <!-- Tabs -->
-            <div class="flex p-1 bg-zinc-100 dark:bg-zinc-950/70 rounded-xl mb-5">
-                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-bold bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all">Iniciar Sessió</button>
-                <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-bold text-zinc-500 dark:text-zinc-400 rounded-lg hover:text-zinc-700 dark:hover:text-zinc-300 transition-all">Crear Compte</button>
+            <div class="flex p-1 bg-zinc-100 dark:bg-zinc-950/70 rounded-xl mb-4 sm:mb-5">
+                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs sm:text-sm font-bold bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 rounded-lg shadow-sm transition-all">Iniciar Sessió</button>
+                <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs sm:text-sm font-bold text-zinc-500 dark:text-zinc-400 rounded-lg hover:text-zinc-700 dark:hover:text-zinc-300 transition-all">Crear Compte</button>
             </div>
 
             <form id="auth-form" onsubmit="handleAuth(event)">
-                <div class="space-y-3.5">
+                <div class="space-y-3">
                     <div>
                         <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1 uppercase tracking-wide">Correu Electrònic / Usuari</label>
-                        <input type="email" id="auth-email" required placeholder="tu@email.com" class="w-full px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
+                        <input type="email" id="auth-email" required placeholder="tu@email.com" class="w-full px-3.5 sm:px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
                     </div>
                     <div class="relative">
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center justify-between mb-1 gap-2">
                             <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wide">Contrasenya</label>
                             <button type="button" onclick="window.sendFirebasePasswordReset()" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">Has oblidat la contrasenya?</button>
                         </div>
                         <div class="relative">
-                            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner pr-12">
+                            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-3.5 sm:px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner pr-12">
                             <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition outline-none">
                                 <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             </button>
@@ -1065,17 +1287,17 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1 uppercase tracking-wide">Telèfon (Verificació Opcional)</label>
-                        <input type="tel" id="auth-phone" placeholder="+34 600 000 000" class="w-full px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
+                        <input type="tel" id="auth-phone" placeholder="+34 600 000 000" class="w-full px-3.5 sm:px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
                     </div>
                     <!-- Google reCAPTCHA Enterprise Widget -->
-                    <div class="pt-1 flex flex-col items-center justify-center overflow-x-auto">
+                    <div class="pt-1 flex flex-col items-center justify-center max-w-full overflow-hidden [&_.g-recaptcha]:origin-center max-xs:[&_.g-recaptcha]:scale-[0.86]">
                         <div id="auth-recaptcha-widget" class="g-recaptcha" data-sitekey="6LfJNiAuAAAAAILl7aJgmDSSyPpxr0jDzK6qbyga" data-action="LOGIN"></div>
                     </div>
                 </div>
-                <button type="submit" id="auth-submit-btn" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md mt-4 flex items-center justify-center gap-2 cursor-pointer border border-zinc-900 dark:border-zinc-200">
+                <button type="submit" id="auth-submit-btn" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md mt-4 flex items-center justify-center gap-2 cursor-pointer border border-zinc-900 dark:border-zinc-200">
                     Accedir
                 </button>
-                <div class="mt-4 flex items-start gap-2 p-3 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl">
+                <div class="mt-3.5 sm:mt-4 flex items-start gap-2 p-2.5 sm:p-3 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-500 shrink-0 mt-0.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium leading-tight">
                         Privadesa i Seguretat: Autenticació protegida amb reCAPTCHA Enterprise, Firebase Auth i Google OAuth 2.0.
@@ -1092,7 +1314,7 @@
     <!-- ============================================== -->
     <!-- APP PRINCIPAL (S'oculta si no hi ha sessió)    -->
     <!-- ============================================== -->
-    <div id="app-container" class="flex w-full h-full hidden opacity-0 transition-opacity duration-700 bg-zinc-50 dark:bg-zinc-950">
+    <div id="app-container" class="flex w-full h-full min-h-0 min-w-0 overflow-hidden hidden opacity-0 transition-opacity duration-700 bg-zinc-50 dark:bg-zinc-950">
         
         <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-40 hidden backdrop-blur-sm transition-opacity opacity-0 md:hidden"></div>
 
@@ -1196,30 +1418,29 @@
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col relative w-full h-full overflow-hidden bg-zinc-50 dark:bg-zinc-950">
+        <main class="flex-1 flex flex-col relative w-full h-full min-h-0 min-w-0 overflow-hidden bg-zinc-50 dark:bg-zinc-950">
             <!-- BANNER INFORMATIU DE MODE CONVIDAT (SENSE SESSIÓ INICIADA) -->
-            <div id="guest-mode-banner" class="hidden bg-amber-50/95 dark:bg-zinc-900 border-b border-amber-200/90 dark:border-zinc-800 px-3 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-2 z-30 shrink-0">
-                <div class="flex items-center gap-2 text-xs text-amber-900 dark:text-zinc-200 min-w-0">
+            <div id="guest-mode-banner" class="hidden bg-amber-50/95 dark:bg-zinc-900 border-b border-amber-200/90 dark:border-zinc-800 px-3 sm:px-5 py-1.5 sm:py-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 sm:gap-2 z-30 shrink-0">
+                <div class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-amber-900 dark:text-zinc-200 min-w-0 flex-1">
                     <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-800 dark:text-amber-300 font-extrabold text-[10px] uppercase tracking-wider shrink-0">Modo sin sesión</span>
-                    <span class="truncate font-medium">Solo están activos los modos de chat básicos. Los botones de herramientas, apuntes, guardado y Google Workspace requieren iniciar sesión.</span>
+                    <span class="font-medium leading-tight sm:truncate">Modos de chat activos. Herramientas, apuntes y guardado requieren iniciar sesión.</span>
                 </div>
-                <div class="flex items-center gap-2 shrink-0 ml-auto">
-                    <button type="button" onclick="showPublicLanding()" class="px-2.5 py-1 rounded-lg border border-amber-300 dark:border-zinc-700 hover:bg-amber-100/70 dark:hover:bg-zinc-800 text-amber-900 dark:text-zinc-300 text-[11px] font-bold transition cursor-pointer">
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto">
+                    <button type="button" onclick="showPublicLanding()" class="px-2 sm:px-2.5 py-1 rounded-lg border border-amber-300 dark:border-zinc-700 hover:bg-amber-100/70 dark:hover:bg-zinc-800 text-amber-900 dark:text-zinc-300 text-[11px] font-bold transition cursor-pointer">
                         Información
                     </button>
-                    <button type="button" onclick="openAuthModal('login')" class="px-3 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-[11px] font-bold transition cursor-pointer shadow-2xs">
+                    <button type="button" onclick="openAuthModal('login')" class="px-2.5 sm:px-3 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-[11px] font-bold transition cursor-pointer shadow-2xs">
                         Acceder / Iniciar Sesión
                     </button>
                 </div>
             </div>
 
-            <button id="global-menu-btn" onclick="toggleSidebar()" class="absolute top-3 left-3 md:top-5 md:left-5 z-20 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 p-2 rounded-xl shadow-xs hover:bg-zinc-50 dark:hover:bg-zinc-800 transition md:hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-            </button>
-
             <!-- BENVINGUDA / PANTALLA D'INICI -->
-            <div id="welcome-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-8 bg-zinc-50 dark:bg-zinc-950 relative transition-colors duration-300">
-                <div class="w-full max-w-3xl text-center space-y-8 py-4 relative z-10">
+            <div id="welcome-view" class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex items-start justify-center pt-14 sm:pt-8 pb-8 px-4 md:p-8 bg-zinc-50 dark:bg-zinc-950 relative transition-colors duration-300">
+                <button id="global-menu-btn" type="button" onclick="toggleSidebar()" aria-label="Obrir menú lateral" title="Menú" class="absolute top-3 left-3 md:top-5 md:left-5 z-20 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 p-2.5 rounded-xl shadow-xs hover:bg-zinc-50 dark:hover:bg-zinc-800 transition md:hidden cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+                <div class="w-full max-w-3xl my-auto text-center space-y-6 sm:space-y-8 py-2 sm:py-4 relative z-10">
                     <!-- Brand Hero Title -->
                     <div class="space-y-3">
                         <div class="w-14 h-14 md:w-16 md:h-16 bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-2xl flex items-center justify-center shadow-sm mx-auto p-2.5 select-none">
@@ -1297,18 +1518,23 @@
             </div>
 
             <!-- CONFIGURACIÓ PLA (DISSENY OBERT I COMPLET) -->
-            <div id="setup-view" class="hidden flex-1 flex-col overflow-y-auto bg-zinc-50 dark:bg-zinc-950 relative transition-colors duration-300">
+            <div id="setup-view" class="hidden flex-1 min-h-0 flex-col overflow-y-auto overflow-x-hidden bg-zinc-50 dark:bg-zinc-950 relative transition-colors duration-300">
                 <!-- Barra superior neta -->
-                <header class="sticky top-0 z-20 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/90 dark:bg-zinc-950/90 backdrop-blur-md px-4 sm:px-8 py-3.5">
-                    <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
-                        <button type="button" onclick="backToHome()" class="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white transition bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 px-3 py-1.5 rounded-xl cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="m15 18-6-6 6-6"/></svg>
-                            <span>Tornar</span>
-                        </button>
-                        <div class="hidden sm:flex text-xs text-zinc-500 dark:text-zinc-400 font-medium items-center gap-2 ml-1">
-                            <span>Pla d'Estudis</span>
+                <header class="sticky top-0 z-20 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/90 dark:bg-zinc-950/90 backdrop-blur-md px-4 sm:px-8 py-3">
+                    <div class="max-w-4xl mx-auto flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="toggleSidebar()" aria-label="Obrir menú lateral" class="p-2 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition md:hidden cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                            </button>
+                            <button type="button" onclick="backToHome()" class="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white transition bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 px-3 py-1.5 rounded-xl cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="m15 18-6-6 6-6"/></svg>
+                                <span>Tornar</span>
+                            </button>
+                        </div>
+                        <div class="flex text-xs text-zinc-500 dark:text-zinc-400 font-medium items-center gap-1.5 sm:gap-2 truncate">
+                            <span class="truncate">Pla d'Estudis</span>
                             <span aria-hidden="true">/</span>
-                            <span class="text-zinc-900 dark:text-zinc-100 font-semibold">Configuració</span>
+                            <span class="text-zinc-900 dark:text-zinc-100 font-semibold truncate">Configuració</span>
                         </div>
                     </div>
                 </header>
@@ -1470,7 +1696,7 @@
                     </div>
 
                     <!-- ACCIÓ FINAL -->
-                    <div class="pt-6 border-t border-zinc-200/80 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 pb-6">
+                    <div class="pt-6 border-t border-zinc-200/80 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 pb-10">
                         <p class="text-xs text-zinc-500 dark:text-zinc-400">Es generarà el calendari adaptat i un breu diagnòstic inicial.</p>
                         <button id="btn-start" onclick="proceedToNextStep()" class="w-full sm:w-auto px-7 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold py-3.5 rounded-2xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-sm cursor-pointer active:scale-[0.99] shrink-0">
                             <span>Generar Pla d'Estudis</span>
@@ -1481,13 +1707,22 @@
             </div>
 
             <!-- VISTA CALENDARI I TEST DIAGNÒSTIC -->
-            <div id="quiz-view" class="hidden flex-1 overflow-y-auto items-start justify-center p-4 md:p-8 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
-                <div class="w-full max-w-4xl space-y-6 md:space-y-8">
-                    <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800 rounded-[2rem] shadow-xl p-6 md:p-8">
+            <div id="quiz-view" class="hidden flex-1 min-h-0 flex-col overflow-y-auto overflow-x-hidden items-center justify-start p-3 sm:p-4 md:p-8 pb-10 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-950 dark:to-zinc-900">
+                <div class="w-full max-w-4xl space-y-5 md:space-y-8">
+                    <div class="flex items-center justify-between gap-2 md:hidden">
+                        <button type="button" onclick="toggleSidebar()" aria-label="Obrir menú lateral" class="p-2 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-2xs flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                            <span>Menú</span>
+                        </button>
+                        <button type="button" onclick="stopQuizTimer(); backToHome();" class="px-3 py-1.5 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-2xs text-xs font-bold cursor-pointer">
+                            ← Tornar
+                        </button>
+                    </div>
+                    <div class="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800 rounded-3xl sm:rounded-[2rem] shadow-xl p-4 sm:p-6 md:p-8">
                         <div class="flex flex-wrap items-center justify-between gap-3 mb-4 md:mb-8">
-                            <h2 class="text-xl md:text-3xl font-black text-zinc-900 dark:text-white flex items-center gap-3">
-                                <span class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md flex items-center justify-center shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <h2 class="text-lg sm:text-xl md:text-3xl font-black text-zinc-900 dark:text-white flex items-center gap-2.5 sm:gap-3">
+                                <span class="bg-blue-600 text-white p-2 sm:p-2.5 rounded-xl shadow-md flex items-center justify-center shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 </span>
                                 El teu Pla d'Estudi
                             </h2>
@@ -1565,55 +1800,55 @@
             </div>
 
             <!-- XAT VIEW -->
-            <div id="chat-view" class="hidden flex-1 flex-col h-full bg-zinc-50 dark:bg-zinc-950 relative">
-                <!-- 1. HEADER BAR (Sleek Gemini-style Header) -->
-                <div class="px-2.5 py-2 sm:px-4 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200/80 dark:border-zinc-800/80 z-30 w-full">
-                    <div class="w-full flex justify-between items-center gap-2">
-                        <div class="flex items-center gap-2 min-w-0 justify-start">
-                            <button onclick="toggleSidebar()" class="p-1.5 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition md:hidden shrink-0 border border-zinc-200 dark:border-zinc-800" aria-label="Menú">
+            <div id="chat-view" class="hidden flex-1 flex-col min-h-0 w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 relative">
+                <!-- 1. HEADER BAR (Sleek Gemini-style Header adaptable a web mòbil sense retalls) -->
+                <div class="px-2.5 py-2 sm:px-4 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200/80 dark:border-zinc-800/80 z-30 w-full shrink-0">
+                    <div class="w-full flex flex-wrap sm:flex-nowrap justify-between items-center gap-y-1.5 gap-x-2">
+                        <div class="flex items-center gap-2 min-w-0 flex-1 justify-start">
+                            <button onclick="toggleSidebar()" class="p-1.5 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition md:hidden shrink-0 border border-zinc-200 dark:border-zinc-800 flex items-center gap-1" aria-label="Menú">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
                             </button>
                             <div class="font-semibold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 text-xs sm:text-sm min-w-0 truncate justify-start text-left">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span> 
-                                <span id="chat-mode-label" class="truncate max-w-[120px] xs:max-w-[180px] sm:max-w-xs">Classe Activa</span>
-                                <span id="context-aware-badge" title="Context Intel·ligent Actiu (Gemini 3.8 Flash)" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/15 dark:bg-blue-400/20 text-blue-600 dark:text-blue-300 border border-blue-500/30 text-[10px] font-bold tracking-tight shadow-2xs shrink-0 cursor-default">
+                                <span id="chat-mode-label" class="truncate max-w-[210px] xs:max-w-[260px] sm:max-w-xs">Classe Activa</span>
+                                <span id="context-aware-badge" title="Context Intel·ligent Actiu (Gemini 3.8 Flash)" class="hidden xs:inline-flex sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/15 dark:bg-blue-400/20 text-blue-600 dark:text-blue-300 border border-blue-500/30 text-[10px] font-bold tracking-tight shadow-2xs shrink-0 cursor-default">
                                     <svg class="w-2.5 h-2.5 text-blue-500 animate-pulse" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
                                     <span class="hidden sm:inline">Context Gemini</span>
                                 </span>
                                 <span id="chat-header-pinned-badge" class="hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/15 dark:bg-amber-400/20 text-amber-600 dark:text-amber-300 border border-amber-500/30 text-[10px] font-bold tracking-tight shadow-[0_0_10px_rgba(245,158,11,0.2)] shrink-0">
                                     <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3l5 5-1.5 1.5-1.5-.5-3.5 3.5 1.5 5.5-2 2-4-6-5 5-1.5-1.5 5-5-6-4 2-2 5.5 1.5 3.5-3.5-.5-1.5L16 3z"/></svg>
-                                    <span>Fixada</span>
+                                    <span class="hidden sm:inline">Fixada</span>
                                 </span>
                             </div>
                         </div>
                         
-                        <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                            <button id="header-pomodoro-pill" onclick="openPomodoroModal()" title="Temporitzador Pomodoro & Tàctiques d'Estudi" class="hidden text-xs bg-rose-50 hover:bg-rose-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-rose-200/80 dark:border-zinc-800 text-rose-700 dark:text-rose-300 font-medium py-1 px-2.5 rounded-xl transition items-center gap-1.5 whitespace-nowrap cursor-pointer group">
+                        <div class="flex items-center justify-end gap-1 sm:gap-1.5 shrink-0 w-full sm:w-auto pt-1 sm:pt-0 border-t border-zinc-200/50 dark:border-zinc-800/50 sm:border-none overflow-x-auto no-scrollbar">
+                            <button id="header-pomodoro-pill" onclick="openPomodoroModal()" title="Temporitzador Pomodoro & Tàctiques d'Estudi" class="hidden text-xs bg-rose-50 hover:bg-rose-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-rose-200/80 dark:border-zinc-800 text-rose-700 dark:text-rose-300 font-medium py-1 px-2 sm:px-2.5 rounded-xl transition items-center gap-1.5 whitespace-nowrap cursor-pointer group shrink-0">
                                 <span id="pomo-pill-dot" class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
-                                <span id="header-pomodoro-timer" class="font-mono text-xs">25:00</span>
+                                <span id="header-pomodoro-timer" class="font-mono text-[11px] sm:text-xs">25:00</span>
                                 <span class="hidden lg:inline text-[11px] text-rose-600 dark:text-rose-400">Pomodoro</span>
                             </button>
-                            <button id="calendar-header-btn" onclick="showCalendarModal()" title="Calendari d'Estudi" class="text-xs bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200/80 dark:border-zinc-800 text-blue-700 dark:text-blue-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                            <button id="calendar-header-btn" onclick="showCalendarModal()" title="Calendari d'Estudi" class="text-xs bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200/80 dark:border-zinc-800 text-blue-700 dark:text-blue-300 font-medium py-1 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                <span class="hidden sm:inline">Calendari</span>
+                                <span class="inline text-[11px] sm:text-xs">Calendari</span>
                             </button>
-                            <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 border border-zinc-900 dark:border-zinc-700 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-2xs cursor-pointer">
+                            <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 border border-zinc-900 dark:border-zinc-700 font-medium py-1 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shadow-2xs cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-amber-400 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                                <span class="hidden sm:inline">Eines</span>
+                                <span class="inline text-[11px] sm:text-xs">Eines</span>
                             </button>
-                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria i Resultats" class="text-xs bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium py-1 px-2.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria i Resultats" class="text-xs bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium py-1 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-sky-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58 2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
-                                <span class="hidden sm:inline">Memòria</span>
+                                <span class="inline text-[11px] sm:text-xs">Memòria</span>
                             </button>
                             <!-- BOTÓ D'EINES D'ÚS QUOTIDIÀ (NOMÉS A MÒDUL D'ÚS QUOTIDIÀ) -->
                             <div class="relative inline-block text-left shrink-0">
                                 <button id="daily-tools-header-btn" onclick="toggleDailyToolsMenu(event)" title="Eines i Integracions d'Ús Quotidià" class="hidden text-xs bg-red-50 hover:bg-red-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-red-200/80 dark:border-zinc-800 text-red-700 dark:text-red-400 font-bold py-1 px-2 sm:px-2.5 rounded-xl transition items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shadow-2xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-red-600 dark:text-red-400 shrink-0"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
-                                    <span class="inline sm:hidden">Eines</span>
+                                    <span class="inline sm:hidden text-[11px]">Eines Quotidià</span>
                                     <span class="hidden sm:inline">💡 Eines Ús Quotidià</span>
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="shrink-0 text-red-500"><polyline points="6 9 12 15 18 9"/></svg>
                                 </button>
-                                <div id="daily-tools-dropdown" class="hidden fixed sm:absolute right-2 sm:right-0 top-13 sm:top-auto sm:mt-2 w-[calc(100vw-1rem)] max-w-xs sm:w-80 max-h-[78vh] overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-2.5 z-50 transition-all duration-200 text-xs font-medium">
+                                <div id="daily-tools-dropdown" class="hidden fixed sm:absolute left-2.5 right-2.5 sm:left-auto sm:right-0 top-24 sm:top-full sm:mt-2 w-auto sm:w-80 max-h-[72dvh] overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-2.5 z-50 transition-all duration-200 text-xs font-medium">
                                     <div class="px-2 py-1.5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between mb-2 sticky top-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md z-10">
                                         <span class="font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5 text-xs">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red-500"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
@@ -1813,7 +2048,7 @@
                                 </button>
 
                                 <!-- DROPDOWN MENU OPCIONS DE LA CONVERSA -->
-                                <div id="chat-header-menu-dropdown" class="hidden absolute right-0 mt-2 w-60 sm:w-64 max-h-[80vh] overflow-y-auto bg-zinc-900/95 border border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-1.5 z-50 text-zinc-200 text-xs sm:text-sm font-medium transition-all duration-200 transform opacity-0 scale-95 origin-top-right">
+                                <div id="chat-header-menu-dropdown" class="hidden fixed sm:absolute right-2.5 sm:right-0 top-24 sm:top-full sm:mt-2 w-64 max-w-[calc(100vw-1.25rem)] max-h-[75dvh] overflow-y-auto bg-zinc-900/95 border border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl p-1.5 z-50 text-zinc-200 text-xs sm:text-sm font-medium transition-all duration-200 transform opacity-0 scale-95 origin-top-right">
                                     <button onclick="handleHeaderMenuShare()" class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-zinc-800/80 rounded-xl transition text-left cursor-pointer group">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400 shrink-0 group-hover:scale-110 transition-transform"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                                         <span>Compartir conversa</span>
@@ -1884,10 +2119,10 @@
                 </div>
 
                 <!-- 2. MESSAGES CONTAINER -->
-                <div id="chat-messages" class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 pb-2 scroll-smooth max-w-4xl mx-auto w-full"></div>
+                <div id="chat-messages" class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2.5 py-3 sm:p-5 space-y-4 pb-3 scroll-smooth max-w-4xl mx-auto w-full"></div>
                 
-                <!-- 3. INPUT CONTAINER (Gemini Horizontal Pill Style) -->
-                <div class="px-3 py-2 sm:px-4 sm:py-3 bg-zinc-50 dark:bg-zinc-950 relative z-20 pb-safe md:pb-4 transition-colors duration-300">
+                <!-- 3. INPUT CONTAINER (Gemini Horizontal Pill Style on Desktop, Two-Row Full-Width Capsule on Mobile Web) -->
+                <div class="px-2.5 py-2 sm:px-4 sm:py-3 bg-zinc-50/95 dark:bg-zinc-950/95 backdrop-blur-md relative z-20 pb-safe md:pb-4 shrink-0 transition-colors duration-300">
                     <div class="max-w-3xl mx-auto w-full">
                         <!-- Previsualització d'Imatge adjunta -->
                         <div id="attachment-preview" class="hidden mb-2">
@@ -1899,17 +2134,17 @@
                             </div>
                         </div>
 
-                        <!-- CÀPSULA HORITZONTAL ESTIL GEMINI -->
-                        <form id="chat-form" onsubmit="event.preventDefault();" class="relative bg-white dark:bg-[#1e1f20] border border-zinc-200 dark:border-zinc-700/60 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 shadow-sm flex items-center gap-1.5 sm:gap-2 focus-within:border-blue-500/60 dark:focus-within:border-blue-500/60 transition-all duration-200">
+                        <!-- CÀPSULA D'ENTRADA (2 files a web mòbil perquè el text mai es talli, 1 fila a escriptori) -->
+                        <form id="chat-form" onsubmit="event.preventDefault();" class="relative bg-white dark:bg-[#191a23] border border-zinc-200/90 dark:border-zinc-800/90 rounded-3xl sm:rounded-[1.75rem] px-3 py-2 sm:px-3.5 sm:py-2 shadow-md shadow-zinc-900/5 dark:shadow-black/40 flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 focus-within:border-blue-500/60 dark:focus-within:border-blue-500/60 transition-all duration-200">
                             
                             <!-- BOTÓ MAS (+) AMB DESPLEGABLE D'OPCIONS -->
-                            <div class="relative shrink-0">
+                            <div class="relative shrink-0 order-2 sm:order-1">
                                 <button type="button" id="chat-plus-btn" onclick="togglePlusMenu(event)" title="Més opcions (Càmera, Imatges, PDFs)" class="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer font-bold text-lg active:scale-95">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                 </button>
 
                                 <!-- MENU DESPLEGABLE DEL (+) ORGANITZAT PER CARPETES I SUB-OPCIONS -->
-                                <div id="plus-menu" class="hidden absolute left-0 bottom-12 z-50 bg-white/98 dark:bg-[#14141a]/98 border border-zinc-200/90 dark:border-zinc-800/90 rounded-[1.75rem] shadow-2xl p-3 w-80 sm:w-84 max-w-[95vw] flex flex-col gap-2 backdrop-blur-2xl transition-all duration-200">
+                                <div id="plus-menu" class="hidden fixed sm:absolute left-2.5 right-2.5 sm:left-0 sm:right-auto bottom-20 sm:bottom-12 z-50 bg-white/98 dark:bg-[#14141a]/98 border border-zinc-200/90 dark:border-zinc-800/90 rounded-[1.75rem] shadow-2xl p-3 w-auto sm:w-84 max-h-[72dvh] overflow-y-auto flex flex-col gap-2 backdrop-blur-2xl transition-all duration-200">
                                     
                                     <!-- VISTA PRINCIPAL: CARPETES D'OPCIONS -->
                                     <div id="plus-folder-root" class="space-y-1.5">
@@ -2265,23 +2500,23 @@
                                 </div>
                             </div>
 
-                            <!-- TEXTAREA PRINCIPAL -->
-                            <div class="flex-1 min-w-0 relative flex items-center">
+                            <!-- TEXTAREA PRINCIPAL (100% d'amplada a la fila superior en mòbil web perquè no es talli res) -->
+                            <div class="w-full sm:w-auto sm:flex-1 min-w-0 order-1 sm:order-2 relative flex items-center pb-1.5 sm:pb-0 border-b border-zinc-100 dark:border-zinc-800/80 sm:border-none">
                                 <textarea id="chat-input" rows="1" placeholder="Pregunta a Aliat sobre el teu temari..." class="w-full bg-transparent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 text-xs sm:text-sm outline-none ring-0 focus:ring-0 border-none resize-none overflow-y-auto min-h-[26px] max-h-[140px] px-1 py-0.5 font-normal leading-relaxed" oninput="this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 140) + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('chat-form').requestSubmit(); }"></textarea>
                             </div>
 
-                            <!-- SELECTOR DE TUTOR (Pill compacte a la dreta estil Gemini Pro) -->
-                            <div class="relative inline-block text-left shrink-0" id="tutor-dropdown-container">
-                                <button type="button" id="tutor-dropdown-btn" onclick="toggleTutorDropdown(event)" class="tutor-mode-select-elem flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium px-2.5 py-1.5 rounded-full border border-zinc-200/80 dark:border-zinc-700/60 hover:bg-zinc-200/80 dark:hover:bg-zinc-700 transition cursor-pointer group">
+                            <!-- SELECTOR DE TUTOR (Visible també a web mòbil amb el seu nom) -->
+                            <div class="relative inline-block text-left shrink-0 order-3 sm:order-3 mr-auto sm:mr-0" id="tutor-dropdown-container">
+                                <button type="button" id="tutor-dropdown-btn" onclick="toggleTutorDropdown(event)" class="tutor-mode-select-elem flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[11px] sm:text-xs font-medium px-2.5 py-1.5 rounded-full border border-zinc-200/80 dark:border-zinc-700/60 hover:bg-zinc-200/80 dark:hover:bg-zinc-700 transition cursor-pointer group">
                                     <span id="selected-tutor-icon" class="text-blue-500 shrink-0 flex items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                                     </span>
-                                    <span id="selected-tutor-label" class="hidden sm:inline-block truncate max-w-[110px]">Tutor Estàndard</span>
+                                    <span id="selected-tutor-label" class="inline-block truncate max-w-[115px] sm:max-w-[110px]">Tutor Estàndard</span>
                                     <svg id="tutor-arrow-icon" class="w-3 h-3 text-zinc-400 group-hover:text-blue-500 transition-transform duration-300 ml-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
                                 </button>
 
                                 <!-- DESPLEGABLE PERSONALITZAT -->
-                                <div id="tutor-dropdown-menu" class="hidden absolute right-0 bottom-11 z-50 bg-white/95 dark:bg-[#18181b]/95 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 w-60 flex flex-col gap-1 backdrop-blur-xl transition-all">
+                                <div id="tutor-dropdown-menu" class="hidden fixed sm:absolute right-2.5 sm:right-0 bottom-20 sm:bottom-11 z-50 bg-white/98 dark:bg-[#18181b]/98 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 w-64 sm:w-60 max-w-[calc(100vw-1.25rem)] flex flex-col gap-1 backdrop-blur-xl transition-all">
                                     <button type="button" onclick="selectTutorOption('standard')" class="tutor-opt-btn flex items-center gap-2.5 w-full p-2 hover:bg-blue-50 dark:hover:bg-zinc-800/80 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
                                         <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
@@ -2325,19 +2560,19 @@
                             </div>
 
                             <!-- BOTÓ DE CERCA AMB GOOGLE (Google Search Grounding gemini-3.8-flash) -->
-                            <button type="button" id="google-search-toggle-btn" onclick="toggleGoogleSearchGrounding()" title="Cerca Web amb Google activa (gemini-3.8-flash)" class="w-8 h-8 rounded-full hover:bg-blue-100/70 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center transition cursor-pointer relative shrink-0 shadow-xs active:scale-95">
+                            <button type="button" id="google-search-toggle-btn" onclick="toggleGoogleSearchGrounding()" title="Cerca Web amb Google activa (gemini-3.8-flash)" class="w-8 h-8 rounded-full hover:bg-blue-100/70 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center transition cursor-pointer relative shrink-0 order-4 shadow-xs active:scale-95">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
                                 <span id="google-search-pulse" class="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse ring-2 ring-blue-400/50"></span>
                             </button>
 
                             <!-- MICRÒFON -->
-                            <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="Dictat per Veu" class="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer relative shrink-0">
+                            <button type="button" id="mic-btn" onclick="toggleVoiceDictation()" title="Dictat per Veu" class="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer relative shrink-0 order-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                                 <span id="mic-pulse" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
                             </button>
 
                             <!-- BOTÓ DE SO / TRUCADA DE VEU (Al costat del micròfon) -->
-                            <button type="button" id="voice-speak-btn" onclick="openVoiceCallModal()" title="Trucada de Veu en Directe amb l'IA" class="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer relative shrink-0 border border-transparent group">
+                            <button type="button" id="voice-speak-btn" onclick="openVoiceCallModal()" title="Trucada de Veu en Directe amb l'IA" class="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer relative shrink-0 order-4 border border-transparent group">
                                 <!-- Anell SVG d'ona de so animada en temps real -->
                                 <svg id="voice-speak-wave-svg" class="hidden absolute -inset-1.5 w-[calc(100%+12px)] h-[calc(100%+12px)] pointer-events-none text-emerald-500 overflow-visible" viewBox="0 0 40 40">
                                     <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="4 3" class="animate-spin duration-3000 origin-center opacity-85" />
@@ -2353,13 +2588,13 @@
                             </button>
 
                             <!-- BOTÓ D'ENVIAR -->
-                            <button type="submit" aria-label="Enviar" class="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white flex items-center justify-center transition shadow-xs shrink-0 font-bold cursor-pointer">
+                            <button type="submit" aria-label="Enviar" class="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-500 active:scale-95 text-white flex items-center justify-center transition shadow-xs shrink-0 order-4 font-bold cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
                             </button>
                         </form>
 
                         <!-- DISCLAIMER SUBTIL ESTIL GEMINI -->
-                        <p class="text-[11px] text-zinc-500 dark:text-zinc-500 mt-2 text-center font-normal">
+                        <p class="text-[10.5px] sm:text-[11px] text-zinc-500 dark:text-zinc-500 mt-1.5 sm:mt-2 text-center font-normal">
                             Aliat Intel·ligent pot cometre errors, verifica la informació important.
                         </p>
                     </div>
@@ -2369,26 +2604,26 @@
     </div>
 
     <!-- MODAL CONFIGURACIÓ -->
-    <div id="settings-modal" class="fixed inset-0 bg-zinc-950/70 dark:bg-zinc-950/85 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-md opacity-0 transition-opacity duration-300">
-        <div class="bg-white dark:bg-[#121217] text-zinc-900 dark:text-zinc-100 rounded-[2.25rem] w-full max-w-lg flex flex-col overflow-hidden shadow-2xl shadow-blue-950/10 dark:shadow-black/80 transform scale-95 transition-transform duration-300 border border-zinc-200/90 dark:border-zinc-800/90" id="settings-modal-box">
+    <div id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" class="fixed inset-0 bg-zinc-950/70 dark:bg-zinc-950/85 z-[110] hidden flex items-center justify-center p-2.5 sm:p-4 backdrop-blur-md opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-[#121217] text-zinc-900 dark:text-zinc-100 rounded-3xl sm:rounded-[2.25rem] w-full max-w-lg max-h-[92dvh] flex flex-col overflow-hidden shadow-2xl shadow-blue-950/10 dark:shadow-black/80 transform scale-95 transition-transform duration-300 border border-zinc-200/90 dark:border-zinc-800/90" id="settings-modal-box">
             <!-- Header -->
-            <div class="p-5 sm:p-6 border-b border-zinc-200/80 dark:border-zinc-800/80 flex justify-between items-center bg-zinc-50/80 dark:bg-zinc-900/40">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-white dark:bg-zinc-800/95 flex items-center justify-center shrink-0 border border-zinc-200/90 dark:border-zinc-700 p-1.5 shadow-sm">
+            <div class="p-4 sm:p-6 border-b border-zinc-200/80 dark:border-zinc-800/80 flex justify-between items-center bg-zinc-50/80 dark:bg-zinc-900/40 shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white dark:bg-zinc-800/95 flex items-center justify-center shrink-0 border border-zinc-200/90 dark:border-zinc-700 p-1.5 shadow-sm">
                         <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat Intel·ligent Logo" class="w-full h-full object-contain drop-shadow-2xs dark:brightness-[1.85] dark:contrast-125">
                     </div>
-                    <div>
-                        <h3 class="font-black text-zinc-900 dark:text-zinc-100 text-lg leading-tight">Configuració del Compte</h3>
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Personalitza l'aparença, el motor d'IA i la privadesa</p>
+                    <div class="min-w-0">
+                        <h3 id="settings-modal-title" class="font-black text-zinc-900 dark:text-zinc-100 text-base sm:text-lg leading-tight truncate">Configuració del Compte</h3>
+                        <p class="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-medium truncate">Personalitza l'aparença, el motor d'IA i la privadesa</p>
                     </div>
                 </div>
-                <button onclick="closeSettings()" class="w-9 h-9 flex items-center justify-center rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-100 bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/60 hover:border-zinc-300 dark:hover:border-zinc-600 shadow-sm transition-all cursor-pointer">
+                <button onclick="closeSettings()" aria-label="Tancar configuració" class="w-9 h-9 flex items-center justify-center rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-100 bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/60 hover:border-zinc-300 dark:hover:border-zinc-600 shadow-sm transition-all cursor-pointer shrink-0">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
 
             <!-- Body Content -->
-            <div class="p-6 space-y-6 overflow-y-auto max-h-[70vh]">
+            <div class="p-4 sm:p-6 space-y-5 sm:space-y-6 overflow-y-auto flex-1">
                 <!-- Nom / Compte -->
                 <div class="space-y-2">
                     <label id="setting-label-account" class="block text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">El teu Compte (Nom Públic)</label>
@@ -2927,10 +3162,10 @@
             </div>
 
             <!-- MAIN SPLIT CONTENT -->
-            <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-zinc-200/80 dark:divide-zinc-800/80">
+            <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-y-auto lg:overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-zinc-200/80 dark:divide-zinc-800/80">
                 
                 <!-- PANNELL ESQUERRA: SELECCIÓ I PARÀMETRES (45% / 5 cols) -->
-                <div class="lg:col-span-5 p-4 sm:p-5 overflow-y-auto space-y-4 bg-zinc-50/50 dark:bg-zinc-950/20 custom-scrollbar">
+                <div class="lg:col-span-5 p-3.5 sm:p-5 lg:overflow-y-auto space-y-4 bg-zinc-50/50 dark:bg-zinc-950/20 custom-scrollbar">
                     
                     <!-- SISTER TEMPLATES GRID -->
                     <div>
@@ -2993,7 +3228,7 @@
                 </div>
 
                 <!-- PANNELL DRETA: RESULTAT I EDITOR DIRECTE (55% / 7 cols) -->
-                <div class="lg:col-span-7 p-4 sm:p-5 flex flex-col overflow-hidden bg-white dark:bg-[#121217]">
+                <div class="lg:col-span-7 p-3.5 sm:p-5 flex flex-col min-h-[340px] lg:min-h-0 lg:overflow-hidden bg-white dark:bg-[#121217]">
                     
                     <!-- ACTION BAR SUPERIOR DE L'EDITOR -->
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2 pb-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 shrink-0">
@@ -3089,9 +3324,9 @@
                     </div>
 
                     <!-- LIVE EDITABLE TEXTAREA & PREVIEW CONTAINER -->
-                    <div id="studio-result-editor" class="flex-1 overflow-hidden relative rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 flex flex-col shadow-inner">
-                        <textarea id="studio-editable-textarea" oninput="updateStudioStats()" placeholder="Escriu, redacta o edita el teu document directament aquí... Pots utilitzar la barra d'eines superior per afegir títols, taules, tasques o descarregar-lo per a Word i Google Docs." class="w-full h-full p-4 bg-transparent text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm leading-relaxed outline-none resize-none custom-scrollbar font-sans"></textarea>
-                        <div id="studio-formatted-preview" class="hidden w-full h-full p-5 overflow-y-auto text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm leading-relaxed custom-scrollbar prose dark:prose-invert max-w-none"></div>
+                    <div id="studio-result-editor" class="flex-1 min-h-[240px] lg:min-h-0 overflow-hidden relative rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 flex flex-col shadow-inner">
+                        <textarea id="studio-editable-textarea" oninput="updateStudioStats()" placeholder="Escriu, redacta o edita el teu document directament aquí... Pots utilitzar la barra d'eines superior per afegir títols, taules, tasques o descarregar-lo per a Word i Google Docs." class="w-full flex-1 min-h-[220px] lg:h-full p-4 bg-transparent text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm leading-relaxed outline-none resize-none custom-scrollbar font-sans"></textarea>
+                        <div id="studio-formatted-preview" class="hidden w-full flex-1 min-h-[220px] lg:h-full p-5 overflow-y-auto text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm leading-relaxed custom-scrollbar prose dark:prose-invert max-w-none"></div>
                     </div>
                 </div>
 
@@ -3286,7 +3521,7 @@
                 </div>
 
                 <!-- TARGETA DE DETALLS DEL NODO SELECCIONAT -->
-                <div id="mindmap-node-detail-panel" class="hidden absolute top-4 right-4 z-20 w-84 max-w-[92vw] bg-zinc-900/95 border border-zinc-700/80 p-4 rounded-2xl shadow-2xl backdrop-blur-xl text-xs space-y-3">
+                <div id="mindmap-node-detail-panel" class="hidden absolute inset-x-2.5 bottom-16 sm:bottom-auto sm:top-4 sm:left-auto sm:right-4 z-20 w-auto sm:w-84 max-h-[48dvh] overflow-y-auto bg-zinc-900/95 border border-zinc-700/80 p-4 rounded-2xl shadow-2xl backdrop-blur-xl text-xs space-y-3">
                     <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
                         <span id="mindmap-detail-type" class="px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-400 font-extrabold text-[10px] uppercase">Concepte</span>
                         <button type="button" onclick="document.getElementById('mindmap-node-detail-panel').classList.add('hidden')" class="w-6 h-6 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition cursor-pointer">✕</button>
@@ -15189,19 +15424,19 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 const box = document.getElementById('chat-messages');
                 if (box && chatHistory.length === 0) {
                     box.innerHTML = `
-                        <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-8 px-4 space-y-5 animate-fade-in">
+                        <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-4 sm:py-8 px-2 sm:px-4 space-y-4 sm:space-y-5 animate-fade-in">
                             <div class="flex items-center gap-3.5">
                                 <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/70 text-blue-600 dark:text-sky-400 flex items-center justify-center shrink-0">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                                 </div>
                                 <div>
-                                    <h2 class="text-lg sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Pla d'Estudis (Modo sin sesión)</h2>
+                                    <h2 class="text-base sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Pla d'Estudis (Modo sin sesión)</h2>
                                     <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Escriu qualsevol tema al xat per estudiar. Per pujar apunts PDF, generar el calendari d'examen i fer tests diagnòstics, inicia sessió.</p>
                                 </div>
                             </div>
                             <button type="button" onclick="promptGuestLoginRequired()" class="w-full p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-500 transition cursor-pointer flex items-center justify-between gap-3 text-left">
                                 <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">📄 Pujar apunts PDF i configurar data d'examen (Requereix iniciar sessió)</span>
-                                <span class="text-xs font-bold text-blue-600 dark:text-sky-400">Accedir →</span>
+                                <span class="text-xs font-bold text-blue-600 dark:text-sky-400 shrink-0">Accedir →</span>
                             </button>
                         </div>
                     `;
@@ -15322,14 +15557,14 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (!box) return;
             const currentMode = window.getDailyOutputMode ? window.getDailyOutputMode() : 'direct';
             box.innerHTML = `
-                <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-8 px-4 space-y-6 animate-fade-in">
+                <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-4 sm:py-8 px-2 sm:px-4 space-y-4 sm:space-y-6 animate-fade-in">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-center gap-3.5">
                             <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200/80 dark:border-rose-800/70 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                             </div>
                             <div>
-                                <h2 class="text-lg sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Ús Quotidià i Documents</h2>
+                                <h2 class="text-base sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Ús Quotidià i Documents</h2>
                                 <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Redacta correus, informes per a Word o Google Docs i organitza el teu dia.</p>
                             </div>
                         </div>
@@ -15345,8 +15580,8 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                         </div>
                         <span id="daily-welcome-mode-hint" class="text-[11px] text-zinc-500 dark:text-zinc-400">${currentMode === 'direct' ? 'Mode directe actiu: et dona només el text final llest per copiar o enviar, sense passos ni preguntes.' : 'Mode guiat actiu: et demana detalls, explica passos i estructura el resultat.'}</span>
                     </div>
-                    <div class="pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
-                        <button type="button" onclick="startDailyUseWithTopic('correu')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-400 dark:hover:border-rose-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
+                    <div class="pt-3 sm:pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 text-left">
+                        <button type="button" onclick="startDailyUseWithTopic('correu')" class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-400 dark:hover:border-rose-500/70 transition cursor-pointer group flex flex-col justify-between gap-2.5 sm:gap-3">
                             <div>
                                 <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Correu Formal</div>
                                 <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Redacció clara i professional</div>
@@ -15355,7 +15590,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                             </span>
                         </button>
-                        <button type="button" onclick="startDailyUseWithTopic('informe')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-400 dark:hover:border-rose-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
+                        <button type="button" onclick="startDailyUseWithTopic('informe')" class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-400 dark:hover:border-rose-500/70 transition cursor-pointer group flex flex-col justify-between gap-2.5 sm:gap-3">
                             <div>
                                 <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Informe Executiu</div>
                                 <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Estructura per a Word o Docs</div>
@@ -15364,7 +15599,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                             </span>
                         </button>
-                        <button type="button" onclick="startDailyUseWithTopic('planificador')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-400 dark:hover:border-rose-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
+                        <button type="button" onclick="startDailyUseWithTopic('planificador')" class="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-rose-400 dark:hover:border-rose-500/70 transition cursor-pointer group flex flex-col justify-between gap-2.5 sm:gap-3">
                             <div>
                                 <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">Planificador Diari</div>
                                 <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Prioritats i blocs de temps</div>
@@ -15375,7 +15610,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                         </button>
                     </div>
                     <div class="pt-1">
-                        <button type="button" onclick="openGoogleWorkspaceHubModal('daily')" class="w-full p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-400 dark:hover:border-blue-500/70 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 transition cursor-pointer group flex items-center justify-between gap-3 text-left shadow-2xs active:scale-[0.99]">
+                        <button type="button" onclick="openGoogleWorkspaceHubModal('daily')" class="w-full p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-400 dark:hover:border-blue-500/70 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 transition cursor-pointer group flex items-center justify-between gap-3 text-left shadow-2xs active:scale-[0.99]">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
@@ -15402,17 +15637,17 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             const box = document.getElementById('chat-messages');
             if (!box) return;
             box.innerHTML = `
-                <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-8 px-4 space-y-6 animate-fade-in">
+                <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-4 sm:py-8 px-2 sm:px-4 space-y-4 sm:space-y-6 animate-fade-in">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/70 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         </div>
                         <div>
-                            <h2 class="text-lg sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">XatBot</h2>
+                            <h2 class="text-base sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">XatBot</h2>
                             <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Resol dubtes concrets, practica exercicis o explora qualsevol tema pas a pas.</p>
                         </div>
                     </div>
-                    <div class="pt-5 border-t border-zinc-200/80 dark:border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+                    <div class="pt-3 sm:pt-5 border-t border-zinc-200/80 dark:border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 text-left">
                         <button type="button" onclick="startFreeChatWithTopic('debat')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
                             <div>
                                 <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Debat i Opinió</div>
@@ -19632,11 +19867,16 @@ ${parsedBody}
 
             let htmlContent = marked.parse(text);
 
+            // Embolcallar taules de Markdown en una targeta arrodonida amb scroll horitzontal suau en mòbil
+            htmlContent = htmlContent
+                .replace(/<table>/g, '<div class="chat-table-wrapper"><table class="w-full text-left">')
+                .replace(/<\/table>/g, '</table></div>');
+
             // Fer que els enllaços siguin blaus i s'obrin en una pestanya nova
             htmlContent = htmlContent.replace(/<a href="/g, '<a target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-600 underline font-semibold transition-colors" href="');
 
             // Fer que les imatges de markdown es puguin clicar per obrir el lightbox
-            htmlContent = htmlContent.replace(/<img /g, '<img onclick="openLightbox(this.src)" class="cursor-zoom-in hover:opacity-95 transition shadow-lg rounded-xl my-2 max-h-[320px] object-cover border border-zinc-200 dark:border-zinc-800" ');
+            htmlContent = htmlContent.replace(/<img /g, '<img onclick="openLightbox(this.src)" class="cursor-zoom-in hover:opacity-95 transition shadow-lg rounded-2xl my-2 max-h-[320px] object-cover border border-zinc-200 dark:border-zinc-800" ');
 
             // Codi amb estil Gemini (Caixa fosca, capçalera neta amb nom d'idioma i botó copiar)
             htmlContent = htmlContent.replace(/<pre><code(?: class="language-([^"]*)")?>([\s\S]*?)<\/code><\/pre>/gi, function(m, lang, code) {
@@ -19871,68 +20111,79 @@ ${parsedBody}
             }
             const div = document.createElement('div');
             if (sender === 'user') {
-                div.className = "flex justify-end w-full mb-3";
-                div.innerHTML = `<div class="bg-blue-600 dark:bg-[#282a2c] text-white dark:text-zinc-100 px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] sm:max-w-[75%] text-xs sm:text-sm font-medium shadow-xs break-words leading-relaxed">${formatMessage(text)}</div>`;
+                div.className = "flex justify-end w-full mb-3.5 chat-msg-user";
+                div.innerHTML = `<div class="bg-gradient-to-br from-blue-600 to-indigo-600 dark:from-[#252836] dark:to-[#1e202b] text-white dark:text-zinc-100 border border-blue-500/30 dark:border-zinc-700/70 px-4 py-2.5 sm:px-5 sm:py-3 rounded-[1.4rem] rounded-br-md max-w-[88%] sm:max-w-[75%] text-xs sm:text-sm font-medium shadow-sm break-words leading-relaxed">${formatMessage(text)}</div>`;
             } else {
-                div.className = "flex justify-start gap-2.5 sm:gap-3 w-full mb-5 chat-msg-ai transition-all duration-200";
+                div.className = "flex justify-start gap-2 sm:gap-3 w-full mb-5 chat-msg-ai transition-all duration-200";
 
                 let searchBadgeHtml = "";
                 if (Array.isArray(searchQueries) && searchQueries.length > 0) {
                     searchBadgeHtml = `
-                    <div class="mb-2 flex flex-wrap items-center gap-1.5">
+                    <div class="mb-2.5 flex flex-wrap items-center gap-1.5">
                         ${searchQueries.map(q => `
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-900/60 text-blue-600 dark:text-blue-400 text-[11px] font-semibold shadow-xs">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-900/60 text-blue-600 dark:text-blue-400 text-[11px] font-semibold shadow-2xs">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                                <span>Cercat amb Google: "${escapeHtml(q)}"</span>
+                                <span>${window.t ? window.t('Cercat amb Google', 'Buscado con Google') : 'Cercat amb Google'}: "${escapeHtml(q)}"</span>
                             </span>
                         `).join('')}
                     </div>`;
                 }
 
+                const calLabel = window.t ? window.t('Google Calendar', 'Google Calendar') : 'Google Calendar';
+                const remLabel = window.t ? window.t("Recorda'm (25m)", "Recuérdame (25m)") : "Recorda'm (25m)";
+
                 div.innerHTML = `
-                <div class="relative shrink-0 mt-0.5">
-                    <div class="w-7 h-7 rounded-lg bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 p-1 flex items-center justify-center shadow-2xs overflow-hidden">
+                <div class="relative shrink-0 mt-1 hidden xs:block sm:block">
+                    <div class="w-8 h-8 rounded-2xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 p-1.5 flex items-center justify-center shadow-xs overflow-hidden">
                         <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat IA" class="w-full h-full object-contain dark:brightness-[1.85] dark:contrast-125">
                     </div>
                 </div>
-                <div class="flex-1 max-w-[95%] sm:max-w-[90%] text-zinc-900 dark:text-zinc-100 overflow-hidden group">
-                    ${searchBadgeHtml}
-                    <div class="prose prose-sm dark:prose-invert max-w-none text-xs sm:text-[13.5px] leading-relaxed break-words overflow-x-auto">${formatMessage(text)}</div>
-                    <!-- FILA D'ACCIONS ESTIL GEMINI AMB BOTÓ D'ÀUDIO COMPRIMIT (TTS) -->
-                    <div class="flex items-center gap-1.5 mt-2 text-zinc-400 dark:text-zinc-500 text-xs flex-wrap">
-                        <button onclick="this.classList.toggle('text-blue-500')" title="M'agrada" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                <div class="flex-1 min-w-0 max-w-full sm:max-w-[92%] text-zinc-900 dark:text-zinc-100 overflow-hidden group">
+                    <div class="chat-msg-ai-card px-3.5 py-3.5 sm:px-5 sm:py-4">
+                        <div class="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-zinc-100 dark:border-zinc-800/70">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <div class="w-5 h-5 rounded-md bg-zinc-100 dark:bg-zinc-800 p-0.5 flex items-center justify-center sm:hidden shrink-0">
+                                    <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat" class="w-full h-full object-contain dark:brightness-[1.85]">
+                                </div>
+                                <span class="text-[11px] font-extrabold text-zinc-700 dark:text-zinc-300 tracking-tight">Aliat Intel·ligent</span>
+                            </div>
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500/70 dark:bg-sky-400/70 shrink-0"></span>
+                        </div>
+                        ${searchBadgeHtml}
+                        <div class="prose prose-sm dark:prose-invert max-w-none text-xs sm:text-[13.5px] leading-relaxed break-words overflow-x-auto">${formatMessage(text)}</div>
+                    </div>
+                    <!-- BARRA D'ACCIONS ORGÀNICA EN CÀPSULES ARRODONIDES -->
+                    <div class="flex items-center gap-1.5 mt-2 pl-1 text-zinc-400 dark:text-zinc-500 text-xs flex-wrap">
+                        <div class="inline-flex items-center gap-0.5 px-1.5 py-1 rounded-2xl bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/90 shadow-2xs">
+                            <button onclick="this.classList.toggle('text-blue-500')" title="M'agrada" class="p-1.5 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition cursor-pointer">
+                                <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                            </button>
+                            <button onclick="this.classList.toggle('text-rose-500')" title="No m'agrada" class="p-1.5 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition cursor-pointer">
+                                <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
+                            </button>
+                            <button onclick="triggerAiResponse()" title="Regenerar resposta" class="p-1.5 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition cursor-pointer">
+                                <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+                            </button>
+                            <button onclick="window.copyMsgText(this)" title="Copiar text" class="p-1.5 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition cursor-pointer">
+                                <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                            <button onclick="speakMessageText(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="Escoltar text complet" class="p-1.5 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition cursor-pointer">
+                                <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                            </button>
+                            <button onclick="window.openDocumentExportModal(this)" title="Exportar a Word / Copiar per a document" class="p-1.5 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition cursor-pointer flex items-center justify-center">
+                                <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            </button>
+                            <button onclick="sendAsEmail(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="Enviar per Correu electrònic" class="p-1.5 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition cursor-pointer flex items-center justify-center">
+                                <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            </button>
+                        </div>
+                        <button onclick="promptGoogleCalendarReminder(appMode === 'daily_use' ? 'Tasca planificada' : 'Sessió d\'Estudi', this.closest('.chat-msg-ai').querySelector('.prose').innerText.slice(0, 300))" title="Afegir a Google Calendar" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-2xl bg-white/90 dark:bg-zinc-900/90 hover:bg-blue-50 dark:hover:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-800/90 text-zinc-700 dark:text-zinc-200 text-[11px] font-semibold transition cursor-pointer shadow-2xs">
+                            <span>🗓️</span>
+                            <span>${calLabel}</span>
                         </button>
-                        <button onclick="this.classList.toggle('text-rose-500')" title="No m'agrada" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
-                        </button>
-                        <button onclick="triggerAiResponse()" title="Regenerar resposta" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
-                        </button>
-                        <button onclick="window.copyMsgText(this)" title="Copiar text" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        </button>
-                        <button onclick="speakMessageText(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="Escoltar text complet" class="p-1 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                        </button>
-                        <button onclick="window.openDocumentExportModal(this)" title="Exportar a Word / Copiar per a document" class="p-1 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                        </button>
-                        <button onclick="sendAsEmail(this.closest('.chat-msg-ai').querySelector('.prose').innerText)" title="Enviar per Correu electrònic" class="p-1 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                        </button>
-                        ${appMode === 'study' ? `
-                        <button onclick="promptGoogleCalendarReminder('Sessió d\'Estudi', this.closest('.chat-msg-ai').querySelector('.prose').innerText.slice(0, 300))" title="Afegir a Google Calendar" class="p-1 hover:text-blue-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        </button>
-                        ` : ''}
-                        ${appMode === 'daily_use' ? `
-                        <button onclick="promptGoogleCalendarReminder('Tasca planificada', this.closest('.chat-msg-ai').querySelector('.prose').innerText.slice(0, 300))" title="Afegir a Google Calendar" class="p-1 hover:text-blue-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        </button>
-                        ` : ''}
-                        <button onclick="openQuickReminderModal(this)" title="Recorda'm (Programar dia i hora)" class="p-1 hover:text-amber-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition cursor-pointer flex items-center justify-center">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <button onclick="openQuickReminderModal(this)" title="Recorda'm (Programar dia i hora)" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-2xl bg-white/90 dark:bg-zinc-900/90 hover:bg-amber-50 dark:hover:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-800/90 text-zinc-700 dark:text-zinc-200 text-[11px] font-semibold transition cursor-pointer shadow-2xs">
+                            <span>🔔</span>
+                            <span>${remLabel}</span>
                         </button>
                     </div>
                 </div>`;
@@ -19951,12 +20202,12 @@ ${parsedBody}
             div.className = "flex justify-start gap-2.5 sm:gap-3 w-full mb-4";
             div.innerHTML = `
             <div class="relative shrink-0 mt-0.5">
-                <div class="w-7 h-7 rounded-lg bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 p-1 flex items-center justify-center shadow-2xs overflow-hidden">
+                <div class="w-8 h-8 rounded-2xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 p-1.5 flex items-center justify-center shadow-xs overflow-hidden">
                     <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat IA" class="w-full h-full object-contain dark:brightness-[1.85] dark:contrast-125">
                 </div>
             </div>
-            <div class="bg-white/95 dark:bg-[#1e1f20] border border-zinc-200 dark:border-zinc-800 px-3.5 py-2 rounded-full flex gap-1.5 shadow-xs items-center h-8">
-                <div class="w-1.5 h-1.5 bg-zinc-700 dark:bg-zinc-300 rounded-full animate-bounce"></div>
+            <div class="chat-msg-ai-card px-4 py-2.5 flex gap-1.5 items-center h-9">
+                <div class="w-1.5 h-1.5 bg-blue-600 dark:bg-sky-400 rounded-full animate-bounce"></div>
                 <div class="w-1.5 h-1.5 bg-zinc-500 dark:bg-zinc-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
                 <div class="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
             </div>`;
@@ -20134,7 +20385,7 @@ ${parsedBody}
                 if (opts.length === 0) {
                     const emptyEl = document.createElement('div');
                     emptyEl.className = 'px-3 py-2 text-xs text-zinc-400 text-center';
-                    emptyEl.textContent = 'Sense opcions disponibles';
+                    emptyEl.textContent = window.t ? window.t('Sense opcions disponibles', 'Sin opciones disponibles') : 'Sense opcions disponibles';
                     portal.appendChild(emptyEl);
                     return;
                 }
@@ -20268,10 +20519,24 @@ ${parsedBody}
                 });
             }
 
+            function shouldSkipCustomSelect(select) {
+                if (!select || select.tagName !== 'SELECT') return true;
+                if (select.classList.contains('swal2-select')) return true;
+                if (select.hasAttribute('data-no-custom-select')) return true;
+                if (select.multiple || Number(select.size) > 1) return true;
+                if (select.style && select.style.display === 'none') return true;
+                if (select.closest('.swal2-popup') && !select.id && (!select.options || select.options.length === 0)) return true;
+                return false;
+            }
+
             function enhanceSelectElement(select) {
-                if (!select || select.tagName !== 'SELECT') return;
+                if (shouldSkipCustomSelect(select)) {
+                    if (select && select._customTrigger && select._customTrigger.parentNode) {
+                        select._customTrigger.parentNode.removeChild(select._customTrigger);
+                    }
+                    return;
+                }
                 if (select.dataset.customSelectReady === '1') return;
-                if (select.multiple || Number(select.size) > 1) return;
 
                 select.dataset.customSelectReady = '1';
                 const forceDark = select.className.includes('bg-zinc-800') || !!select.closest('#voice-call-modal');
@@ -20298,6 +20563,11 @@ ${parsedBody}
                     const idx = select.selectedIndex;
                     const selectedOpt = (opts && idx >= 0 && opts[idx]) ? opts[idx] : (opts && opts[0]);
                     labelSpan.textContent = selectedOpt ? (selectedOpt.textContent || selectedOpt.label || '') : '';
+                    if (!opts || opts.length === 0) {
+                        trigger.setAttribute('data-empty', '1');
+                    } else {
+                        trigger.removeAttribute('data-empty');
+                    }
                     if (activeSelect === select && activePortal) {
                         renderPortalOptions(activePortal, select, trigger, forceDark);
                     }
@@ -20349,6 +20619,7 @@ ${parsedBody}
 
             window.upgradeCustomSelects = function(root = document) {
                 if (!root || !root.querySelectorAll) return;
+                document.querySelectorAll('button.swal2-select, .aliat-select-trigger[data-empty="1"]').forEach(el => el.remove());
                 if (root.tagName === 'SELECT') {
                     enhanceSelectElement(root);
                     return;

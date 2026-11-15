@@ -2304,12 +2304,16 @@
                                         </button>
 
                                         <!-- ACCIONS RÀPIDES DIRECTES -->
-                                        <div class="pt-1 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center gap-1.5">
+                                        <div class="pt-1 border-t border-zinc-100 dark:border-zinc-800/80 grid grid-cols-2 gap-1.5">
                                             <label class="w-full flex items-center justify-center gap-1.5 p-2 bg-emerald-50/80 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xl border border-emerald-200/80 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold transition cursor-pointer shadow-2xs">
                                                 <input type="file" id="chat-attachment" accept="image/*,.pdf,audio/*" class="hidden" onchange="handleAttachment(this); closePlusMenu();">
                                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                                                <span>📎 Adjuntar Fitxer</span>
+                                                <span class="truncate">Adjuntar Fitxer</span>
                                             </label>
+                                            <button type="button" onclick="event.stopPropagation(); closePlusMenu(); openAnalyzeMediaModal('pdf_plan');" class="w-full flex items-center justify-center gap-1.5 p-2 bg-blue-50/80 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-xl border border-blue-200/80 dark:border-blue-900/60 text-blue-700 dark:text-blue-300 text-[11px] font-bold transition cursor-pointer shadow-2xs">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                                <span class="truncate">PDF → Pla d'Estudi</span>
+                                            </button>
                                         </div>
                                     </div>
 
@@ -12339,85 +12343,305 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
         // --- ANÀLISI MULTIMODAL D'IMATGES & VÍDEOS (OCR I OBJECTES) ---
         window.currentAnalyzeBase64 = null;
         window.currentAnalyzeMimeType = null;
+        window.currentAnalyzePdfText = '';
+        window.currentAnalyzePdfName = '';
 
-        window.openAnalyzeMediaModal = function() {
+        window.openAnalyzeMediaModal = function(initialFocus = '') {
             window.currentAnalyzeBase64 = null;
             window.currentAnalyzeMimeType = null;
+            window.currentAnalyzePdfText = '';
+            window.currentAnalyzePdfName = '';
+
+            const defaultExamDate = (() => {
+                const existing = document.getElementById('exam-date')?.value;
+                if (existing) return existing;
+                const d = new Date();
+                d.setDate(d.getDate() + 14);
+                return d.toISOString().split('T')[0];
+            })();
+
+            const existingPdfsHtml = (Array.isArray(uploadedPDFs) && uploadedPDFs.length > 0)
+                ? `<div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/70 text-[11px] text-emerald-800 dark:text-emerald-200 flex items-center justify-between gap-2">
+                        <span>✅ <strong>${uploadedPDFs.length} PDF(s) carregat(s):</strong> ${uploadedPDFs.map(p => escapeHtml(p.name)).join(', ')}</span>
+                   </div>`
+                : '';
 
             Swal.fire({
-                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg> Analitzar Imatges & Vídeos (Multimodal)</div>',
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white text-base sm:text-lg"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2.2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><circle cx="11.5" cy="14.5" r="2.5"/><path d="M13.3 16.3 15 18"/></svg> <span>Anàlisi de Fitxers, Apunts PDF i Pla d\'Estudi</span></div>',
                 html: `
                     <div class="text-left space-y-3.5 text-xs text-zinc-700 dark:text-zinc-200">
-                        <p class="text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                            Reconeixement detallat de text (OCR), detecció d'objectes, resolució de problemes i comprensió d'apunts o vídeos amb <strong>Gemini 3.8 Flash</strong>.
-                        </p>
-
-                        <div>
-                            <label class="block font-bold text-[11px] mb-1.5">Selecciona o puja una imatge o vídeo:</label>
-                            <input id="analyze-file-input" type="file" accept="image/*,video/*" onchange="previewAnalyzeMedia(this)" class="w-full text-xs text-zinc-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-50 dark:file:bg-cyan-950/60 file:text-cyan-700 dark:file:text-cyan-300 hover:file:bg-cyan-100 cursor-pointer" />
+                        <!-- Guia pas a pas -->
+                        <div class="p-3 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/70 space-y-1.5">
+                            <div class="font-extrabold text-blue-950 dark:text-blue-200 text-xs flex items-center gap-1.5">
+                                <span>🧭 Guia ràpida per crear el teu Pla d'Estudi Personalitzat:</span>
+                            </div>
+                            <ol class="list-decimal list-inside space-y-1 text-[11px] text-blue-900/90 dark:text-blue-200/90 leading-relaxed">
+                                <li><strong>Pas 1 (Puja els apunts):</strong> Selecciona un o diversos fitxers <strong>PDF</strong> (o imatge/vídeo dels teus apunts) al quadre inferior.</li>
+                                <li><strong>Pas 2 (Data i enfocament):</strong> Indica la data del teu examen o lliurament i l'objectiu de l'anàlisi.</li>
+                                <li><strong>Pas 3 (Genera el pla):</strong> Prem <em>"Generar Pla d'Estudi Personalitzat"</em> per crear el calendari de sessions i el test diagnòstic, o <em>"Analitzar Contingut"</em> per obtenir un resum immediat al xat.</li>
+                            </ol>
                         </div>
 
-                        <div id="analyze-preview-container" class="hidden p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center min-h-[120px]"></div>
+                        ${existingPdfsHtml}
+
+                        <!-- Pas 1: Selector de fitxer (PDF, Imatge o Vídeo) -->
+                        <div class="border-2 border-dashed border-cyan-300 dark:border-cyan-800/80 rounded-2xl p-4 text-center hover:border-cyan-500 dark:hover:border-cyan-400 bg-cyan-50/20 dark:bg-zinc-900/60 transition relative cursor-pointer">
+                            <label class="block font-extrabold text-xs text-zinc-900 dark:text-white mb-1 cursor-pointer">
+                                📄 Pas 1: Selecciona o arrossega els teus apunts (PDF, Imatge o Vídeo)
+                            </label>
+                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mb-2.5">Admet documents <strong>.PDF</strong> (extracció automàtica del temari), fotos d'apunts i vídeos</p>
+                            <input id="analyze-file-input" type="file" accept=".pdf,application/pdf,image/*,video/*" multiple onchange="previewAnalyzeMedia(this)" class="w-full text-xs text-zinc-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 cursor-pointer" />
+                        </div>
+
+                        <div id="analyze-preview-container" class="hidden p-3 rounded-xl bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center min-h-[72px] gap-2"></div>
+
+                        <!-- Pas 2: Configuració ràpida per al Pla d'Estudi i Mode d'Anàlisi -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                            <div>
+                                <label class="block font-bold text-[11px] mb-1 text-zinc-800 dark:text-zinc-200">📅 Data de l'examen (per al Pla):</label>
+                                <input id="analyze-modal-exam-date" type="date" value="${defaultExamDate}" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs text-zinc-900 dark:text-white font-semibold" />
+                            </div>
+                            <div>
+                                <label class="block font-bold text-[11px] mb-1 text-zinc-800 dark:text-zinc-200">🎯 Objectiu de l'anàlisi:</label>
+                                <select id="analyze-mode-select" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs text-zinc-900 dark:text-white font-medium">
+                                    <option value="study_plan" ${initialFocus === 'pdf_plan' ? 'selected' : ''}>📅 Estructura per a Pla d'Estudi + Preguntes Clau</option>
+                                    <option value="all">🔍 Anàlisi Global (Resum + Conceptes d'Examen)</option>
+                                    <option value="ocr">📝 Extracció de Text, Esquemes i Fórmules (OCR)</option>
+                                    <option value="objects">🔬 Detecció d'Elements, Gràfics i Components</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div>
-                            <label class="block font-bold text-[11px] mb-1">Objectiu de l'anàlisi:</label>
-                            <select id="analyze-mode-select" class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs text-zinc-900 dark:text-white font-medium">
-                                <option value="all">🔍 Anàlisi Global (OCR + Detecció d'elements + Desglossament d'Examen)</option>
-                                <option value="ocr">📝 Reconeixement de Text & Fórmules Manuscrits (OCR Precís)</option>
-                                <option value="objects">🔬 Detecció d'Objectes, Orgànuls i Components</option>
-                                <option value="video">🎥 Desglossament Seqüencial de Vídeo i Escenes</option>
-                            </select>
+                            <label class="block font-bold text-[11px] mb-1 text-zinc-800 dark:text-zinc-200">✏️ Indicacions opcionals (nivell, temes prioritaris, tipus d'examen):</label>
+                            <input id="analyze-modal-custom-notes" type="text" placeholder="Ex: Batxillerat / Universitat, prioritzar temes 1 i 2, examen tipus test..." class="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs text-zinc-900 dark:text-white" />
                         </div>
 
                         <div id="analyze-result-container" class="hidden pt-2"></div>
 
-                        <div class="pt-2">
-                            <button id="btn-analyze-action" onclick="executeAnalyzeMedia()" class="w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                                <span>Començar Anàlisi amb Gemini 3.8</span>
+                        <!-- Pas 3: Accions principals -->
+                        <div class="pt-2 flex flex-col sm:flex-row gap-2">
+                            <button id="btn-generate-plan-from-modal" type="button" onclick="launchStudyPlanFromAnalyzeModal()" class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <span>Generar Pla d'Estudi Personalitzat</span>
+                            </button>
+                            <button id="btn-analyze-action" type="button" onclick="executeAnalyzeMedia()" class="py-3 px-4 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md cursor-pointer">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                <span>Analitzar Fitxer Ara</span>
+                            </button>
+                        </div>
+                        <div class="text-center pt-0.5">
+                            <button type="button" onclick="Swal.close(); openFullStudyConfigurator();" class="text-[11px] font-bold text-blue-600 dark:text-sky-400 hover:underline cursor-pointer">
+                                O obrir el configurador complet del Pla d'Estudis (selecció de dies i hores) →
                             </button>
                         </div>
                     </div>
                 `,
                 showCloseButton: true,
                 showConfirmButton: false,
-                customClass: { popup: 'rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg w-full' }
+                customClass: { popup: 'rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-xl w-full' }
             });
         };
 
-        window.previewAnalyzeMedia = function(input) {
-            const file = input.files && input.files[0];
-            const previewContainer = document.getElementById('analyze-preview-container');
-            if (!file || !previewContainer) return;
+        window.openFullStudyConfigurator = function() {
+            appMode = 'study';
+            document.getElementById('daily-use-banner')?.classList.add('hidden');
+            document.getElementById('welcome-view')?.classList.add('hidden');
+            document.getElementById('quiz-view')?.classList.add('hidden');
+            document.getElementById('quiz-view')?.classList.remove('flex');
+            document.getElementById('chat-view')?.classList.add('hidden');
+            document.getElementById('chat-view')?.classList.remove('flex');
+            document.getElementById('setup-view')?.classList.remove('hidden');
+            document.getElementById('setup-view')?.classList.add('flex');
+            updateHeaderButtonsVisibility();
+        };
 
+        window.previewAnalyzeMedia = async function(input) {
+            const files = input.files ? Array.from(input.files) : [];
+            const previewContainer = document.getElementById('analyze-preview-container');
+            if (files.length === 0 || !previewContainer) return;
+
+            previewContainer.classList.remove('hidden');
+            const pdfFiles = files.filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+
+            if (pdfFiles.length > 0) {
+                previewContainer.innerHTML = `
+                    <div class="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400">
+                        <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Llegint i extraient el temari de ${pdfFiles.length} fitxer(s) PDF...</span>
+                    </div>
+                `;
+                let combinedPdfText = '';
+                let totalPagesRead = 0;
+                for (const file of pdfFiles) {
+                    try {
+                        const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+                        let fullText = '';
+                        const maxPages = Math.min(pdf.numPages, 25);
+                        totalPagesRead += maxPages;
+                        for (let i = 1; i <= maxPages; i++) {
+                            const textContent = await (await pdf.getPage(i)).getTextContent();
+                            fullText += textContent.items.map(item => item.str).join(' ') + '\n';
+                        }
+                        const cleanText = fullText.trim();
+                        uploadedPDFs = uploadedPDFs.filter(p => p.name !== file.name);
+                        uploadedPDFs.push({
+                            id: 'pdf_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
+                            name: file.name,
+                            text: cleanText
+                        });
+                        combinedPdfText += (combinedPdfText ? '\n\n---\n\n' : '') + cleanText;
+                    } catch (err) {
+                        console.error('Error llegint PDF al modal:', err);
+                    }
+                }
+                if (typeof updatePdfListAndText === 'function') {
+                    updatePdfListAndText();
+                }
+                window.currentAnalyzePdfText = combinedPdfText || extractedText || '';
+                window.currentAnalyzePdfName = pdfFiles.map(f => f.name).join(', ');
+                window.currentAnalyzeMimeType = 'application/pdf';
+
+                const charCount = window.currentAnalyzePdfText.length;
+                previewContainer.innerHTML = `
+                    <div class="w-full text-left space-y-1.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-xs font-extrabold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5">
+                                ✅ PDF(s) carregats i llestos (${totalPagesRead} pàg. llegides · ${charCount.toLocaleString()} caràcters)
+                            </span>
+                        </div>
+                        <div class="text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 truncate">📄 ${escapeHtml(window.currentAnalyzePdfName)}</div>
+                        <div class="text-[10.5px] text-zinc-500 dark:text-zinc-400 line-clamp-2 bg-white dark:bg-zinc-900 p-2 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                            ${escapeHtml(window.currentAnalyzePdfText.substring(0, 260) || 'Document PDF carregat correctament.')}...
+                        </div>
+                    </div>
+                `;
+                if (typeof showToast === 'function') {
+                    showToast(`📄 Apunts PDF carregats! Ja pots prémer "Generar Pla d'Estudi Personalitzat".`, 'success');
+                }
+                return;
+            }
+
+            const file = files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 window.currentAnalyzeBase64 = e.target.result;
                 window.currentAnalyzeMimeType = file.type || 'image/png';
-                previewContainer.classList.remove('hidden');
-
                 if (file.type.startsWith('video/')) {
-                    previewContainer.innerHTML = `<video src="${e.target.result}" controls class="max-h-48 rounded-lg max-w-full"></video>`;
+                    previewContainer.innerHTML = `<video src="${e.target.result}" controls class="max-h-44 rounded-lg max-w-full"></video>`;
                 } else {
-                    previewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview" class="max-h-48 rounded-lg object-contain" />`;
+                    previewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview" class="max-h-44 rounded-lg object-contain" />`;
                 }
             };
             reader.readAsDataURL(file);
         };
 
-        window.executeAnalyzeMedia = async function() {
-            if (!window.currentAnalyzeBase64) {
-                showToast("Si us plau, selecciona una imatge o vídeo per analitzar.", "warning");
+        window.launchStudyPlanFromAnalyzeModal = async function() {
+            const modalDate = document.getElementById('analyze-modal-exam-date')?.value || '';
+            const customNotes = document.getElementById('analyze-modal-custom-notes')?.value?.trim() || '';
+
+            const examDateInput = document.getElementById('exam-date');
+            if (examDateInput && modalDate) {
+                examDateInput.value = modalDate;
+                examDateInput.dispatchEvent(new Event('change'));
+            }
+            const manualTopicInput = document.getElementById('manual-topic');
+            if (manualTopicInput && customNotes) {
+                manualTopicInput.value = customNotes;
+            }
+
+            // Assegurem que almenys hi hagi dies seleccionats (per defecte Dilluns a Divendres si cap està marcat)
+            const checkedDays = document.querySelectorAll('.day-checkbox:checked');
+            if (checkedDays.length === 0) {
+                document.querySelectorAll('.day-checkbox').forEach(cb => {
+                    const v = parseInt(cb.value, 10);
+                    if (v >= 1 && v <= 5) cb.checked = true;
+                });
+            }
+
+            if (uploadedPDFs.length === 0 && !customNotes && (!manualTopicInput || !manualTopicInput.value.trim())) {
+                showToast('Puja primer el teu fitxer PDF d\'apunts (Pas 1) o escriu el tema a estudiar.', 'warning');
                 return;
             }
 
+            Swal.close();
+            await proceedToNextStep();
+        };
+
+        window.executeAnalyzeMedia = async function() {
+            const customNotes = document.getElementById('analyze-modal-custom-notes')?.value?.trim() || '';
             const analysisMode = document.getElementById('analyze-mode-select')?.value || 'all';
             const resultContainer = document.getElementById('analyze-result-container');
             const btn = document.getElementById('btn-analyze-action');
 
+            // Si tenim un PDF carregat, fem l'anàlisi estructurada del PDF amb l'API de generació
+            const pdfTextToAnalyze = window.currentAnalyzePdfText || (Array.isArray(uploadedPDFs) && uploadedPDFs.length > 0 ? uploadedPDFs.map(p => p.text).join('\n\n') : '');
+            if (pdfTextToAnalyze && !window.currentAnalyzeBase64) {
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Analitzant PDF...</span>`;
+                }
+                if (resultContainer) {
+                    resultContainer.classList.remove('hidden');
+                    resultContainer.innerHTML = `
+                        <div class="p-4 bg-cyan-50 dark:bg-cyan-950/40 rounded-2xl border border-cyan-200 dark:border-cyan-900/50 flex flex-col items-center gap-2 text-center">
+                            <div class="w-8 h-8 border-3 border-cyan-600 border-t-transparent rounded-full animate-spin"></div>
+                            <div class="font-bold text-xs text-cyan-900 dark:text-cyan-200">Analitzant els apunts PDF i estructurant punts clau...</div>
+                        </div>
+                    `;
+                }
+                try {
+                    const promptForPdf = `Analitza aquests apunts en PDF (${window.currentAnalyzePdfName || 'Apunts'}) i genera:\n1. Resum executiu dels temes i blocs principals.\n2. Conceptes clau que solen entrar a examen.\n3. Proposta d'estructura d'estudi per blocs.\n${customNotes ? 'Indicacions addicionals: ' + customNotes : ''}\n\nContingut del PDF:\n${pdfTextToAnalyze.substring(0, 14000)}`;
+                    const res = await callGenerateApi({
+                        action: 'chat',
+                        messages: [{ role: 'user', content: promptForPdf }],
+                        mode: 'study',
+                        pdfText: pdfTextToAnalyze.substring(0, 14000)
+                    });
+                    const data = await res.json();
+                    const replyText = data.reply || data.text || 'Anàlisi completada.';
+                    const parsedHtml = (typeof marked !== 'undefined' && marked.parse)
+                        ? marked.parse(replyText)
+                        : `<p>${escapeHtml(replyText).replace(/\n/g, '<br>')}</p>`;
+                    if (resultContainer) {
+                        resultContainer.innerHTML = `
+                            <div class="space-y-3">
+                                <div class="max-h-60 overflow-y-auto p-3 bg-zinc-50 dark:bg-zinc-800/80 rounded-2xl border border-zinc-200 dark:border-zinc-700 prose dark:prose-invert text-xs custom-scrollbar">
+                                    ${parsedHtml}
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <button type="button" onclick="launchStudyPlanFromAnalyzeModal()" class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                                        📅 Generar ara el Pla d'Estudi amb aquest PDF
+                                    </button>
+                                    <button type="button" onclick="insertAnalysisIntoChat(this)" class="py-2 px-3 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-xl text-xs font-bold transition cursor-pointer">
+                                        Inserir al Xat
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    showToast('Anàlisi del PDF completada!', 'success');
+                } catch (err) {
+                    if (resultContainer) {
+                        resultContainer.innerHTML = `<div class="p-3 bg-red-50 dark:bg-red-950/40 rounded-xl border border-red-200 text-xs text-red-600"><strong>Avís:</strong> ${escapeHtml(err.message)}</div>`;
+                    }
+                } finally {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = `<span>Analitzar Fitxer Ara</span>`;
+                    }
+                }
+                return;
+            }
+
+            if (!window.currentAnalyzeBase64) {
+                showToast("Si us plau, selecciona un fitxer PDF, imatge o vídeo al Pas 1.", "warning");
+                return;
+            }
+
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Analitzant amb Gemini 3.8 Flash...</span>`;
+                btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Analitzant...</span>`;
             }
 
             if (resultContainer) {
@@ -12425,7 +12649,7 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                 resultContainer.innerHTML = `
                     <div class="p-4 bg-cyan-50 dark:bg-cyan-950/40 rounded-2xl border border-cyan-200 dark:border-cyan-900/50 flex flex-col items-center gap-2 text-center">
                         <div class="w-8 h-8 border-3 border-cyan-600 border-t-transparent rounded-full animate-spin"></div>
-                        <div class="font-bold text-xs text-cyan-900 dark:text-cyan-200">Examinant detalladament el fitxer multimèdia...</div>
+                        <div class="font-bold text-xs text-cyan-900 dark:text-cyan-200">Examinant detalladament el fitxer...</div>
                     </div>
                 `;
             }
@@ -12457,7 +12681,7 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                                 ${parsedHtml}
                             </div>
                             <div class="flex flex-col sm:flex-row gap-2">
-                                <button onclick="exportDirectlyToGoogleDocs('Anàlisi Multimodal - Gemini', document.getElementById('analyze-result-container').innerText, 'Anàlisi Visual')" class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                                <button onclick="exportDirectlyToGoogleDocs('Anàlisi de Fitxers - Aliat', document.getElementById('analyze-result-container').innerText, 'Anàlisi Visual')" class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                                     <span>Crear i Obrir a Google Docs</span>
                                 </button>
@@ -12468,7 +12692,7 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                         </div>
                     `;
                 }
-                showToast("Anàlisi multimèdia completada!", "success");
+                showToast("Anàlisi completada!", "success");
             } catch (err) {
                 console.error("Analysis error:", err);
                 if (resultContainer) {
@@ -12482,7 +12706,7 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
             } finally {
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Començar Anàlisi amb Gemini 3.8</span>`;
+                    btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Analitzar Fitxer Ara</span>`;
                 }
             }
         };
@@ -12492,7 +12716,7 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
             if (container) {
                 const text = container.innerText;
                 Swal.close();
-                appendMessage('assistant', `### Resultat de l'Anàlisi Multimodal (Gemini 3.8):\n\n${text}`);
+                appendMessage('assistant', `### Resultat de l'Anàlisi del Fitxer:\n\n${text}`);
                 showToast("Anàlisi inserida al xat!", "success");
             }
         };
@@ -12822,6 +13046,23 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                             </div>
                         </div>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
+
+                    <!-- ACCÉS DIRECTE: ANÀLISI DE FITXERS PDF I PLA D'ESTUDI PERSONALITZAT -->
+                    <button type="button" onclick="Swal.close(); openAnalyzeMediaModal('pdf_plan');" class="w-full p-3.5 bg-cyan-50/70 dark:bg-cyan-950/30 border border-cyan-200/90 dark:border-cyan-800/70 rounded-2xl hover:border-cyan-500 dark:hover:border-cyan-400 transition-all group flex items-center justify-between gap-3 text-left cursor-pointer">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-9 h-9 rounded-xl bg-cyan-600 text-white dark:bg-cyan-500 dark:text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors flex items-center gap-2">
+                                    <span>Anàlisi de Fitxers PDF i Pla d'Estudi</span>
+                                    <span class="text-[9px] bg-cyan-100 dark:bg-cyan-900/80 text-cyan-700 dark:text-cyan-200 font-extrabold px-1.5 py-0.5 rounded-md">Guiat</span>
+                                </div>
+                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Puja apunts en PDF, imatge o vídeo i genera el teu calendari d'estudi</div>
+                            </div>
+                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
 
                     <!-- ACCÉS DIRECTE: CONSCIENCIACIÓ, CRITERI PROPI I TÈCNIQUES D'IA -->
@@ -16075,14 +16316,20 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                                 </div>
                                 <div>
-                                    <h2 class="text-base sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Pla d'Estudis (Modo sin sesión)</h2>
-                                    <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Escriu qualsevol tema al xat per estudiar. Per pujar apunts PDF, generar el calendari d'examen i fer tests diagnòstics, inicia sessió.</p>
+                                    <h2 class="text-base sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">Pla d'Estudis Personalitzat</h2>
+                                    <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Puja els teus apunts en PDF per analitzar el temari, generar el teu calendari d'estudi i fer el test diagnòstic.</p>
                                 </div>
                             </div>
-                            <button type="button" onclick="promptGuestLoginRequired()" class="w-full p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-500 transition cursor-pointer flex items-center justify-between gap-3 text-left">
-                                <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">📄 Pujar apunts PDF i configurar data d'examen (Requereix iniciar sessió)</span>
-                                <span class="text-xs font-bold text-blue-600 dark:text-sky-400 shrink-0">Accedir →</span>
-                            </button>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <button type="button" onclick="openAnalyzeMediaModal('pdf_plan')" class="w-full p-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white transition cursor-pointer flex items-center justify-between gap-3 text-left shadow-sm">
+                                    <span class="text-xs font-extrabold">📄 Analitzar Apunts PDF i Generar Pla d'Estudi</span>
+                                    <span class="text-xs font-extrabold shrink-0">Obrir →</span>
+                                </button>
+                                <button type="button" onclick="openFullStudyConfigurator()" class="w-full p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-500 transition cursor-pointer flex items-center justify-between gap-3 text-left">
+                                    <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">🗓️ Configurador complet (Dies, hores i PDF)</span>
+                                    <span class="text-xs font-bold text-blue-600 dark:text-sky-400 shrink-0">Configurar →</span>
+                                </button>
+                            </div>
                         </div>
                     `;
                 }
@@ -19861,6 +20108,16 @@ ${parsedBody}
                 return;
             }
             
+            // Si és un PDF adjuntat des del menú '+', obrim el modal d'Anàlisi de Fitxers i Pla d'Estudi i en processem el text
+            if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                openAnalyzeMediaModal('pdf_plan');
+                setTimeout(() => {
+                    previewAnalyzeMedia({ files: [file] });
+                }, 120);
+                input.value = '';
+                return;
+            }
+
             // Si és una imatge, la convertim a Base64 per enviar-la a la IA
             if (file.type.startsWith('image/')) {
                 const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
@@ -19875,7 +20132,7 @@ ${parsedBody}
                 };
                 reader.readAsDataURL(file);
             } else {
-                Swal.fire('Atenció', 'De moment es poden adjuntar imatges o fitxers d\'àudio per transcriure.', 'info');
+                Swal.fire('Atenció', 'Pots adjuntar apunts en PDF, imatges o fitxers d\'àudio.', 'info');
             }
             input.value = ''; // Resetejar input
         }
@@ -19892,9 +20149,11 @@ ${parsedBody}
             e.preventDefault(); const input = document.getElementById('chat-input'); const msg = input.value.trim();
             if (!msg && !currentAttachmentBase64) return;
             
-            // Detecció d'intenció d'obrir el modal de Google Calendar o l'eina d'Anàlisi Multimodal des del xat
+            // Detecció d'intenció d'obrir el modal de Google Calendar o el modal d'Anàlisi de Fitxers / PDF i Pla d'Estudi des del xat
             const isCalendarModalIntent = /(?:obre|obrir|abre|abrir|mostra|sincronitz).*google\s*calendar/i.test(msg) || /agenda\s+de\s+l'aliat.*calendari/i.test(msg);
-            const isMultimodalToolIntent = /(?:obre|obrir|abre|abrir).*an[aà]lisi\s+multimodal/i.test(msg) || /(?:pujar|subir)\s+una\s+foto\s+o\s+v[ií]deo\s+d'apunts/i.test(msg);
+            const isMultimodalToolIntent = /(?:obre|obrir|abre|abrir).*(?:an[aà]lisi\s+multimodal|an[aà]lisi\s+de\s+fitxers|modal\s+d'an[aà]lisi)/i.test(msg)
+                || /(?:pujar|subir)\s+(?:una\s+foto\s+o\s+v[ií]deo|els\s+apunts\s+en\s+pdf|apunts\s+en\s+pdf)/i.test(msg)
+                || /pla\s+d'estudi\s+personalitzat/i.test(msg);
 
             if ((isCalendarModalIntent || isMultimodalToolIntent) && !currentAttachmentBase64) {
                 input.value = '';
@@ -19905,27 +20164,27 @@ ${parsedBody}
                     replyParts.push(`📅 **Google Calendar i Agenda de l'Aliat:** He obert el modal de Google Calendar perquè puguis sincronitzar les teves sessions i esdeveniments amb el teu calendari oficial.`);
                 }
                 if (isMultimodalToolIntent) {
-                    replyParts.push(`🔍 **Anàlisi Multimodal (Foto i Vídeo d'Apunts):** Pots pujar qualsevol imatge o vídeo d'apunts per analitzar-lo amb Gemini.`);
+                    replyParts.push(`📄 **Modal d'Anàlisi de Fitxers i Pla d'Estudi Personalitzat obert!**\n\nSegueix aquests **3 passos** dins del modal per començar:\n1. **Pas 1 — Puja els apunts en PDF:** Fes clic al selector de fitxers per carregar un o diversos documents PDF dels teus apunts (l'IA n'extraurà el temari automàticament).\n2. **Pas 2 — Data de l'examen i enfocament:** Tria la data límit del teu examen i afegeix qualsevol indicació sobre el teu nivell o temes prioritaris.\n3. **Pas 3 — Genera el Pla d'Estudi:** Prem **"Generar Pla d'Estudi Personalitzat"** per obtenir el teu calendari de sessions per dies i el test diagnòstic inicial.`);
                 }
                 replyParts.push(`
 <div class="flex flex-wrap gap-2 mt-3 not-prose">
-    <button type="button" onclick="openGoogleCalendarModal()" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-bold transition cursor-pointer shadow-xs flex items-center gap-1.5">
-        📅 Obrir Modal Google Calendar
+    <button type="button" onclick="openAnalyzeMediaModal('pdf_plan')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition cursor-pointer shadow-xs flex items-center gap-1.5">
+        📄 Obrir Modal d'Anàlisi de Fitxers i PDF
     </button>
-    <button type="button" onclick="openAnalyzeMediaModal()" class="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold transition cursor-pointer shadow-xs flex items-center gap-1.5">
-        🔍 Obrir Eina d'Anàlisi Multimodal
+    <button type="button" onclick="openFullStudyConfigurator()" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-bold transition cursor-pointer shadow-xs flex items-center gap-1.5">
+        🗓️ Obrir Configurador Complet del Pla d'Estudi
     </button>
-    <a href="/privacidad.html" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
-        🔒 Política de Privacidad (privacidad.html) ↗
-    </a>
+    <button type="button" onclick="openGoogleCalendarModal()" class="px-3.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 text-xs font-bold transition cursor-pointer flex items-center gap-1.5">
+        📅 Google Calendar
+    </button>
 </div>`);
                 appendMessage('ai', replyParts.join('\n\n'));
                 if (isCalendarModalIntent && isMultimodalToolIntent) {
-                    openAnalyzeMediaModal();
+                    openAnalyzeMediaModal('pdf_plan');
                 } else if (isCalendarModalIntent) {
                     openGoogleCalendarModal();
                 } else if (isMultimodalToolIntent) {
-                    openAnalyzeMediaModal();
+                    openAnalyzeMediaModal('pdf_plan');
                 }
                 return;
             }

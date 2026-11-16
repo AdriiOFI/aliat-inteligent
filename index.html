@@ -12,8 +12,8 @@
     <meta name="twitter:image" content="/icon-512.png">
     <meta name="google-site-verification" content="Ob_ohKErmz3FY-PLXlhVlvhEfIfz9cXYxspdz36I92c" />
     
-    <!-- Favicon Oficial & PWA / Android / iOS App Icons -->
-    <link rel="manifest" href="/manifest.json">
+    <!-- Favicon Oficial & PWA / Android / iOS App Icons (mateix logo del desplegable i pantalla de benvinguda) -->
+    <link rel="manifest" href="/manifest.json?v=20261116b">
     <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)">
     <meta name="mobile-web-app-capable" content="yes">
@@ -21,14 +21,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Aliat">
     <meta name="application-name" content="Aliat Intel·ligent">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon.png?v=20261116b">
+    <link rel="shortcut icon" type="image/png" href="/favicon.png?v=20261116b">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=20261116b">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=20261116b">
+    <link rel="icon" type="image/png" sizes="160x160" href="/assets/aistudio/logoOFI_048f1d3b.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=20261116b">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png?v=20261116b">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20261116b">
     <link rel="apple-touch-icon" href="/assets/aistudio/logoOFI_048f1d3b.png">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22706,10 +22706,19 @@ ${parsedBody}
 
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
-                    title: "📲 Instal·la Aliat com a App Android",
+                    title: "📲 Instal·la Aliat com a App",
                     html: `
                         <div class="text-left space-y-3 py-1 text-xs text-zinc-700 dark:text-zinc-200">
-                            <p class="font-medium">Pots instal·lar Aliat Intel·ligent directament al teu telèfon Android sense ocupar memòria:</p>
+                            <div class="flex items-center gap-3 p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+                                <div class="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 p-2 flex items-center justify-center shrink-0 shadow-xs">
+                                    <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Logo Aliat" class="w-full h-full object-contain dark:brightness-[1.85] dark:contrast-125">
+                                </div>
+                                <div>
+                                    <div class="font-extrabold text-sm text-zinc-900 dark:text-white">Aliat Intel·ligent</div>
+                                    <div class="text-[11px] text-zinc-500 dark:text-zinc-400">Aplicació Web (PWA) amb el logo oficial d'Aliat</div>
+                                </div>
+                            </div>
+                            <p class="font-medium">Pots instal·lar Aliat Intel·ligent directament al teu telèfon o escriptori sense ocupar memòria:</p>
                             <div class="bg-blue-50/80 dark:bg-blue-950/50 p-3 rounded-2xl border border-blue-200/80 dark:border-blue-900/60 space-y-2.5">
                                 <div class="flex items-start gap-2.5">
                                     <span class="font-bold text-blue-600 bg-white dark:bg-zinc-800 w-5 h-5 rounded-full flex items-center justify-center shrink-0 shadow-2xs text-[11px]">1</span>

@@ -107,6 +107,11 @@ app.get(['/condiciones.html', '/condiciones', '/terminos.html', '/terminos'], (r
     if (fs.existsSync(rootFile)) return res.sendFile(rootFile);
     return res.sendFile(path.join(__dirname, 'public', 'condiciones.html'));
 });
+app.get(['/cookies.html', '/cookies', '/politica-cookies.html'], (req, res) => {
+    const rootFile = path.join(__dirname, 'cookies.html');
+    if (fs.existsSync(rootFile)) return res.sendFile(rootFile);
+    return res.sendFile(path.join(__dirname, 'public', 'cookies.html'));
+});
 
 // Static assets: ONLY serve the dedicated public directory (never expose root source/data files)
 app.use(express.static(path.join(__dirname, 'public')));

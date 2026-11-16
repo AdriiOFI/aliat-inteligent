@@ -7,9 +7,12 @@
     <meta name="description" content="Tutor virtual intel·ligent per crear plans d'estudi amb IA, tests de diagnòstic i xat interactiu.">
     <meta property="og:title" content="Aliat Intel·ligent">
     <meta property="og:description" content="Tutor virtual intel·ligent per crear plans d'estudi amb IA, tests de diagnòstic i xat interactiu.">
+    <meta property="og:image" content="/icon-512.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image" content="/icon-512.png">
     <meta name="google-site-verification" content="Ob_ohKErmz3FY-PLXlhVlvhEfIfz9cXYxspdz36I92c" />
     
-    <!-- PWA & Android Web App Meta Tags -->
+    <!-- Favicon Oficial & PWA / Android / iOS App Icons -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2563eb" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)">
@@ -17,9 +20,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Aliat">
+    <meta name="application-name" content="Aliat Intel·ligent">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="apple-touch-icon" href="/assets/aistudio/logoOFI_048f1d3b.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/assets/aistudio/logoOFI_048f1d3b.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/assets/aistudio/logoOFI_048f1d3b.png">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -117,6 +127,17 @@
         input:focus-visible {
             outline: none !important;
             box-shadow: none !important;
+        }
+        /* Fons 100% sòlid i opac per al menú (+) i desplegables del xat */
+        #plus-menu,
+        #tutor-dropdown-menu {
+            background-color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        html.dark #plus-menu,
+        html.dark #tutor-dropdown-menu {
+            background-color: #14141a !important;
+            opacity: 1 !important;
         }
         @media (prefers-reduced-motion: reduce) {
             *, ::before, ::after {
@@ -1290,6 +1311,8 @@
                 <div class="flex flex-wrap items-center justify-center gap-4 font-semibold">
                     <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 hover:underline">Política de Privacidad</a>
                     <a href="/condiciones.html" class="text-blue-600 dark:text-sky-400 hover:underline">Condiciones de Uso</a>
+                    <a href="/cookies.html" class="text-blue-600 dark:text-sky-400 hover:underline">Política de Cookies e IA</a>
+                    <button type="button" onclick="window.openAliatCookieSettingsModal && window.openAliatCookieSettingsModal()" class="text-blue-600 dark:text-sky-400 hover:underline cursor-pointer">Configurar Cookies</button>
                     <button type="button" onclick="enterGuestMode('free')" class="hover:text-zinc-900 dark:hover:text-white cursor-pointer">Modo Invitado</button>
                     <button type="button" onclick="openAuthModal('login')" class="hover:text-zinc-900 dark:hover:text-white cursor-pointer">Acceder / Login</button>
                 </div>
@@ -1886,6 +1909,9 @@
                             <button onclick="toggleSidebar()" class="p-1.5 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition md:hidden shrink-0 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center" aria-label="Menú">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
                             </button>
+                            <div class="w-7 h-7 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 p-1 flex items-center justify-center shrink-0 shadow-2xs">
+                                <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/icon-192.png';}" alt="Aliat Logo" class="w-full h-full object-contain dark:brightness-[1.85] dark:contrast-125">
+                            </div>
                             <div class="font-semibold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5 text-xs sm:text-sm min-w-0 flex-1 truncate justify-start text-left">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span> 
                                 <span id="chat-mode-label" class="truncate">Classe Activa</span>
@@ -2234,12 +2260,12 @@
                             
                             <!-- BOTÓ MAS (+) AMB DESPLEGABLE D'OPCIONS -->
                             <div class="relative shrink-0 order-2 sm:order-1">
-                                <button type="button" id="chat-plus-btn" onclick="togglePlusMenu(event)" title="Més opcions (Càmera, Imatges, PDFs)" class="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-600 dark:text-zinc-300 flex items-center justify-center transition cursor-pointer font-bold text-lg active:scale-95">
+                                <button type="button" id="chat-plus-btn" onclick="togglePlusMenu(event)" title="Més opcions (Càmera, Imatges, PDFs)" class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200/90 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 flex items-center justify-center transition cursor-pointer font-bold text-lg active:scale-95 shadow-2xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                 </button>
 
-                                <!-- MENU DESPLEGABLE DEL (+) ORGANITZAT PER CARPETES I SUB-OPCIONS -->
-                                <div id="plus-menu" class="hidden fixed sm:absolute left-2.5 right-2.5 sm:left-0 sm:right-auto bottom-20 sm:bottom-12 z-50 bg-white/98 dark:bg-[#14141a]/98 border border-zinc-200/90 dark:border-zinc-800/90 rounded-[1.75rem] shadow-2xl p-3 w-auto sm:w-84 max-h-[72dvh] overflow-y-auto flex flex-col gap-2 backdrop-blur-2xl transition-all duration-200">
+                                <!-- MENU DESPLEGABLE DEL (+) ORGANITZAT PER CARPETES I SUB-OPCIONS (FONS SÒLID OPAC) -->
+                                <div id="plus-menu" class="hidden fixed sm:absolute left-2.5 right-2.5 sm:left-0 sm:right-auto bottom-20 sm:bottom-12 z-50 bg-white dark:bg-[#14141a] border border-zinc-200 dark:border-zinc-800 rounded-[1.75rem] shadow-2xl p-3 w-auto sm:w-80 max-h-[72dvh] overflow-y-auto flex flex-col gap-2 transition-all duration-200">
                                     
                                     <!-- VISTA PRINCIPAL: CARPETES D'OPCIONS -->
                                     <div id="plus-folder-root" class="space-y-1.5">
@@ -2252,7 +2278,7 @@
                                         </div>
 
                                         <!-- CARPETA 1: GOOGLE WORKSPACE -->
-                                        <button type="button" onclick="showPlusFolder('workspace')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-blue-50/80 dark:hover:bg-blue-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-blue-300 dark:hover:border-blue-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                        <button type="button" onclick="showPlusFolder('workspace')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900 hover:bg-blue-50 dark:hover:bg-blue-950/60 border border-zinc-200/80 dark:border-zinc-800 hover:border-blue-300 dark:hover:border-blue-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
                                             <div class="flex items-center gap-2.5 min-w-0">
                                                 <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
@@ -2269,7 +2295,7 @@
                                         </button>
 
                                         <!-- CARPETA 2: IA CREATIVA & MULTIMODAL -->
-                                        <button type="button" onclick="showPlusFolder('creative')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 border border-zinc-200/80 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                        <button type="button" onclick="showPlusFolder('creative')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
                                             <div class="flex items-center gap-2.5 min-w-0">
                                                 <div class="w-8 h-8 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
@@ -2286,7 +2312,7 @@
                                         </button>
 
                                         <!-- CARPETA 3: EINES D'ESTUDI & TESTS -->
-                                        <button type="button" onclick="showPlusFolder('study')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                        <button type="button" onclick="showPlusFolder('study')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 border border-zinc-200/80 dark:border-zinc-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
                                             <div class="flex items-center gap-2.5 min-w-0">
                                                 <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white dark:bg-emerald-500 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
@@ -2303,7 +2329,7 @@
                                         </button>
 
                                         <!-- CARPETA 4: FOCUS & POMODORO -->
-                                        <button type="button" onclick="showPlusFolder('focus')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 hover:bg-amber-50/80 dark:hover:bg-amber-950/40 border border-zinc-200/80 dark:border-zinc-800 hover:border-amber-300 dark:hover:border-amber-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
+                                        <button type="button" onclick="showPlusFolder('focus')" class="flex items-center justify-between w-full p-2 rounded-2xl bg-zinc-50 dark:bg-zinc-900 hover:bg-amber-50 dark:hover:bg-amber-950/60 border border-zinc-200/80 dark:border-zinc-800 hover:border-amber-300 dark:hover:border-amber-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.98]">
                                             <div class="flex items-center gap-2.5 min-w-0">
                                                 <div class="w-8 h-8 rounded-xl bg-amber-600 text-white dark:bg-amber-400 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -2614,8 +2640,8 @@
                                     <svg id="tutor-arrow-icon" class="w-3 h-3 text-zinc-400 group-hover:text-blue-500 transition-transform duration-300 ml-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
                                 </button>
 
-                                <!-- DESPLEGABLE PERSONALITZAT -->
-                                <div id="tutor-dropdown-menu" class="hidden fixed sm:absolute right-2.5 sm:right-0 bottom-20 sm:bottom-11 z-50 bg-white/98 dark:bg-[#18181b]/98 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 w-64 sm:w-60 max-w-[calc(100vw-1.25rem)] flex flex-col gap-1 backdrop-blur-xl transition-all">
+                                <!-- DESPLEGABLE PERSONALITZAT (FONS SÒLID OPAC) -->
+                                <div id="tutor-dropdown-menu" class="hidden fixed sm:absolute right-2.5 sm:right-0 bottom-20 sm:bottom-11 z-50 bg-white dark:bg-[#18181b] border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-1.5 w-64 sm:w-60 max-w-[calc(100vw-1.25rem)] flex flex-col gap-1 transition-all">
                                     <button type="button" onclick="selectTutorOption('standard')" class="tutor-opt-btn flex items-center gap-2.5 w-full p-2 hover:bg-blue-50 dark:hover:bg-zinc-800/80 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer">
                                         <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
@@ -2658,10 +2684,10 @@
                                 </div>
                             </div>
 
-                            <!-- BOTÓ DE CERCA AMB GOOGLE (Google Search Grounding gemini-3.8-flash) -->
-                            <button type="button" id="google-search-toggle-btn" onclick="toggleGoogleSearchGrounding()" title="Cerca Web amb Google activa (gemini-3.8-flash)" class="w-8 h-8 rounded-full hover:bg-blue-100/70 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center transition cursor-pointer relative shrink-0 order-4 shadow-xs active:scale-95">
+                            <!-- BOTÓ DE CERCA AMB GOOGLE (Desactivat per defecte; activable fins i tot sense iniciar sessió) -->
+                            <button type="button" id="google-search-toggle-btn" onclick="toggleGoogleSearchGrounding()" title="Cerca Web amb Google desactivada (Fes clic per activar)" class="w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-400 dark:text-zinc-500 border border-transparent flex items-center justify-center transition cursor-pointer relative shrink-0 order-4 active:scale-95">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>
-                                <span id="google-search-pulse" class="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse ring-2 ring-blue-400/50"></span>
+                                <span id="google-search-pulse" class="hidden absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-pulse ring-2 ring-blue-400/50"></span>
                             </button>
 
                             <!-- MICRÒFON -->
@@ -2902,6 +2928,20 @@
                             </span>
                             <span class="text-emerald-600 dark:text-emerald-400 text-[11px] shrink-0">↗</span>
                         </a>
+                        <a href="/cookies.html" target="_blank" rel="noopener noreferrer" class="px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-900 hover:bg-blue-50/60 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:border-blue-400 dark:hover:border-sky-500/60 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition flex items-center justify-between gap-2 shadow-2xs">
+                            <span class="flex items-center gap-2 truncate">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-amber-600 dark:text-amber-400 shrink-0"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/></svg>
+                                <span class="truncate">Política de Cookies e IA</span>
+                            </span>
+                            <span class="text-amber-600 dark:text-amber-400 text-[11px] shrink-0">↗</span>
+                        </a>
+                        <button type="button" onclick="window.openAliatCookieSettingsModal && window.openAliatCookieSettingsModal()" class="px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-900 hover:bg-blue-50/60 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:border-blue-400 dark:hover:border-sky-500/60 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition flex items-center justify-between gap-2 shadow-2xs cursor-pointer text-left">
+                            <span class="flex items-center gap-2 truncate">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-indigo-600 dark:text-indigo-400 shrink-0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4"/></svg>
+                                <span class="truncate">Configurar Cookies</span>
+                            </span>
+                            <span class="text-indigo-600 dark:text-indigo-400 text-[11px] shrink-0">⚙️</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -3782,13 +3822,13 @@
         </div>
     </div>
 
-    <!-- TOAST NOTIFICACIÓ BAIX MIG -->
-    <div id="bottom-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] pointer-events-none transition-all duration-300 transform translate-y-12 opacity-0">
-        <div id="toast-content" class="bg-zinc-900/95 dark:bg-zinc-800/95 text-white px-5 py-3 rounded-2xl shadow-2xl border border-zinc-700/80 backdrop-blur-xl flex items-center gap-3 text-xs md:text-sm font-medium">
-            <span id="toast-icon" class="flex items-center text-emerald-400">
+    <!-- TOAST NOTIFICACIÓ A DALT AL CENTRE (Per no tapar mai el xat d'escriptura a baix) -->
+    <div id="bottom-toast" class="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-[200] pointer-events-none transition-all duration-300 transform -translate-y-12 opacity-0 max-w-[calc(100vw-1.5rem)]">
+        <div id="toast-content" class="bg-zinc-900 dark:bg-zinc-800 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl shadow-2xl border border-zinc-700 flex items-center gap-2.5 text-xs md:text-sm font-medium pointer-events-none">
+            <span id="toast-icon" class="flex items-center text-emerald-400 shrink-0">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             </span>
-            <span id="toast-msg">Notificació</span>
+            <span id="toast-msg" class="truncate">Notificació</span>
         </div>
     </div>
 
@@ -4546,6 +4586,10 @@
 
             const isAllowedInGuest =
                 id === 'send-btn' ||
+                id === 'google-search-toggle-btn' ||
+                id === 'xatbot-submode-header-pill' ||
+                id === 'memory-header-btn' ||
+                id === 'chat-plus-btn' ||
                 (typeAttr === 'submit' && btn.closest('#chat-form')) ||
                 id === 'sidebar-new-session-btn' ||
                 id === 'sidebar-mode-study' ||
@@ -4553,6 +4597,28 @@
                 id === 'sidebar-mode-daily' ||
                 id === 'sidebar-toggle-btn' ||
                 id === 'global-menu-btn' ||
+                onclickAttr.includes('toggleGoogleSearchGrounding') ||
+                onclickAttr.includes('showMemoryModal') ||
+                onclickAttr.includes('switchMemoryD3ChartTab') ||
+                onclickAttr.includes('addManualStudyMinutesToday') ||
+                onclickAttr.includes('updateMemoryDailyTargetGoal') ||
+                onclickAttr.includes('togglePlusMenu') ||
+                onclickAttr.includes('showPlusFolder') ||
+                onclickAttr.includes('closePlusMenu') ||
+                onclickAttr.includes('AliatCookie') ||
+                onclickAttr.includes('setFreeChatSubMode') ||
+                onclickAttr.includes('startFreeChatWithTopic') ||
+                onclickAttr.includes('setDailyOutputMode') ||
+                onclickAttr.includes('openResponsibleAiGuideModal') ||
+                onclickAttr.includes('closeResponsibleAiGuideModal') ||
+                onclickAttr.includes('switchResponsibleAiTab') ||
+                onclickAttr.includes('filterResponsibleAiAwareness') ||
+                onclickAttr.includes('applyResponsibleAiPrompt') ||
+                onclickAttr.includes('copyResponsibleAiPrompt') ||
+                onclickAttr.includes('fillResponsibleBuilderPreset') ||
+                onclickAttr.includes('sendResponsibleBuilderToChat') ||
+                onclickAttr.includes('copyMsgText') ||
+                onclickAttr.includes('triggerAiResponse') ||
                 onclickAttr.includes('setAppLanguage') ||
                 onclickAttr.includes('startStudyMode') ||
                 onclickAttr.includes('startFreeChatMode') ||
@@ -6749,20 +6815,70 @@
                     </div>
                 </div>
 
-                <!-- BLOC GRÀFIC DE PROGRÉS (D3.JS - ÚLTIMS 7 DIES) -->
-                <div class="bg-zinc-50/90 dark:bg-zinc-900/90 p-4 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 shadow-2xs space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700 dark:text-sky-400 flex items-center gap-1.5">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                            <span>Evolució de Punts (Últims 7 dies)</span>
+                <!-- BLOC GRÀFIC D3.JS: TEMPS D'ESTUDI DIARI VS OBJECTIU (ÚLTIMS 30 DIES) + EVOLUCIÓ DE PUNTS -->
+                <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xs space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span id="memory-d3-card-title" class="text-xs font-extrabold uppercase tracking-wider text-blue-700 dark:text-sky-400 flex items-center gap-1.5">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3v18h18"/><path d="M7 16v-5"/><path d="M12 16V8"/><path d="M17 16v-8"/></svg>
+                            <span>Temps d'Estudi Diari vs. Objectiu (Últims 30 dies)</span>
                         </span>
-                        <span class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 bg-white/80 dark:bg-zinc-800 px-2 py-0.5 rounded-md border border-zinc-200/80 dark:border-zinc-700">D3.js</span>
+                        <div class="flex items-center gap-1 bg-white dark:bg-zinc-950 p-0.5 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                            <button type="button" id="memory-chart-tab-30d" onclick="window.switchMemoryD3ChartTab('study30d')" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-blue-600 text-white transition cursor-pointer">30d Estudi vs Objectiu</button>
+                            <button type="button" id="memory-chart-tab-7d" onclick="window.switchMemoryD3ChartTab('points7d')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">7d Punts</button>
+                        </div>
                     </div>
-                    <p class="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium leading-tight">
-                        Trajectòria diària d'acumulació de punts per activitats, encerts i pomodoros completats.
-                    </p>
-                    <div id="memory-d3-chart-container" class="w-full h-44 relative mt-1 flex items-center justify-center overflow-hidden">
-                        <!-- El gràfic d3 es dibuixa automàticament en obrir el modal -->
+
+                    <!-- Controls i KPIs del gràfic D3 de 30 dies -->
+                    <div id="memory-d3-30d-controls" class="space-y-2.5">
+                        <p class="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium leading-tight">
+                            Comparativa diària en D3.js dels minuts estudiats durant els últims 30 dies respecte al teu objectiu diari (línia discontínua ambre).
+                        </p>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-white dark:bg-zinc-950 p-2 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                                <div id="d3-30d-kpi-today" class="text-sm font-black text-emerald-600 dark:text-emerald-400 tabular-nums">-- min</div>
+                                <div class="text-[9.5px] font-bold text-zinc-500 uppercase mt-0.5">Estudi Avui</div>
+                            </div>
+                            <div class="bg-white dark:bg-zinc-950 p-2 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                                <div id="d3-30d-kpi-avg" class="text-sm font-black text-blue-600 dark:text-sky-400 tabular-nums">-- min/d</div>
+                                <div class="text-[9.5px] font-bold text-zinc-500 uppercase mt-0.5">Mitjana 30d</div>
+                            </div>
+                            <div class="bg-white dark:bg-zinc-950 p-2 rounded-xl border border-zinc-200/80 dark:border-zinc-800">
+                                <div id="d3-30d-kpi-met" class="text-sm font-black text-amber-600 dark:text-amber-400 tabular-nums">-- / 30</div>
+                                <div class="text-[9.5px] font-bold text-zinc-500 uppercase mt-0.5">Objectiu Assolit</div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
+                            <div class="flex items-center gap-1.5 text-[11px] font-bold text-zinc-700 dark:text-zinc-300">
+                                <span>🎯 Objectiu diari:</span>
+                                <select id="memory-d3-target-select" onchange="window.updateMemoryDailyTargetGoal(this.value)" class="px-2 py-1 rounded-lg bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-[11px] font-extrabold text-zinc-900 dark:text-white cursor-pointer">
+                                    <option value="60">60 min (1h/dia)</option>
+                                    <option value="90">90 min (1.5h/dia)</option>
+                                    <option value="120">120 min (2h/dia)</option>
+                                    <option value="150">150 min (2.5h/dia)</option>
+                                    <option value="240">240 min (4h/dia)</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="window.addManualStudyMinutesToday(15)" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10.5px] font-extrabold transition cursor-pointer shadow-2xs">+15m estudi avui</button>
+                                <button type="button" onclick="window.addManualStudyMinutesToday(30)" class="px-2.5 py-1 rounded-lg bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-[10.5px] font-extrabold transition cursor-pointer">+30m</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenidor del gràfic D3.js -->
+                    <div id="memory-d3-chart-container" class="w-full h-52 relative mt-1 flex items-center justify-center overflow-visible select-none">
+                        <!-- El gràfic D3 es dibuixa automàticament en obrir el modal -->
+                    </div>
+
+                    <!-- Llegenda del gràfic de 30 dies -->
+                    <div id="memory-d3-30d-legend" class="flex flex-wrap items-center justify-between gap-2 pt-1 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 border-t border-zinc-200/70 dark:border-zinc-800/80">
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-emerald-500 inline-block"></span> Objectiu assolit</span>
+                            <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-xs bg-blue-500 inline-block"></span> En progrés</span>
+                            <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 border-t-2 border-dashed border-amber-500 inline-block"></span> Meta diària</span>
+                        </div>
+                        <span class="text-[9.5px] text-zinc-400">Passa el cursor o toca qualsevol dia</span>
                     </div>
                 </div>
 
@@ -6814,6 +6930,9 @@
                 </div>
             </div>`;
 
+            window._lastMemoryChartContext = { userPoints, mem, eff, totalMins };
+            window._activeMemoryChartTab = window._activeMemoryChartTab || 'study30d';
+
             Swal.fire({
                 title: '<div class="flex items-center justify-center gap-2.5 text-zinc-900 dark:text-white"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-3 3.87A4 4 0 0 0 2 15a4 4 0 0 0 4 4h1a4 4 0 0 0 3.87 3 4 4 0 0 0 4.26-3H16a4 4 0 0 0 4-4 4 4 0 0 0-1-2.87A4 4 0 0 0 22 11a4 4 0 0 0-3-3.87V6a4 4 0 0 0-4-4h-3z"/></svg> <span>Memòria, Eficiència i Resultats</span></div>',
                 html: htmlContent,
@@ -6822,15 +6941,389 @@
                 confirmButtonColor: '#18181b',
                 customClass: { popup: 'rounded-[1.75rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg w-full', title: 'font-black text-zinc-900 dark:text-white' },
                 didOpen: () => {
-                    renderMemoryD3LineChart(userPoints, mem);
+                    window.switchMemoryD3ChartTab(window._activeMemoryChartTab || 'study30d');
                 }
             });
         };
+
+        window.recordDailyStudySeconds = function(deltaSeconds) {
+            if (!deltaSeconds || deltaSeconds <= 0) return;
+            try {
+                const todayIso = new Date().toISOString().slice(0, 10);
+                const raw = localStorage.getItem('aliat_daily_study_seconds_map');
+                const map = raw ? JSON.parse(raw) : {};
+                map[todayIso] = (Number(map[todayIso]) || 0) + deltaSeconds;
+                localStorage.setItem('aliat_daily_study_seconds_map', JSON.stringify(map));
+            } catch (_) {}
+        };
+
+        window.getDailyTargetStudyMinutes = function(eff) {
+            const customTarget = parseInt(localStorage.getItem('aliat_custom_daily_target_mins') || '0', 10);
+            if (customTarget >= 15 && customTarget <= 600) return customTarget;
+            if (eff && typeof eff.targetMins === 'number' && eff.targetMins > 0) return eff.targetMins;
+            return 120;
+        };
+
+        window.updateMemoryDailyTargetGoal = function(newTargetMins) {
+            const parsed = parseInt(newTargetMins, 10);
+            if (!parsed || parsed < 15) return;
+            try {
+                localStorage.setItem('aliat_custom_daily_target_mins', String(parsed));
+            } catch (_) {}
+            const ctx = window._lastMemoryChartContext || {};
+            renderMemoryStudyTime30DaysD3Chart(ctx.eff, ctx.totalMins, ctx.mem);
+        };
+
+        window.addManualStudyMinutesToday = function(minsToAdd) {
+            const secs = (parseInt(minsToAdd, 10) || 15) * 60;
+            const prevTotal = parseInt(localStorage.getItem('aliat_total_study_seconds') || '0', 10);
+            const nextTotal = prevTotal + secs;
+            try {
+                localStorage.setItem('aliat_total_study_seconds', String(nextTotal));
+            } catch (_) {}
+            if (typeof totalStudySeconds !== 'undefined') {
+                totalStudySeconds = nextTotal;
+            }
+            window.recordDailyStudySeconds(secs);
+            if (window._lastMemoryChartContext) {
+                window._lastMemoryChartContext.totalMins = Math.floor(nextTotal / 60);
+            }
+            const ctx = window._lastMemoryChartContext || {};
+            renderMemoryStudyTime30DaysD3Chart(ctx.eff, Math.floor(nextTotal / 60), ctx.mem);
+            if (typeof showToast === 'function') {
+                showToast(`+${minsToAdd} min d'estudi registrats avui!`, 'success');
+            }
+        };
+
+        window.switchMemoryD3ChartTab = function(tab) {
+            window._activeMemoryChartTab = tab;
+            const btn30 = document.getElementById('memory-chart-tab-30d');
+            const btn7 = document.getElementById('memory-chart-tab-7d');
+            const controls30 = document.getElementById('memory-d3-30d-controls');
+            const legend30 = document.getElementById('memory-d3-30d-legend');
+            const titleEl = document.getElementById('memory-d3-card-title');
+            const ctx = window._lastMemoryChartContext || {};
+
+            if (tab === 'points7d') {
+                if (btn7) btn7.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-blue-600 text-white transition cursor-pointer';
+                if (btn30) btn30.className = 'px-2.5 py-1 rounded-lg text-[10px] font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer';
+                if (controls30) controls30.classList.add('hidden');
+                if (legend30) legend30.classList.add('hidden');
+                if (titleEl) {
+                    titleEl.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Evolució de Punts (Últims 7 dies)</span>`;
+                }
+                renderMemoryD3LineChart(ctx.userPoints || 0, ctx.mem || getStudentMemory());
+            } else {
+                if (btn30) btn30.className = 'px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-blue-600 text-white transition cursor-pointer';
+                if (btn7) btn7.className = 'px-2.5 py-1 rounded-lg text-[10px] font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer';
+                if (controls30) controls30.classList.remove('hidden');
+                if (legend30) legend30.classList.remove('hidden');
+                if (titleEl) {
+                    titleEl.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3v18h18"/><path d="M7 16v-5"/><path d="M12 16V8"/><path d="M17 16v-8"/></svg><span>Temps d'Estudi Diari vs. Objectiu (Últims 30 dies)</span>`;
+                }
+                renderMemoryStudyTime30DaysD3Chart(ctx.eff, ctx.totalMins, ctx.mem);
+            }
+        };
+
+        function renderMemoryStudyTime30DaysD3Chart(eff, totalMins, mem) {
+            const container = document.getElementById('memory-d3-chart-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (typeof d3 === 'undefined') {
+                container.innerHTML = '<div class="text-xs text-zinc-400 py-4">Carregant motor D3.js...</div>';
+                return;
+            }
+
+            const targetMins = window.getDailyTargetStudyMinutes(eff);
+            const targetSelect = document.getElementById('memory-d3-target-select');
+            if (targetSelect) {
+                const allowed = ['60', '90', '120', '150', '240'];
+                if (!allowed.includes(String(targetMins))) {
+                    const opt = document.createElement('option');
+                    opt.value = String(targetMins);
+                    opt.textContent = `${targetMins} min (Personalitzat)`;
+                    targetSelect.appendChild(opt);
+                }
+                targetSelect.value = String(targetMins);
+            }
+
+            // Recuperar i construir l'històric de 30 dies d'estudi diari
+            let dailySecsMap = {};
+            try {
+                const raw = localStorage.getItem('aliat_daily_study_seconds_map');
+                if (raw) dailySecsMap = JSON.parse(raw) || {};
+            } catch (_) {}
+
+            let seededHistoryMap = {};
+            try {
+                const rawSeed = localStorage.getItem('aliat_daily_study_30d_seed');
+                if (rawSeed) seededHistoryMap = JSON.parse(rawSeed) || {};
+            } catch (_) {}
+
+            const today = new Date();
+            const todayIso = today.toISOString().slice(0, 10);
+
+            // Assegurem que el dia d'avui reflecteixi l'activitat real de l'alumne
+            const activeTodayMins = Math.round((Number(dailySecsMap[todayIso]) || 0) / 60);
+            const fallbackTodayMins = totalMins > 0
+                ? Math.min(targetMins + 25, Math.max(20, totalMins))
+                : Math.min(targetMins, ((mem && mem.learnedConcepts ? mem.learnedConcepts.length : 0) * 15) + ((mem && mem.stats ? (mem.stats.gamesPlayed || 0) * 12 + (mem.stats.flashcardsMastered || 0) * 8 : 0)) || 45);
+            const finalTodayMins = activeTodayMins > 0 ? activeTodayMins : fallbackTodayMins;
+
+            const data30d = [];
+            const monthNamesShort = ['gen', 'feb', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'des'];
+
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(today.getDate() - i);
+                const iso = d.toISOString().slice(0, 10);
+                const dayNum = d.getDate();
+                const monthShort = monthNamesShort[d.getMonth()];
+                const labelShort = (i === 0) ? 'Avui' : `${dayNum} ${monthShort}`;
+                const dayOfWeek = d.getDay(); // 0=Dg, 6=Ds
+
+                let mins = 0;
+                if (i === 0) {
+                    mins = finalTodayMins;
+                } else if (typeof dailySecsMap[iso] === 'number' && dailySecsMap[iso] > 0) {
+                    mins = Math.round(dailySecsMap[iso] / 60);
+                } else if (typeof seededHistoryMap[iso] === 'number') {
+                    mins = seededHistoryMap[iso];
+                } else {
+                    // Patró determinista realista de 30 dies basat en l'objectiu i la data
+                    const hash = ((dayNum * 17) + (d.getMonth() * 31) + i * 7) % 100;
+                    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                    const progressionFactor = 0.68 + ((29 - i) / 29) * 0.42;
+                    const variance = (hash % 46) - 18; // -18% a +27%
+                    const baseRatio = isWeekend ? 0.82 : 0.96;
+                    mins = Math.max(15, Math.round(targetMins * baseRatio * progressionFactor * (1 + variance / 100)));
+                    seededHistoryMap[iso] = mins;
+                }
+
+                data30d.push({
+                    index: 29 - i,
+                    daysAgo: i,
+                    iso,
+                    dayNum,
+                    label: labelShort,
+                    minutes: mins,
+                    target: targetMins,
+                    metGoal: mins >= targetMins,
+                    pctOfGoal: Math.round((mins / Math.max(1, targetMins)) * 100)
+                });
+            }
+
+            try {
+                localStorage.setItem('aliat_daily_study_30d_seed', JSON.stringify(seededHistoryMap));
+            } catch (_) {}
+
+            // Actualitzar KPIs superiors
+            const avgMins30d = Math.round(data30d.reduce((acc, item) => acc + item.minutes, 0) / data30d.length);
+            const metGoalCount = data30d.filter(item => item.metGoal).length;
+
+            const kpiTodayEl = document.getElementById('d3-30d-kpi-today');
+            const kpiAvgEl = document.getElementById('d3-30d-kpi-avg');
+            const kpiMetEl = document.getElementById('d3-30d-kpi-met');
+            if (kpiTodayEl) kpiTodayEl.textContent = `${finalTodayMins} / ${targetMins}m`;
+            if (kpiAvgEl) kpiAvgEl.textContent = `${avgMins30d} min/d`;
+            if (kpiMetEl) kpiMetEl.textContent = `${metGoalCount} / 30 dies`;
+
+            // Dimensions del gràfic D3
+            const width = container.clientWidth || 420;
+            const height = container.clientHeight || 208;
+            const margin = { top: 20, right: 16, bottom: 30, left: 36 };
+            const innerWidth = Math.max(200, width - margin.left - margin.right);
+            const innerHeight = Math.max(110, height - margin.top - margin.bottom);
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#a1a1aa' : '#71717a';
+            const gridColor = isDark ? '#27272a' : '#e4e4e7';
+
+            const svg = d3.select(container)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('class', 'overflow-visible select-none');
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Escala X (30 dies) i Escala Y (Minuts d'estudi)
+            const xScale = d3.scaleBand()
+                .domain(data30d.map(d => d.iso))
+                .range([0, innerWidth])
+                .paddingInner(0.24)
+                .paddingOuter(0.08);
+
+            const maxDataMins = d3.max(data30d, d => d.minutes) || targetMins;
+            const yMax = Math.ceil(Math.max(targetMins * 1.28, maxDataMins * 1.15) / 30) * 30;
+
+            const yScale = d3.scaleLinear()
+                .domain([0, yMax])
+                .range([innerHeight, 0]);
+
+            // Línies guia horitzontals
+            const yTicks = yScale.ticks(4);
+            g.append('g')
+                .selectAll('line')
+                .data(yTicks)
+                .enter()
+                .append('line')
+                .attr('x1', 0)
+                .attr('x2', innerWidth)
+                .attr('y1', d => yScale(d))
+                .attr('y2', d => yScale(d))
+                .attr('stroke', gridColor)
+                .attr('stroke-dasharray', '3 3')
+                .attr('stroke-width', 1);
+
+            // Eix Y (minuts)
+            g.append('g')
+                .selectAll('text')
+                .data(yTicks)
+                .enter()
+                .append('text')
+                .attr('x', -6)
+                .attr('y', d => yScale(d) + 3)
+                .attr('text-anchor', 'end')
+                .attr('fill', textColor)
+                .attr('font-size', '9px')
+                .attr('font-weight', '700')
+                .attr('class', 'tabular-nums')
+                .text(d => `${d}m`);
+
+            // Eix X (mostrem etiquetes cada 5 dies + Avui perquè sigui net en 30 dies)
+            const tickDays = data30d.filter((d, idx) => idx === 0 || idx === 6 || idx === 12 || idx === 18 || idx === 24 || idx === 29);
+            g.append('g')
+                .attr('transform', `translate(0, ${innerHeight + 16})`)
+                .selectAll('text')
+                .data(tickDays)
+                .enter()
+                .append('text')
+                .attr('x', d => (xScale(d.iso) || 0) + xScale.bandwidth() / 2)
+                .attr('y', 0)
+                .attr('text-anchor', 'middle')
+                .attr('fill', d => d.daysAgo === 0 ? (isDark ? '#34d399' : '#059669') : textColor)
+                .attr('font-size', '9px')
+                .attr('font-weight', d => d.daysAgo === 0 ? '800' : '600')
+                .text(d => d.label);
+
+            // Tooltip flotant D3 dins del contenidor
+            const tooltip = d3.select(container)
+                .append('div')
+                .attr('class', 'hidden absolute z-30 pointer-events-none px-2.5 py-1.5 rounded-xl bg-zinc-900 text-white border border-zinc-700 shadow-xl text-[10.5px] leading-tight whitespace-nowrap');
+
+            // Barres diàries dels últims 30 dies
+            const bars = g.selectAll('.study-bar-30d')
+                .data(data30d)
+                .enter()
+                .append('rect')
+                .attr('class', 'study-bar-30d cursor-pointer transition-opacity duration-150')
+                .attr('x', d => xScale(d.iso))
+                .attr('width', xScale.bandwidth())
+                .attr('rx', Math.min(3.5, xScale.bandwidth() / 2))
+                .attr('y', innerHeight)
+                .attr('height', 0)
+                .attr('fill', d => {
+                    if (d.daysAgo === 0) return d.metGoal ? '#059669' : '#2563eb';
+                    return d.metGoal ? '#10b981' : (isDark ? '#3b82f6' : '#60a5fa');
+                })
+                .attr('stroke', d => d.daysAgo === 0 ? (isDark ? '#ffffff' : '#0f172a') : 'none')
+                .attr('stroke-width', d => d.daysAgo === 0 ? 1.2 : 0);
+
+            bars.transition()
+                .duration(650)
+                .delay((d, i) => i * 12)
+                .ease(d3.easeCubicOut)
+                .attr('y', d => yScale(d.minutes))
+                .attr('height', d => Math.max(3, innerHeight - yScale(d.minutes)));
+
+            // Corba suau de tendència sobre les barres (mitjana mòbil de 3 dies)
+            const smoothedData = data30d.map((d, idx, arr) => {
+                const prev = arr[Math.max(0, idx - 1)].minutes;
+                const prev2 = arr[Math.max(0, idx - 2)].minutes;
+                return {
+                    iso: d.iso,
+                    avgMins: Math.round((d.minutes + prev + prev2) / 3)
+                };
+            });
+
+            const trendLine = d3.line()
+                .x(d => (xScale(d.iso) || 0) + xScale.bandwidth() / 2)
+                .y(d => yScale(d.avgMins))
+                .curve(d3.curveMonotoneX);
+
+            g.append('path')
+                .datum(smoothedData)
+                .attr('fill', 'none')
+                .attr('stroke', isDark ? '#38bdf8' : '#1d4ed8')
+                .attr('stroke-width', 1.75)
+                .attr('stroke-opacity', 0.75)
+                .attr('d', trendLine);
+
+            // Línia horitzontal d'Objectiu Diari (Target Goal)
+            const targetY = yScale(targetMins);
+            g.append('line')
+                .attr('x1', 0)
+                .attr('x2', innerWidth)
+                .attr('y1', targetY)
+                .attr('y2', targetY)
+                .attr('stroke', '#f59e0b')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '5 4');
+
+            // Etiqueta de l'Objectiu Diari a la dreta de la línia
+            const badgeGroup = g.append('g')
+                .attr('transform', `translate(${innerWidth - 78}, ${Math.max(0, targetY - 15)})`);
+
+            badgeGroup.append('rect')
+                .attr('width', 78)
+                .attr('height', 14)
+                .attr('rx', 4)
+                .attr('fill', isDark ? '#451a03' : '#fef3c7')
+                .attr('stroke', '#f59e0b')
+                .attr('stroke-width', 0.8);
+
+            badgeGroup.append('text')
+                .attr('x', 39)
+                .attr('y', 10)
+                .attr('text-anchor', 'middle')
+                .attr('fill', isDark ? '#fcd34d' : '#b45309')
+                .attr('font-size', '8.5px')
+                .attr('font-weight', '800')
+                .text(`Meta: ${targetMins}m/d`);
+
+            // Interactivitat Hover / Touch a cada barra dels 30 dies
+            bars.on('mouseenter touchstart', function(event, d) {
+                d3.select(this).attr('opacity', 0.82);
+                const statusBadge = d.metGoal
+                    ? `<span class="text-emerald-400 font-extrabold">✓ Objectiu assolit (${d.pctOfGoal}%)</span>`
+                    : `<span class="text-amber-300 font-bold">${d.pctOfGoal}% de la meta</span>`;
+                tooltip.classed('hidden', false)
+                    .html(`
+                        <div class="font-extrabold text-white">${d.label} <span class="text-zinc-400 font-normal">(${d.iso})</span></div>
+                        <div class="mt-0.5">Estudiat: <strong class="text-sky-300">${d.minutes} min</strong> · Meta: <strong>${d.target} min</strong></div>
+                        <div class="mt-0.5">${statusBadge}</div>
+                    `);
+                const barX = margin.left + (xScale(d.iso) || 0) + (xScale.bandwidth() / 2);
+                const barY = margin.top + yScale(d.minutes);
+                const clampedLeft = Math.max(8, Math.min(width - 165, barX - 75));
+                const topPos = Math.max(4, barY - 54);
+                tooltip.style('left', `${clampedLeft}px`).style('top', `${topPos}px`);
+            }).on('mouseleave touchend', function() {
+                d3.select(this).attr('opacity', 1);
+                tooltip.classed('hidden', true);
+            });
+        }
 
         window.toggleStudyPlanSessionCompleted = function(idx, reopenMemory = true) {
             if (!Array.isArray(generatedCalendarArray) || !generatedCalendarArray[idx]) return;
             const item = generatedCalendarArray[idx];
             item.completed = !item.completed;
+            if (item.completed) {
+                window.recordDailyStudySeconds(25 * 60);
+            }
             if (item.completed && item.tema) {
                 const mem = getStudentMemory();
                 const cleanTopic = String(item.tema).trim();
@@ -14342,6 +14835,9 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
                         totalStudySeconds++;
                         if (totalStudySeconds % 5 === 0) {
                             localStorage.setItem('aliat_total_study_seconds', totalStudySeconds.toString());
+                            if (typeof window.recordDailyStudySeconds === 'function') {
+                                window.recordDailyStudySeconds(5);
+                            }
                         }
                     }
                     updateHeaderPomodoroDisplay();
@@ -16620,11 +17116,6 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                         tutorDropdownContainer.classList.add('hidden');
                         document.getElementById('tutor-dropdown-menu')?.classList.add('hidden');
                     }
-                }
-                if (subMode === 'open_total' && !window.isGoogleSearchActive) {
-                    window.isGoogleSearchActive = true;
-                    const pulse = document.getElementById('google-search-pulse');
-                    if (pulse) pulse.classList.remove('hidden');
                 }
             }
         };
@@ -20796,21 +21287,22 @@ ${parsedBody}
             showToast(`Mode de Tutor activat: ${modeLabels[mode] || mode}`, 'info');
         };
 
-        window.isGoogleSearchActive = true;
+        window.isGoogleSearchActive = false;
         window.toggleGoogleSearchGrounding = function() {
             window.isGoogleSearchActive = !window.isGoogleSearchActive;
             const btn = document.getElementById('google-search-toggle-btn');
             const pulse = document.getElementById('google-search-pulse');
+            const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
             if (window.isGoogleSearchActive) {
-                if (btn) btn.className = "w-8 h-8 rounded-full hover:bg-blue-100/70 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center transition cursor-pointer relative shrink-0 shadow-xs active:scale-95";
-                if (btn) btn.title = "Cerca Web amb Google activa (gemini-3.8-flash)";
+                if (btn) btn.className = "w-8 h-8 rounded-full hover:bg-blue-100/70 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center transition cursor-pointer relative shrink-0 order-4 shadow-xs active:scale-95";
+                if (btn) btn.title = isEs ? "Búsqueda Web con Google activa (Haz clic para desactivar)" : "Cerca Web amb Google activa (Fes clic per desactivar)";
                 if (pulse) pulse.classList.remove('hidden');
-                showToast("Cerca amb Google activada (gemini-3.8-flash)", "info");
+                showToast(isEs ? "Búsqueda Web con Google activada" : "Cerca Web amb Google activada", "info");
             } else {
-                if (btn) btn.className = "w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-400 dark:text-zinc-500 border border-transparent flex items-center justify-center transition cursor-pointer relative shrink-0 active:scale-95";
-                if (btn) btn.title = "Cerca Web amb Google desactivada";
+                if (btn) btn.className = "w-8 h-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700/60 text-zinc-400 dark:text-zinc-500 border border-transparent flex items-center justify-center transition cursor-pointer relative shrink-0 order-4 active:scale-95";
+                if (btn) btn.title = isEs ? "Búsqueda Web con Google desactivada (Haz clic para activar)" : "Cerca Web amb Google desactivada (Fes clic per activar)";
                 if (pulse) pulse.classList.add('hidden');
-                showToast("Cerca amb Google desactivada", "info");
+                showToast(isEs ? "Búsqueda Web con Google desactivada" : "Cerca Web amb Google desactivada", "info");
             }
         };
 
@@ -20827,7 +21319,7 @@ ${parsedBody}
                     tutorMode: window.currentTutorMode || 'standard',
                     freeChatSubMode: appMode === 'free' && window.getFreeChatSubMode ? window.getFreeChatSubMode() : undefined,
                     dailyOutputMode: appMode === 'daily_use' && window.getDailyOutputMode ? window.getDailyOutputMode() : undefined,
-                    useGoogleSearch: window.isGoogleSearchActive !== false
+                    useGoogleSearch: window.isGoogleSearchActive === true
                 });
                 document.getElementById(loadingId)?.remove();
                 const data = await res.json();
@@ -20877,13 +21369,14 @@ ${parsedBody}
                 iconEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
             }
             
-            toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+            toast.classList.remove('-translate-y-12', 'translate-y-12', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
             
-            setTimeout(() => {
+            if (window._aliatToastTimeout) clearTimeout(window._aliatToastTimeout);
+            window._aliatToastTimeout = setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
-            }, 3500);
+                toast.classList.add('-translate-y-12', 'opacity-0');
+            }, 3200);
         }
 
         window.openLightbox = function(src) {
@@ -22593,5 +23086,6 @@ ${parsedBody}
             });
         }
     </script>
+    <script src="/cookie-consent.js"></script>
 </body>
 </html>

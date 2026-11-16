@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Condicions d'Ús / Condiciones de Uso · Aliat Intel·ligent</title>
     <meta name="description" content="Condicions d'Ús i Termes del Servei d'Aliat Intel·ligent en català i espanyol: modalitats d'accés, tutoria amb IA, integració amb Google Workspace i ús responsable.">
-    <link rel="icon" type="image/png" href="/assets/aistudio/logoOFI_048f1d3b.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -162,6 +168,10 @@
         <footer class="text-center text-xs text-zinc-500 dark:text-zinc-400 pb-8 space-x-2">
             <span>© 2026 Aliat Intel·ligent</span>
             <span>·</span>
+            <a href="/cookies.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Política de Cookies i Dades d'IA</a>
+            <span>·</span>
+            <button type="button" onclick="window.openAliatCookieSettingsModal && window.openAliatCookieSettingsModal()" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline cursor-pointer">Configurar Cookies</button>
+            <span>·</span>
             <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Política de Privadesa</a>
             <span>·</span>
             <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Tornar a l'inici</a>
@@ -274,12 +284,17 @@
         <footer class="text-center text-xs text-zinc-500 dark:text-zinc-400 pb-8 space-x-2">
             <span>© 2026 Aliat Intel·ligent</span>
             <span>·</span>
+            <a href="/cookies.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Política de Cookies y Datos de IA</a>
+            <span>·</span>
+            <button type="button" onclick="window.openAliatCookieSettingsModal && window.openAliatCookieSettingsModal()" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline cursor-pointer">Configurar Cookies</button>
+            <span>·</span>
             <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Política de Privacidad</a>
             <span>·</span>
             <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Volver al inicio</a>
         </footer>
     </main>
 
+    <script src="/cookie-consent.js"></script>
     <script>
         function getSavedLang() {
             const ls = localStorage.getItem('aliat_lang');

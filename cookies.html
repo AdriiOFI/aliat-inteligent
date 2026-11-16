@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Cookies, Emmagatzematge i Dades d'IA · Aliat Intel·ligent</title>
+    <meta name="description" content="Política legal de Cookies, localStorage i tractament de dades d'Intel·ligència Artificial d'Aliat Intel·ligent segons el RGPD, LOPDGDD i LSSI-CE.">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] } } }
+        };
+        if (localStorage.getItem('aliat_theme') === 'dark' || (!localStorage.getItem('aliat_theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-100 min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
+        <div class="max-w-4xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
+            <a href="/" class="flex items-center gap-2 sm:gap-3 group min-w-0">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white dark:bg-zinc-800/95 border border-zinc-200/90 dark:border-zinc-700 flex items-center justify-center p-1.5 shadow-2xs shrink-0">
+                    <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}" alt="Aliat Intel·ligent" class="w-full h-full object-contain drop-shadow-2xs dark:brightness-[1.85] dark:contrast-125">
+                </div>
+                <div class="truncate">
+                    <span class="font-extrabold text-xs sm:text-base text-zinc-900 dark:text-white tracking-tight block leading-none truncate">Aliat Intel·ligent</span>
+                    <span class="lang-ca text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium block truncate">Política de Cookies i Dades d'IA</span>
+                    <span class="lang-es hidden text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 font-medium block truncate">Política de Cookies y Datos de IA</span>
+                </div>
+            </a>
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <div class="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 p-0.5 text-[11px] sm:text-xs font-bold" role="group" aria-label="Selector d'idioma">
+                    <button type="button" id="btn-lang-ca" onclick="setPageLang('ca')" class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition cursor-pointer"><span class="sm:hidden">CA</span><span class="hidden sm:inline">Català</span></button>
+                    <button type="button" id="btn-lang-es" onclick="setPageLang('es')" class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition cursor-pointer"><span class="sm:hidden">ES</span><span class="hidden sm:inline">Español</span></button>
+                </div>
+                <a href="/privacidad.html" class="hidden md:inline-flex px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold transition">
+                    <span class="lang-ca">Privadesa</span>
+                    <span class="lang-es hidden">Privacidad</span>
+                </a>
+                <a href="/condiciones.html" class="hidden md:inline-flex px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold transition">
+                    <span class="lang-ca">Condicions</span>
+                    <span class="lang-es hidden">Condiciones</span>
+                </a>
+                <button type="button" onclick="togglePageTheme()" class="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5" title="Canviar tema / Cambiar tema">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+                </button>
+                <a href="/" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-bold transition shadow-2xs whitespace-nowrap">
+                    <span class="lang-ca"><span class="sm:hidden">← App</span><span class="hidden sm:inline">← Tornar a l'App</span></span>
+                    <span class="lang-es hidden"><span class="sm:hidden">← App</span><span class="hidden sm:inline">← Volver a la App</span></span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- PANELL D'ESTAT ACTUAL DE CONSENTIMENT I GESTIÓ DIRECTA -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 pt-8">
+        <div class="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-blue-200/90 dark:border-blue-800/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="space-y-1.5">
+                <div class="text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-sky-400">
+                    <span class="lang-ca">ESTAT ACTUAL DEL TEU CONSENTIMENT EN AQUEST NAVEGADOR</span>
+                    <span class="lang-es hidden">ESTADO ACTUAL DE TU CONSENTIMIENTO EN ESTE NAVEGADOR</span>
+                </div>
+                <div id="cookie-policy-live-status" class="text-xs text-zinc-600 dark:text-zinc-300"></div>
+            </div>
+            <button type="button" onclick="window.openAliatCookieSettingsModal && window.openAliatCookieSettingsModal()" class="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold transition cursor-pointer shrink-0 shadow-xs">
+                <span class="lang-ca">Configurar o revocar cookies</span>
+                <span class="lang-es hidden">Configurar o revocar cookies</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VERSIÓ EN CATALÀ (NORMATIU RGPD / LSSI-CE) -->
+    <!-- ========================================== -->
+    <main class="lang-ca max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-xs space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/70 text-blue-700 dark:text-sky-300 text-xs font-bold">
+                <span>Compliment RGPD (UE 2016/679) · LOPDGDD · Art. 22.2 LSSI-CE</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
+                Política de Cookies, Emmagatzematge Local i Dades d'Intel·ligència Artificial
+            </h1>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                En compliment de l'article 22.2 de la Llei 34/2002 de Serveis de la Societat de la Informació i de Comerç Electrònic (LSSI-CE), el Reglament General de Protecció de Dades (RGPD) i la Guia de l'Agència Espanyola de Protecció de Dades (AEPD), t'informem de manera detallada sobre totes les cookies, les variables de <code>localStorage</code> i les dades que es transmeten als motors d'Intel·ligència Artificial quan utilitzes <strong>Aliat Intel·ligent</strong>.
+            </p>
+        </section>
+
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-6 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <div class="space-y-2">
+                <h2 class="text-base font-extrabold text-zinc-900 dark:text-white">1. Què demana i processa la Intel·ligència Artificial?</h2>
+                <p>Perquè les funcionalitats de tutoria acadèmica, XatBot i Ús Quotidià funcionin, l'aplicació processa exclusivament les dades que tu introdueixes activament:</p>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li><strong>Missatges i context de conversa (<code>chatHistory</code>):</strong> Les preguntes i respostes de la sessió activa s'envien per HTTPS xifrat al servidor (<code>/api/generate</code>) i d'allà a l'API oficial de <strong>Google Gemini</strong> (<code>@google/genai</code>) o al proveïdor d'IA configurat (Groq, OpenAI, OpenRouter, DeepSeek o Mistral).</li>
+                    <li><strong>Apunts i documents pujats (<code>pdfText</code> i imatges/vídeos):</strong> Quan puges un fitxer PDF, una foto d'apunts o un àudio de veu, el text o fitxer s'analitza únicament per generar el teu pla d'estudi, esquema, <em>flashcards</em> o resolució pas a pas.</li>
+                    <li><strong>Cerca Web sota demanda (<code>useGoogleSearch</code>):</strong> Desactivada per defecte. Només quan actives manualment el botó de <em>Cerca Web amb Google</em> o fas consultes d'actualitat/esports en directe, la consulta es contrasta amb fonts públiques d'internet.</li>
+                </ul>
+            </div>
+
+            <div class="space-y-3 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h2 class="text-base font-extrabold text-zinc-900 dark:text-white">2. Taula Tècnica de Cookies i Emmagatzematge Local (localStorage)</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white font-extrabold">
+                                <th class="py-2.5 pr-3">Nom / Clau</th>
+                                <th class="py-2.5 px-3">Tipus i Proveïdor</th>
+                                <th class="py-2.5 px-3">Durada</th>
+                                <th class="py-2.5 pl-3">Finalitat exacta</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-zinc-200/70 dark:divide-zinc-800/80">
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_cookie_consent</td>
+                                <td class="py-2.5 px-3">Cookie HTTP + localStorage (Pròpia)</td>
+                                <td class="py-2.5 px-3">12 mesos</td>
+                                <td class="py-2.5 pl-3">Desa la prova legal del teu consentiment de cookies i categories autoritzades.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_token / aliat_user</td>
+                                <td class="py-2.5 px-3">localStorage (Pròpia · JWT)</td>
+                                <td class="py-2.5 px-3">Sessió / 7 dies</td>
+                                <td class="py-2.5 pl-3">Autenticació segura de l'usuari registrat per sincronitzar les seves sessions al núvol.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">_GRECAPTCHA</td>
+                                <td class="py-2.5 px-3">Cookie HTTP (Google reCAPTCHA)</td>
+                                <td class="py-2.5 px-3">6 mesos</td>
+                                <td class="py-2.5 pl-3">Seguretat tècnica contra bots i accessos automatitzats en l'inici de sessió.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_lang / aliat_theme</td>
+                                <td class="py-2.5 px-3">Cookie HTTP + localStorage (Pròpia)</td>
+                                <td class="py-2.5 px-3">12 mesos</td>
+                                <td class="py-2.5 pl-3">Recorda l'idioma triat (Català / Español) i el tema visual (Clar / Fosc).</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_sessions_backup</td>
+                                <td class="py-2.5 px-3">localStorage (Pròpia)</td>
+                                <td class="py-2.5 px-3">Persistent local</td>
+                                <td class="py-2.5 pl-3">Conserva localment el teu historial d'estudi, plans, exàmens i targetes de memòria.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_local_context_*</td>
+                                <td class="py-2.5 px-3">localStorage (Pròpia · IA)</td>
+                                <td class="py-2.5 px-3">Persistent local</td>
+                                <td class="py-2.5 pl-3">Manté el resum i context dels apunts PDF perquè la IA recordi el temari de la sessió.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-xs text-zinc-500 dark:text-zinc-400 pb-8 space-x-2">
+            <span>© 2026 Aliat Intel·ligent</span>
+            <span>·</span>
+            <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Política de Privadesa</a>
+            <span>·</span>
+            <a href="/condiciones.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Condicions d'Ús</a>
+            <span>·</span>
+            <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Tornar a l'inici</a>
+        </footer>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- VERSIÓN EN ESPAÑOL (NORMATIVO RGPD / LSSI) -->
+    <!-- ========================================== -->
+    <main class="lang-es hidden max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-xs space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/70 text-blue-700 dark:text-sky-300 text-xs font-bold">
+                <span>Cumplimiento RGPD (UE 2016/679) · LOPDGDD · Art. 22.2 LSSI-CE</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
+                Política de Cookies, Almacenamiento Local y Datos de Inteligencia Artificial
+            </h1>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                En cumplimiento del artículo 22.2 de la Ley 34/2002 de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), el Reglamento General de Protección de Datos (RGPD) y la Guía de la Agencia Española de Protección de Datos (AEPD), te informamos de forma detallada sobre todas las cookies, las variables de <code>localStorage</code> y los datos que se transmiten a los motores de Inteligencia Artificial cuando utilizas <strong>Aliat Intel·ligent</strong>.
+            </p>
+        </section>
+
+        <section class="bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-6 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <div class="space-y-2">
+                <h2 class="text-base font-extrabold text-zinc-900 dark:text-white">1. ¿Qué pide y procesa la Inteligencia Artificial?</h2>
+                <p>Para que las funciones de tutoría académica, XatBot y Uso Cotidiano funcionen, la aplicación procesa exclusivamente los datos que introduces activamente:</p>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm">
+                    <li><strong>Mensajes y contexto de conversación (<code>chatHistory</code>):</strong> Las preguntas y respuestas de la sesión activa se envían por HTTPS cifrado al servidor (<code>/api/generate</code>) y desde allí a la API oficial de <strong>Google Gemini</strong> (<code>@google/genai</code>) o al proveedor de IA configurado (Groq, OpenAI, OpenRouter, DeepSeek o Mistral).</li>
+                    <li><strong>Apuntes y documentos subidos (<code>pdfText</code> e imágenes/vídeos):</strong> Cuando subes un archivo PDF, una foto de apuntes o un audio de voz, el texto o archivo se analiza únicamente para generar tu plan de estudio, esquema, <em>flashcards</em> o resolución paso a paso.</li>
+                    <li><strong>Búsqueda Web bajo demanda (<code>useGoogleSearch</code>):</strong> Desactivada por defecto. Solo cuando activas manualmente el botón de <em>Búsqueda Web con Google</em> o realizas consultas deportivas/actualidad en directo, la consulta se contrasta con fuentes públicas de internet.</li>
+                </ul>
+            </div>
+
+            <div class="space-y-3 border-t border-zinc-200/80 dark:border-zinc-800 pt-5">
+                <h2 class="text-base font-extrabold text-zinc-900 dark:text-white">2. Tabla Técnica de Cookies y Almacenamiento Local (localStorage)</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white font-extrabold">
+                                <th class="py-2.5 pr-3">Nombre / Clave</th>
+                                <th class="py-2.5 px-3">Tipo y Proveedor</th>
+                                <th class="py-2.5 px-3">Duración</th>
+                                <th class="py-2.5 pl-3">Finalidad exacta</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-zinc-200/70 dark:divide-zinc-800/80">
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_cookie_consent</td>
+                                <td class="py-2.5 px-3">Cookie HTTP + localStorage (Propia)</td>
+                                <td class="py-2.5 px-3">12 meses</td>
+                                <td class="py-2.5 pl-3">Guarda la prueba legal de tu consentimiento de cookies y categorías autorizadas.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_token / aliat_user</td>
+                                <td class="py-2.5 px-3">localStorage (Propia · JWT)</td>
+                                <td class="py-2.5 px-3">Sesión / 7 días</td>
+                                <td class="py-2.5 pl-3">Autenticación segura del usuario registrado para sincronizar sus sesiones en la nube.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">_GRECAPTCHA</td>
+                                <td class="py-2.5 px-3">Cookie HTTP (Google reCAPTCHA)</td>
+                                <td class="py-2.5 px-3">6 meses</td>
+                                <td class="py-2.5 pl-3">Seguridad técnica frente a bots y accesos automatizados en el inicio de sesión.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_lang / aliat_theme</td>
+                                <td class="py-2.5 px-3">Cookie HTTP + localStorage (Propia)</td>
+                                <td class="py-2.5 px-3">12 meses</td>
+                                <td class="py-2.5 pl-3">Recuerda el idioma elegido (Català / Español) y el tema visual (Claro / Oscuro).</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_sessions_backup</td>
+                                <td class="py-2.5 px-3">localStorage (Propia)</td>
+                                <td class="py-2.5 px-3">Persistente local</td>
+                                <td class="py-2.5 pl-3">Conserva localmente tu historial de estudio, planes, exámenes y tarjetas de memoria.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 pr-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">aliat_local_context_*</td>
+                                <td class="py-2.5 px-3">localStorage (Propia · IA)</td>
+                                <td class="py-2.5 px-3">Persistente local</td>
+                                <td class="py-2.5 pl-3">Mantiene el resumen y contexto de tus apuntes PDF para que la IA recuerde el temario.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-xs text-zinc-500 dark:text-zinc-400 pb-8 space-x-2">
+            <span>© 2026 Aliat Intel·ligent</span>
+            <span>·</span>
+            <a href="/privacidad.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Política de Privacidad</a>
+            <span>·</span>
+            <a href="/condiciones.html" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Condiciones de Uso</a>
+            <span>·</span>
+            <a href="/" class="text-blue-600 dark:text-sky-400 font-semibold hover:underline">Volver al inicio</a>
+        </footer>
+    </main>
+
+    <script src="/cookie-consent.js"></script>
+    <script>
+        function getSavedLang() {
+            const ls = localStorage.getItem('aliat_lang') || localStorage.getItem('aliat_app_language');
+            if (ls === 'es' || ls === 'ca') return ls;
+            const m = document.cookie.match(/(?:^|;\s*)aliat_lang=(ca|es)/);
+            return m ? m[1] : 'ca';
+        }
+        function setPageLang(lang) {
+            const norm = lang === 'es' ? 'es' : 'ca';
+            localStorage.setItem('aliat_lang', norm);
+            document.cookie = 'aliat_lang=' + norm + '; path=/; max-age=31536000; SameSite=Lax';
+            document.documentElement.lang = norm;
+            document.querySelectorAll('.lang-ca').forEach(el => el.classList.toggle('hidden', norm !== 'ca'));
+            document.querySelectorAll('.lang-es').forEach(el => el.classList.toggle('hidden', norm !== 'es'));
+            const btnCa = document.getElementById('btn-lang-ca');
+            const btnEs = document.getElementById('btn-lang-es');
+            if (btnCa && btnEs) {
+                btnCa.className = norm === 'ca'
+                    ? 'px-2.5 py-1.5 rounded-lg transition cursor-pointer bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs'
+                    : 'px-2.5 py-1.5 rounded-lg transition cursor-pointer text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
+                btnEs.className = norm === 'es'
+                    ? 'px-2.5 py-1.5 rounded-lg transition cursor-pointer bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-2xs'
+                    : 'px-2.5 py-1.5 rounded-lg transition cursor-pointer text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
+            }
+        }
+        function togglePageTheme() {
+            document.documentElement.classList.toggle('dark');
+            const t = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('aliat_theme', t);
+            document.cookie = 'aliat_theme=' + t + '; path=/; max-age=31536000; SameSite=Lax';
+        }
+        setPageLang(getSavedLang());
+    </script>
+</body>
+</html>

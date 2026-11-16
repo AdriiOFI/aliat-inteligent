@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aliat-pwa-v9';
+const CACHE_NAME = 'aliat-pwa-v10';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
@@ -165,6 +165,10 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    return;
+  }
   if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
     const { title, options } = event.data;
     self.registration.showNotification(title, options || {});

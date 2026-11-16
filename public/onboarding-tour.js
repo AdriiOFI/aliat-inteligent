@@ -588,6 +588,18 @@
         }
     }
 
+    function closeMobileSidebarNow() {
+        state.openedMobileSidebar = false;
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+        if (sidebar && window.innerWidth < 768) {
+            sidebar.classList.add('-translate-x-full');
+        }
+        if (overlay && window.innerWidth < 768) {
+            overlay.classList.add('hidden', 'opacity-0');
+        }
+    }
+
     function openMobileSidebarForStep() {
         if (window.innerWidth >= 768) return;
         const sidebar = document.getElementById('sidebar');
@@ -1029,7 +1041,7 @@
         return forceFallback ? flowData.steps.slice() : [];
     }
 
-    window.__ALIAT_ONBOARDING_VERSION = 9;
+    window.__ALIAT_ONBOARDING_VERSION = 10;
     let _lastTourStartTs = 0;
 
     window.startAliatOnboarding = function (requestedFlow = 'auto', forceReplay = false) {
@@ -1043,7 +1055,7 @@
 
         // If mobile sidebar drawer was left open over the app while clicking ?, collapse it first so UI is unobstructed
         if (window.innerWidth < 768) {
-            restoreMobileSidebarIfNeeded();
+            closeMobileSidebarNow();
         }
 
         const hooks = getTourHooks();

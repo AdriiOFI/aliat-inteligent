@@ -44,7 +44,23 @@
     <!-- Google API Client, Identity Services & reCAPTCHA Enterprise -->
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://www.google.com/recaptcha/enterprise.js"></script>
+    <script>
+        window.isRecaptchaPreviewBypassHost = function() {
+            try {
+                const h = (window.location && window.location.hostname ? window.location.hostname : '').toLowerCase();
+                return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || /^ais-(dev|pre)-[a-z0-9-]+(?:\.[a-z0-9-]+)?\.run\.app$/i.test(h);
+            } catch (_) {
+                return false;
+            }
+        };
+        if (!window.isRecaptchaPreviewBypassHost()) {
+            const s = document.createElement('script');
+            s.src = 'https://www.google.com/recaptcha/enterprise.js';
+            s.async = true;
+            s.defer = true;
+            document.head.appendChild(s);
+        }
+    </script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
         
@@ -1396,9 +1412,12 @@
                         <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1 uppercase tracking-wide">Telèfon (Verificació Opcional)</label>
                         <input type="tel" id="auth-phone" placeholder="+34 600 000 000" class="w-full px-3.5 sm:px-4 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 text-zinc-800 dark:text-zinc-100 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm shadow-inner">
                     </div>
-                    <!-- Google reCAPTCHA Enterprise Widget -->
-                    <div class="pt-1 flex flex-col items-center justify-center max-w-full overflow-hidden [&_.g-recaptcha]:origin-center max-xs:[&_.g-recaptcha]:scale-[0.86]">
+                    <!-- Google reCAPTCHA Enterprise Widget (desactivat només a la preview) -->
+                    <div id="auth-recaptcha-container" class="pt-1 flex flex-col items-center justify-center max-w-full overflow-hidden [&_.g-recaptcha]:origin-center max-xs:[&_.g-recaptcha]:scale-[0.86]">
                         <div id="auth-recaptcha-widget" class="g-recaptcha" data-sitekey="6LfjNyMuAAAAAFx70W1IM70A6pOmlzTf6lR4pzyg" data-action="LOGIN"></div>
+                    </div>
+                    <div id="auth-recaptcha-preview-note" class="hidden text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/70 rounded-xl px-3 py-2 text-center font-medium">
+                        reCAPTCHA desactivado solo en esta vista previa (activo en producción).
                     </div>
                 </div>
                 <button type="submit" id="auth-submit-btn" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold py-3 sm:py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md mt-4 flex items-center justify-center gap-2 cursor-pointer border border-zinc-900 dark:border-zinc-200">
@@ -4563,6 +4582,16 @@
             if (authView) {
                 authView.classList.remove('hidden');
             }
+            const isPreview = typeof window.isRecaptchaPreviewBypassHost === 'function' && window.isRecaptchaPreviewBypassHost();
+            const recaptchaContainer = document.getElementById('auth-recaptcha-container');
+            const previewNote = document.getElementById('auth-recaptcha-preview-note');
+            if (isPreview) {
+                if (recaptchaContainer) recaptchaContainer.classList.add('hidden');
+                if (previewNote) previewNote.classList.remove('hidden');
+                return;
+            }
+            if (recaptchaContainer) recaptchaContainer.classList.remove('hidden');
+            if (previewNote) previewNote.classList.add('hidden');
             try {
                 const recaptchaEl = document.getElementById('auth-recaptcha-widget');
                 if (recaptchaEl && !recaptchaEl.hasChildNodes() && window.grecaptcha && window.grecaptcha.enterprise && typeof window.grecaptcha.enterprise.render === 'function') {
@@ -4861,10 +4890,39 @@
                     const rejecter = gisPendingReject;
                     gisPendingResolve = null;
                     gisPendingReject = null;
-                    if (rejecter) rejecter(new Error((err && (err.message || err.type)) || 'No s\'ha pogut obrir la finestra d\'autorització de Google.'));
+                    if (rejecter) {
+                        const errType = err && err.type ? String(err.type) : '';
+                        const wrapped = new Error(
+                            errType === 'popup_closed'
+                                ? 'Has tancat la finestra d\'autorització de Google.'
+                                : ((err && (err.message || errType)) || 'No s\'ha pogut obrir la finestra d\'autorització de Google.')
+                        );
+                        if (errType === 'popup_closed') {
+                            wrapped.code = 'auth/popup-closed-by-user';
+                            wrapped.type = 'popup_closed';
+                        } else if (errType === 'popup_failed_to_open') {
+                            wrapped.code = 'auth/popup-blocked';
+                            wrapped.type = 'popup_failed_to_open';
+                        }
+                        rejecter(wrapped);
+                    }
                 }
             });
             return gisTokenClient;
+        }
+
+        function isGooglePopupClosedError(err) {
+            if (!err) return false;
+            const code = String(err.code || '');
+            const type = String(err.type || '');
+            const msg = String(err.message || '');
+            return (
+                code === 'auth/popup-closed-by-user' ||
+                code === 'auth/cancelled-popup-request' ||
+                type === 'popup_closed' ||
+                msg === 'popup_closed' ||
+                /popup[-_ ]closed/i.test(msg)
+            );
         }
 
         async function testFirestoreConnection() {
@@ -5311,7 +5369,7 @@
         function showGoogleOAuthRetryModal(err, onRetrySync) {
             const errCode = (err && err.code) || '';
             const isPopupBlocked = errCode === 'auth/popup-blocked';
-            const isClosed = errCode === 'auth/popup-closed-by-user' || errCode === 'auth/cancelled-popup-request';
+            const isClosed = isGooglePopupClosedError(err);
 
             if (isClosed) {
                 showToast("Has tancat la finestra d'autorització oficial de Google.", "info");
@@ -5402,8 +5460,7 @@
                 return accessToken;
             } catch (err) {
                 console.warn("[Workspace OAuth]", err);
-                const code = (err && err.code) || '';
-                if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+                if (isGooglePopupClosedError(err)) {
                     showToast("Autorització de Google cancel·lada.", "info");
                     return null;
                 }
@@ -5491,7 +5548,10 @@
             }
         }
 
+        let googleLoginInFlight = false;
         async function handleGoogleLogin(useGisDirect = false) {
+            if (googleLoginInFlight) return;
+            googleLoginInFlight = true;
             try {
                 let oauthData = null;
 
@@ -5527,8 +5587,15 @@
 
                 await completeBackendGoogleAuth(oauthData);
             } catch (err) {
-                console.error("Error Google Auth:", err);
+                if (isGooglePopupClosedError(err)) {
+                    console.info("[Google Auth] Finestra tancada per l'usuari.");
+                    showToast("Has tancat la finestra d'autorització oficial de Google.", "info");
+                    return;
+                }
+                console.warn("[Google Auth notice]", err);
                 showGoogleOAuthRetryModal(err, () => handleGoogleLogin(true));
+            } finally {
+                googleLoginInFlight = false;
             }
         }
         window.handleGoogleLogin = handleGoogleLogin;
@@ -5712,15 +5779,16 @@
             }
 
             const expectedAction = authMode === 'login' ? 'LOGIN' : 'REGISTER';
+            const isPreviewBypass = typeof window.isRecaptchaPreviewBypassHost === 'function' && window.isRecaptchaPreviewBypassHost();
             const recaptchaWidgetEl = document.getElementById('auth-recaptcha-widget');
-            const hasRenderedCaptchaIframe = !!(recaptchaWidgetEl && recaptchaWidgetEl.querySelector('iframe'));
-            let recaptchaToken = getRecaptchaEnterpriseToken(expectedAction);
+            const hasRenderedCaptchaIframe = !isPreviewBypass && !!(recaptchaWidgetEl && recaptchaWidgetEl.querySelector('iframe'));
+            let recaptchaToken = isPreviewBypass ? '' : getRecaptchaEnterpriseToken(expectedAction);
 
-            if (!recaptchaToken && !hasRenderedCaptchaIframe) {
+            if (!isPreviewBypass && !recaptchaToken && !hasRenderedCaptchaIframe) {
                 recaptchaToken = await executeRecaptchaEnterpriseFallback(expectedAction);
             }
 
-            if (hasRenderedCaptchaIframe && !recaptchaToken) {
+            if (!isPreviewBypass && hasRenderedCaptchaIframe && !recaptchaToken) {
                 showToast("Si us plau, completa la casella reCAPTCHA abans de continuar", "warning");
                 return;
             }

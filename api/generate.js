@@ -1192,29 +1192,177 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             });
         }
 
-        // ACCIÓ 3: XATBOT LLIURE AMB INTERNET I GOOGLE SEARCH GROUNDING
+        // ACCIÓ 3: XATBOT LLIURE (OPCIÓ ESTUDI LLIURE I OPCIÓ MODE LLIURE TOTAL AMB INTERNET EN TEMPS REAL)
         if (action === 'free_chat') {
             const geminiHistory = formatGeminiHistory(chatHistory);
             let searchContext = "";
+            const liveSources = [];
             const lastUserMsg = geminiHistory.length > 0 ? geminiHistory[geminiHistory.length - 1] : null;
             const lastText = lastUserMsg && lastUserMsg.role === 'user' && lastUserMsg.parts && lastUserMsg.parts[0] ? lastUserMsg.parts[0].text : "";
-            
-            if (process.env.TAVILY_API_KEY && lastText) {
-                try {
-                    const searchReq = await fetch('https://api.tavily.com/search', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ api_key: process.env.TAVILY_API_KEY, query: lastText, search_depth: "basic", max_results: 3 })
-                    });
-                    if (searchReq.ok) {
-                        const searchRes = await searchReq.json();
-                        if (searchRes.results && searchRes.results.length > 0) {
-                            searchContext = "\n\n### INFORMACIÓ ACTUALITZADA D'INTERNET ###\n" + 
-                                searchRes.results.map(r => `Font: [${r.title}](${r.url})\nContingut: ${r.content}`).join('\n\n') +
-                                "\n\nUtilitza aquesta informació en format Markdown [Text](URL).";
+            const freeChatSubMode = body.freeChatSubMode === 'study_free' ? 'study_free' : 'open_total';
+
+            // Data actual real en fus horari Europe/Madrid
+            const now = new Date();
+            const currentDateStrEs = now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/Madrid' });
+            const currentDateStrCa = now.toLocaleDateString('ca-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/Madrid' });
+            const todayIsoDate = now.toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' }); // YYYY-MM-DD
+
+            // 1. Si és una consulta sobre futbol / partits / esports d'avui o propers, obtenim el marcador oficial en directe d'ESPN
+            const isSportsOrFootballQuery = /\b(futbol|fútbol|partido|partidos|partit|partits|juega|juegan|juga|juguen|liga|laliga|champions|premier|serie a|bundesliga|copa|selecci[oó]n?|barça|barcelona|madrid|atletico|atlético|girona|espanyol|athletic|betis|sevilla|valencia|villarreal|real sociedad|marcador| goles|jornada|clasificaci[oó]n|classificaci[oó])\b/i.test(lastText);
+
+            if (lastText && (freeChatSubMode === 'open_total' || body.useGoogleSearch !== false || isSportsOrFootballQuery)) {
+                const tasks = [];
+
+                if (isSportsOrFootballQuery) {
+                    tasks.push((async () => {
+                        try {
+                            const leagues = [
+                                { id: 'esp.1', label: 'LaLiga EA Sports (Espanya)' },
+                                { id: 'esp.2', label: 'LaLiga Hypermotion (2a Divisió)' },
+                                { id: 'uefa.champions', label: 'UEFA Champions League' },
+                                { id: 'uefa.europa', label: 'UEFA Europa League' },
+                                { id: 'uefa.nations', label: 'UEFA Nations League (Seleccions)' },
+                                { id: 'esp.copa_del_rey', label: 'Copa del Rei' },
+                                { id: 'eng.1', label: 'Premier League (Anglaterra)' },
+                                { id: 'ita.1', label: 'Serie A (Itàlia)' },
+                                { id: 'ger.1', label: 'Bundesliga (Alemanya)' },
+                                { id: 'fra.1', label: 'Ligue 1 (França)' }
+                            ];
+                            const results = await Promise.all(leagues.map(async (lg) => {
+                                const ctrl = new AbortController();
+                                const tId = setTimeout(() => ctrl.abort(), 3200);
+                                try {
+                                    const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${lg.id}/scoreboard`, { signal: ctrl.signal });
+                                    clearTimeout(tId);
+                                    if (!r.ok) return null;
+                                    const d = await r.json();
+                                    return { league: lg.label, events: Array.isArray(d.events) ? d.events : [] };
+                                } catch (_) {
+                                    clearTimeout(tId);
+                                    return null;
+                                }
+                            }));
+
+                            const todayMatches = [];
+                            const otherRoundMatches = [];
+
+                            for (const item of results) {
+                                if (!item || !item.events.length) continue;
+                                for (const ev of item.events) {
+                                    const evDateObj = ev.date ? new Date(ev.date) : null;
+                                    const evDayIso = evDateObj ? evDateObj.toLocaleDateString('sv-SE', { timeZone: 'Europe/Madrid' }) : '';
+                                    const evTimeStr = evDateObj ? evDateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' }) : '';
+                                    const evDayReadable = evDateObj ? evDateObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Europe/Madrid' }) : '';
+
+                                    const comp = ev.competitions && ev.competitions[0];
+                                    const competitors = (comp && Array.isArray(comp.competitors)) ? comp.competitors : [];
+                                    const home = competitors.find(c => c.homeAway === 'home') || competitors[0];
+                                    const away = competitors.find(c => c.homeAway === 'away') || competitors[1];
+                                    const homeName = home?.team?.displayName || home?.team?.name || '';
+                                    const awayName = away?.team?.displayName || away?.team?.name || '';
+                                    const state = ev.status?.type?.state || 'pre';
+                                    const detail = ev.status?.type?.shortDetail || '';
+
+                                    let matchLine = '';
+                                    if (state === 'in') {
+                                        matchLine = `[EN JUEGO - ${detail}] ${homeName} ${home?.score ?? 0} - ${away?.score ?? 0} ${awayName} (${item.league})`;
+                                    } else if (state === 'post') {
+                                        matchLine = `[FINALIZADO] ${homeName} ${home?.score ?? 0} - ${away?.score ?? 0} ${awayName} (${item.league}, ${evDayReadable})`;
+                                    } else {
+                                        matchLine = `[PROGRAMADO ${evDayReadable} a las ${evTimeStr}h] ${homeName} vs ${awayName} (${item.league})`;
+                                    }
+
+                                    if (evDayIso === todayIsoDate || state === 'in') {
+                                        todayMatches.push(matchLine);
+                                    } else {
+                                        otherRoundMatches.push(matchLine);
+                                    }
+                                }
+                            }
+
+                            let footballBlock = `\n\n### MARCADOR I CALENDARI OFICIAL DE FUTBOL EN TEMPS REAL (Data d'avui: ${currentDateStrEs}) ###\n`;
+                            if (todayMatches.length > 0) {
+                                footballBlock += `PARTITS D'AVUI (${todayIsoDate}):\n- ` + todayMatches.slice(0, 20).join('\n- ') + `\n`;
+                            } else {
+                                footballBlock += `Avui (${todayIsoDate}) no hi ha partits de 1a divisió en curs o ja s'han disputat; aquí tens els partits de la jornada actual / propers dies oficials:\n`;
+                            }
+                            if (otherRoundMatches.length > 0) {
+                                footballBlock += `PARTITS DE LA JORNADA ACTUAL I PROPERS DIES:\n- ` + otherRoundMatches.slice(0, 22).join('\n- ') + `\n`;
+                            }
+                            liveSources.push({ title: 'ESPN Marcadores y Calendario Oficial de Fútbol', url: 'https://espndeportes.espn.com/futbol/resultados' });
+                            return footballBlock;
+                        } catch (_) {
+                            return '';
                         }
+                    })());
+                }
+
+                // 2. Cerca de notícies i actualitat d'Internet en temps real (Google News RSS)
+                tasks.push((async () => {
+                    try {
+                        const ctrl = new AbortController();
+                        const tId = setTimeout(() => ctrl.abort(), 3200);
+                        const cleanQ = isSportsOrFootballQuery ? `${lastText} futbol partidos horarios` : lastText;
+                        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cleanQ)}&hl=es&gl=ES&ceid=ES:es`;
+                        const rssRes = await fetch(rssUrl, { signal: ctrl.signal });
+                        clearTimeout(tId);
+                        if (!rssRes.ok) return '';
+                        const xml = await rssRes.text();
+                        const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].slice(0, 6);
+                        if (items.length === 0) return '';
+                        const parsedNews = [];
+                        for (const m of items) {
+                            const block = m[1];
+                            const titleMatch = block.match(/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i);
+                            const linkMatch = block.match(/<link>([\s\S]*?)<\/link>/i);
+                            const pubDateMatch = block.match(/<pubDate>([\s\S]*?)<\/pubDate>/i);
+                            const sourceMatch = block.match(/<source[^>]*>([\s\S]*?)<\/source>/i);
+                            const title = (titleMatch ? titleMatch[1] : '').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+                            const link = (linkMatch ? linkMatch[1] : '').trim();
+                            const pubDate = (pubDateMatch ? pubDateMatch[1] : '').trim();
+                            const sourceName = (sourceMatch ? sourceMatch[1] : 'Internet').trim();
+                            if (title) {
+                                parsedNews.push(`- ${title} (${sourceName}${pubDate ? ' · ' + pubDate : ''})`);
+                                if (link && liveSources.length < 5) {
+                                    liveSources.push({ title: `${sourceName}: ${title.substring(0, 65)}`, url: link });
+                                }
+                            }
+                        }
+                        if (parsedNews.length > 0) {
+                            return `\n\n### NOTÍCIES I RESULTATS D'INTERNET EN TEMPS REAL ###\n` + parsedNews.join('\n');
+                        }
+                        return '';
+                    } catch (_) {
+                        return '';
                     }
-                } catch(e) {}
+                })());
+
+                // 3. Tavily API (si està configurada)
+                if (process.env.TAVILY_API_KEY) {
+                    tasks.push((async () => {
+                        try {
+                            const searchReq = await fetch('https://api.tavily.com/search', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ api_key: process.env.TAVILY_API_KEY, query: lastText, search_depth: "basic", max_results: 3 })
+                            });
+                            if (searchReq.ok) {
+                                const searchRes = await searchReq.json();
+                                if (searchRes.results && searchRes.results.length > 0) {
+                                    searchRes.results.forEach(r => {
+                                        if (r.url && liveSources.length < 6) liveSources.push({ title: r.title || r.url, url: r.url });
+                                    });
+                                    return "\n\n### INFORMACIÓ WEB ADICIONAL ###\n" +
+                                        searchRes.results.map(r => `Font: [${r.title}](${r.url})\nContingut: ${r.content}`).join('\n\n');
+                                }
+                            }
+                        } catch (_) {}
+                        return '';
+                    })());
+                }
+
+                const resolvedChunks = await Promise.all(tasks);
+                searchContext = resolvedChunks.filter(Boolean).join('\n');
             }
 
             const hasImageInFreeChat = geminiHistory.some(m => m.parts && m.parts.some(p => p.inlineData || p.type === 'image_url'));
@@ -1229,12 +1377,34 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             const callLang = body.callLanguage || 'català';
             const callPersona = body.callPersona || 'natural';
 
-            const systemPromptFree = "Ets Aliat Intel·ligent en mode Xat Lliure amb connexió a Google Search. Ets un assistent d'IA conversacional, obert, enginyós i de propòsit general.\n" + safetyRules + "\n\n" +
-                "- Mode Lliure Total: L'usuari pot xerrar absolutament de qualsevol cosa (aficions, curiositats, debats, idees personals, tecnologia, cinema, jocs, humor o qualsevol pregunta del món).\n" +
-                "- NO forcis que la conversa sigui d'estudi ni et limitis a l'acadèmic. Conversa amb total naturalitat i proximitat, com en un xat entre amics o companys.\n" +
+            let modeSpecificInstruction = "";
+            if (freeChatSubMode === 'study_free') {
+                let tutorRules = "";
+                if (tutorMode === 'socratic') {
+                    tutorRules = "\n- Mode Socràtic actiu: Guia amb preguntes perquè l'usuari raoni pas a pas.";
+                } else if (tutorMode === 'feynman') {
+                    tutorRules = "\n- Mode Feynman actiu: Explica-ho de manera ultra senzilla amb analogies quotidianes.";
+                } else if (tutorMode === 'tribunal') {
+                    tutorRules = "\n- Mode Tribunal actiu: Avalúa amb rigor acadèmic i fes preguntes d'examen.";
+                }
+                modeSpecificInstruction =
+                    "Ets Aliat Intel·ligent en mode XatBot d'Estudi Lliure (amb connexió a Internet).\n" +
+                    "- Ajuda l'usuari a estudiar qualsevol matèria, resoldre exercicis pas a pas, practicar idiomes o aprofundir en conceptes acadèmics sense necessitat d'un pla d'estudi tancat." +
+                    tutorRules;
+            } else {
+                modeSpecificInstruction =
+                    "Ets Aliat Intel·ligent en MODE LLIURE TOTAL amb connexió en temps real a Internet i Google Search.\n" +
+                    "- POTS PARLAR D'ABSOLUTAMENT QUALSEVOL COSA: futbol i esports d'avui, qui juga avui, resultats, notícies d'última hora, cinema, sèries, videojocs, música, cuina, tecnologia, curiositats, debats, humor o conversa quotidiana.\n" +
+                    "- PROHIBIT dirigir la conversa cap a l'estudi o l'aprenentatge si l'usuari no ho demana. Si et pregunten qui juga avui al futbol, quina pel·lícula veure o què passa al món, respon directament amb tota la informació d'internet actualitzada.\n" +
+                    "- Quan hi hagi un bloc de 'MARCADOR I CALENDARI OFICIAL DE FUTBOL EN TEMPS REAL' o 'NOTÍCIES I RESULTATS D'INTERNET EN TEMPS REAL' a sota, UTILITZA AQUESTES DADES REALS I EXACTE per respondre detallant equips, competicions, horaris i resultats.";
+            }
+
+            const systemPromptFree = modeSpecificInstruction + "\n" +
+                `- Data actual real: ${currentDateStrCa} (${currentDateStrEs}).\n` +
+                safetyRules + "\n\n" +
                 "- CONTINUÏTAT: Segueix sempre el fil de la conversa anterior amb coherència.\n" +
-                "- Dades i fets actualitzats: Utilitza les eines de cerca per donar informació rigorosa, fresca i verificada quan es tracti d'esdeveniments recents, notícies o consultes d'informació general.\n" +
-                "- Idioma: Respon amb excel·lència i expressivitat en català (o en l'idioma en què et parli l'usuari)." + searchContext + imageInstructionFree;
+                "- Respon en l'idioma en què t'escrigui l'usuari (si t'escriu en castellà/español, respon en castellà impecable; si t'escriu en català, respon en català impecable)." +
+                searchContext + imageInstructionFree;
 
             let promptToUse = systemPromptFree;
             if (isVoice) {
@@ -1248,17 +1418,19 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
                 promptToUse = "ESTÀS EN UNA TRUCADA DE VEU EN DIRECTE AMB L'USUARI (com una trucada de telèfon o Gemini Live).\n" +
                     personaRules +
+                    `- Data actual: ${currentDateStrEs}.\n` +
                     "- PROHIBICIÓ TOTAL: No utilitzis mai fórmules robòtiques com 'He entès...', 'T'he comprès', 'Et puc ajudar en alguna altra cosa?', 'En què més et puc ajudar?'.\n" +
                     "- Respon directament al que et diu o pregunta la persona, sense embuts.\n" +
                     "- Format per a veu alta: Respostes directes i àgils (1 a 3 frases màxim), sense markdown, sense asteriscs, sense negretes ni llistes.\n" +
                     "- Idioma obligatori de la trucada: " + callLang + ". Parla amb naturalitat i fluïdesa.\n" +
+                    (searchContext ? "- Informació d'internet en temps real: " + searchContext.substring(0, 1500) + "\n" : "") +
                     (body.studentContext ? "- Context de l'usuari: " + String(body.studentContext).substring(0, 600) + "\n" : "") +
                     (body.pdfText ? "- Context d'apunts disponible: " + String(body.pdfText).substring(0, 1500) : "");
             }
             
             let replyText = "";
             let aiRes = null;
-            const useGoogleSearch = body.useGoogleSearch !== false;
+            const useGoogleSearch = freeChatSubMode === 'open_total' ? true : (body.useGoogleSearch !== false);
             try {
                 aiRes = await executeAI({
                     systemPrompt: promptToUse,
@@ -1274,6 +1446,8 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                         : (callLang.includes('angl') || callLang.includes('english')
                             ? "Sorry, the line cut out for a second. What were you saying?"
                             : "Perdona, s'ha tallat un segon la connexió. Què em deies fa un moment?");
+                } else if (searchContext) {
+                    replyText = `Aquí tens la informació actualitzada d'Internet (${currentDateStrEs}):\n` + searchContext.replace(/###/g, '####');
                 } else {
                     const lastUserQuery = chatHistory.length > 0 ? String(chatHistory[chatHistory.length - 1].content || '').trim() : '';
                     replyText = `Aquí tens una resposta directa sobre **"${lastUserQuery.substring(0, 100) || 'el que em comentes'}"**:\n\n` +
@@ -1282,10 +1456,17 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
             }
 
+            const combinedSources = [...(aiRes?.sources || [])];
+            for (const ls of liveSources) {
+                if (ls && ls.url && !combinedSources.some(s => s.url === ls.url)) {
+                    combinedSources.push(ls);
+                }
+            }
+
             return res.status(200).json({
                 reply: replyText,
-                searchQueries: aiRes?.searchQueries || [],
-                sources: aiRes?.sources || [],
+                searchQueries: aiRes?.searchQueries || (lastText ? [lastText] : []),
+                sources: combinedSources,
                 groundingMetadata: aiRes?.groundingMetadata || null
             });
         }

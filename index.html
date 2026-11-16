@@ -100,15 +100,23 @@
         button, a, input, select, textarea, .interactive-btn {
             touch-action: manipulation;
         }
-        /* Accessibilitat per teclat: focus visible nítid en tots els botons, enllaços i controls */
+        /* Accessibilitat per teclat en botons i enllaços, sense quadre blau molest al textarea del xat */
         button:focus-visible,
         a:focus-visible,
-        input:focus-visible,
         select:focus-visible,
-        textarea:focus-visible,
         .aliat-select-trigger:focus-visible {
             outline: 2px solid #3b82f6 !important;
             outline-offset: 2px !important;
+        }
+        #chat-input,
+        #chat-input:focus,
+        #chat-input:focus-visible,
+        textarea:focus,
+        textarea:focus-visible,
+        input:focus,
+        input:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
         }
         @media (prefers-reduced-motion: reduce) {
             *, ::before, ::after {
@@ -1895,6 +1903,14 @@
                                 <span id="header-pomodoro-timer" class="font-mono text-[11px] sm:text-xs">25:00</span>
                                 <span class="hidden lg:inline text-[11px] text-rose-600 dark:text-rose-400">Pomodoro</span>
                             </button>
+                            <div id="xatbot-submode-header-pill" class="hidden items-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 rounded-xl p-0.5 gap-0.5 shrink-0">
+                                <button type="button" data-xatbot-submode="study_free" onclick="setFreeChatSubMode('study_free')" class="xatbot-submode-btn py-1 px-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 whitespace-nowrap">
+                                    <span>🎓 Estudi Lliure</span>
+                                </button>
+                                <button type="button" data-xatbot-submode="open_total" onclick="setFreeChatSubMode('open_total')" class="xatbot-submode-btn py-1 px-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 whitespace-nowrap">
+                                    <span>🌐 Lliure Total</span>
+                                </button>
+                            </div>
                             <button id="calendar-header-btn" onclick="showCalendarModal()" title="Calendari d'Estudi" class="text-xs bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200/80 dark:border-zinc-800 text-blue-700 dark:text-blue-300 font-medium py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 <span class="hidden xs:inline sm:inline text-[11px] sm:text-xs">Calendari</span>
@@ -2213,8 +2229,8 @@
                             </div>
                         </div>
 
-                        <!-- CÀPSULA D'ENTRADA (2 files a web mòbil perquè el text mai es talli, 1 fila a escriptori) -->
-                        <form id="chat-form" onsubmit="event.preventDefault();" class="relative bg-white dark:bg-[#191a23] border border-zinc-200/90 dark:border-zinc-800/90 rounded-3xl sm:rounded-[1.75rem] px-3 py-2 sm:px-3.5 sm:py-2 shadow-md shadow-zinc-900/5 dark:shadow-black/40 flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 focus-within:border-blue-500/60 dark:focus-within:border-blue-500/60 transition-all duration-200">
+                        <!-- CÀPSULA D'ENTRADA (2 files a web mòbil perquè el text mai es talli, 1 fila a escriptori, sense vora blava en fer clic) -->
+                        <form id="chat-form" onsubmit="event.preventDefault();" class="relative bg-white dark:bg-[#191a23] border border-zinc-200/90 dark:border-zinc-800/90 rounded-3xl sm:rounded-[1.75rem] px-3 py-2 sm:px-3.5 sm:py-2 shadow-md shadow-zinc-900/5 dark:shadow-black/40 flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 transition-all duration-200">
                             
                             <!-- BOTÓ MAS (+) AMB DESPLEGABLE D'OPCIONS -->
                             <div class="relative shrink-0 order-2 sm:order-1">
@@ -15080,10 +15096,24 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                 }
             }
 
-            // Desplegable de Tutor (Tutor Estàndard, Socràtic, Feynman, Tribunal) NOMÉS VISIBLE EN PLA D'ESTUDIS
+            // Selector de sub-mode de XatBot (Estudi Lliure vs Mode Lliure Total) a la capçalera
+            const xatbotHeaderPill = document.getElementById('xatbot-submode-header-pill');
+            if (xatbotHeaderPill) {
+                if (appMode === 'free') {
+                    xatbotHeaderPill.classList.remove('hidden');
+                    xatbotHeaderPill.classList.add('flex');
+                    if (typeof window.syncFreeChatSubModeUI === 'function') window.syncFreeChatSubModeUI();
+                } else {
+                    xatbotHeaderPill.classList.add('hidden');
+                    xatbotHeaderPill.classList.remove('flex');
+                }
+            }
+
+            // Desplegable de Tutor (Tutor Estàndard, Socràtic, Feynman, Tribunal) VISIBLE EN PLA D'ESTUDIS I EN XATBOT D'ESTUDI LLIURE
             const tutorDropdownContainer = document.getElementById('tutor-dropdown-container');
             if (tutorDropdownContainer) {
-                if (isStudy) {
+                const isFreeStudy = (appMode === 'free' && typeof window.getFreeChatSubMode === 'function' && window.getFreeChatSubMode() === 'study_free');
+                if (isStudy || isFreeStudy) {
                     tutorDropdownContainer.classList.remove('hidden');
                 } else {
                     tutorDropdownContainer.classList.add('hidden');
@@ -16546,48 +16576,175 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             `;
         };
 
+        // --- GESTIÓ DELS 2 MODES DEL XATBOT: 'study_free' (Estudiar Mode Lliure) vs 'open_total' (Mode Lliure Total + Internet) ---
+        window.getFreeChatSubMode = function() {
+            const saved = localStorage.getItem('aliat_free_chat_submode');
+            return saved === 'study_free' ? 'study_free' : 'open_total';
+        };
+
+        window.syncFreeChatSubModeUI = function() {
+            const subMode = window.getFreeChatSubMode();
+            const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+            document.querySelectorAll('.xatbot-submode-btn').forEach(btn => {
+                const m = btn.getAttribute('data-xatbot-submode');
+                const active = m === subMode;
+                if (btn.closest('#xatbot-submode-header-pill')) {
+                    btn.className = active
+                        ? 'xatbot-submode-btn py-1 px-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 whitespace-nowrap bg-emerald-600 text-white shadow-2xs'
+                        : 'xatbot-submode-btn py-1 px-2 rounded-lg text-[10.5px] sm:text-xs font-bold transition cursor-pointer flex items-center gap-1 whitespace-nowrap text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-zinc-800';
+                } else {
+                    btn.className = active
+                        ? 'xatbot-submode-btn flex-1 py-2 px-3 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-xs'
+                        : 'xatbot-submode-btn flex-1 py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/70';
+                }
+            });
+
+            if (appMode === 'free') {
+                const label = document.getElementById('chat-mode-label');
+                if (label) {
+                    label.innerText = subMode === 'study_free'
+                        ? (isEs ? 'XatBot · Estudio Libre' : 'XatBot · Estudi Lliure')
+                        : (isEs ? 'XatBot · Libre Total' : 'XatBot · Lliure Total');
+                }
+                const chatInput = document.getElementById('chat-input');
+                if (chatInput) {
+                    chatInput.placeholder = subMode === 'study_free'
+                        ? (isEs ? 'Pregunta cualquier duda de estudio, matemáticas, ciencia o idiomas...' : 'Pregunta qualsevol dubte d\'estudi, mates, ciència o idiomes...')
+                        : (isEs ? 'Habla de cualquier cosa: ¿quién juega hoy al fútbol?, noticias de internet, cine...' : 'Parla de qualsevol cosa: qui juga avui al futbol?, notícies d\'internet, cinema...');
+                }
+                const tutorDropdownContainer = document.getElementById('tutor-dropdown-container');
+                if (tutorDropdownContainer) {
+                    if (subMode === 'study_free') {
+                        tutorDropdownContainer.classList.remove('hidden');
+                    } else {
+                        tutorDropdownContainer.classList.add('hidden');
+                        document.getElementById('tutor-dropdown-menu')?.classList.add('hidden');
+                    }
+                }
+                if (subMode === 'open_total' && !window.isGoogleSearchActive) {
+                    window.isGoogleSearchActive = true;
+                    const pulse = document.getElementById('google-search-pulse');
+                    if (pulse) pulse.classList.remove('hidden');
+                }
+            }
+        };
+
+        window.setFreeChatSubMode = function(subMode) {
+            const next = subMode === 'study_free' ? 'study_free' : 'open_total';
+            localStorage.setItem('aliat_free_chat_submode', next);
+            window.syncFreeChatSubModeUI();
+            if (appMode === 'free' && chatHistory.length === 0) {
+                renderChatbotWelcomeCard();
+            }
+            const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+            if (typeof showToast === 'function') {
+                showToast(
+                    next === 'study_free'
+                        ? (isEs ? '🎓 Modo Estudio Libre activo: resuelve dudas y practica paso a paso.' : '🎓 Mode Estudi Lliure actiu: resol dubtes i practica pas a pas.')
+                        : (isEs ? '🌐 Modo Libre Total activo: habla de cualquier tema con información de internet en directo.' : '🌐 Mode Lliure Total actiu: parla de qualsevol tema amb informació d\'internet en directe.'),
+                    'info'
+                );
+            }
+        };
+
         window.renderChatbotWelcomeCard = function() {
             const box = document.getElementById('chat-messages');
             if (!box) return;
+            const subMode = window.getFreeChatSubMode ? window.getFreeChatSubMode() : 'open_total';
+            const isStudyFree = subMode === 'study_free';
+            const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+
+            window.syncFreeChatSubModeUI();
+
+            const cardsHtml = isStudyFree ? `
+                <button type="button" onclick="startFreeChatWithTopic('ciencia')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
+                    <div>
+                        <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${isEs ? 'Ciencia, Mates y Código' : 'Ciència, Mates i Codi'}</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">${isEs ? 'Resolución explicada paso a paso' : 'Resolució explicada pas a pas'}</div>
+                    </div>
+                    <span class="self-end text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </span>
+                </button>
+                <button type="button" onclick="startFreeChatWithTopic('practica')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
+                    <div>
+                        <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${isEs ? 'Practicar Ejercicios' : 'Practicar Exercicis'}</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">${isEs ? 'Preguntas de repaso sin calendario' : 'Preguntes de repàs sense calendari'}</div>
+                    </div>
+                    <span class="self-end text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </span>
+                </button>
+                <button type="button" onclick="startFreeChatWithTopic('idiomes')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
+                    <div>
+                        <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${isEs ? 'Idiomas y Redacción' : 'Idiomes i Redacció'}</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">${isEs ? 'Practica conversación y gramática' : 'Practica conversa i gramàtica'}</div>
+                    </div>
+                    <span class="self-end text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </span>
+                </button>
+            ` : `
+                <button type="button" onclick="startFreeChatWithTopic('futbol_avui')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
+                    <div>
+                        <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${isEs ? '⚽ ¿Quién juega hoy al fútbol?' : '⚽ Qui juga avui al futbol?'}</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">${isEs ? 'Partidos de hoy, horarios y resultados en directo' : 'Partits d\'avui, horaris i resultats en directe'}</div>
+                    </div>
+                    <span class="self-end text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </span>
+                </button>
+                <button type="button" onclick="startFreeChatWithTopic('actualitat_internet')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
+                    <div>
+                        <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${isEs ? '🌐 Actualidad e Internet' : '🌐 Actualitat i Internet'}</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">${isEs ? 'Noticias de hoy, tendencias y búsqueda en vivo' : 'Notícies d\'avui, tendències i cerca en viu'}</div>
+                    </div>
+                    <span class="self-end text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </span>
+                </button>
+                <button type="button" onclick="startFreeChatWithTopic('oci_lliure')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
+                    <div>
+                        <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${isEs ? '🎬 Cine, Juegos y Charla Libre' : '🎬 Cinema, Jocs i Xerrada Lliure'}</div>
+                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">${isEs ? 'Habla de cualquier tema sin límites académicos' : 'Parla de qualsevol tema sense límits acadèmics'}</div>
+                    </div>
+                    <span class="self-end text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </span>
+                </button>
+            `;
+
             box.innerHTML = `
-                <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-4 sm:py-8 px-2 sm:px-4 space-y-4 sm:space-y-6 animate-fade-in">
+                <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-4 sm:py-8 px-2 sm:px-4 space-y-4 sm:space-y-5 animate-fade-in">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/70 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         </div>
                         <div>
                             <h2 class="text-base sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">XatBot</h2>
-                            <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Resol dubtes concrets, practica exercicis o explora qualsevol tema pas a pas.</p>
+                            <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">${isEs ? 'Elige entre estudiar a tu ritmo o hablar libremente de cualquier cosa con acceso a internet.' : 'Tria entre estudiar al teu ritme o parlar lliurement de qualsevol cosa amb accés a internet.'}</p>
                         </div>
                     </div>
-                    <div class="pt-3 sm:pt-5 border-t border-zinc-200/80 dark:border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 text-left">
-                        <button type="button" onclick="startFreeChatWithTopic('debat')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
-                            <div>
-                                <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Debat i Opinió</div>
-                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Arguments i anàlisi crítica</div>
-                            </div>
-                            <span class="self-end text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" aria-hidden="true">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                            </span>
-                        </button>
-                        <button type="button" onclick="startFreeChatWithTopic('ciencia')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
-                            <div>
-                                <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Ciència i Mates</div>
-                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Resolució pas a pas</div>
-                            </div>
-                            <span class="self-end text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" aria-hidden="true">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                            </span>
-                        </button>
-                        <button type="button" onclick="startFreeChatWithTopic('brainstorming')" class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-500/70 transition cursor-pointer group flex flex-col justify-between gap-3">
-                            <div>
-                                <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Pluja d'Idees</div>
-                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Enfocaments per a projectes</div>
-                            </div>
-                            <span class="self-end text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" aria-hidden="true">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                            </span>
-                        </button>
+
+                    <!-- SELECTOR DE LES 2 OPCIONS DEL XATBOT: ESTUDIAR MODE LLIURE vs MODE LLIURE TOTAL -->
+                    <div class="p-2.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 space-y-2">
+                        <div class="flex flex-col sm:flex-row gap-1.5 bg-zinc-200/70 dark:bg-zinc-950 p-1 rounded-xl">
+                            <button type="button" data-xatbot-submode="study_free" onclick="setFreeChatSubMode('study_free')" class="xatbot-submode-btn flex-1 py-2 px-3 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${isStudyFree ? 'bg-emerald-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/70'}">
+                                <span>🎓 ${isEs ? 'Estudiar (Modo Libre)' : 'Estudiar (Mode Lliure)'}</span>
+                            </button>
+                            <button type="button" data-xatbot-submode="open_total" onclick="setFreeChatSubMode('open_total')" class="xatbot-submode-btn flex-1 py-2 px-3 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${!isStudyFree ? 'bg-emerald-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/70'}">
+                                <span>🌐 ${isEs ? 'Modo Libre Total (Cualquier tema + Internet)' : 'Mode Lliure Total (Qualsevol tema + Internet)'}</span>
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 px-1">
+                            ${isStudyFree
+                                ? (isEs ? '🎓 Enfocado en estudiar y aprender sin calendario fijo: resuelve ejercicios, dudas de clase y usa los modos de Tutor.' : '🎓 Enfocat a estudiar i aprendre sense calendari fix: resol exercicis, dubtes de classe i utilitza els modes de Tutor.')
+                                : (isEs ? '🌐 Conversación 100% libre conectada a Internet en tiempo real: pregunta quién juega hoy al fútbol, noticias de última hora, cine, juegos o lo que quieras.' : '🌐 Conversa 100% lliure connectada a Internet en temps real: pregunta qui juga avui al futbol, notícies d\'última hora, cinema, jocs o el que vulguis.')}
+                        </p>
+                    </div>
+
+                    <div class="pt-2 border-t border-zinc-200/80 dark:border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 text-left">
+                        ${cardsHtml}
                     </div>
                     <div class="pt-1">
                         <button type="button" onclick="openGoogleWorkspaceHubModal('free')" class="w-full p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-400 dark:hover:border-blue-500/70 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 transition cursor-pointer group flex items-center justify-between gap-3 text-left shadow-2xs active:scale-[0.99]">
@@ -16608,7 +16765,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                             </span>
                         </button>
                     </div>
-                    <p class="text-[11px] text-zinc-400 dark:text-zinc-500">Escriu la teva consulta a la barra inferior per començar.</p>
+                    <p class="text-[11px] text-zinc-400 dark:text-zinc-500">${isEs ? 'Escribe tu mensaje en la barra inferior para empezar.' : 'Escriu la teva consulta a la barra inferior per començar.'}</p>
                 </div>
             `;
         };
@@ -17076,6 +17233,28 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         };
 
         window.startFreeChatWithTopic = function(topicTextOrKey) {
+            const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+            const directPromptMap = {
+                'futbol_avui': isEs
+                    ? '¿Quién juega hoy al fútbol? Dime los partidos de hoy, los horarios y los resultados actualizados según internet.'
+                    : 'Qui juga avui al futbol? Digues-me els partits d\'avui, els horaris i els resultats actualitzats segons internet.',
+                'actualitat_internet': isEs
+                    ? '¿Cuáles son las noticias y temas de actualidad más importantes de hoy en internet?'
+                    : 'Quines són les notícies i temes d\'actualitat més importants d\'avui a internet?',
+                'oci_lliure': isEs
+                    ? '¡Hola! Estoy en modo libre total. Recomiéndame algo interesante (cine, series, videojuegos o curiosidades de hoy) para charlar.'
+                    : 'Hola! Estic en mode lliure total. Recomana\'m alguna cosa interessant (cinema, sèries, videojocs o curiositats d\'avui) per xerrar.'
+            };
+
+            if (directPromptMap[topicTextOrKey]) {
+                const userPrompt = directPromptMap[topicTextOrKey];
+                appendMessage('user', userPrompt);
+                chatHistory.push({ role: 'user', content: userPrompt });
+                saveSession();
+                triggerAiResponse();
+                return;
+            }
+
             const keyMap = {
                 'debat': "Debat i opinió sobre filosofia o temes d'actualitat",
                 'ciencia': "Resolució de dubtes científics, matemàtics o de programació",
@@ -20289,6 +20468,7 @@ ${parsedBody}
                     pdfText: finalStudyText, 
                     studentContext: studentContextStr,
                     tutorMode: window.currentTutorMode || 'standard',
+                    freeChatSubMode: appMode === 'free' && window.getFreeChatSubMode ? window.getFreeChatSubMode() : undefined,
                     dailyOutputMode: appMode === 'daily_use' && window.getDailyOutputMode ? window.getDailyOutputMode() : undefined,
                     useGoogleSearch: window.isGoogleSearchActive !== false
                 });

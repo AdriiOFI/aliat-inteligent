@@ -12,14 +12,31 @@ module.exports = async function analyzeMultimodalHandler(req, res) {
         mediaBase64,
         mimeType = 'image/png',
         analysisMode = 'all', // 'objects', 'ocr', 'all', 'video'
-        prompt = ''
+        prompt = '',
+        apiKey: bodyApiKey
     } = req.body || {};
 
     if (!mediaBase64) {
         return res.status(400).json({ error: 'Cal enviar la imatge o vídeo codificat en base64.' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+    let apiKey = (bodyApiKey && !String(bodyApiKey).includes('••••')) ? String(bodyApiKey).trim() : '';
+    if (!apiKey && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+        try {
+            const { extractUserFromRequest, getDbClient } = require('../lib/db');
+            const user = extractUserFromRequest(req);
+            if (user && user.id) {
+                const client = getDbClient();
+                const uRes = await client.execute({ sql: 'SELECT ai_api_key FROM users WHERE id = ?', args: [user.id] });
+                if (uRes.rows && uRes.rows[0] && uRes.rows[0].ai_api_key) {
+                    apiKey = String(uRes.rows[0].ai_api_key).trim();
+                }
+            }
+        } catch (_) {}
+    }
+    if (!apiKey) {
+        apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+    }
     if (!apiKey) {
         return res.status(500).json({ error: 'GEMINI_API_KEY no està configurada al servidor.' });
     }
@@ -93,7 +110,7 @@ Respon sempre en Català estructurat en seccions clares.`;
         console.error('[Analyze Multimodal Error]:', err);
         return res.status(500).json({
             success: false,
-            error: err.message || 'Error analitzant el contingut multimèdia'
+            error: 'Error analitzant el contingut multimèdia. Torna-ho a provar en uns segons.'
         });
     }
 };

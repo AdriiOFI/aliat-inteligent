@@ -130,6 +130,17 @@ module.exports = async function remindersHandler(req, res) {
             const enabled = body.enabled !== false ? 1 : 0;
             const nowIso = new Date().toISOString();
 
+            if (body.id) {
+                const existingRem = await client.execute({
+                    sql: 'SELECT user_id FROM study_reminders WHERE id = ?',
+                    args: [id]
+                });
+                const existingRow = existingRem.rows && existingRem.rows[0];
+                if (existingRow && !userIds.includes(String(existingRow.user_id))) {
+                    return res.status(403).json({ error: 'No tens permís per modificar aquest recordatori.' });
+                }
+            }
+
             await client.execute({
                 sql: `INSERT INTO study_reminders (
                     id, user_id, user_email, title, notes, frequency, days_json,
@@ -241,10 +252,12 @@ module.exports = async function remindersHandler(req, res) {
         if (action === 'unsubscribe-push' && req.method === 'POST') {
             const { endpoint } = req.body || {};
             if (!endpoint) return res.status(400).json({ error: 'Endpoint requerit.' });
-            await client.execute({
-                sql: 'DELETE FROM push_subscriptions WHERE endpoint = ?',
-                args: [String(endpoint)]
-            });
+            for (const uid of userIds) {
+                await client.execute({
+                    sql: 'DELETE FROM push_subscriptions WHERE endpoint = ? AND user_id = ?',
+                    args: [String(endpoint), uid]
+                });
+            }
             return res.status(200).json({ success: true });
         }
 
@@ -321,6 +334,6 @@ module.exports = async function remindersHandler(req, res) {
         return res.status(404).json({ error: `Acció no reconeguda: ${action}` });
     } catch (err) {
         console.error('[Reminders API Error]:', err);
-        return res.status(500).json({ error: err.message || 'Error intern de recordatoris' });
+        return res.status(500).json({ error: 'Error intern de recordatoris.' });
     }
 };

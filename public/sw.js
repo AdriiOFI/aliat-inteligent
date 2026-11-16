@@ -1,8 +1,9 @@
-const CACHE_NAME = 'aliat-pwa-v3';
+const CACHE_NAME = 'aliat-pwa-v5';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/onboarding-tour.js',
   '/favicon.ico',
   '/favicon.png',
   '/favicon-16x16.png',

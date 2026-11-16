@@ -27,6 +27,14 @@
             .replace(/'/g, '&#39;');
     }
 
+    function sanitizeHtmlFragment(html) {
+        return String(html || '')
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+            .replace(/\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+            .replace(/javascript:/gi, '');
+    }
+
     // --- WEB AUDIO SYNTHESIZED FEEDBACK (SENSE FITXERS EXTERNS) ---
     function playGameSound(type) {
         try {
@@ -1857,7 +1865,7 @@
             if (m.role === 'user') {
                 return `<div class="flex justify-end"><div class="px-3.5 py-2 rounded-2xl bg-indigo-600 text-white font-semibold max-w-[85%]">${esc(m.content)}</div></div>`;
             }
-            const formatted = (typeof marked !== 'undefined' && marked.parse) ? marked.parse(m.content || '') : esc(m.content || '');
+            const formatted = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(m.content || '') : esc(m.content || ''));
             return `
                 <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                     <div class="prose prose-xs dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 leading-relaxed">${formatted}</div>
@@ -2186,7 +2194,7 @@
         }
 
         listEl.innerHTML = notes.map((n, idx) => {
-            const rendered = (typeof marked !== 'undefined' && marked.parse) ? marked.parse(n.content || '') : esc(n.content || '');
+            const rendered = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(n.content || '') : esc(n.content || ''));
             return `
                 <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                     <div class="flex items-center justify-between gap-2">
@@ -2283,12 +2291,30 @@
 
     window.studySpecificPlanSession = function (sessionNum, sessionTopic) {
         if (typeof Swal !== 'undefined') Swal.close();
+        document.getElementById('welcome-view')?.classList.add('hidden');
+        document.getElementById('setup-view')?.classList.add('hidden');
+        document.getElementById('setup-view')?.classList.remove('flex');
+        document.getElementById('quiz-view')?.classList.add('hidden');
+        document.getElementById('quiz-view')?.classList.remove('flex');
+        const chatView = document.getElementById('chat-view');
+        if (chatView) {
+            chatView.classList.remove('hidden');
+            chatView.classList.add('flex');
+        }
+        document.getElementById('chat-form')?.classList.remove('hidden');
+        document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
+        document.getElementById('global-menu-btn')?.classList.add('hidden');
+        if (typeof window.updateHeaderButtonsVisibility === 'function') {
+            window.updateHeaderButtonsVisibility();
+        }
+        const safeNum = Number(sessionNum) || 1;
+        const safeTopic = String(sessionTopic || tr('Conceptes clau del temari', 'Conceptos clave del temario')).trim();
         const promptText = tr(
-            `Estudiem a fons la Sessió ${sessionNum}: "${sessionTopic}". Explica'm els conceptes clau de manera estructurada per a examen, posa un exemple resolt pas a pas i acaba amb [BOTON_FLASHCARDS].`,
-            `Estudiemos a fondo la Sesión ${sessionNum}: "${sessionTopic}". Explícame los conceptos clave de forma estructurada para examen, pon un ejemplo resuelto paso a paso y termina con [BOTON_FLASHCARDS].`
+            `Estudiem a fons la Sessió ${safeNum}: "${safeTopic}". Explica'm els conceptes clau de manera estructurada per a examen, posa un exemple resolt pas a pas i acaba amb [BOTON_FLASHCARDS].`,
+            `Estudiemos a fondo la Sesión ${safeNum}: "${safeTopic}". Explícame los conceptos clave de forma estructurada para examen, pon un ejemplo resuelto paso a paso y termina con [BOTON_FLASHCARDS].`
         );
         if (typeof appendMessage === 'function' && typeof triggerAiResponse === 'function') {
-            appendMessage('user', tr(`Iniciar Sessió ${sessionNum}: ${sessionTopic}`, `Iniciar Sesión ${sessionNum}: ${sessionTopic}`));
+            appendMessage('user', tr(`Iniciar Sessió ${safeNum}: ${safeTopic}`, `Iniciar Sesión ${safeNum}: ${safeTopic}`));
             if (typeof chatHistory !== 'undefined' && Array.isArray(chatHistory)) {
                 chatHistory.push({ role: 'user', content: promptText });
             }

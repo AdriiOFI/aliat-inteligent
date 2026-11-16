@@ -19,7 +19,23 @@ module.exports = async function generateVideoHandler(req, res) {
         return res.status(400).json({ error: 'Cal introduir una descripció o prompt per al vídeo.' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+    let apiKey = '';
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+        try {
+            const { extractUserFromRequest, getDbClient } = require('../lib/db');
+            const user = extractUserFromRequest(req);
+            if (user && user.id) {
+                const client = getDbClient();
+                const uRes = await client.execute({ sql: 'SELECT ai_api_key FROM users WHERE id = ?', args: [user.id] });
+                if (uRes.rows && uRes.rows[0] && uRes.rows[0].ai_api_key) {
+                    apiKey = String(uRes.rows[0].ai_api_key).trim();
+                }
+            }
+        } catch (_) {}
+    }
+    if (!apiKey) {
+        apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+    }
     if (!apiKey) {
         return res.status(500).json({ error: 'GEMINI_API_KEY no està configurada al servidor.' });
     }
@@ -97,11 +113,10 @@ module.exports = async function generateVideoHandler(req, res) {
 
         return res.status(200).json({
             success: false,
-            error: errMsg,
             isPaidModelError: isPaidModelError,
             message: isPaidModelError
                 ? "El model de generació de vídeo (gemini-omni-1.2-flash) requereix una clau amb facturació habilitada."
-                : `Error en la generació de vídeo: ${errMsg}`
+                : "No s'ha pogut generar el vídeo en aquest moment. Torna-ho a provar més tard."
         });
     }
 };

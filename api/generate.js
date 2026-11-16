@@ -2253,6 +2253,6 @@ Inclou citacions constants com [Font 1], [Font 2] al costat de cada afirmació, 
 
     } catch (error) {
         console.error("Error handler generate.js:", error);
-        return res.status(200).json({ error: "Error intern del servidor: " + error.message });
+        return res.status(200).json({ error: "Error intern del servidor en processar la petició." });
     }
 };

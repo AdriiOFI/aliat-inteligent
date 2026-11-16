@@ -137,7 +137,7 @@ module.exports = async function generateImageHandler(req, res) {
         console.error('[Image Fallback Error]:', fallbackErr);
         return res.status(500).json({
             success: false,
-            error: 'No s\'ha pogut generar la imatge. Revisa la connexió o el text introduït: ' + fallbackErr.message
+            error: 'No s\'ha pogut generar la imatge en aquest moment. Revisa la connexió o el text introduït.'
         });
     }
 };

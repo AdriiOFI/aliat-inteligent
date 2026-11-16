@@ -500,52 +500,69 @@
     }
 
     function ensureStyles() {
-        if (document.getElementById('aliat-onboarding-styles')) return;
+        const existing = document.getElementById('aliat-onboarding-styles');
+        if (existing) return;
         const style = document.createElement('style');
         style.id = 'aliat-onboarding-styles';
         style.textContent = `
             @keyframes aliatTourFadeIn {
-                from { opacity: 0; transform: translateY(6px) scale(0.985); }
+                from { opacity: 0.01; transform: translateY(6px) scale(0.985); }
                 to { opacity: 1; transform: translateY(0) scale(1); }
             }
             #aliat-onboarding-root {
-                position: fixed;
-                inset: 0;
-                z-index: 260;
+                position: fixed !important;
+                inset: 0 !important;
+                z-index: 2147483000 !important;
                 pointer-events: none;
             }
             #aliat-onboarding-backdrop {
-                position: fixed;
-                inset: 0;
+                position: fixed !important;
+                inset: 0 !important;
                 pointer-events: auto;
             }
             #aliat-onboarding-spotlight {
-                position: fixed;
+                position: fixed !important;
                 border-radius: 14px;
                 border: 2px solid #2563eb;
                 box-shadow: 0 0 0 9999px rgba(9, 9, 11, 0.56), 0 0 0 5px rgba(37, 99, 235, 0.24);
                 pointer-events: none;
                 transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease;
-                z-index: 261;
+                z-index: 2147483001 !important;
             }
             html.dark #aliat-onboarding-spotlight {
                 border-color: #38bdf8;
                 box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.68), 0 0 0 5px rgba(56, 189, 248, 0.25);
             }
             #aliat-onboarding-card {
-                position: fixed;
+                position: fixed !important;
                 pointer-events: auto;
-                z-index: 262;
-                width: min(375px, calc(100vw - 24px));
+                z-index: 2147483002 !important;
+                width: min(380px, calc(100vw - 24px));
                 max-height: calc(100dvh - 24px);
                 overflow-y: auto;
-                animation: aliatTourFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                background-color: #ffffff;
+                color: #18181b;
+                border: 1px solid #e4e4e7;
+                border-radius: 1rem;
+                padding: 1.15rem;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+                opacity: 1;
+                animation: aliatTourFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            html.dark #aliat-onboarding-card {
+                background-color: #18181b;
+                color: #f4f4f5;
+                border-color: #3f3f46;
             }
             #aliat-onboarding-arrow {
                 position: absolute;
                 width: 12px;
                 height: 12px;
                 transform: rotate(45deg);
+                background-color: #ffffff;
+            }
+            html.dark #aliat-onboarding-arrow {
+                background-color: #18181b;
             }
             @media (prefers-reduced-motion: reduce) {
                 #aliat-onboarding-card,
@@ -994,27 +1011,46 @@
         });
     }
 
-    function buildStepsForFlow(flow) {
+    function isChatViewCurrentlyOpen() {
+        const chatView = document.getElementById('chat-view');
+        return Boolean(chatView && !chatView.classList.contains('hidden'));
+    }
+
+    function buildStepsForFlow(flow, forceFallback = false) {
         const isEs = getLang() === 'es';
         const copy = getCopy(isEs);
         const flowData = copy.flows[flow] || copy.flows.landing;
-        return flowData.steps.filter((s) => {
+        const filtered = flowData.steps.filter((s) => {
             // Steps with an onEnter transition dynamically navigate into the target view/menu at step activation
             if (typeof s.onEnter === 'function' || s.requiresSidebarOnMobile) return true;
             return Boolean(resolveTargetElement(s.selector));
         });
+        if (filtered.length > 0) return filtered;
+        return forceFallback ? flowData.steps.slice() : [];
     }
 
+    window.__ALIAT_ONBOARDING_VERSION = 9;
+    let _lastTourStartTs = 0;
+
     window.startAliatOnboarding = function (requestedFlow = 'auto', forceReplay = false) {
-        const flow = requestedFlow === 'auto' ? detectFlow() : requestedFlow;
+        const now = Date.now();
+        if (forceReplay && state.active && now - _lastTourStartTs < 250) return;
+        _lastTourStartTs = now;
+
+        const flow = (!requestedFlow || requestedFlow === 'auto') ? detectFlow() : requestedFlow;
         if (!forceReplay && isFlowDone(flow)) return;
         if (!forceReplay && isAnyBlockingModalOpen()) return;
 
+        // If mobile sidebar drawer was left open over the app while clicking ?, collapse it first so UI is unobstructed
+        if (window.innerWidth < 768) {
+            restoreMobileSidebarIfNeeded();
+        }
+
         const hooks = getTourHooks();
-        state.hasUserChatAtStart = Boolean(hooks && hooks.hasUserChat());
+        state.hasUserChatAtStart = Boolean(hooks && isChatViewCurrentlyOpen() && hooks.hasUserChat());
         state.snapshot = (flow !== 'landing' && hooks && !state.hasUserChatAtStart) ? hooks.getSnapshot() : null;
 
-        const steps = buildStepsForFlow(flow);
+        const steps = buildStepsForFlow(flow, Boolean(forceReplay));
         if (!steps || steps.length === 0) return;
 
         state.active = true;
@@ -1113,6 +1149,15 @@
             window.openAuthModal._onboardingHooked = true;
         }
     }
+
+    document.addEventListener('click', (e) => {
+        const target = e.target && e.target.closest ? e.target.closest('#sidebar-tour-btn, #welcome-tour-btn, #landing-tour-btn, [data-aliat-tour-trigger]') : null;
+        if (!target) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const flow = target.id === 'landing-tour-btn' ? 'landing' : 'auto';
+        window.startAliatOnboarding(flow, true);
+    });
 
     function init() {
         hookLifecycleFunctions();

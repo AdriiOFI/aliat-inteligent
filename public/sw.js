@@ -1,9 +1,11 @@
-const CACHE_NAME = 'aliat-pwa-v8';
+const CACHE_NAME = 'aliat-pwa-v9';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/onboarding-tour.js',
+  '/study-notebook-games.js',
+  '/cookie-consent.js',
   '/favicon.ico',
   '/favicon.png',
   '/favicon-16x16.png',
@@ -12,8 +14,7 @@ const PRECACHE_ASSETS = [
   '/icon-512.png',
   '/icon-maskable-512.png',
   '/apple-touch-icon.png',
-  '/assets/aistudio/logoOFI_048f1d3b.png',
-  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap'
+  '/assets/aistudio/logoOFI_048f1d3b.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -50,7 +51,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   if (url.pathname.startsWith('/api/')) {
-    // Network-first for API requests
     event.respondWith(
       fetch(event.request).catch(() => {
         return new Response(JSON.stringify({ error: 'Estàs fora de línia. Connecta\'t per generar noves respostes d\'IA.' }), {
@@ -61,7 +61,37 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Stale-While-Revalidate for app shell and assets
+  // Network-First for HTML navigations and core app scripts so UI & bugfixes take effect immediately
+  const isSameOrigin = url.origin === self.location.origin;
+  const isHtmlOrScript =
+    event.request.mode === 'navigate' ||
+    (isSameOrigin && (
+      url.pathname === '/' ||
+      url.pathname.endsWith('.html') ||
+      url.pathname.endsWith('.js')
+    ));
+
+  if (isHtmlOrScript) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-cache' }).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(() => {
+        return caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === 'navigate') return caches.match('/');
+        });
+      })
+    );
+    return;
+  }
+
+  // Stale-While-Revalidate for static images, icons, and fonts
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
@@ -72,12 +102,7 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
-      }).catch(() => {
-        // Fallback for navigation requests
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
-        }
-      });
+      }).catch(() => cachedResponse);
 
       return cachedResponse || fetchPromise;
     })

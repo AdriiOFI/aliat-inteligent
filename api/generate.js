@@ -1915,6 +1915,340 @@ Genera entre 3 i 5 conceptes principals, cadascun amb 2 detalls específics. Tot
             return res.status(200).json({ transcription, model: usedModel });
         }
 
+        // ACCIÓ 9: GENERADOR DE JOCS D'APRENENTATGE ACTIU DEL PLA D'ESTUDI
+        if (action === 'generate_study_game') {
+            const gameType = body.gameType || 'memory_pairs';
+            const topic = (body.topic || "Temari d'Estudi").trim();
+            const sourceContext = (body.context || pdfText || studentContext || "").trim().substring(0, 14000);
+            const isEs = effectiveLang === 'es';
+
+            const systemPromptGame = (isEs
+                ? `Eres un diseñador pedagógico experto en aprendizaje activo y gamificación académica universitaria y de bachillerato.
+Tu objetivo es crear datos JSON rigurosos y educativos sobre el tema "${topic}" basados en los apuntes proporcionados.
+RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO sin texto fuera del JSON.`
+                : `Ets un dissenyador pedagògic expert en aprenentatge actiu i gamificació acadèmica universitària i de batxillerat.
+El teu objectiu és crear dades JSON rigoroses i educatives sobre el tema "${topic}" basades en els apunts proporcionats.
+RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID sense text fora del JSON.`);
+
+            let schemaPrompt = "";
+            if (gameType === 'memory_pairs') {
+                schemaPrompt = isEs
+                    ? `Genera 6 parejas de conceptos clave y sus definiciones/fórmulas sobre "${topic}". Formato JSON exacto:
+{
+  "title": "Parejas de Conceptos: ${topic}",
+  "pairs": [
+    { "term": "Concepto o Fórmula (máx 45 caract.)", "match": "Definición o aplicación exacta (máx 90 caract.)", "explanation": "Breve explicación de por qué se relacionan de cara al examen." }
+  ]
+}`
+                    : `Genera 6 parelles de conceptes clau i les seves definicions/fórmules sobre "${topic}". Format JSON exacte:
+{
+  "title": "Parelles de Conceptes: ${topic}",
+  "pairs": [
+    { "term": "Concepte o Fórmula (màx 45 caràct.)", "match": "Definició o aplicació exacta (màx 90 caràct.)", "explanation": "Breu explicació de per què es relacionen de cara a l'examen." }
+  ]
+}`;
+            } else if (gameType === 'cloze_builder') {
+                schemaPrompt = isEs
+                    ? `Genera 4 retos de completar huecos (Cloze) de nivel examen sobre "${topic}". En cada reto, la frase debe contener exactamente "__1__" y "__2__" donde van las palabras clave. Formato JSON exacto:
+{
+  "title": "Constructor de Definiciones y Fórmulas: ${topic}",
+  "items": [
+    {
+      "sentence": "En ${topic}, el proceso de __1__ permite obtener __2__ de forma eficiente.",
+      "blanks": ["palabra1", "palabra2"],
+      "distractors": ["distractor1", "distractor2", "distractor3"],
+      "explanation": "Explicación pedagógica de la frase completa."
+    }
+  ]
+}`
+                    : `Genera 4 reptes de completar buits (Cloze) de nivell examen sobre "${topic}". En cada repte, la frase ha de contenir exactament "__1__" i "__2__" on van les paraules clau. Format JSON exacte:
+{
+  "title": "Constructor de Definicions i Fórmules: ${topic}",
+  "items": [
+    {
+      "sentence": "En ${topic}, el procés de __1__ permet obtenir __2__ de forma eficient.",
+      "blanks": ["paraula1", "paraula2"],
+      "distractors": ["distractor1", "distractor2", "distractor3"],
+      "explanation": "Explicació pedagògica de la frase completa."
+    }
+  ]
+}`;
+            } else if (gameType === 'sequence_order') {
+                schemaPrompt = isEs
+                    ? `Genera una secuencia lógica, cronológica o de resolución paso a paso de 5 etapas sobre "${topic}". El array "steps" debe estar EN EL ORDEN CORRECTO del paso 1 al paso 5. Formato JSON exacto:
+{
+  "title": "Secuencia y Orden Lógico: ${topic}",
+  "prompt": "Ordena del paso 1 al 5 el siguiente proceso o desarrollo de ${topic}:",
+  "steps": [
+    { "order": 1, "label": "Paso 1...", "detail": "Por qué ocurre primero" },
+    { "order": 2, "label": "Paso 2...", "detail": "Conexión con el paso anterior" },
+    { "order": 3, "label": "Paso 3...", "detail": "Fase central" },
+    { "order": 4, "label": "Paso 4...", "detail": "Consecuencia directa" },
+    { "order": 5, "label": "Paso 5...", "detail": "Resultado o conclusión final" }
+  ]
+}`
+                    : `Genera una seqüència lògica, cronològica o de resolució pas a pas de 5 etapes sobre "${topic}". L'array "steps" ha d'estar EN L'ORDRE CORRECTE del pas 1 al pas 5. Format JSON exacte:
+{
+  "title": "Seqüència i Ordre Lògic: ${topic}",
+  "prompt": "Ordena del pas 1 al 5 el següent procés o desenvolupament de ${topic}:",
+  "steps": [
+    { "order": 1, "label": "Pas 1...", "detail": "Per què passa primer" },
+    { "order": 2, "label": "Pas 2...", "detail": "Connexió amb el pas anterior" },
+    { "order": 3, "label": "Pas 3...", "detail": "Fase central" },
+    { "order": 4, "label": "Pas 4...", "detail": "Conseqüència directa" },
+    { "order": 5, "label": "Pas 5...", "detail": "Resultat o conclusió final" }
+  ]
+}`;
+            } else if (gameType === 'error_hunter') {
+                schemaPrompt = isEs
+                    ? `Genera 4 casos de "Cazador de Errores de Examen" sobre "${topic}". En cada caso hay 4 afirmaciones técnicas: 3 son verdaderas y 1 contiene un error típico de examen (índice "errorIndex" de 0 a 3). Formato JSON exacto:
+{
+  "title": "Cazador de Trampas de Examen: ${topic}",
+  "rounds": [
+    {
+      "context": "Identifica cuál de estas 4 afirmaciones sobre ${topic} contiene un ERROR o trampa de examen:",
+      "statements": [
+        "Afirmación rigurosa 1",
+        "Afirmación con un error sutil pero falso",
+        "Afirmación rigurosa 3",
+        "Afirmación rigurosa 4"
+      ],
+      "errorIndex": 1,
+      "correction": "Explicación de por qué esa afirmación es falsa y cuál es el dato correcto."
+    }
+  ]
+}`
+                    : `Genera 4 casos de "Caçador d'Errors d'Examen" sobre "${topic}". En cada cas hi ha 4 afirmacions tècniques: 3 són certes i 1 conté un error típic d'examen (índex "errorIndex" de 0 a 3). Format JSON exacte:
+{
+  "title": "Caçador de Trampes d'Examen: ${topic}",
+  "rounds": [
+    {
+      "context": "Identifica quina d'aquestes 4 afirmacions sobre ${topic} conté un ERROR o trampa d'examen:",
+      "statements": [
+        "Afirmació rigorosa 1",
+        "Afirmació amb un error subtil però fals",
+        "Afirmació rigorosa 3",
+        "Afirmació rigorosa 4"
+      ],
+      "errorIndex": 1,
+      "correction": "Explicació de per què aquesta afirmació és falsa i quina és la dada correcta."
+    }
+  ]
+}`;
+            } else {
+                // speed_tf
+                schemaPrompt = isEs
+                    ? `Genera 6 afirmaciones de Verdadero o Falso de alta velocidad sobre "${topic}". Formato JSON exacto:
+{
+  "title": "Sprint Verdadero / Falso: ${topic}",
+  "statements": [
+    { "text": "Afirmación concisa sobre ${topic}...", "isTrue": true, "reason": "Justificación breve y directa." }
+  ]
+}`
+                    : `Genera 6 afirmacions de Veritat o Fals d'alta velocitat sobre "${topic}". Format JSON exacte:
+{
+  "title": "Sprint Veritat / Fals: ${topic}",
+  "statements": [
+    { "text": "Afirmació concisa sobre ${topic}...", "isTrue": true, "reason": "Justificació breu i directa." }
+  ]
+}`;
+            }
+
+            const userPrompt = (sourceContext
+                ? `APUNTS I CONTEXT REAL DE LA SESSIÓ:\n'''\n${sourceContext}\n'''\n\n`
+                : '') + schemaPrompt;
+
+            try {
+                const aiRes = await executeAI({
+                    systemPrompt: systemPromptGame,
+                    contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+                    jsonMode: true
+                });
+                const parsed = extractJson(aiRes?.text || String(aiRes || ''));
+                if (parsed && typeof parsed === 'object') {
+                    return res.status(200).json({ success: true, gameType, topic, gameData: parsed });
+                }
+            } catch (err) {
+                console.warn("[generate_study_game] Fallback local:", err.message);
+            }
+
+            return res.status(200).json({ success: true, gameType, topic, gameData: null, fallback: true });
+        }
+
+        // ACCIÓ 10: GEMINI NOTEBOOK STUDIO (ESTIL GOOGLE NOTEBOOKLM)
+        if (action === 'notebook_studio') {
+            const subAction = body.subAction || 'artifact';
+            const artifactType = body.artifactType || 'study_guide';
+            const notebookTitle = (body.notebookTitle || "Quadern d'Estudi").trim();
+            const sources = Array.isArray(body.sources) ? body.sources : [];
+            const question = (body.question || "").trim();
+            const isEs = effectiveLang === 'es';
+
+            const formattedSources = sources.length > 0
+                ? sources.map((s, idx) => `=== [Font ${idx + 1}: ${s.title || ('Document ' + (idx + 1))}] ===\n${String(s.content || '').substring(0, 7000)}`).join('\n\n')
+                : `=== [Font 1: ${notebookTitle}] ===\n${(pdfText || studentContext || notebookTitle).substring(0, 12000)}`;
+
+            if (subAction === 'audio_overview') {
+                const systemPromptPodcast = isEs
+                    ? `Eres el motor de "Audio Overview" (Resumen de Audio estilo Google NotebookLM).
+Genera un guion de podcast académico apasionante, natural y didáctico entre 2 presentadores ("Marc" - analítico y curioso, y "Laia" - experta pedagógica que pone ejemplos claros y trucos de examen) basado EXCLUSIVAMENTE en las fuentes del cuaderno "${notebookTitle}".
+RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO con esta estructura exacta:
+{
+  "title": "Deep Dive Audio: ${notebookTitle}",
+  "durationEstimate": "3 min",
+  "summary": "Resumen de 1 frase sobre qué debaten Marc y Laia.",
+  "keyTakeaways": ["Punto clave 1 [Font 1]", "Punto clave 2 [Font 1]", "Punto clave 3"],
+  "dialogue": [
+    { "speaker": "Marc", "text": "¡Bienvenidos al análisis a fondo! Hoy tenemos delante los apuntes sobre..." },
+    { "speaker": "Laia", "text": "¡Exacto, Marc! Y ojo porque en la [Font 1] hay un concepto que siempre cae en los exámenes..." }
+  ]
+}
+Genera entre 8 y 10 intervenciones dinámicas, sin emojis, listas para ser leídas por síntesis de voz.`
+                    : `Ets el motor d'"Audio Overview" (Resum d'Àudio estil Google NotebookLM).
+Genera un guió de pòdcast acadèmic apassionant, natural i didàctic entre 2 locutors ("Marc" - analític i curiós, i "Laia" - experta pedagògica que posa exemples clars i trucs d'examen) basat EXCLUSIVAMENT en les fonts del quadern "${notebookTitle}".
+RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura exacta:
+{
+  "title": "Deep Dive d'Àudio: ${notebookTitle}",
+  "durationEstimate": "3 min",
+  "summary": "Resum d'1 frase sobre què debaten en Marc i la Laia.",
+  "keyTakeaways": ["Punt clau 1 [Font 1]", "Punt clau 2 [Font 1]", "Punt clau 3"],
+  "dialogue": [
+    { "speaker": "Marc", "text": "Benvinguts a l'anàlisi a fons! Avui tenim al davant les fonts sobre..." },
+    { "speaker": "Laia", "text": "Exacte, Marc! I molta atenció perquè a la [Font 1] hi ha un concepte clau que sempre surt a examen..." }
+  ]
+}
+Genera entre 8 i 10 intervencions dinàmiques, sense emojis, llestes per ser llegides per síntesi de veu.`;
+
+                try {
+                    const aiRes = await executeAI({
+                        systemPrompt: systemPromptPodcast,
+                        contents: [{ role: "user", parts: [{ text: `FONTS DEL QUADERN:\n${formattedSources}\n\nGenera l'Audio Overview en JSON.` }] }],
+                        jsonMode: true
+                    });
+                    const parsed = extractJson(aiRes?.text || String(aiRes || ''));
+                    if (parsed && Array.isArray(parsed.dialogue) && parsed.dialogue.length > 0) {
+                        return res.status(200).json({ success: true, overview: parsed });
+                    }
+                } catch (err) {
+                    console.warn("[notebook_studio audio_overview] Fallback:", err.message);
+                }
+
+                const fallbackDialogue = isEs ? [
+                    { speaker: "Marc", text: `Bienvenidos al estudio profundo de nuestro cuaderno sobre ${notebookTitle}. Hoy vamos a desgranar las fuentes activas para quedarnos con lo esencial.` },
+                    { speaker: "Laia", text: `Así es, Marc. Revisando la Font 1, lo primero que debemos dominar es la estructura fundamental de ${notebookTitle} y cómo se conectan sus conceptos principales.` },
+                    { speaker: "Marc", text: `Muchas veces cuando estudiamos este tema memorizamos sin entender el porqué. ¿Cuál dirías que es la clave para no fallar en el examen?` },
+                    { speaker: "Laia", text: `La clave está en distinguir bien las definiciones base de sus aplicaciones prácticas. Si entiendes la causa y el efecto que describe la Font 1, puedes resolver cualquier pregunta trampa.` },
+                    { speaker: "Marc", text: `Totalmente. Además, conviene repasar los pasos en orden lógico y practicar con los juegos interactivos del Plan de Estudio para fijar la memoria a largo plazo.` },
+                    { speaker: "Laia", text: `Exacto. Mi recomendación final: revisad las citas del cuaderno, haced el reto de Cazar Errores y tendréis ${notebookTitle} completamente dominado.` }
+                ] : [
+                    { speaker: "Marc", text: `Benvinguts a l'anàlisi a fons del nostre quadern sobre ${notebookTitle}. Avui desgranarem les fonts actives per quedar-nos amb l'essència.` },
+                    { speaker: "Laia", text: `Així és, Marc. Analitzant la Font 1, el primer que cal dominar és l'estructura fonamental de ${notebookTitle} i com es relacionen els seus conceptes centrals.` },
+                    { speaker: "Marc", text: `Moltes vegades quan estudiem aquest bloc memoritzem sense entendre el perquè. Quina diries que és la clau per no fallar a l'examen?` },
+                    { speaker: "Laia", text: `La clau és diferenciar les definicions base de les aplicacions pràctiques. Si entens la relació causa-efecte que recull la Font 1, podràs resoldre qualsevol pregunta trampa.` },
+                    { speaker: "Marc", text: `Totalment d'acord. A més, val la pena repassar la seqüència de passos i practicar amb els jocs interactius del Pla d'Estudi per consolidar la memòria.` },
+                    { speaker: "Laia", text: `Exacte! El meu consell final: reviseu les citacions del quadern, feu una partida al Caçador d'Errors i tindreu ${notebookTitle} 100% dominat.` }
+                ];
+
+                return res.status(200).json({
+                    success: true,
+                    overview: {
+                        title: (isEs ? "Deep Dive Audio: " : "Deep Dive d'Àudio: ") + notebookTitle,
+                        durationEstimate: "2 min",
+                        summary: isEs ? `Conversación analítica entre Marc y Laia sobre ${notebookTitle}.` : `Conversa analítica entre en Marc i la Laia sobre ${notebookTitle}.`,
+                        keyTakeaways: [
+                            `${notebookTitle}: estructura conceptual i idees centrals [Font 1]`,
+                            isEs ? `Errores frecuentes de examen y cómo evitarlos [Font 1]` : `Errors freqüents d'examen i com evitar-los [Font 1]`,
+                            isEs ? `Estrategia práctica de repaso activo` : `Estratègia pràctica de repàs actiu`
+                        ],
+                        dialogue: fallbackDialogue
+                    }
+                });
+            }
+
+            if (subAction === 'chat') {
+                const systemPromptNbChat = isEs
+                    ? `Eres el asistente de investigación de Gemini Notebook (estilo Google NotebookLM).
+Responde a la consulta del estudiante basándote ESTRICTAMENTE en las fuentes del cuaderno y añade citas explícitas entre corchetes como [Font 1], [Font 2] al final de las frases respaldadas por cada fuente.
+No uses emojis.
+RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO con esta estructura:
+{
+  "answer": "Respuesta bien estructurada en Markdown con citas [Font 1]...",
+  "citations": ["Font 1"],
+  "followUps": ["¿Pregunta sugerida 1?", "¿Pregunta sugerida 2?", "¿Pregunta sugerida 3?"]
+}`
+                    : `Ets l'assistent d'investigació de Gemini Notebook (estil Google NotebookLM).
+Respon a la consulta de l'estudiant basant-te ESTRICTAMENT en les fonts del quadern i afegeix citacions explícites entre claudàtors com [Font 1], [Font 2] al final de les frases recolzades per cada font.
+No utilitzis emojis.
+RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura:
+{
+  "answer": "Resposta ben estructurada en Markdown amb citacions [Font 1]...",
+  "citations": ["Font 1"],
+  "followUps": ["Pregunta suggerida 1?", "Pregunta suggerida 2?", "Pregunta suggerida 3?"]
+}`;
+
+                try {
+                    const aiRes = await executeAI({
+                        systemPrompt: systemPromptNbChat,
+                        contents: [{ role: "user", parts: [{ text: `FONTS ACTIVES DEL QUADERN:\n${formattedSources}\n\nPREGUNTA DE L'USUARI: ${question}` }] }],
+                        jsonMode: true
+                    });
+                    const parsed = extractJson(aiRes?.text || String(aiRes || ''));
+                    if (parsed && parsed.answer) {
+                        return res.status(200).json({ success: true, ...parsed });
+                    }
+                } catch (err) {
+                    console.warn("[notebook_studio chat] Fallback:", err.message);
+                }
+
+                return res.status(200).json({
+                    success: true,
+                    answer: isEs
+                        ? `Según el análisis de las fuentes activas sobre **${notebookTitle}** [Font 1]:\n\n- **Respuesta directa a "${question}"**: Los apuntes destacan los fundamentos teóricos y su aplicación práctica directa dentro del temario [Font 1].\n- **Punto clave para examen**: Conviene relacionar este concepto con las definiciones principales del documento para justificar la respuesta con rigor académico [Font 1].`
+                        : `Segons l'anàlisi de les fonts actives sobre **${notebookTitle}** [Font 1]:\n\n- **Resposta directa a "${question}"**: Els apunts destaquen els fonaments teòrics i la seva aplicació pràctica directa dins del temari [Font 1].\n- **Punt clau per a l'examen**: Convé relacionar aquest concepte amb les definicions principals del document per justificar la resposta amb rigor acadèmic [Font 1].`,
+                    citations: ["Font 1"],
+                    followUps: isEs
+                        ? [`¿Cuáles son las preguntas de examen más probables sobre ${notebookTitle}?`, `¿Qué relación hay entre los conceptos principales de la Font 1?`, `Haz una tabla comparativa de los puntos clave`]
+                        : [`Quines són les preguntes d'examen més probables sobre ${notebookTitle}?`, `Quina relació hi ha entre els conceptes principals de la Font 1?`, `Fes una taula comparativa dels punts clau`]
+                });
+            }
+
+            // subAction === 'artifact'
+            const artifactLabels = {
+                study_guide: isEs ? "Guía de Estudio Completa (con Citas)" : "Guia d'Estudi Completa (amb Citacions)",
+                briefing_doc: isEs ? "Documento de Síntesis Ejecutiva (Briefing Doc)" : "Document de Síntesi Executiva (Briefing Doc)",
+                faq: isEs ? "Preguntas Frecuentes de Examen (FAQ)" : "Preguntes Freqüents d'Examen (FAQ)",
+                timeline: isEs ? "Línea Temporal y Secuencia de Procesos" : "Línia Temporal i Seqüència de Processos",
+                glossary: isEs ? "Glosario Académico de Conceptos Clave" : "Glossari Acadèmic de Conceptes Clau",
+                exam_traps: isEs ? "Informe de Trampas de Examen y Errores Comunes" : "Informe de Trampes d'Examen i Errors Freqüents"
+            };
+            const selectedTitle = artifactLabels[artifactType] || artifactLabels.study_guide;
+
+            const systemPromptArtifact = isEs
+                ? `Eres el motor de documentos de Google NotebookLM. Genera el artefacto "${selectedTitle}" sobre "${notebookTitle}" basándote en las fuentes proporcionadas.
+Incluye citas constantes como [Font 1], [Font 2] junto a cada afirmación, usa Markdown estructurado con tablas o listas claras y NO uses emojis.`
+                : `Ets el motor de documents de Google NotebookLM. Genera l'artefacte "${selectedTitle}" sobre "${notebookTitle}" basant-te en les fonts proporcionades.
+Inclou citacions constants com [Font 1], [Font 2] al costat de cada afirmació, utilitza Markdown estructurat amb taules o llistes clares i NO utilitzis emojis.`;
+
+            try {
+                const aiRes = await executeAI({
+                    systemPrompt: systemPromptArtifact,
+                    contents: [{ role: "user", parts: [{ text: `FONTS DEL QUADERN:\n${formattedSources}\n\nGenera ara: ${selectedTitle}` }] }]
+                });
+                const content = aiRes?.text || String(aiRes || '');
+                if (content && content.trim().length > 20) {
+                    return res.status(200).json({ success: true, title: `${selectedTitle} · ${notebookTitle}`, content });
+                }
+            } catch (err) {
+                console.warn("[notebook_studio artifact] Fallback:", err.message);
+            }
+
+            return res.status(200).json({
+                success: true,
+                title: `${selectedTitle} · ${notebookTitle}`,
+                content: `### ${selectedTitle}: ${notebookTitle}\n\n- **Síntesi fonamental**: Document generat a partir de les fonts actives del quadern sobre **${notebookTitle}** [Font 1].\n- **Conceptes vertebradors**: Estructura teòrica, definicions essencials i relacions causals extretes del material d'estudi [Font 1].\n- **Orientació d'examen**: Revisa els termes clau i practica amb el Laboratori de Jocs Interactius per consolidar el domini de la matèria [Font 1].`
+            });
+        }
+
         return res.status(200).json({ error: 'Acció no reconeguda.' });
 
     } catch (error) {

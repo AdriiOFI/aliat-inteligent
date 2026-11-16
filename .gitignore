@@ -9,7 +9,17 @@ dist/
 
 # Runtime local storage & keys (never commit user/session/VAPID/JWT data)
 data/
+.jwt_secret
 *.db
 *.sqlite
 *.sqlite3
 *.log
+*.pem
+*.key
+*service-account*.json
+*serviceAccount*.json
+firebase-adminsdk*.json
+credentials*.json
+secrets*.json
+request.json
+temp_script_*.js

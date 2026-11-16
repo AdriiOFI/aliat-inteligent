@@ -81,7 +81,7 @@ app.get('/firebase-applet-config.json', (req, res) => {
             messagingSenderId: raw.messagingSenderId || '',
             measurementId: raw.measurementId || '',
             oAuthClientId: raw.oAuthClientId || '',
-            recaptchaSiteKey: raw.recaptchaSiteKey || ''
+            recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY || raw.recaptchaSiteKey || ''
         };
         if (raw.firestoreDatabaseId) {
             publicConfig.firestoreDatabaseId = raw.firestoreDatabaseId;

@@ -16860,219 +16860,359 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         };
 
         // =========================================================================
-        // GUIA D'ÚS RESPONSABLE, CONSCIENCIACIÓ I TÈCNIQUES PER UTILITZAR BÉ LA IA
+        // GUIA D'ÚS RESPONSABLE, CONSCIENCIACIÓ I TÈCNIQUES PER UTILITZAR BÉ LA IA (PANTALLA COMPLETA)
         // =========================================================================
+        window.closeResponsibleAiGuideModal = function() {
+            const existing = document.getElementById('responsible-ai-fullscreen-modal');
+            if (existing) {
+                existing.classList.add('opacity-0');
+                setTimeout(() => {
+                    if (existing.parentNode) existing.parentNode.removeChild(existing);
+                }, 180);
+            }
+            if (window._respAiEscHandler) {
+                document.removeEventListener('keydown', window._respAiEscHandler);
+                window._respAiEscHandler = null;
+            }
+        };
+
         window.openResponsibleAiGuideModal = function(initialTab = 'consciencia') {
+            if (typeof Swal !== 'undefined' && Swal.isVisible && Swal.isVisible()) {
+                Swal.close();
+            }
+            const prevModal = document.getElementById('responsible-ai-fullscreen-modal');
+            if (prevModal) prevModal.remove();
+
             const lang = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es' ? 'es' : 'ca';
             const isEs = lang === 'es';
 
             const copy = {
+                badgeTop: isEs ? 'GUÍA INTERACTIVA · PANTALLA COMPLETA' : 'GUIA INTERACTIVA · PANTALLA COMPLETA',
                 title: isEs ? 'Buen Uso, Criterio Propio y Técnicas de IA' : 'Bon Ús, Criteri Propi i Tècniques d\'IA',
                 subtitle: isEs
-                    ? 'Guía práctica en Uso Cotidiano para mantener tu pensamiento crítico, informarte bien y aprovechar la IA con seguridad.'
-                    : 'Guia pràctica en Ús Quotidià per mantenir el teu pensament crític, informar-te bé i aprofitar la IA amb seguretat.',
+                    ? 'Aprende cuándo confiar en la IA, cómo mantener tu criterio ciudadano y qué técnicas usar para obtener respuestas útiles y verificables.'
+                    : 'Aprèn quan confiar en la IA, com mantenir el teu criteri ciutadà i quines tècniques fer servir per obtenir respostes útils i verificables.',
+                closeBtn: isEs ? 'Cerrar pantalla completa' : 'Tancar pantalla completa',
                 tab1: isEs ? '1. Concienciación y Criterio Propio' : '1. Conscienciació i Criteri Propi',
                 tab2: isEs ? '2. Técnicas para Usar Bien la IA' : '2. Tècniques per Utilitzar Bé la IA',
-                bannerTitle: isEs ? 'Principio fundamental: La IA es un copiloto, nunca decide por ti' : 'Principi fonamental: La IA és un copilot, mai decideix per tu',
+                tab3: isEs ? '3. Constructor Rápido de Prompts' : '3. Constructor Ràpid de Prompts',
+                bannerTitle: isEs ? 'Regla de oro: La IA sintetiza internet, pero el criterio y la decisión son siempre tuyos' : 'Regla d\'or: La IA sintetitza internet, però el criteri i la decisió són sempre teus',
                 bannerDesc: isEs
-                    ? 'La Inteligencia Artificial recopila y sintetiza patrones e información de internet. Puede contener sesgos, datos desactualizados o simplificaciones. En decisiones ciudadanas, éticas o personales, el criterio final siempre es tuyo.'
-                    : 'La Intel·ligència Artificial recopila i sintetitza patrons i informació d\'internet. Pot contenir biaixos, dades desactualitzades o simplificacions. En decisions ciutadanes, ètiques o personals, el criteri final sempre és teu.',
-                tryBtn: isEs ? 'Usar ejemplo en el chat' : 'Provar exemple al xat',
+                    ? 'La IA busca patrones en millones de textos de internet. Úsala como copiloto para contrastar ideas, resumir documentos o estructurar tareas, nunca para sustituir tu voto, tu salud ni tu pensamiento crítico.'
+                    : 'La IA busca patrons en milions de textos d\'internet. Utilitza-la com a copilot per contrastar idees, resumir documents o estructurar tasques, mai per substituir el teu vot, la teva salut ni el teu pensament crític.',
+                filterAll: isEs ? 'Todos los ámbitos' : 'Tots els àmbits',
+                filterCivic: isEs ? 'Política, Voto y Noticias' : 'Política, Vot i Notícies',
+                filterSafety: isEs ? 'Salud, Legal y Privacidad' : 'Salut, Legal i Privacitat',
+                filterMind: isEs ? 'Pensamiento Crítico' : 'Pensament Crític',
+                dontLabel: isEs ? 'EVITA HACER ESTO' : 'EVITA FER AIXÒ',
+                doLabel: isEs ? 'HAZLO ASÍ CON CRITERIO' : 'FES-HO AIXÍ AMB CRITERI',
+                whyLabel: isEs ? '¿Por qué?' : 'Per què?',
+                tryBtn: isEs ? 'Probar plantilla en el chat' : 'Provar plantilla al xat',
+                copyBtn: isEs ? 'Copiar' : 'Copiar',
+                copiedBtn: isEs ? '¡Copiado!' : 'Copiat!',
                 awarenessCards: isEs ? [
                     {
+                        cat: 'civic',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>',
                         badge: 'Política y Voto Ciudadano',
+                        accent: 'rose',
                         badgeColor: 'bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border-rose-200 dark:border-rose-800',
-                        title: 'Nunca pidas a la IA a quién votar: infórmate y contrasta fuentes',
-                        dontDo: '❌ No preguntes: "¿A qué partido político debería votar?" ni delegues tu ideología en un chat.',
-                        why: 'La IA extrae textos de internet (medios, foros, artículos con distintas tendencias) y no tiene valores ciudadanos ni vive tu realidad. Confiar tu voto a la IA te expone a sesgos invisibles.',
-                        doInstead: '✅ Úsala para resumir programas electorales oficiales, comparar qué propone cada candidatura sobre vivienda, sanidad o educación de forma neutral, y acude siempre a debates y fuentes originales.',
+                        title: 'Nunca pidas a la IA a quién votar: infórmate y contrasta',
+                        keyPoints: [
+                            'La IA recopila textos de internet (medios, redes, foros) que pueden tener sesgos invisibles.',
+                            'No tiene valores ciudadanos ni vive tu situación económica, laboral o familiar.'
+                        ],
+                        dontDo: '«¿A qué partido político debería votar en las elecciones?»',
+                        doInstead: 'Pide comparativas neutrales de programas oficiales por temas (vivienda, sanidad, educación) y consulta fuentes originales.',
                         prompt: 'Compara de forma totalmente neutral, objetiva y sin tomar partido cuáles son los principales enfoques sobre [tema: vivienda / educación / empleo], indicando qué puntos conviene verificar en los programas oficiales de cada candidatura.'
                     },
                     {
+                        cat: 'civic',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v4"/><path d="M11 16h.01"/></svg>',
                         badge: 'Fuentes de Internet y Verificación',
+                        accent: 'amber',
                         badgeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border-amber-200 dark:border-amber-800',
-                        title: 'La IA coge información de internet y puede equivocarse ("Alucinaciones")',
-                        dontDo: '❌ No des por cierta una cifra, ley o noticia importante sin comprobar de dónde sale.',
-                        why: 'Los modelos de lenguaje predicen palabras probables combinando datos de la red. Pueden mezclar fechas, confundir normativas locales o citar datos que han cambiado recientemente.',
-                        doInstead: '✅ Pide siempre qué fuentes oficiales respaldan un dato y contrasta en boletines oficiales, medios contrastados o webs institucionales.',
+                        title: 'La IA puede equivocarse o mezclar datos («Alucinaciones»)',
+                        keyPoints: [
+                            'Los modelos predicen palabras probables: pueden sonar muy seguros aunque un dato sea inexacto.',
+                            'Las leyes locales, precios o noticias de última hora cambian constantemente.'
+                        ],
+                        dontDo: 'Dar por cierta una cifra, subvención o noticia viral sin comprobar la fuente.',
+                        doInstead: 'Exige siempre saber qué organismo oficial respalda el dato y compruébalo en webs institucionales o medios contrastados.',
                         prompt: 'Explícame las claves sobre [tema o noticia actual] separando claramente: 1) Hechos verificables, 2) Diferentes interpretaciones existentes y 3) Qué fuentes oficiales debería consultar para confirmar los datos.'
                     },
                     {
+                        cat: 'safety',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
                         badge: 'Salud Física y Mental',
+                        accent: 'emerald',
                         badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
-                        title: 'No sustituye a médicos, psicólogos ni diagnósticos profesionales',
-                        dontDo: '❌ No uses la IA para autodiagnosticarte síntomas graves ni para cambiar medicación.',
-                        why: 'Un síntoma depende de tu historial clínico, analíticas y exploración presencial que ninguna IA puede realizar.',
-                        doInstead: '✅ Úsala para entender términos médicos complejos de un informe o preparar una lista de preguntas claras para tu próxima consulta médica.',
+                        title: 'No sustituye a médicos, psicólogos ni diagnósticos reales',
+                        keyPoints: [
+                            'Un diagnóstico requiere exploración presencial, analíticas y tu historial clínico completo.',
+                            'Autodiagnosticarse por internet genera ansiedad innecesaria o retrasa atención médica.'
+                        ],
+                        dontDo: 'Usar el chat para cambiar dosis de medicación o diagnosticar síntomas urgentes.',
+                        doInstead: 'Úsala para traducir términos médicos difíciles de un informe o preparar preguntas claras para tu médico.',
                         prompt: 'Tengo una consulta médica próximamente sobre [motivo general]. Ayúdame a preparar una lista de 5 preguntas claras y útiles para hacerle al profesional sanitario y entender mejor sus indicaciones.'
                     },
                     {
+                        cat: 'safety',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
                         badge: 'Privacidad y Datos Sensibles',
+                        accent: 'blue',
                         badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-                        title: 'Protege tu identidad, contraseñas y datos bancarios o de terceros',
-                        dontDo: '❌ Nunca escribas en el chat tu DNI completo, cuentas bancarias, contraseñas, direcciones privadas ni datos confidenciales de otras personas.',
-                        why: 'La seguridad digital empieza por minimizar la huella de datos personales sensibles que compartes en servicios en línea.',
-                        doInstead: '✅ Sustituye siempre los datos reales por etiquetas entre corchetes como [NOMBRE], [DNI] o [EMPRESA] al redactar correos o reclamaciones.',
+                        title: 'Protege tu DNI, cuentas bancarias y datos de terceros',
+                        keyPoints: [
+                            'Nunca compartas contraseñas, números de tarjeta, IBAN, DNI completo ni datos privados de clientes o amigos.',
+                            'Puedes redactar cualquier documento usando etiquetas vacías y rellenarlas tú después.'
+                        ],
+                        dontDo: 'Pegar un contrato o reclamación con nombres reales, teléfonos, DNI y cuenta bancaria.',
+                        doInstead: 'Sustituye los datos sensibles por marcadores entre corchetes como [NOMBRE], [DNI] o [IBAN].',
                         prompt: 'Redacta una reclamación formal dirigida a [EMPRESA] por un cobro indebido en la factura del mes de [MES], dejando huecos con corchetes [NOMBRE] y [NÚMERO DE CONTRATO] para que yo los rellene en privado.'
                     },
                     {
-                        badge: 'Decisiones Legales, Fiscales y Financieras',
+                        cat: 'safety',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+                        badge: 'Decisiones Legales y Financieras',
+                        accent: 'purple',
                         badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300 border-purple-200 dark:border-purple-800',
-                        title: 'No firmes contratos ni inviertas dinero basándote solo en la IA',
-                        dontDo: '❌ No preguntes "¿En qué invierto mis ahorros?" ni uses un contrato generado sin revisión legal.',
-                        why: 'Las leyes cambian según la comunidad autónoma, el país y el año fiscal, y las recomendaciones financieras en internet suelen ocultar riesgos.',
-                        doInstead: '✅ Pide a la IA que te explique cláusulas difíciles en lenguaje llano para saber qué preguntar a un asesor o abogado colegiado.',
+                        title: 'No firmes contratos ni inviertas ahorros a ciegas',
+                        keyPoints: [
+                            'La normativa fiscal y laboral varía por comunidad autónoma, país y fecha.',
+                            'Las promesas de rentabilidad rápida en internet suelen esconder riesgos altos.'
+                        ],
+                        dontDo: '«¿En qué criptomoneda o acción meto mis ahorros hoy?» o firmar sin leer.',
+                        doInstead: 'Pide que te explique qué significan las cláusulas de permanencia, fianza o IRPF en lenguaje llano.',
                         prompt: 'Explícame en lenguaje sencillo qué significan habitualmente las cláusulas de permanencia, penalización y fianza en un contrato de [alquiler / trabajo], y qué puntos debería revisar con atención antes de firmar.'
                     },
                     {
+                        cat: 'mind',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a8 8 0 0 0-8 8c0 3.4 2.1 6.3 5 7.4V20a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2.6c2.9-1.1 5-4 5-7.4a8 8 0 0 0-8-8z"/><path d="M9 22h6"/></svg>',
                         badge: 'Pensamiento Crítico vs. Copia Pasiva',
+                        accent: 'indigo',
                         badgeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
                         title: 'Que la IA entrene tu mente en lugar de apagarla',
-                        dontDo: '❌ No copies y pegues textos enteros sin leerlos, comprenderlos ni darles tu voz.',
-                        why: 'Si delegas todo el esfuerzo de pensar y redactar, pierdes capacidad de argumentación, vocabulario y criterio propio.',
-                        doInstead: '✅ Escribe primero tu idea o borrador y pídele a la IA que actúe como editor crítico señalando puntos débiles o mejoras de claridad.',
+                        keyPoints: [
+                            'Copiar y pegar sin leer debilita tu capacidad de expresarte, argumentar y recordar.',
+                            'El mayor valor de la IA es usarla como entrenador que reta tus ideas.'
+                        ],
+                        dontDo: 'Copiar y entregar un texto entero sin haberlo leído ni aportado tus propias ideas.',
+                        doInstead: 'Escribe primero tu borrador o esquema y pide a la IA que señale puntos flojos o te haga preguntas.',
                         prompt: 'He escrito este borrador de opinión/texto: "[pega aquí tu idea]". No me lo reescribas entero; dime 3 puntos donde mi argumento sea flojo y hazme 2 preguntas para que yo mismo lo mejore.'
                     }
                 ] : [
                     {
+                        cat: 'civic',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>',
                         badge: 'Política i Vot Ciutadà',
+                        accent: 'rose',
                         badgeColor: 'bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border-rose-200 dark:border-rose-800',
-                        title: 'Mai demanis a la IA a qui votar: informa\'t bé i contrasta fonts',
-                        dontDo: '❌ No preguntis: "A quin partit polític hauria de votar?" ni deleguis la teva ideologia en un xat.',
-                        why: 'La IA agafa i sintetitza informació d\'internet (mitjans, fòrums, articles amb diferents tendències) i no té valors ciutadans ni viu la teva realitat. Confiar el teu vot a la IA t\'exposa a biaixos invisibles.',
-                        doInstead: '✅ Utilitza-la per resumir programes electorals oficials, comparar què proposa cada candidatura sobre habitatge, sanitat o educació de forma neutral, i consulta sempre debats i fonts originals.',
+                        title: 'Mai demanis a la IA a qui votar: informa\'t i contrasta',
+                        keyPoints: [
+                            'La IA recopila textos d\'internet (mitjans, xarxes, fòrums) que poden tenir biaixos invisibles.',
+                            'No té valors ciutadans ni viu la teva situació econòmica, laboral o familiar.'
+                        ],
+                        dontDo: '«A quin partit polític hauria de votar a les eleccions?»',
+                        doInstead: 'Demana comparatives neutrals de programes oficials per temes (habitatge, sanitat, educació) i consulta fonts originals.',
                         prompt: 'Compara de forma totalment neutral, objectiva i sense prendre partit quins són els principals enfocaments sobre [tema: habitatge / educació / ocupació], indicant quins punts convé verificar als programes oficials de cada candidatura.'
                     },
                     {
+                        cat: 'civic',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v4"/><path d="M11 16h.01"/></svg>',
                         badge: 'Fonts d\'Internet i Verificació',
+                        accent: 'amber',
                         badgeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border-amber-200 dark:border-amber-800',
-                        title: 'La IA recull dades d\'internet i pot equivocar-se ("Al·lucinacions")',
-                        dontDo: '❌ No donis per certa una xifra, llei o notícia important sense comprovar d\'on surt.',
-                        why: 'Els models de llenguatge prediuen paraules probables combinant dades de la xarxa. Poden barrejar dates, confondre normatives locals o citar dades que han canviat recentment.',
-                        doInstead: '✅ Demana sempre quines fonts oficials avalen una dada i contrasta-ho en butlletins oficials, mitjans contrastats o webs institucionals.',
+                        title: 'La IA pot equivocar-se o barrejar dades («Al·lucinacions»)',
+                        keyPoints: [
+                            'Els models prediuen paraules probables: poden sonar molt segurs encara que una dada sigui inexacta.',
+                            'Les lleis locals, preus o notícies d\'última hora canvien constantment.'
+                        ],
+                        dontDo: 'Donar per certa una xifra, subvenció o notícia viral sense comprovar la font.',
+                        doInstead: 'Exigeix sempre saber quin organisme oficial avala la dada i comprova-ho en webs institucionals o mitjans contrastats.',
                         prompt: 'Explica\'m les claus sobre [tema o notícia actual] separant clarament: 1) Fets verificables, 2) Diferents interpretacions existents i 3) Quines fonts oficials hauria de consultar per confirmar les dades.'
                     },
                     {
+                        cat: 'safety',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
                         badge: 'Salut Física i Mental',
+                        accent: 'emerald',
                         badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
-                        title: 'No substitueix metges, psicòlegs ni diagnòstics professionals',
-                        dontDo: '❌ No facis servir la IA per autodiagnosticar-te símptomes greus ni per canviar medicació.',
-                        why: 'Un símptoma depèn del teu historial clínic, analítiques i exploració presencial que cap IA pot realitzar.',
-                        doInstead: '✅ Fes-la servir per entendre termes mèdics complexos d\'un informe o preparar una llista de preguntes clares per a la teva propera visita mèdica.',
+                        title: 'No substitueix metges, psicòlegs ni diagnòstics reals',
+                        keyPoints: [
+                            'Un diagnòstic requereix exploració presencial, analítiques i el teu historial clínic complet.',
+                            'Autodiagnosticar-se per internet genera ansietat innecessària o retarda l\'atenció mèdica.'
+                        ],
+                        dontDo: 'Usar el xat per canviar dosis de medicació o diagnosticar símptomes urgents.',
+                        doInstead: 'Fes-la servir per traduir termes mèdics difícils d\'un informe o preparar preguntes clares per al teu metge.',
                         prompt: 'Tinc una visita mèdica properament sobre [motiu general]. Ajuda\'m a preparar una llista de 5 preguntes clares i útils per fer-li al professional sanitari i entendre millor les seves indicacions.'
                     },
                     {
+                        cat: 'safety',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
                         badge: 'Privacitat i Dades Sensibles',
+                        accent: 'blue',
                         badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-                        title: 'Protegeix la teva identitat, contrasenyes i dades bancàries o de tercers',
-                        dontDo: '❌ Mai escriguis al xat el teu DNI complet, comptes bancaris, contrasenyes, adreces privades ni dades confidencials d\'altres persones.',
-                        why: 'La seguretat digital comença per minimitzar l\'empremta de dades personals sensibles que comparteixes en serveis en línia.',
-                        doInstead: '✅ Substitueix sempre les dades reals per etiquetes entre claudàtors com [NOM], [DNI] o [EMPRESA] quan redactis correus o reclamacions.',
+                        title: 'Protegeix el teu DNI, comptes bancaris i dades de tercers',
+                        keyPoints: [
+                            'Mai comparteixis contrasenyes, números de targeta, IBAN, DNI complet ni dades privades de clients o amics.',
+                            'Pots redactar qualsevol document usant etiquetes buides i omplir-les tu després.'
+                        ],
+                        dontDo: 'Enganxar un contracte o reclamació amb noms reals, telèfons, DNI i compte bancari.',
+                        doInstead: 'Substitueix les dades sensibles per marcadors entre claudàtors com [NOM], [DNI] o [IBAN].',
                         prompt: 'Redacta una reclamació formal dirigida a [EMPRESA] per un cobrament indegut a la factura del mes de [MES], deixant buits amb claudàtors [NOM] i [NÚMERO DE CONTRACTE] perquè jo els ompli en privat.'
                     },
                     {
-                        badge: 'Decisions Legals, Fiscals i Financeres',
+                        cat: 'safety',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+                        badge: 'Decisions Legals i Financeres',
+                        accent: 'purple',
                         badgeColor: 'bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300 border-purple-200 dark:border-purple-800',
-                        title: 'No signis contractes ni inverteixis diners basant-te només en la IA',
-                        dontDo: '❌ No preguntis "On inverteixo els meus estalvis?" ni utilitzis un contracte generat sense revisió legal.',
-                        why: 'Les lleis canvien segons el territori i l\'any fiscal, i les recomanacions financeres a internet solen amagar riscos.',
-                        doInstead: '✅ Demana a la IA que t\'expliqui clàusules difícils en llenguatge planer per saber què preguntar a un assessor o advocat col·legiat.',
+                        title: 'No signis contractes ni inverteixis estalvis a cegues',
+                        keyPoints: [
+                            'La normativa fiscal i laboral varia segons el territori i l\'any en curs.',
+                            'Les promeses de rendibilitat ràpida a internet solen amagar riscos alts.'
+                        ],
+                        dontDo: '«En quina criptomoneda o acció poso els meus estalvis avui?» o signar sense llegir.',
+                        doInstead: 'Demana que t\'expliqui què signifiquen les clàusules de permanència, fiança o IRPF en llenguatge planer.',
                         prompt: 'Explica\'m en llenguatge senzill què signifiquen habitualment les clàusules de permanència, penalització i fiança en un contracte de [lloguer / feina], i quins punts hauria de revisar amb atenció abans de signar.'
                     },
                     {
+                        cat: 'mind',
+                        icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a8 8 0 0 0-8 8c0 3.4 2.1 6.3 5 7.4V20a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2.6c2.9-1.1 5-4 5-7.4a8 8 0 0 0-8-8z"/><path d="M9 22h6"/></svg>',
                         badge: 'Pensament Crític vs. Còpia Passiva',
+                        accent: 'indigo',
                         badgeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
                         title: 'Fes que la IA entreni la teva ment en lloc d\'apagar-la',
-                        dontDo: '❌ No copiïs i enganxis textos sencers sense llegir-los, comprendre\'ls ni donar-los la teva pròpia veu.',
-                        why: 'Si delegues tot l\'esforç de pensar i redactar, perds capacitat d\'argumentació, vocabulari i criteri propi.',
-                        doInstead: '✅ Escriu primer la teva idea o esborrany i demana a la IA que actuï com a editor crític assenyalant punts febles o millores de claredat.',
+                        keyPoints: [
+                            'Copiar i enganxar sense llegir debilita la teva capacitat d\'expressar-te, argumentar i recordar.',
+                            'El valor més gran de la IA és utilitzar-la com a entrenador que posa a prova les teves idees.'
+                        ],
+                        dontDo: 'Copiar i lliurar un text sencer sense haver-lo llegit ni aportat les teves pròpies idees.',
+                        doInstead: 'Escriu primer el teu esborrany o esquema i demana a la IA que assenyali punts fluixos o et faci preguntes.',
                         prompt: 'He escrit aquest esborrany d\'opinió/text: "[enganxa aquí la teva idea]". No me\'l reescriguis sencer; digues-me 3 punts on el meu argument sigui fluix i fes-me 2 preguntes perquè jo mateix el millori.'
                     }
                 ],
                 techniqueCards: isEs ? [
                     {
-                        step: 'TÉCNICA 1',
+                        step: 'TÉCNICA 01',
+                        tag: 'Estructura perfecta',
                         title: 'Fórmula C.R.O.F. (Contexto + Rol + Objetivo + Formato)',
-                        desc: 'Cuanto más contexto des a la IA, menos inventará. Especifica siempre tu situación (Contexto), cómo quieres que actúe (Rol), qué necesitas exactamente (Objetivo) y cómo debe presentarlo (Formato).',
-                        example: 'Contexto: Soy estudiante/profesional preparando [tema]. Rol: Actúa como un experto divulgador. Objetivo: Explícame los 4 puntos clave sin tecnicismos. Formato: Tabla comparativa y resumen final.',
+                        desc: 'Cuanto más claro sea tu contexto, menos tendrá que adivinar la IA. Combina estos 4 bloques en cualquier petición importante:',
+                        pillars: ['1. Contexto: Tu situación', '2. Rol: Quién te responde', '3. Objetivo: Qué necesitas', '4. Formato: Tabla, lista, guion'],
+                        weakPrompt: '«Explícame cómo hacer un presupuesto mensual»',
+                        strongPrompt: 'Contexto: Vivo en pareja y queremos ahorrar un 15%. Rol: Especialista en finanzas domésticas. Objetivo: Diseña un método sencillo de control de gastos. Formato: Tabla por categorías y 3 reglas prácticas.',
                         prompt: 'Contexto: Estoy organizando [proyecto o tarea cotidiana]. Rol: Actúa como un especialista en organización y comunicación clara. Objetivo: Ayúdame a estructurar los pasos principales y prever posibles imprevistos. Formato: Lista numerada con tiempos estimados y una tabla resumen.'
                     },
                     {
-                        step: 'TÉCNICA 2',
-                        title: 'Contraste Neutral y "Abogado del Diablo" (Ideal para política y debates)',
-                        desc: 'Para evitar cámaras de eco y sesgos de internet en temas sociales, políticos o económicos, pide explícitamente a la IA que presente los mejores argumentos de todas las posturas sin inclinarse por ninguna.',
-                        example: 'En lugar de preguntar "¿Es buena esta ley?", pide: "Dame los 3 argumentos principales a favor y los 3 en contra con datos objetivos".',
+                        step: 'TÉCNICA 02',
+                        tag: 'Anti-sesgos / Política',
+                        title: 'Contraste Neutral y «Abogado del Diablo»',
+                        desc: 'En debates políticos, sociales o económicos, evita que la IA refuerce una sola postura pidiéndole los mejores argumentos de cada lado:',
+                        pillars: ['Pide 3 argumentos a favor', 'Pide 3 argumentos en contra', 'Exige tono 100% neutral', 'Pide qué datos verificar'],
+                        weakPrompt: '«¿Es buena o mala esta nueva ley?»',
+                        strongPrompt: '«Expón de forma estrictamente neutral los 3 argumentos más sólidos a favor y los 3 en contra de esta medida, y qué datos oficiales debo consultar.»',
                         prompt: 'Sobre el debate actual acerca de [medida política, social o económica], expón de manera estrictamente neutral: 1) Los 3 argumentos más sólidos a favor, 2) Los 3 argumentos más sólidos en contra, y 3) Qué datos objetivos debería buscar en fuentes independientes para formarme mi propia opinión.'
                     },
                     {
-                        step: 'TÉCNICA 3',
-                        title: 'Auditoría de Fuentes y Verificación de Datos',
-                        desc: 'Obliga a la IA a separar lo que sabe con certeza de lo que es aproximado, pidiéndole que indique dónde puedes comprobar cada afirmación en internet.',
-                        example: '"Indica el nivel de certeza de cada punto y qué organismo oficial publica el dato real".',
+                        step: 'TÉCNICA 03',
+                        tag: 'Verificación Internet',
+                        title: 'Auditoría de Fuentes y Nivel de Certeza',
+                        desc: 'Obliga a la IA a separar hechos comprobados de estimaciones e indicar qué organismo oficial publica el dato original:',
+                        pillars: ['Separar hechos de opiniones', 'Pedir organismo oficial', 'Detectar datos que caducan', 'Evitar alucinaciones'],
+                        weakPrompt: '«¿Cuáles son las ayudas actuales al alquiler?»',
+                        strongPrompt: '«Explícame los requisitos habituales, indica el nivel de certeza de cada punto y en qué boletín o web oficial debo verificar la convocatoria vigente.»',
                         prompt: 'Necesito informarme con rigor sobre [tema]. Dame las claves principales e incluye al final de cada punto: el organismo o fuente oficial donde puedo verificar el dato original y qué aspectos podrían haber cambiado recientemente.'
                     },
                     {
-                        step: 'TÉCNICA 4',
-                        title: 'Razonamiento Paso a Paso (Pensamiento Estructurado)',
-                        desc: 'Para resolver problemas cotidianos, presupuestos o planificación, pide a la IA que desglose el razonamiento paso a paso antes de darte el resultado final.',
-                        example: '"Razona paso a paso las ventajas, costes e inconvenientes antes de proponer una solución".',
+                        step: 'TÉCNICA 04',
+                        tag: 'Decisiones complejas',
+                        title: 'Razonamiento Paso a Paso (Pros, Contras y Variables)',
+                        desc: 'Para comparar opciones de compra, estudios, viajes o planificación semanal, pide que desglose las variables antes de concluir:',
+                        pillars: ['Desglosar variables', 'Tabla de pros y contras', 'Costes ocultos / riesgos', 'Preguntas antes de decidir'],
+                        weakPrompt: '«¿Qué portátil o tarifa me compro?»',
+                        strongPrompt: '«Analiza paso a paso qué criterios debo comparar según mi uso, haz una tabla de ventajas e inconvenientes y dime qué 3 preguntas hacer antes de comprar.»',
                         prompt: 'Quiero tomar una decisión informada sobre [comparar dos opciones / organizar un presupuesto / planificar una semana]. Analiza paso a paso las variables importantes, los pros y contras de cada alternativa y qué preguntas clave debo hacerme antes de decidir.'
                     },
                     {
-                        step: 'TÉCNICA 5',
+                        step: 'TÉCNICA 05',
+                        tag: 'Aprendizaje activo',
                         title: 'Técnica Socrática y Editor Crítico',
-                        desc: 'Usa la IA para aprender de verdad y mejorar tus propios textos: pídele que te haga preguntas o que critique constructivamente tu borrador en vez de hacerlo todo por ti.',
-                        example: '"Hazme 3 preguntas clave para detectar si he entendido bien este tema".',
+                        desc: 'Haz que la IA te haga preguntas para comprobar si dominas un tema o que critique tu borrador sin reescribírtelo entero:',
+                        pillars: ['No pedir el trabajo hecho', 'Pedir crítica constructiva', 'Responder preguntas reto', 'Mantener tu propio estilo'],
+                        weakPrompt: '«Hazme una redacción sobre el cambio climático»',
+                        strongPrompt: '«Aquí tienes mi esquema. No lo escribas por mí: dime qué 3 ideas están poco explicadas y hazme 2 preguntas para mejorarlo yo.»',
                         prompt: 'Quiero comprobar si domino bien el tema de [tema] sin copiar. Explícame primero la base en 5 líneas y luego hazme 3 preguntas de reflexión crítica para poner a prueba mi comprensión.'
                     },
                     {
-                        step: 'TÉCNICA 6',
+                        step: 'TÉCNICA 06',
+                        tag: 'Privacidad 100%',
                         title: 'Plantillas con Variables Seguras [CORCHETES]',
-                        desc: 'Para redactar correos, instancias o currículums cuidando tu privacidad al 100%, usa variables entre corchetes para rellenar tus datos personales fuera del chat.',
-                        example: 'Usa [MI_NOMBRE], [EMPRESA_DESTINO], [IMPORTE] en lugar de datos reales.',
+                        desc: 'Redacta correos formales, reclamaciones, contratos o currículums sin exponer ningún dato personal en el chat:',
+                        pillars: ['Usa [MI_NOMBRE]', 'Usa [DNI / NIE]', 'Usa [EMPRESA / IMPORTE]', 'Rellena en tu ordenador'],
+                        weakPrompt: '«Soy Juan Pérez con DNI 12345678A, escribe al banco...»',
+                        strongPrompt: '«Redacta una carta formal al banco usando marcadores [NOMBRE], [DNI] e [IMPORTE] para rellenarlos yo en privado.»',
                         prompt: 'Redacta una plantilla profesional de correo para solicitar [motivo: información / reunión / revisión de factura] usando marcadores entre corchetes como [NOMBRE], [FECHA] y [REFERENCIA] para mantener mi privacidad.'
                     }
                 ] : [
                     {
-                        step: 'TÈCNICA 1',
+                        step: 'TÈCNICA 01',
+                        tag: 'Estructura perfecta',
                         title: 'Fórmula C.R.O.F. (Context + Rol + Objectiu + Format)',
-                        desc: 'Com més context donis a la IA, menys s\'inventarà. Especifica sempre la teva situació (Context), com vols que actuï (Rol), què necessites exactament (Objectiu) i com ho ha de presentar (Format).',
-                        example: 'Context: Soc estudiant/professional preparant [tema]. Rol: Actua com un divulgador rigorós. Objectiu: Explica\'m els 4 punts clau sense tecnicismes. Format: Taula comparativa i resum final.',
+                        desc: 'Com més clar sigui el teu context, menys haurà d\'endevinar la IA. Combina aquests 4 blocs en qualsevol petició important:',
+                        pillars: ['1. Context: La teva situació', '2. Rol: Qui et respon', '3. Objectiu: Què necessites', '4. Format: Taula, llista, guió'],
+                        weakPrompt: '«Explica\'m com fer un pressupost mensual»',
+                        strongPrompt: 'Context: Visc en parella i volem estalviar un 15%. Rol: Especialista en finances domèstiques. Objectiu: Dissenya un mètode senzill de control de despeses. Format: Taula per categories i 3 regles pràctiques.',
                         prompt: 'Context: Estic organitzant [projecte o tasca quotidiana]. Rol: Actua com un especialista en organització i comunicació clara. Objectiu: Ajuda\'m a estructurar els passos principals i preveure possibles imprevistos. Format: Llista numerada amb temps estimats i una taula resum.'
                     },
                     {
-                        step: 'TÈCNICA 2',
-                        title: 'Contrast Neutral i "Advocat del Diable" (Ideal per a política i debats)',
-                        desc: 'Per evitar cambres d\'eco i biaixos d\'internet en temes socials, polítics o econòmics, demana explícitament a la IA que presenti els millors arguments de totes les postures sense inclinar-se per cap.',
-                        example: 'En lloc de preguntar "És bona aquesta llei?", demana: "Dóna\'m els 3 arguments principals a favor i els 3 en contra amb dades objectives".',
+                        step: 'TÈCNICA 02',
+                        tag: 'Anti-biaixos / Política',
+                        title: 'Contrast Neutral i «Advocat del Diable»',
+                        desc: 'En debats polítics, socials o econòmics, evita que la IA reforci una sola postura demanant-li els millors arguments de cada banda:',
+                        pillars: ['Demana 3 arguments a favor', 'Demana 3 arguments en contra', 'Exigeix to 100% neutral', 'Demana quines dades verificar'],
+                        weakPrompt: '«És bona o dolenta aquesta nova llei?»',
+                        strongPrompt: '«Exposa de forma estrictament neutral els 3 arguments més sòlids a favor i els 3 en contra d\'aquesta mesura, i quines dades oficials he de consultar.»',
                         prompt: 'Sobre el debat actual al voltant de [mesura política, social o econòmica], exposa de manera estrictament neutral: 1) Els 3 arguments més sòlids a favor, 2) Els 3 arguments més sòlids en contra, i 3) Quines dades objectives hauria de cercar en fonts independents per formar-me la meva pròpia opinió.'
                     },
                     {
-                        step: 'TÈCNICA 3',
-                        title: 'Auditoria de Fonts i Verificació de Dades',
-                        desc: 'Obliga la IA a separar el que és un fet verificable del que és una estimació, demanant-li que indiqui on pots comprovar cada afirmació a internet.',
-                        example: '"Indica el nivell de certesa de cada punt i quin organisme oficial publica la dada real".',
+                        step: 'TÈCNICA 03',
+                        tag: 'Verificació Internet',
+                        title: 'Auditoria de Fonts i Nivell de Certesa',
+                        desc: 'Obliga la IA a separar fets comprovats d\'estimacions i indicar quin organisme oficial publica la dada original:',
+                        pillars: ['Separar fets d\'opinions', 'Demanar organisme oficial', 'Detectar dades que caduquen', 'Evitar al·lucinacions'],
+                        weakPrompt: '«Quines són les ajudes actuals al lloguer?»',
+                        strongPrompt: '«Explica\'m els requisits habituals, indica el nivell de certesa de cada punt i en quin butlletí o web oficial he de verificar la convocatòria vigent.»',
                         prompt: 'Necessito informar-me amb rigor sobre [tema]. Dóna\'m les claus principals i inclou al final de cada punt: l\'organisme o font oficial on puc verificar la dada original i quins aspectes podrien haver canviat recentment.'
                     },
                     {
-                        step: 'TÈCNICA 4',
-                        title: 'Raonament Pas a Pas (Pensament Estructurat)',
-                        desc: 'Per resoldre problemes quotidians, pressupostos o planificació, demana a la IA que desglossi el raonament pas a pas abans de donar-te el resultat final.',
-                        example: '"Raona pas a pas els avantatges, costos i inconvenients abans de proposar una solució".',
+                        step: 'TÈCNICA 04',
+                        tag: 'Decisions complexes',
+                        title: 'Raonament Pas a Pas (Pros, Contres i Variables)',
+                        desc: 'Per comparar opcions de compra, estudis, viatges o planificació setmanal, demana que desglossi les variables abans de concloure:',
+                        pillars: ['Desglossar variables', 'Taula de pros i contres', 'Costos ocults / riscos', 'Preguntes abans de decidir'],
+                        weakPrompt: '«Quin portàtil o tarifa em compro?»',
+                        strongPrompt: '«Analitza pas a pas quins criteris he de comparar segons el meu ús, fes una taula d\'avantatges i inconvenients i digues-me quines 3 preguntes fer abans de comprar.»',
                         prompt: 'Vull prendre una decisió informada sobre [comparar dues opcions / organitzar un pressupost / planificar una setmana]. Analitza pas a pas les variables importants, els pros i contres de cada alternativa i quines preguntes clau m\'he de fer abans de decidir.'
                     },
                     {
-                        step: 'TÈCNICA 5',
+                        step: 'TÈCNICA 05',
+                        tag: 'Aprenentatge actiu',
                         title: 'Tècnica Socràtica i Editor Crític',
-                        desc: 'Fes servir la IA per aprendre de debò i millorar els teus propis textos: demana-li que et faci preguntes o que critiqui constructivament el teu esborrany en lloc de fer-ho tot per tu.',
-                        example: '"Fes-me 3 preguntes clau per detectar si he entès bé aquest tema".',
+                        desc: 'Fes que la IA et faci preguntes per comprovar si domines un tema o que critiqui el teu esborrany sense reescriure\'l sencer:',
+                        pillars: ['No demanar la feina feta', 'Demanar crítica constructiva', 'Respondre preguntes repte', 'Mantenir el teu propi estil'],
+                        weakPrompt: '«Fes-me una redacció sobre el canvi climàtic»',
+                        strongPrompt: '«Aquí tens el meu esquema. No l\'escriguis per mi: digues-me quines 3 idees estan poc explicades i fes-me 2 preguntes per millorar-lo jo.»',
                         prompt: 'Vull comprovar si domino bé el tema de [tema] sense copiar. Explica\'m primer la base en 5 línies i després fes-me 3 preguntes de reflexió crítica per posar a prova la meva comprensió.'
                     },
                     {
-                        step: 'TÈCNICA 6',
+                        step: 'TÈCNICA 06',
+                        tag: 'Privacitat 100%',
                         title: 'Plantilles amb Variables Segures [CLAUDÀTORS]',
-                        desc: 'Per redactar correus, instàncies o currículums cuidant la teva privacitat al 100%, utilitza variables entre claudàtors per omplir les teves dades personals fora del xat.',
-                        example: 'Fes servir [EL_MEU_NOM], [EMPRESA_DESTÍ], [IMPORT] en lloc de dades reals.',
+                        desc: 'Redacta correus formals, reclamacions, contractes o currículums sense exposar cap dada personal al xat:',
+                        pillars: ['Fes servir [EL_MEU_NOM]', 'Fes servir [DNI / NIE]', 'Fes servir [EMPRESA / IMPORT]', 'Omple-ho al teu ordinador'],
+                        weakPrompt: '«Soc Joan Pérez amb DNI 12345678A, escriu al banc...»',
+                        strongPrompt: '«Redacta una carta formal al banc usant marcadors [NOM], [DNI] i [IMPORT] per omplir-los jo en privat.»',
                         prompt: 'Redacta una plantilla professional de correu per sol·licitar [motiu: informació / reunió / revisió de factura] utilitzant marcadors entre claudàtors com [NOM], [DATA] i [REFERÈNCIA] per mantenir la meva privacitat.'
                     }
                 ]
@@ -17084,113 +17224,330 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             };
 
             const awarenessHtml = copy.awarenessCards.map((c, idx) => `
-                <div class="p-3.5 sm:p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/90 border border-zinc-200/90 dark:border-zinc-800 flex flex-col justify-between gap-2.5 text-left shadow-2xs">
-                    <div class="space-y-2">
+                <article data-resp-cat="${c.cat}" class="resp-ai-awareness-card p-5 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800/90 flex flex-col justify-between gap-4 text-left shadow-xs hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700/70 transition-all">
+                    <div class="space-y-3.5">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-lg border ${c.badgeColor}">${c.badge}</span>
+                            <span class="px-3 py-1 text-xs font-extrabold rounded-xl border ${c.badgeColor}">${c.badge}</span>
+                            <span class="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 flex items-center justify-center shrink-0">${c.icon}</span>
                         </div>
-                        <h4 class="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 leading-snug">${c.title}</h4>
-                        <div class="p-2 rounded-xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-900/50 text-[11px] text-rose-800 dark:text-rose-200 font-medium leading-relaxed">${c.dontDo}</div>
-                        <p class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">${c.why}</p>
-                        <div class="p-2 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/50 text-[11px] text-emerald-800 dark:text-emerald-200 font-medium leading-relaxed">${c.doInstead}</div>
+                        <h4 class="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-snug">${c.title}</h4>
+                        <ul class="space-y-1.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                            ${c.keyPoints.map(pt => `<li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span><span>${pt}</span></li>`).join('')}
+                        </ul>
+                        <div class="grid grid-cols-1 gap-2.5 pt-1">
+                            <div class="p-3 rounded-2xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-200/70 dark:border-rose-900/50">
+                                <div class="text-[10px] font-black uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-0.5">✕ ${copy.dontLabel}</div>
+                                <div class="text-xs sm:text-[13px] text-rose-900 dark:text-rose-200 font-semibold leading-snug">${c.dontDo}</div>
+                            </div>
+                            <div class="p-3 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-900/50">
+                                <div class="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-0.5">✓ ${copy.doLabel}</div>
+                                <div class="text-xs sm:text-[13px] text-emerald-900 dark:text-emerald-200 font-semibold leading-snug">${c.doInstead}</div>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" onclick="applyResponsibleAiPrompt('awareness', ${idx})" class="mt-1 w-full py-2 px-3 rounded-xl bg-white hover:bg-indigo-50 dark:bg-zinc-900 dark:hover:bg-indigo-950/50 border border-zinc-200 dark:border-zinc-700 hover:border-indigo-400 text-indigo-600 dark:text-indigo-300 text-[11px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        <span>${copy.tryBtn}</span>
-                    </button>
-                </div>
+                    <div class="pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center gap-2">
+                        <button type="button" onclick="applyResponsibleAiPrompt('awareness', ${idx})" class="flex-1 py-2.5 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-[13px] font-extrabold flex items-center justify-center gap-2 transition cursor-pointer shadow-2xs">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>${copy.tryBtn}</span>
+                        </button>
+                        <button type="button" onclick="copyResponsibleAiPrompt('awareness', ${idx}, this)" class="py-2.5 px-3 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shrink-0" title="${copy.copyBtn}">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            <span>${copy.copyBtn}</span>
+                        </button>
+                    </div>
+                </article>
             `).join('');
 
             const techniquesHtml = copy.techniqueCards.map((t, idx) => `
-                <div class="p-3.5 sm:p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/90 border border-zinc-200/90 dark:border-zinc-800 flex flex-col justify-between gap-2.5 text-left shadow-2xs">
-                    <div class="space-y-2">
+                <article class="p-5 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800/90 flex flex-col justify-between gap-4 text-left shadow-xs hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700/70 transition-all">
+                    <div class="space-y-3.5">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="px-2 py-0.5 text-[10px] font-black rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">${t.step}</span>
+                            <span class="px-3 py-1 text-xs font-black rounded-xl bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">${t.step}</span>
+                            <span class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">${t.tag}</span>
                         </div>
-                        <h4 class="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 leading-snug">${t.title}</h4>
-                        <p class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">${t.desc}</p>
-                        <div class="p-2.5 rounded-xl bg-zinc-100/90 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-[10.5px] font-mono text-zinc-700 dark:text-zinc-300 leading-relaxed">${t.example}</div>
+                        <h4 class="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-snug">${t.title}</h4>
+                        <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">${t.desc}</p>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            ${t.pillars.map(p => `<div class="px-2.5 py-1.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/50 text-[11px] font-bold text-indigo-900 dark:text-indigo-200 truncate">${p}</div>`).join('')}
+                        </div>
+                        <div class="space-y-2 pt-1">
+                            <div class="p-2.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/25 border border-rose-200/60 dark:border-rose-900/40 text-xs text-rose-800 dark:text-rose-300">
+                                <span class="font-black uppercase text-[10px] mr-1.5">${isEs ? 'Pregunta vaga:' : 'Pregunta vaga:'}</span>${t.weakPrompt}
+                            </div>
+                            <div class="p-3 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-900/50 text-xs text-emerald-900 dark:text-emerald-200 font-medium leading-relaxed">
+                                <span class="font-black uppercase text-[10px] block text-emerald-700 dark:text-emerald-400 mb-0.5">${isEs ? 'Pregunta con técnica:' : 'Pregunta amb tècnica:'}</span>${t.strongPrompt}
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" onclick="applyResponsibleAiPrompt('techniques', ${idx})" class="mt-1 w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-2xs">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                        <span>${copy.tryBtn}</span>
-                    </button>
-                </div>
+                    <div class="pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center gap-2">
+                        <button type="button" onclick="applyResponsibleAiPrompt('techniques', ${idx})" class="flex-1 py-2.5 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-[13px] font-extrabold flex items-center justify-center gap-2 transition cursor-pointer shadow-2xs">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <span>${copy.tryBtn}</span>
+                        </button>
+                        <button type="button" onclick="copyResponsibleAiPrompt('techniques', ${idx}, this)" class="py-2.5 px-3 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer shrink-0" title="${copy.copyBtn}">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            <span>${copy.copyBtn}</span>
+                        </button>
+                    </div>
+                </article>
             `).join('');
 
-            const activeConsciencia = initialTab !== 'tecniques';
+            const activeTab = (initialTab === 'tecniques' || initialTab === 'builder') ? initialTab : 'consciencia';
 
-            Swal.fire({
-                title: `<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white text-base sm:text-lg"><span class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span><span>${copy.title}</span></div>`,
-                html: `
-                    <div class="mt-1 text-left space-y-3">
-                        <p class="text-xs text-zinc-500 dark:text-zinc-400 text-center max-w-xl mx-auto leading-relaxed">${copy.subtitle}</p>
+            const modalEl = document.createElement('div');
+            modalEl.id = 'responsible-ai-fullscreen-modal';
+            modalEl.className = 'fixed inset-0 z-[130] w-screen h-[100dvh] bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col overflow-hidden animate-fade-in';
+            modalEl.innerHTML = `
+                <!-- Barra Superior Pantalla Completa -->
+                <header class="shrink-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-b border-zinc-200/90 dark:border-zinc-800 px-4 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/90 text-indigo-700 dark:text-indigo-300">${copy.badgeTop}</span>
+                            </div>
+                            <h2 class="text-base sm:text-xl font-black text-zinc-900 dark:text-white truncate mt-0.5">${copy.title}</h2>
+                        </div>
+                    </div>
 
-                        <!-- Banner de conscienciació -->
-                        <div class="p-3 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/70 flex items-start gap-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            </span>
-                            <div class="min-w-0">
-                                <div class="text-xs font-extrabold text-indigo-950 dark:text-indigo-200">${copy.bannerTitle}</div>
-                                <div class="text-[11px] text-indigo-800/90 dark:text-indigo-300/90 leading-relaxed mt-0.5">${copy.bannerDesc}</div>
+                    <!-- Pestanyes principals a la capçalera -->
+                    <div class="flex items-center gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-950 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 order-3 lg:order-2 w-full lg:w-auto overflow-x-auto no-scrollbar">
+                        <button type="button" id="resp-ai-tab-consciencia" onclick="switchResponsibleAiTab('consciencia')" class="flex-1 lg:flex-initial py-2 px-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'consciencia' ? 'bg-indigo-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span>${copy.tab1}</span>
+                        </button>
+                        <button type="button" id="resp-ai-tab-tecniques" onclick="switchResponsibleAiTab('tecniques')" class="flex-1 lg:flex-initial py-2 px-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'tecniques' ? 'bg-indigo-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <span>${copy.tab2}</span>
+                        </button>
+                        <button type="button" id="resp-ai-tab-builder" onclick="switchResponsibleAiTab('builder')" class="flex-1 lg:flex-initial py-2 px-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'builder' ? 'bg-indigo-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                            <span>${copy.tab3}</span>
+                        </button>
+                    </div>
+
+                    <button type="button" onclick="closeResponsibleAiGuideModal()" class="order-2 lg:order-3 py-2 px-3.5 rounded-xl bg-zinc-100 hover:bg-rose-100 dark:bg-zinc-800 dark:hover:bg-rose-950/70 text-zinc-700 hover:text-rose-700 dark:text-zinc-200 dark:hover:text-rose-300 font-extrabold text-xs sm:text-sm flex items-center gap-2 transition cursor-pointer shrink-0">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        <span class="hidden sm:inline">${copy.closeBtn}</span>
+                        <span class="sm:hidden">ESC</span>
+                    </button>
+                </header>
+
+                <!-- Cos amb desplaçament fluid a pantalla completa -->
+                <div class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 custom-scrollbar">
+                    <div class="max-w-7xl mx-auto space-y-6 pb-10">
+                        <!-- Banner resum superior -->
+                        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-indigo-600/10 via-blue-600/10 to-emerald-600/10 dark:from-indigo-950/60 dark:via-zinc-900 dark:to-emerald-950/40 border border-indigo-200/80 dark:border-indigo-800/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-start gap-3.5">
+                                <span class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                </span>
+                                <div>
+                                    <h3 class="text-sm sm:text-base font-black text-zinc-900 dark:text-white">${copy.bannerTitle}</h3>
+                                    <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed mt-1 max-w-4xl">${copy.bannerDesc}</p>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Selector de pestanyes -->
-                        <div class="grid grid-cols-2 gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-950 rounded-2xl border border-zinc-200/80 dark:border-zinc-800">
-                            <button type="button" id="resp-ai-tab-consciencia" onclick="switchResponsibleAiTab('consciencia')" class="py-2 px-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${activeConsciencia ? 'bg-indigo-600 text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                <span class="truncate">${copy.tab1}</span>
-                            </button>
-                            <button type="button" id="resp-ai-tab-tecniques" onclick="switchResponsibleAiTab('tecniques')" class="py-2 px-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${!activeConsciencia ? 'bg-indigo-600 text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                                <span class="truncate">${copy.tab2}</span>
-                            </button>
-                        </div>
+                        <!-- PANEL 1: CONSCIENCIACIÓ I CRITERI PROPI -->
+                        <section id="resp-ai-panel-consciencia" class="${activeTab === 'consciencia' ? 'space-y-5' : 'hidden'}">
+                            <!-- Filtres ràpids per categoria -->
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <p class="text-xs sm:text-sm font-bold text-zinc-500 dark:text-zinc-400">${copy.subtitle}</p>
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <button type="button" onclick="filterResponsibleAiAwareness('all', this)" class="resp-ai-filter-btn px-3 py-1.5 rounded-xl text-xs font-extrabold bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 transition cursor-pointer">${copy.filterAll}</button>
+                                    <button type="button" onclick="filterResponsibleAiAwareness('civic', this)" class="resp-ai-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 transition cursor-pointer">${copy.filterCivic}</button>
+                                    <button type="button" onclick="filterResponsibleAiAwareness('safety', this)" class="resp-ai-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 transition cursor-pointer">${copy.filterSafety}</button>
+                                    <button type="button" onclick="filterResponsibleAiAwareness('mind', this)" class="resp-ai-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 transition cursor-pointer">${copy.filterMind}</button>
+                                </div>
+                            </div>
 
-                        <!-- Contingut Pestanya 1: Conscienciació -->
-                        <div id="resp-ai-panel-consciencia" class="${activeConsciencia ? 'grid' : 'hidden'} grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[54vh] overflow-y-auto pr-1 custom-scrollbar">
-                            ${awarenessHtml}
-                        </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+                                ${awarenessHtml}
+                            </div>
+                        </section>
 
-                        <!-- Contingut Pestanya 2: Tècniques -->
-                        <div id="resp-ai-panel-tecniques" class="${!activeConsciencia ? 'grid' : 'hidden'} grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[54vh] overflow-y-auto pr-1 custom-scrollbar">
-                            ${techniquesHtml}
-                        </div>
+                        <!-- PANEL 2: TÈCNIQUES PER UTILITZAR BÉ LA IA -->
+                        <section id="resp-ai-panel-tecniques" class="${activeTab === 'tecniques' ? 'space-y-5' : 'hidden'}">
+                            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+                                ${techniquesHtml}
+                            </div>
+                        </section>
+
+                        <!-- PANEL 3: CONSTRUCTOR RÀPID DE PROMPTS (C.R.O.F. + CRITERI CRÍTIC) -->
+                        <section id="resp-ai-panel-builder" class="${activeTab === 'builder' ? 'block' : 'hidden'}">
+                            <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs space-y-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                                    <div>
+                                        <span class="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">${isEs ? 'FÓRMULA INTERACTIVA C.R.O.F.' : 'FÓRMULA INTERACTIVA C.R.O.F.'}</span>
+                                        <h3 class="text-lg sm:text-xl font-black text-zinc-900 dark:text-white mt-0.5">${isEs ? 'Construye tu consulta perfecta con criterio propio' : 'Construeix la teva consulta perfecta amb criteri propi'}</h3>
+                                        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">${isEs ? 'Rellena los campos o elige un caso rápido y envíalo directamente al chat sin compartir datos sensibles.' : 'Omple els camps o tria un cas ràpid i envia\'l directament al xat sense compartir dades sensibles.'}</p>
+                                    </div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <button type="button" onclick="fillResponsibleBuilderPreset('politics')" class="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs font-bold cursor-pointer hover:bg-rose-100 transition">${isEs ? '⚖️ Debate / Política neutral' : '⚖️ Debat / Política neutral'}</button>
+                                        <button type="button" onclick="fillResponsibleBuilderPreset('factcheck')" class="px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold cursor-pointer hover:bg-amber-100 transition">${isEs ? '🔍 Verificar noticia / dato' : '🔍 Verificar notícia / dada'}</button>
+                                        <button type="button" onclick="fillResponsibleBuilderPreset('privacy')" class="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold cursor-pointer hover:bg-blue-100 transition">${isEs ? '🔒 Escrito con [CORCHETES]' : '🔒 Escrit amb [CLAUDÀTORS]'}</button>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1.5">${isEs ? '1. Contexto (Tu situación sin datos privados)' : '1. Context (La teva situació sense dades privades)'}</label>
+                                        <input id="resp-builder-context" type="text" oninput="updateResponsibleBuilderPreview()" placeholder="${isEs ? 'Ej.: Quiero comparar las propuestas sobre vivienda / entender una factura...' : 'Ex.: Vull comparar les propostes sobre habitatge / entendre una factura...'}" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs sm:text-sm text-zinc-900 dark:text-white">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1.5">${isEs ? '2. Rol y Enfoque de la IA' : '2. Rol i Enfocament de la IA'}</label>
+                                        <select id="resp-builder-role" onchange="updateResponsibleBuilderPreview()" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs sm:text-sm text-zinc-900 dark:text-white">
+                                            <option value="${isEs ? 'Analista estrictamente neutral e imparcial que presenta todas las posturas' : 'Analista estrictament neutral i imparcial que presenta totes les postures'}">${isEs ? '⚖️ Analista neutral (presenta pros, contras y todas las posturas)' : '⚖️ Analista neutral (presenta pros, contres i totes les postures)'}</option>
+                                            <option value="${isEs ? 'Verificador de datos riguroso que cita organismos y fuentes oficiales' : 'Verificador de dades rigorós que cita organismes i fonts oficials'}">${isEs ? '🔍 Verificador de fuentes oficiales (separa hechos de opiniones)' : '🔍 Verificador de fonts oficials (separa fets d\'opinions)'}</option>
+                                            <option value="${isEs ? 'Editor crítico socrático que señala mejoras sin hacer el trabajo por mí' : 'Editor crític socràtic que assenyala millores sense fer la feina per mi'}">${isEs ? '🧠 Entrenador de pensamiento crítico (no copia, me hace pensar)' : '🧠 Entrenador de pensament crític (no copia, em fa pensar)'}</option>
+                                            <option value="${isEs ? 'Especialista en comunicación formal que protege mi privacidad con [CORCHETES]' : 'Especialista en comunicació formal que protegeix la meva privacitat amb [CLAUDÀTORS]'}">${isEs ? '🔒 Redactor seguro con variables [CORCHETES]' : '🔒 Redactor segur amb variables [CLAUDÀTORS]'}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1.5">${isEs ? '3. Objetivo exacto (Qué quieres conseguir)' : '3. Objectiu exacte (Què vols aconseguir)'}</label>
+                                        <input id="resp-builder-goal" type="text" oninput="updateResponsibleBuilderPreview()" placeholder="${isEs ? 'Ej.: Dame los 3 argumentos a favor, 3 en contra y dónde verificar los datos...' : 'Ex.: Dóna\'m els 3 arguments a favor, 3 en contra i on verificar les dades...'}" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs sm:text-sm text-zinc-900 dark:text-white">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1.5">${isEs ? '4. Formato y Garantía de Criterio' : '4. Format i Garantia de Criterio'}</label>
+                                        <input id="resp-builder-format" type="text" oninput="updateResponsibleBuilderPreview()" value="${isEs ? 'Tabla comparativa clara + lista de fuentes oficiales donde contrastar la información.' : 'Taula comparativa clara + llista de fonts oficials on contrastar la informació.'}" class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs sm:text-sm text-zinc-900 dark:text-white">
+                                    </div>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 space-y-3">
+                                    <div class="text-xs font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">${isEs ? 'Vista previa del Prompt generado:' : 'Vista prèvia del Prompt generat:'}</div>
+                                    <textarea id="resp-builder-preview" rows="3" class="w-full bg-transparent text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 resize-none border-0 p-0"></textarea>
+                                    <div class="flex flex-wrap items-center justify-end gap-2 pt-1">
+                                        <button type="button" onclick="sendResponsibleBuilderToChat()" class="py-2.5 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-extrabold flex items-center gap-2 transition cursor-pointer shadow-xs">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                            <span>${isEs ? 'Llevar al chat ahora' : 'Portar al xat ara'}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
-                `,
-                showConfirmButton: false,
-                showCloseButton: true,
-                customClass: {
-                    popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-3xl w-full',
-                    title: 'font-black text-zinc-900 dark:text-white'
+                </div>
+            `;
+
+            document.body.appendChild(modalEl);
+            window.updateResponsibleBuilderPreview();
+
+            window._respAiEscHandler = function(ev) {
+                if (ev.key === 'Escape') {
+                    window.closeResponsibleAiGuideModal();
+                }
+            };
+            document.addEventListener('keydown', window._respAiEscHandler);
+        };
+
+        window.switchResponsibleAiTab = function(tab) {
+            const tabs = ['consciencia', 'tecniques', 'builder'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`resp-ai-tab-${t}`);
+                const panel = document.getElementById(`resp-ai-panel-${t}`);
+                const isActive = t === tab;
+                if (btn) {
+                    btn.className = `flex-1 lg:flex-initial py-2 px-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap ${isActive ? 'bg-indigo-600 text-white shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}`;
+                }
+                if (panel) {
+                    panel.classList.toggle('hidden', !isActive);
                 }
             });
         };
 
-        window.switchResponsibleAiTab = function(tab) {
-            const btn1 = document.getElementById('resp-ai-tab-consciencia');
-            const btn2 = document.getElementById('resp-ai-tab-tecniques');
-            const panel1 = document.getElementById('resp-ai-panel-consciencia');
-            const panel2 = document.getElementById('resp-ai-panel-tecniques');
-            if (!btn1 || !btn2 || !panel1 || !panel2) return;
+        window.filterResponsibleAiAwareness = function(category, clickedBtn) {
+            const cards = document.querySelectorAll('.resp-ai-awareness-card');
+            cards.forEach(card => {
+                const cardCat = card.getAttribute('data-resp-cat');
+                const show = category === 'all' || cardCat === category;
+                card.classList.toggle('hidden', !show);
+                card.classList.toggle('flex', show);
+            });
+            const buttons = document.querySelectorAll('.resp-ai-filter-btn');
+            buttons.forEach(b => {
+                const active = b === clickedBtn;
+                b.className = active
+                    ? 'resp-ai-filter-btn px-3 py-1.5 rounded-xl text-xs font-extrabold bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 transition cursor-pointer'
+                    : 'resp-ai-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 transition cursor-pointer';
+            });
+        };
 
-            const isConsciencia = tab === 'consciencia';
-            btn1.className = `py-2 px-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${isConsciencia ? 'bg-indigo-600 text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}`;
-            btn2.className = `py-2 px-2.5 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5 ${!isConsciencia ? 'bg-indigo-600 text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}`;
+        window.copyResponsibleAiPrompt = function(group, idx, btnEl) {
+            const list = window._responsibleAiPrompts && window._responsibleAiPrompts[group];
+            const promptText = Array.isArray(list) ? list[idx] : '';
+            if (!promptText) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(promptText).catch(() => {});
+            }
+            if (btnEl) {
+                const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+                const orig = btnEl.innerHTML;
+                btnEl.innerHTML = `<span>✓ ${isEs ? '¡Copiado!' : 'Copiat!'}</span>`;
+                setTimeout(() => { btnEl.innerHTML = orig; }, 1400);
+            }
+        };
 
-            panel1.classList.toggle('hidden', !isConsciencia);
-            panel1.classList.toggle('grid', isConsciencia);
-            panel2.classList.toggle('hidden', isConsciencia);
-            panel2.classList.toggle('grid', !isConsciencia);
+        window.fillResponsibleBuilderPreset = function(preset) {
+            const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+            const ctx = document.getElementById('resp-builder-context');
+            const goal = document.getElementById('resp-builder-goal');
+            const fmt = document.getElementById('resp-builder-format');
+            if (!ctx || !goal || !fmt) return;
+
+            if (preset === 'politics') {
+                ctx.value = isEs ? 'Quiero informarme con criterio propio sobre el debate actual de [vivienda / educación / economía].' : 'Vull informar-me amb criteri propi sobre el debat actual d\'[habitatge / educació / economia].';
+                goal.value = isEs ? 'Expón de forma 100% neutral los 3 argumentos más sólidos de cada postura sin recomendar a quién votar.' : 'Exposa de forma 100% neutral els 3 arguments més sòlids de cada postura sense recomanar a qui votar.';
+                fmt.value = isEs ? 'Tabla comparativa imparcial + qué programas o fuentes oficiales debo leer para decidir por mí mismo.' : 'Taula comparativa imparcial + quins programes o fonts oficials he de llegir per decidir per mi mateix.';
+            } else if (preset === 'factcheck') {
+                ctx.value = isEs ? 'He leído en internet una noticia o afirmación sobre [tema o cifra] y quiero verificar su rigor.' : 'He llegit a internet una notícia o afirmació sobre [tema o xifra] i vull verificar-ne el rigor.';
+                goal.value = isEs ? 'Separa qué parte es un hecho verificable, qué parte es opinión y qué datos podrían haber cambiado.' : 'Separa quina part és un fet verificable, quina part és opinió i quines dades podrien haver canviat.';
+                fmt.value = isEs ? 'Lista de verificación con los organismos oficiales donde comprobar el dato real.' : 'Llista de verificació amb els organismes oficials on comprovar la dada real.';
+            } else if (preset === 'privacy') {
+                ctx.value = isEs ? 'Necesito redactar un escrito formal para [reclamación / solicitud / contrato] cuidando mi privacidad.' : 'Necessito redactar un escrit formal per a [reclamació / sol·licitud / contracte] cuidant la meva privacitat.';
+                goal.value = isEs ? 'Redacta el documento completo usando marcadores [NOMBRE], [DNI] y [REFERENCIA] sin pedir mis datos reales.' : 'Redacta el document complet usant marcadors [NOM], [DNI] i [REFERÈNCIA] sense demanar les meves dades reals.';
+                fmt.value = isEs ? 'Plantilla formal lista para copiar y rellenar en privado en mi dispositivo.' : 'Plantilla formal llesta per copiar i omplir en privat al meu dispositiu.';
+            }
+            window.updateResponsibleBuilderPreview();
+        };
+
+        window.updateResponsibleBuilderPreview = function() {
+            const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+            const ctx = (document.getElementById('resp-builder-context')?.value || '').trim() || (isEs ? 'Estoy analizando [tema o situación cotidiana].' : 'Estic analitzant [tema o situació quotidiana].');
+            const role = (document.getElementById('resp-builder-role')?.value || '').trim();
+            const goal = (document.getElementById('resp-builder-goal')?.value || '').trim() || (isEs ? 'Dame un análisis riguroso separando hechos verificables de opiniones.' : 'Dóna\'m una anàlisi rigorosa separant fets verificables d\'opinions.');
+            const fmt = (document.getElementById('resp-builder-format')?.value || '').trim();
+            const preview = document.getElementById('resp-builder-preview');
+            if (preview) {
+                preview.value = isEs
+                    ? `Contexto: ${ctx}\nRol: Actúa como ${role}.\nObjetivo: ${goal}\nFormato: ${fmt}`
+                    : `Context: ${ctx}\nRol: Actua com a ${role}.\nObjectiu: ${goal}\nFormat: ${fmt}`;
+            }
+        };
+
+        window.sendResponsibleBuilderToChat = function() {
+            const preview = document.getElementById('resp-builder-preview');
+            const text = preview ? preview.value.trim() : '';
+            if (!text) return;
+            window.closeResponsibleAiGuideModal();
+            if (typeof setStudyMode === 'function' && typeof currentStudyMode !== 'undefined' && currentStudyMode !== 'daily') {
+                setStudyMode('daily');
+            }
+            const input = document.getElementById('chat-input');
+            if (input) {
+                input.value = text;
+                input.focus();
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
         };
 
         window.applyResponsibleAiPrompt = function(group, idx) {
             const list = window._responsibleAiPrompts && window._responsibleAiPrompts[group];
             const promptText = Array.isArray(list) ? list[idx] : '';
             if (!promptText) return;
-            if (typeof Swal !== 'undefined') Swal.close();
+            window.closeResponsibleAiGuideModal();
             if (typeof setStudyMode === 'function' && typeof currentStudyMode !== 'undefined' && currentStudyMode !== 'daily') {
                 setStudyMode('daily');
             }

@@ -1,22 +1,26 @@
 /**
  * Aliat Intel·ligent — Sistema d'Introducció Guiada Pas a Pas (Onboarding Tour)
  * Mini pestanyes contextuals interactives per a usuaris nous (amb sessió iniciada o sense sessió).
+ * Entra dins dels xats per explicar cada mode, els botons superiors, el menú «+» i la barra d'eines.
  * Permet saltar a l'inici o en qualsevol pas, i tornar-la a obrir en qualsevol moment.
  */
 (function () {
     const STORAGE_KEYS = {
         landing: 'aliat_onboarding_landing_v1',
-        guest: 'aliat_onboarding_guest_v1',
-        auth: 'aliat_onboarding_auth_v1'
+        guest: 'aliat_onboarding_guest_v2',
+        auth: 'aliat_onboarding_auth_v2'
     };
 
     const state = {
         active: false,
         flow: 'landing', // 'landing' | 'guest' | 'auth'
         steps: [],
-        index: -1, // -1 = pantalla inicial de benvinguda (es pot saltar d'entrada), 0..N-1 = passos
+        index: -1, // -1 = pantalla inicial de benvinguda, 0..N-1 = passos
         openedMobileSidebar: false,
         targetEl: null,
+        snapshot: null,
+        hasUserChatAtStart: false,
+        transitionToken: 0,
         rafId: null,
         autoTimer: null
     };
@@ -28,8 +32,12 @@
         if (typeof window.currentAppLang === 'string') {
             return window.currentAppLang === 'es' ? 'es' : 'ca';
         }
-        const saved = localStorage.getItem('aliat_lang') || localStorage.getItem('aliat_app_language');
-        return saved === 'es' ? 'es' : 'ca';
+        try {
+            const saved = localStorage.getItem('aliat_lang') || localStorage.getItem('aliat_app_language');
+            return saved === 'es' ? 'es' : 'ca';
+        } catch (_) {
+            return 'ca';
+        }
     }
 
     function isLoggedIn() {
@@ -93,14 +101,341 @@
         }
     }
 
+    function getTourHooks() {
+        return window._aliatTourHooks || null;
+    }
+
+    function buildInAppSteps(isEs, isGuestFlow, hasUserChat) {
+        const hooks = getTourHooks();
+        const steps = [];
+
+        if (!hasUserChat) {
+            steps.push({
+                selector: '#sidebar-mode-study, #welcome-view .grid',
+                requiresSidebarOnMobile: true,
+                onEnter: async () => {
+                    if (hooks) hooks.closeAllMenus();
+                    if (typeof window.backToHome === 'function') await window.backToHome();
+                },
+                actionLabel: isEs ? 'Los 3 modos de chat' : 'Els 3 modes de xat',
+                title: isEs ? 'Tres espacios diseñados para cada tarea' : 'Tres espais dissenyats per a cada tasca',
+                desc: isEs
+                    ? 'Vamos a entrar dentro de cada chat para enseñarte qué hace y todos sus botones. Puedes cambiar de modo aquí en cualquier momento:'
+                    : 'Entrarem dins de cada xat per ensenyar-te què fa i tots els seus botons. Pots canviar de mode aquí en qualsevol moment:',
+                bullets: isEs
+                    ? [
+                        'Pla d’Estudis: planificador con fecha de examen, PDFs, calendario, diagnóstico y seguimiento.',
+                        'XatBot: resolución libre de dudas paso a paso o charla abierta con internet en directo.',
+                        'Ús Quotidià: redacción rápida, correos, tablas, Google Workspace y recordatorios.'
+                    ]
+                    : [
+                        'Pla d’Estudis: planificador amb data d’examen, PDFs, calendari, diagnòstic i seguiment.',
+                        'XatBot: resolució lliure de dubtes pas a pas o xerrada oberta amb internet en directe.',
+                        'Ús Quotidià: redacció ràpida, correus, taules, Google Workspace i recordatoris.'
+                    ]
+            });
+
+            if (!isGuestFlow) {
+                steps.push({
+                    selector: '#setup-view h1, #setup-view',
+                    onEnter: async () => {
+                        if (hooks) await hooks.enterStudySetupOrChat();
+                    },
+                    actionLabel: isEs ? 'Modo Pla d’Estudis' : 'Mode Pla d’Estudis',
+                    title: isEs ? '1. Pla d’Estudis: tu entrenador de exámenes' : '1. Pla d’Estudis: el teu entrenador d’exàmens',
+                    desc: isEs
+                        ? 'En este modo indicas la fecha de tu examen, qué días puedes estudiar y subes tus apuntes en PDF:'
+                        : 'En aquest mode indiques la data del teu examen, quins dies pots estudiar i puges els teus apunts en PDF:',
+                    bullets: isEs
+                        ? [
+                            'Crea automáticamente un calendario repartido por sesiones reales.',
+                            'Genera un minijuego diagnóstico para medir tu nivel antes de empezar.',
+                            'Adapta cada clase del chat a tus PDFs, nivel y tiempo disponible.'
+                        ]
+                        : [
+                            'Crea automàticament un calendari repartit per sessions reals.',
+                            'Genera un minijoc diagnòstic per mesurar el teu nivell abans de començar.',
+                            'Adapta cada classe del xat als teus PDFs, nivell i temps disponible.'
+                        ]
+                });
+            }
+
+            steps.push({
+                selector: '#calendar-header-btn, #tools-header-btn, #memory-header-btn',
+                onEnter: async () => {
+                    if (hooks) await hooks.enterStudyChat();
+                    else if (typeof window.startStudyMode === 'function') await window.startStudyMode(false);
+                },
+                actionLabel: isEs ? 'Botones superiores de Estudio' : 'Botons superiors d’Estudi',
+                title: isEs ? 'Barra superior en Pla d’Estudis' : 'Barra superior al Pla d’Estudis',
+                desc: isEs
+                    ? 'Cuando estás dentro de un chat de Pla d’Estudis, arriba tienes 3 botones clave:'
+                    : 'Quan ets dins d’un xat de Pla d’Estudis, a dalt tens 3 botons clau:',
+                bullets: isEs
+                    ? [
+                        'Calendari: consulta las sesiones por día, márcalas como completadas o pídele repaso a la IA.',
+                        'Eines: abre al instante generador de examen, mapas mentales, cámara OCR o apuntes.',
+                        'Memòria: revisa tus puntos, resultados de test y todo lo que Aliat recuerda de este chat.'
+                    ]
+                    : [
+                        'Calendari: consulta les sessions per dia, marca-les com a completades o demana repàs a la IA.',
+                        'Eines: obre a l’instant generador d’examen, mapes mentals, càmera OCR o apunts.',
+                        'Memòria: revisa els teus punts, resultats de test i tot el que Aliat recorda d’aquest xat.'
+                    ]
+            });
+
+            steps.push({
+                selector: '#games-header-btn',
+                onEnter: async () => {
+                    if (hooks) await hooks.enterStudyChat();
+                },
+                actionLabel: isEs ? 'Botón superior «Jocs» y «Notebook»' : 'Botó superior «Jocs» i «Notebook»',
+                title: isEs ? 'Juegos Interactivos y Gemini Notebook' : 'Jocs Interactius i Gemini Notebook',
+                desc: isEs
+                    ? 'Estos dos botones están siempre arriba en cualquier chat para estudiar de forma activa:'
+                    : 'Aquests dos botons són sempre a dalt en qualsevol xat per estudiar de manera activa:',
+                bullets: isEs
+                    ? [
+                        'Jocs: abre el laboratorio con 6 juegos (Quiz Kahoot, Flashcards, Unir parejas, Ordenar secuencia, V/F relámpago y Completar huecos).',
+                        'Notebook: abre Gemini Notebook Studio con tus fuentes, guía de estudio con citas numeradas y Podcast IA a 2 voces.'
+                    ]
+                    : [
+                        'Jocs: obre el laboratori amb 6 jocs (Quiz Kahoot, Flashcards, Unir parelles, Ordenar seqüència, V/F llampec i Omplir buits).',
+                        'Notebook: obre Gemini Notebook Studio amb les teves fonts, guia d’estudi amb citacions numerades i Podcast IA a 2 veus.'
+                    ]
+            });
+
+            steps.push({
+                selector: '#chat-header-menu-dropdown, #chat-header-menu-btn',
+                onEnter: async () => {
+                    if (hooks) {
+                        await hooks.enterStudyChat();
+                        hooks.openHeaderMenu();
+                    }
+                },
+                onLeave: () => {
+                    if (hooks) hooks.closeHeaderMenu();
+                },
+                actionLabel: isEs ? 'Menú «⋮» arriba a la derecha' : 'Menú «⋮» a dalt a la dreta',
+                title: isEs ? 'Opciones de la conversación (⋮)' : 'Opcions de la conversa (⋮)',
+                desc: isEs
+                    ? 'Al pulsar los tres puntos arriba a la derecha controlas todo sobre el chat actual:'
+                    : 'En prémer els tres punts a dalt a la dreta ho controles tot sobre el xat actual:',
+                bullets: isEs
+                    ? [
+                        'Compartir enlace, ver los archivos subidos al chat o buscar mensajes concretos.',
+                        'Fijar la conversación arriba, renombrarla, duplicarla o pedir un resumen IA.',
+                        'Copiar o descargar toda la conversación en PDF, Word (.doc) o Markdown.'
+                    ]
+                    : [
+                        'Compartir enllaç, veure els arxius pujats al xat o cercar missatges concrets.',
+                        'Fixar la conversa a dalt, canviar-li el nom, duplicar-la o demanar un resum IA.',
+                        'Copiar o descarregar tota la conversa en PDF, Word (.doc) o Markdown.'
+                    ]
+            });
+
+            steps.push({
+                selector: '#xatbot-submode-header-pill',
+                onEnter: async () => {
+                    if (hooks) await hooks.enterFreeChat('study_free');
+                    else if (typeof window.startFreeChatMode === 'function') await window.startFreeChatMode();
+                },
+                actionLabel: isEs ? 'Modo 2: XatBot (Selector superior)' : 'Mode 2: XatBot (Selector superior)',
+                title: isEs ? '2. XatBot: Estudio Libre vs Libre Total' : '2. XatBot: Estudi Lliure vs Lliure Total',
+                desc: isEs
+                    ? 'Dentro de XatBot tienes arriba este interruptor con dos personalidades distintas:'
+                    : 'Dins de XatBot tens a dalt aquest selector amb dues personalitats diferents:',
+                bullets: isEs
+                    ? [
+                        'Estudi Lliure (birrete): resuelve dudas de mates, ciencia, código o idiomas paso a paso sin calendarios rígidos y activa los modos de Tutor.',
+                        'Lliure Total (globo): charla sobre cualquier tema (noticias, deportes, cine, ocio o ideas) con búsqueda web de Google en directo.'
+                    ]
+                    : [
+                        'Estudi Lliure (birret): resol dubtes de mates, ciència, codi o idiomes pas a pas sense calendaris rígids i activa els modes de Tutor.',
+                        'Lliure Total (globus): parla de qualsevol tema (notícies, esports, cinema, oci o idees) amb cerca web de Google en directe.'
+                    ]
+            });
+
+            steps.push({
+                selector: '#tutor-dropdown-btn',
+                onEnter: async () => {
+                    if (hooks) await hooks.enterFreeChat('study_free');
+                },
+                actionLabel: isEs ? 'Selector de Tutor (en la barra inferior)' : 'Selector de Tutor (a la barra inferior)',
+                title: isEs ? 'Elige cómo te enseña el Tutor IA' : 'Tria com t’ensenya el Tutor IA',
+                desc: isEs
+                    ? 'Disponible en Pla d’Estudis y en Estudi Lliure para cambiar el estilo pedagógico de las respuestas:'
+                    : 'Disponible a Pla d’Estudis i a Estudi Lliure per canviar l’estil pedagògic de les respostes:',
+                bullets: isEs
+                    ? [
+                        'Tutor Estàndard: explicación clara, ordenada y con ejemplos.',
+                        'Mode Socràtic: te guía con pistas y preguntas para que deduzcas tú.',
+                        'Mode Feynman / Tribunal: lenguaje ultra sencillo o evaluación exigente de examen.'
+                    ]
+                    : [
+                        'Tutor Estàndard: explicació clara, ordenada i amb exemples.',
+                        'Mode Socràtic: et guia amb pistes i preguntes perquè ho dedueixis tu.',
+                        'Mode Feynman / Tribunal: llenguatge ultra senzill o avaluació exigent d’examen.'
+                    ]
+            });
+
+            steps.push({
+                selector: '#google-search-toggle-btn',
+                onEnter: async () => {
+                    if (hooks) await hooks.enterFreeChat('study_free');
+                },
+                actionLabel: isEs ? 'Botones de Búsqueda, Micrófono y Voz' : 'Botons de Cerca, Micròfon i Veu',
+                title: isEs ? 'Internet en vivo, Dictado y Llamada IA' : 'Internet en viu, Dictat i Trucada IA',
+                desc: isEs
+                    ? 'A la derecha de la barra donde escribes tienes los controles rápidos de interacción:'
+                    : 'A la dreta de la barra on escrius tens els controls ràpids d’interacció:',
+                bullets: isEs
+                    ? [
+                        'Lupa (+): activa o desactiva la búsqueda en Google en directo para contrastar datos actuales.',
+                        'Micrófono: dicta tus preguntas hablando en lugar de escribir.',
+                        'Barras verdes de audio: inicia una llamada de voz en tiempo real para conversar con Aliat.'
+                    ]
+                    : [
+                        'Lupa (+): activa o desactiva la cerca a Google en directe per contrastar dades actuals.',
+                        'Micròfon: dicta les teves preguntes parlant en lloc d’escriure.',
+                        'Barres verdes d’àudio: inicia una trucada de veu en temps real per conversar amb Aliat.'
+                    ]
+            });
+
+            steps.push({
+                selector: '#plus-menu, #chat-plus-btn',
+                onEnter: async () => {
+                    if (hooks) {
+                        await hooks.enterFreeChat('study_free');
+                        hooks.openPlusRoot();
+                    }
+                },
+                onLeave: () => {
+                    if (hooks) hooks.closePlus();
+                },
+                actionLabel: isEs ? 'Botón «+» y sus 4 carpetas' : 'Botó «+» i les seves 4 carpetes',
+                title: isEs ? 'Todo lo que hay dentro del botón «+»' : 'Tot el que hi ha dins del botó «+»',
+                desc: isEs
+                    ? 'Hemos abierto el menú «+» para que veas sus 4 carpetas de herramientas y sus 2 accesos directos:'
+                    : 'Hem obert el menú «+» perquè vegis les seves 4 carpetes d’eines i els 2 accessos directes:',
+                bullets: isEs
+                    ? [
+                        'Google Workspace (8): Calendar, Classroom, Picker, Drive, Gmail, Docs, Slides y Sheets.',
+                        'IA Creativa & Multimodal (5): Crear Imágenes (1:1/9:16/16:9), Vídeo IA, OCR/Analizar, Transcribir Audio y Cámara.',
+                        'Eines d’Estudi & Focus: Quiz Kahoot, Mapa Mental D3, Editor Redacción, Rutinas, Pomodoro y Adjuntar Fitxer / PDF → Pla.'
+                    ]
+                    : [
+                        'Google Workspace (8): Calendar, Classroom, Picker, Drive, Gmail, Docs, Slides i Sheets.',
+                        'IA Creativa & Multimodal (5): Crear Imatges (1:1/9:16/16:9), Vídeo IA, OCR/Analitzar, Transcriure Àudio i Càmera.',
+                        'Eines d’Estudi & Focus: Quiz Kahoot, Mapa Mental D3, Editor Redacció, Rutines, Pomodoro i Adjuntar Fitxer / PDF → Pla.'
+                    ]
+            });
+
+            steps.push({
+                selector: '#daily-tools-header-btn',
+                onEnter: async () => {
+                    if (hooks) await hooks.enterDailyChat();
+                    else if (typeof window.startDailyUseMode === 'function') await window.startDailyUseMode();
+                },
+                actionLabel: isEs ? 'Modo 3: Ús Quotidià (Botón superior)' : 'Mode 3: Ús Quotidià (Botó superior)',
+                title: isEs ? '3. Ús Quotidià: productividad y Google Workspace' : '3. Ús Quotidià: productivitat i Google Workspace',
+                desc: isEs
+                    ? 'Pensado para redactar, planificar rutinas y trabajar con tus apps. Arriba aparece «Eines Ús Quotidià» con:'
+                    : 'Pensat per redactar, planificar rutines i treballar amb les teves apps. A dalt apareix «Eines Ús Quotidià» amb:',
+                bullets: isEs
+                    ? [
+                        'Modo «Ja fet» (texto final directo listo para copiar/enviar) o «Guiat» (explicado paso a paso).',
+                        'Accesos a Gmail, Calendar, Classroom, Slides, Sheets, Editor de Redacción y Tablas de horarios.',
+                        'Recordatorios periódicos de estudio por notificación Push al móvil y correo.'
+                    ]
+                    : [
+                        'Mode «Ja fet» (text final directe llest per copiar/enviar) o «Guiat» (explicat pas a pas).',
+                        'Accessos a Gmail, Calendar, Classroom, Slides, Sheets, Editor de Redacció i Taules d’horaris.',
+                        'Recordatoris periòdics d’estudi per notificació Push al mòbil i correu.'
+                    ]
+            });
+        } else {
+            // User manually replayed tour while inside an existing conversation with messages: explain current view safely without wiping it
+            steps.push({
+                selector: '#xatbot-submode-header-pill, #calendar-header-btn, #daily-tools-header-btn',
+                actionLabel: isEs ? 'Botones superiores del modo activo' : 'Botons superiors del mode actiu',
+                title: isEs ? 'Controles superiores de este chat' : 'Controls superiors d’aquest xat',
+                desc: isEs
+                    ? 'Arriba a la derecha cambian las herramientas según el chat: Calendario/Eines/Memoria en Pla d’Estudis, Estudi Lliure/Lliure Total en XatBot, o Eines Ús Quotidià.'
+                    : 'A dalt a la dreta canvien les eines segons el xat: Calendari/Eines/Memòria a Pla d’Estudis, Estudi Lliure/Lliure Total a XatBot, o Eines Ús Quotidià.'
+            });
+            steps.push({
+                selector: '#games-header-btn, #notebook-header-btn',
+                actionLabel: isEs ? 'Jocs y Gemini Notebook' : 'Jocs i Gemini Notebook',
+                title: isEs ? 'Juegos Interactivos y Notebook' : 'Jocs Interactius i Notebook',
+                desc: isEs
+                    ? 'Pulsa Jocs para practicar con 6 minijuegos activos o Notebook para estudiar con fuentes, citas y Podcast IA a 2 voces.'
+                    : 'Prem Jocs per practicar amb 6 minijocs actius o Notebook per estudiar amb fonts, citacions i Podcast IA a 2 veus.'
+            });
+            steps.push({
+                selector: '#chat-header-menu-dropdown, #chat-header-menu-btn',
+                onEnter: () => { if (hooks) hooks.openHeaderMenu(); },
+                onLeave: () => { if (hooks) hooks.closeHeaderMenu(); },
+                actionLabel: isEs ? 'Menú «⋮» superior' : 'Menú «⋮» superior',
+                title: isEs ? 'Opciones de la conversación (⋮)' : 'Opcions de la conversa (⋮)',
+                desc: isEs
+                    ? 'Desde los tres puntos puedes compartir, ver archivos del chat, buscar, fijar arriba, duplicar, resumir con IA o exportar a PDF, Word y Markdown.'
+                    : 'Des dels tres punts pots compartir, veure arxius del xat, cercar, fixar a dalt, duplicar, resumir amb IA o exportar a PDF, Word i Markdown.'
+            });
+            steps.push({
+                selector: '#plus-menu, #chat-plus-btn',
+                onEnter: () => { if (hooks) hooks.openPlusRoot(); },
+                onLeave: () => { if (hooks) hooks.closePlus(); },
+                actionLabel: isEs ? 'Botón «+» de la barra' : 'Botó «+» de la barra',
+                title: isEs ? 'Carpetas de herramientas del «+»' : 'Carpetes d’eines del «+»',
+                desc: isEs
+                    ? 'Incluye 4 carpetas: Google Workspace (8 apps), IA Creativa & Multimodal (Imágenes, Vídeo, OCR, Audio, Cámara), Eines d’Estudi & Tests y Pomodoro, además de Adjuntar fitxer.'
+                    : 'Inclou 4 carpetes: Google Workspace (8 apps), IA Creativa & Multimodal (Imatges, Vídeo, OCR, Àudio, Càmera), Eines d’Estudi & Tests i Pomodoro, a més d’Adjuntar fitxer.'
+            });
+            steps.push({
+                selector: '#tutor-dropdown-btn, #google-search-toggle-btn, #mic-btn',
+                actionLabel: isEs ? 'Tutor, Cerca Web, Micrófono y Voz' : 'Tutor, Cerca Web, Micròfon i Veu',
+                title: isEs ? 'Controles de respuesta y voz' : 'Controls de resposta i veu',
+                desc: isEs
+                    ? 'Elige estilo de Tutor (Estàndard, Socràtic, Feynman, Tribunal), activa la lupa para buscar en Google en directo, dicta con el micrófono o inicia llamada de voz con las barras verdes.'
+                    : 'Tria estil de Tutor (Estàndard, Socràtic, Feynman, Tribunal), activa la lupa per cercar a Google en directe, dicta amb el micròfon o inicia trucada de veu amb les barres verdes.'
+            });
+        }
+
+        if (isGuestFlow) {
+            steps.push({
+                selector: '#guest-mode-banner button[onclick*="openAuthModal"]',
+                onEnter: () => { if (hooks) hooks.closeAllMenus(); },
+                actionLabel: isEs ? 'Botón «Acceder / Iniciar Sesión»' : 'Botó «Accedir / Iniciar Sessió»',
+                title: isEs ? 'Guarda tus chats y conecta Google' : 'Desa els teus xats i connecta Google',
+                desc: isEs
+                    ? 'En modo sin sesión puedes probar los chats al instante. Cuando quieras guardar tu historial en la nube, subir PDFs largos o vincular Google Workspace, inicia sesión aquí.'
+                    : 'En mode sense sessió pots provar els xats a l’instant. Quan vulguis desar l’historial al núvol, pujar PDFs llargs o vincular Google Workspace, inicia sessió aquí.'
+            });
+        } else {
+            steps.push({
+                selector: '#sidebar-settings-btn',
+                requiresSidebarOnMobile: true,
+                onEnter: () => { if (hooks) hooks.closeAllMenus(); },
+                actionLabel: isEs ? 'Configuración y ayuda' : 'Configuració i ajuda',
+                title: isEs ? 'Ajustes, idioma, API y repetir guía' : 'Ajustos, idioma, API i repetir guia',
+                desc: isEs
+                    ? 'Aquí ajustas idioma (Català/Español), modo oscuro, tu clave API o cookies. Y con el botón «?» justo al lado puedes volver a abrir esta guía cuando quieras.'
+                    : 'Aquí ajustes l’idioma (Català/Español), mode fosc, la teva clau API o cookies. I amb el botó «?» just al costat pots tornar a obrir aquesta guia quan vulguis.'
+            });
+        }
+
+        return steps;
+    }
+
     function getCopy(isEs) {
         return {
-            introBadge: isEs ? 'Guía rápida · Paso a paso' : 'Guia ràpida · Pas a pas',
+            introBadge: isEs ? 'Guía interactiva · Paso a paso' : 'Guia interactiva · Pas a pas',
             stepOf: (cur, total) => isEs ? `Paso ${cur} de ${total}` : `Pas ${cur} de ${total}`,
-            clickCue: isEs ? 'Haz clic aquí:' : 'Fes clic aquí:',
+            clickCue: isEs ? 'Zona:' : 'Zona:',
             skipStart: isEs ? 'Saltar introducción' : 'Saltar introducció',
             skipStep: isEs ? 'Saltar' : 'Saltar',
-            startBtn: isEs ? 'Empezar guía' : 'Començar guia',
+            startBtn: isEs ? 'Empezar recorrido' : 'Començar recorregut',
             prevBtn: isEs ? 'Anterior' : 'Anterior',
             nextBtn: isEs ? 'Siguiente' : 'Següent',
             finishBtn: isEs ? 'Finalizar' : 'Finalitzar',
@@ -131,10 +466,10 @@
                         {
                             selector: '#landing-guest-btn',
                             actionLabel: isEs ? 'Botón «Probar sin sesión»' : 'Botó «Provar sense sessió»',
-                            title: isEs ? 'Prueba el chat al instante sin cuenta' : 'Prova el xat a l’instant sense compte',
+                            title: isEs ? 'Prueba los chats al instante sin cuenta' : 'Prova els xats a l’instant sense compte',
                             desc: isEs
-                                ? 'Si prefieres explorar primero, haz clic aquí para entrar directamente en el modo invitado y chatear con Aliat.'
-                                : 'Si prefereixes explorar primer, fes clic aquí per entrar directament al mode convidat i xatejar amb Aliat.'
+                                ? 'Si prefieres explorar primero, haz clic aquí para entrar directamente en el modo sin sesión y ver los chats por dentro.'
+                                : 'Si prefereixes explorar primer, fes clic aquí per entrar directament al mode sense sessió i veure els xats per dins.'
                         },
                         {
                             selector: '#landing-modos',
@@ -147,97 +482,18 @@
                     ]
                 },
                 guest: {
-                    introTitle: isEs ? 'Recorrido rápido en modo sin sesión' : 'Recorregut ràpid en mode sense sessió',
+                    introTitle: isEs ? 'Recorrido dentro de los chats y botones' : 'Recorregut dins dels xats i botons',
                     introDesc: isEs
-                        ? 'Descubre con estas mini pestañas dónde hacer clic para probar los chats, juegos y cómo iniciar sesión cuando quieras.'
-                        : 'Descobreix amb aquestes mini pestanyes on fer clic per provar els xats, jocs i com iniciar sessió quan vulguis.',
-                    steps: [
-                        {
-                            selector: '#sidebar-mode-study, #welcome-view .grid, #global-menu-btn',
-                            requiresSidebarOnMobile: true,
-                            actionLabel: isEs ? 'Modos en el menú lateral' : 'Modes al menú lateral',
-                            title: isEs ? 'Cambia entre los 3 modos principales' : 'Canvia entre els 3 modes principals',
-                            desc: isEs
-                                ? 'Pulsa Pla d’Estudis para organizar exámenes, XatBot para preguntar cualquier tema o Ús Quotidià para tareas prácticas.'
-                                : 'Prem Pla d’Estudis per organitzar exàmens, XatBot per preguntar qualsevol tema o Ús Quotidià per a tasques pràctiques.'
-                        },
-                        {
-                            selector: '#welcome-view .grid, #chat-form, #setup-view',
-                            actionLabel: isEs ? 'Área principal de trabajo' : 'Àrea principal de treball',
-                            title: isEs ? 'Haz clic para abrir tu primer espacio' : 'Fes clic per obrir el teu primer espai',
-                            desc: isEs
-                                ? 'Selecciona una de estas tarjetas (o escribe directamente en la barra de chat si ya estás dentro) para empezar a interactuar.'
-                                : 'Selecciona una d’aquestes targetes (o escriu directament a la barra de xat si ja hi ets dins) per començar a interactuar.'
-                        },
-                        {
-                            selector: '#games-header-btn, #notebook-header-btn, #welcome-view .grid button:first-child',
-                            actionLabel: isEs ? 'Juegos y Gemini Notebook' : 'Jocs i Gemini Notebook',
-                            title: isEs ? 'Practica con juegos y cuadernos IA' : 'Practica amb jocs i quaderns IA',
-                            desc: isEs
-                                ? 'Dentro del chat encontrarás acceso rápido al Laboratorio de 6 Juegos Interactivos y a Gemini Notebook para estudiar con fuentes.'
-                                : 'Dins del xat trobaràs accés ràpid al Laboratori de 6 Jocs Interactius i a Gemini Notebook per estudiar amb fonts.'
-                        },
-                        {
-                            selector: '#guest-mode-banner button[onclick*="openAuthModal"]',
-                            actionLabel: isEs ? 'Botón «Acceder / Iniciar Sesión»' : 'Botó «Accedir / Iniciar Sessió»',
-                            title: isEs ? 'Desbloquea todas las herramientas' : 'Desbloqueja totes les eines',
-                            desc: isEs
-                                ? 'Cuando quieras guardar tu historial en la nube, subir PDFs o conectar Google Workspace, haz clic aquí para iniciar sesión.'
-                                : 'Quan vulguis desar el teu historial al núvol, pujar PDFs o connectar Google Workspace, fes clic aquí per iniciar sessió.'
-                        }
-                    ]
+                        ? 'Entraremos contigo en cada modo de chat para explicarte sus características, los botones superiores y todo lo que hay en el «+».'
+                        : 'Entrarem amb tu a cada mode de xat per explicar-te les seves característiques, els botons superiors i tot el que hi ha al «+».',
+                    steps: buildInAppSteps(isEs, true, state.hasUserChatAtStart)
                 },
                 auth: {
-                    introTitle: isEs ? 'Bienvenido a tu espacio completo' : 'Benvingut al teu espai complet',
+                    introTitle: isEs ? 'Guía completa por modos, chats y botones' : 'Guia completa per modes, xats i botons',
                     introDesc: isEs
-                        ? 'Te guiamos en 5 mini pestañas por las funciones clave para estudiar, jugar, usar el menú de herramientas y guardar tu progreso.'
-                        : 'Et guiem en 5 mini pestanyes per les funcions clau per estudiar, jugar, fer servir el menú d’eines i desar el teu progrés.',
-                    steps: [
-                        {
-                            selector: '#sidebar-new-session-btn',
-                            requiresSidebarOnMobile: true,
-                            actionLabel: isEs ? 'Botón «Nueva conversación» y Modos' : 'Botó «Nova conversa» i Modes',
-                            title: isEs ? 'Inicia chats o cambia de espacio' : 'Inicia xats o canvia d’espai',
-                            desc: isEs
-                                ? 'Desde el menú izquierdo puedes crear una sesión nueva o alternar en un clic entre Pla d’Estudis, XatBot y Ús Quotidià.'
-                                : 'Des del menú esquerre pots crear una sessió nova o alternar en un clic entre Pla d’Estudis, XatBot i Ús Quotidià.'
-                        },
-                        {
-                            selector: '#chat-form, #setup-view button[onclick*="generatePlan"], #welcome-view .grid',
-                            actionLabel: isEs ? 'Zona de creación y conversación' : 'Zona de creació i conversa',
-                            title: isEs ? 'Empieza tu plan o pregunta a la IA' : 'Comença el teu pla o pregunta a la IA',
-                            desc: isEs
-                                ? 'Elige un modo aquí (o configura tu fecha de examen y PDFs en Pla d’Estudis) para recibir explicaciones paso a paso.'
-                                : 'Tria un mode aquí (o configura la data d’examen i PDFs a Pla d’Estudis) per rebre explicacions pas a pas.'
-                        },
-                        {
-                            selector: '#chat-plus-btn, #sidebar-mode-study',
-                            requiresSidebarOnMobile: true,
-                            actionLabel: isEs ? 'Botón «+» y Herramientas de estudio' : 'Botó «+» i Eines d’estudi',
-                            title: isEs ? 'Sube PDFs, usa Google Workspace y más' : 'Puja PDFs, fes servir Google Workspace i més',
-                            desc: isEs
-                                ? 'Al entrar al chat verás el botón «+» con 4 carpetas: Google Workspace, Generador de Imágenes/Vídeo/OCR, Tests/Mapas y Pomodoro.'
-                                : 'En entrar al xat veuràs el botó «+» amb 4 carpetes: Google Workspace, Generador d’Imatges/Vídeo/OCR, Tests/Mapes i Pomodoro.'
-                        },
-                        {
-                            selector: '#games-header-btn, #notebook-header-btn, #sidebar-nav-history-btn',
-                            requiresSidebarOnMobile: true,
-                            actionLabel: isEs ? 'Jocs, Notebook e Historial' : 'Jocs, Notebook i Historial',
-                            title: isEs ? 'Juegos activos, Notebook y tu Historial' : 'Jocs actius, Notebook i el teu Historial',
-                            desc: isEs
-                                ? 'Practica con 6 juegos interactivos, genera guías con citas en Gemini Notebook y recupera cualquier sesión desde el Historial.'
-                                : 'Practica amb 6 jocs interactius, genera guies amb citacions a Gemini Notebook i recupera qualsevol sessió des de l’Historial.'
-                        },
-                        {
-                            selector: '#sidebar-settings-btn',
-                            requiresSidebarOnMobile: true,
-                            actionLabel: isEs ? 'Icono de Configuración' : 'Icona de Configuració',
-                            title: isEs ? 'Idioma, tema, clave API y cookies' : 'Idioma, tema, clau API i cookies',
-                            desc: isEs
-                                ? 'Haz clic aquí en cualquier momento para cambiar entre Català/Español, modo oscuro, añadir tu API key personal o ajustar la privacidad.'
-                                : 'Fes clic aquí en qualsevol moment per canviar entre Català/Español, mode fosc, afegir la teva API key personal o ajustar la privadesa.'
-                        }
-                    ]
+                        ? 'Nos meteremos dentro de los chats para mostrarte qué hace cada modo, los botones de arriba, el menú «⋮» y todas las carpetas del «+».'
+                        : 'Ens ficarem dins dels xats per mostrar-te què fa cada mode, els botons de dalt, el menú «⋮» i totes les carpetes del «+».',
+                    steps: buildInAppSteps(isEs, false, state.hasUserChatAtStart)
                 }
             }
         };
@@ -280,7 +536,9 @@
                 position: fixed;
                 pointer-events: auto;
                 z-index: 262;
-                width: min(350px, calc(100vw - 24px));
+                width: min(375px, calc(100vw - 24px));
+                max-height: calc(100dvh - 24px);
+                overflow-y: auto;
                 animation: aliatTourFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }
             #aliat-onboarding-arrow {
@@ -346,13 +604,27 @@
         state.targetEl = null;
     }
 
-    function stopTour(markCompleted = true) {
+    function stopTour(markCompleted = true, skipRestore = false) {
+        state.transitionToken += 1;
+        const prevStep = state.index >= 0 ? state.steps[state.index] : null;
+        if (prevStep && typeof prevStep.onLeave === 'function') {
+            try { prevStep.onLeave(); } catch (_) {}
+        }
+        const hooks = getTourHooks();
+        if (hooks) {
+            try { hooks.closeAllMenus(); } catch (_) {}
+        }
         if (markCompleted && state.flow) {
             markFlowDone(state.flow);
         }
+        const snap = state.snapshot;
+        state.snapshot = null;
         state.active = false;
         state.index = -1;
         cleanupDOM(false);
+        if (!skipRestore && snap && hooks && !hooks.hasUserChat()) {
+            Promise.resolve(hooks.restoreSnapshot(snap)).catch(() => {});
+        }
     }
 
     function positionCardAndSpotlight() {
@@ -366,11 +638,10 @@
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const cardRect = card.getBoundingClientRect();
-        const cardW = cardRect.width || Math.min(350, vw - 24);
-        const cardH = cardRect.height || 210;
+        const cardW = cardRect.width || Math.min(375, vw - 24);
+        const cardH = cardRect.height || 230;
         const pad = 12;
 
-        // Intro screen (index === -1) or fallback without target element
         if (state.index < 0 || !state.targetEl || !isElVisible(state.targetEl)) {
             if (spotlight) spotlight.style.display = 'none';
             if (arrow) arrow.style.display = 'none';
@@ -416,7 +687,12 @@
         else if (spaceAbove >= cardH + gap) placement = 'top';
         else if (vw >= 640 && spaceRight >= cardW + gap) placement = 'right';
         else if (vw >= 640 && spaceLeft >= cardW + gap) placement = 'left';
-        else placement = spaceBelow >= spaceAbove ? 'bottom' : 'top';
+        else {
+            const best = Math.max(spaceBelow, spaceAbove, vw >= 640 ? spaceRight : 0, vw >= 640 ? spaceLeft : 0);
+            if (best === spaceRight && vw >= 640) placement = 'right';
+            else if (best === spaceLeft && vw >= 640) placement = 'left';
+            else placement = spaceBelow >= spaceAbove ? 'bottom' : 'top';
+        }
 
         let left = 0;
         let top = 0;
@@ -439,6 +715,12 @@
         card.style.top = Math.round(top) + 'px';
 
         if (arrow) {
+            const overlapsTargetHoriz = !(left + cardW < sx || left > sx + sw);
+            const overlapsTargetVert = !(top + cardH < sy || top > sy + sh);
+            if (overlapsTargetHoriz && overlapsTargetVert) {
+                arrow.style.display = 'none';
+                return;
+            }
             arrow.style.display = 'block';
             arrow.style.left = '';
             arrow.style.right = '';
@@ -494,6 +776,7 @@
         const backdrop = document.createElement('div');
         backdrop.id = 'aliat-onboarding-backdrop';
         backdrop.addEventListener('click', (e) => {
+            e.stopPropagation();
             if (state.targetEl && isElVisible(state.targetEl)) {
                 const r = state.targetEl.getBoundingClientRect();
                 if (e.clientX >= r.left - 6 && e.clientX <= r.right + 6 && e.clientY >= r.top - 6 && e.clientY <= r.bottom + 6) {
@@ -501,7 +784,7 @@
                     const realTarget = stack.find(el => el && !el.id?.startsWith('aliat-onboarding') && !el.closest?.('#aliat-onboarding-root')) || state.targetEl;
                     if (realTarget && typeof realTarget.click === 'function') {
                         const isLast = state.index >= state.steps.length - 1;
-                        if (isLast) stopTour(true);
+                        if (isLast) stopTour(true, true);
                         realTarget.click();
                         return;
                     }
@@ -517,6 +800,7 @@
         const card = document.createElement('div');
         card.id = 'aliat-onboarding-card';
         card.className = 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-2xl p-4 sm:p-5';
+        card.addEventListener('click', (e) => e.stopPropagation());
 
         const arrow = document.createElement('div');
         arrow.id = 'aliat-onboarding-arrow';
@@ -579,9 +863,12 @@
             state.targetEl = target;
 
             if (target && typeof target.scrollIntoView === 'function') {
-                try {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
-                } catch (_) {}
+                const pos = window.getComputedStyle(target).position;
+                if (pos !== 'fixed' && !target.closest('.fixed')) {
+                    try {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+                    } catch (_) {}
+                }
             }
 
             const topRow = document.createElement('div');
@@ -607,11 +894,27 @@
             card.appendChild(title);
 
             const desc = document.createElement('p');
-            desc.className = 'text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed mb-3.5';
+            desc.className = 'text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed mb-2.5';
             desc.textContent = step.desc;
             card.appendChild(desc);
 
-            // Progress bar
+            if (Array.isArray(step.bullets) && step.bullets.length > 0) {
+                const list = document.createElement('ul');
+                list.className = 'space-y-1.5 mb-3 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/70 rounded-xl p-2.5';
+                step.bullets.forEach((bText) => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-start gap-2 text-[11px] leading-snug text-zinc-700 dark:text-zinc-200';
+                    const dot = document.createElement('span');
+                    dot.className = 'w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-sky-400 shrink-0 mt-1.5';
+                    const span = document.createElement('span');
+                    span.textContent = bText;
+                    li.appendChild(dot);
+                    li.appendChild(span);
+                    list.appendChild(li);
+                });
+                card.appendChild(list);
+            }
+
             const progressWrap = document.createElement('div');
             progressWrap.className = 'flex items-center gap-1 mb-3';
             steps.forEach((_, idx) => {
@@ -662,27 +965,42 @@
         document.body.appendChild(root);
 
         positionCardAndSpotlight();
-        // Recalculate after scroll settles (e.g., mobile sidebar slide or smooth scroll)
-        setTimeout(positionCardAndSpotlight, 180);
-        setTimeout(positionCardAndSpotlight, 360);
+        setTimeout(positionCardAndSpotlight, 120);
+        setTimeout(positionCardAndSpotlight, 300);
     }
 
-    function goToStep(idx) {
+    async function goToStep(idx) {
         if (idx < -1 || idx >= state.steps.length) {
             stopTour(true);
             return;
         }
+        const token = ++state.transitionToken;
+        const prevStep = state.index >= 0 ? state.steps[state.index] : null;
+        if (prevStep && typeof prevStep.onLeave === 'function') {
+            try { prevStep.onLeave(); } catch (_) {}
+        }
         state.index = idx;
-        renderTourUI();
+        const nextStep = idx >= 0 ? state.steps[idx] : null;
+        if (nextStep && typeof nextStep.onEnter === 'function') {
+            try {
+                await nextStep.onEnter();
+            } catch (_) {}
+        }
+        if (!state.active || state.transitionToken !== token) return;
+        // Wait one animation frame so toggled views/dropdowns settle before measuring bounding rects
+        requestAnimationFrame(() => {
+            if (!state.active || state.transitionToken !== token) return;
+            renderTourUI();
+        });
     }
 
     function buildStepsForFlow(flow) {
         const isEs = getLang() === 'es';
         const copy = getCopy(isEs);
         const flowData = copy.flows[flow] || copy.flows.landing;
-        // Filter out steps whose target cannot be resolved unless they require mobile sidebar (handled at step render)
         return flowData.steps.filter((s) => {
-            if (s.requiresSidebarOnMobile) return true;
+            // Steps with an onEnter transition dynamically navigate into the target view/menu at step activation
+            if (typeof s.onEnter === 'function' || s.requiresSidebarOnMobile) return true;
             return Boolean(resolveTargetElement(s.selector));
         });
     }
@@ -692,13 +1010,18 @@
         if (!forceReplay && isFlowDone(flow)) return;
         if (!forceReplay && isAnyBlockingModalOpen()) return;
 
+        const hooks = getTourHooks();
+        state.hasUserChatAtStart = Boolean(hooks && hooks.hasUserChat());
+        state.snapshot = (flow !== 'landing' && hooks && !state.hasUserChatAtStart) ? hooks.getSnapshot() : null;
+
         const steps = buildStepsForFlow(flow);
         if (!steps || steps.length === 0) return;
 
         state.active = true;
         state.flow = flow;
         state.steps = steps;
-        state.index = -1; // Always open with intro mini-tab so user can skip at the start
+        state.index = -1;
+        state.transitionToken += 1;
         renderTourUI();
     };
 
@@ -725,14 +1048,12 @@
             const flow = detectFlow();
             if (isFlowDone(flow)) return;
             if (isAnyBlockingModalOpen()) {
-                // Retry calmly once cookies or login dialog closes
                 return;
             }
             window.startAliatOnboarding(flow, false);
         }, delayMs);
     }
 
-    // Event bindings for resize, scroll, keyboard & lifecycle transitions
     window.addEventListener('resize', () => {
         if (state.active) positionCardAndSpotlight();
     });
@@ -756,17 +1077,15 @@
         }
     });
 
-    // Trigger onboarding smoothly once cookie banner is handled
     window.addEventListener('aliat:cookie-consent-updated', () => {
         scheduleAutoCheck(550);
     });
 
-    // Hook into enterGuestMode & applyAuthSuccess so first-time users get guided automatically
     function hookLifecycleFunctions() {
         if (typeof window.enterGuestMode === 'function' && !window.enterGuestMode._onboardingHooked) {
             const origGuest = window.enterGuestMode;
             window.enterGuestMode = function (...args) {
-                if (state.active) stopTour(false);
+                if (state.active) stopTour(false, true);
                 const res = origGuest.apply(this, args);
                 scheduleAutoCheck(550);
                 return res;
@@ -777,7 +1096,7 @@
         if (typeof window.applyAuthSuccess === 'function' && !window.applyAuthSuccess._onboardingHooked) {
             const origAuth = window.applyAuthSuccess;
             window.applyAuthSuccess = function (...args) {
-                if (state.active) stopTour(false);
+                if (state.active) stopTour(false, true);
                 const res = origAuth.apply(this, args);
                 scheduleAutoCheck(650);
                 return res;
@@ -788,7 +1107,7 @@
         if (typeof window.openAuthModal === 'function' && !window.openAuthModal._onboardingHooked) {
             const origOpenAuth = window.openAuthModal;
             window.openAuthModal = function (...args) {
-                if (state.active) stopTour(false);
+                if (state.active) stopTour(false, true);
                 return origOpenAuth.apply(this, args);
             };
             window.openAuthModal._onboardingHooked = true;
@@ -798,7 +1117,6 @@
     function init() {
         hookLifecycleFunctions();
         scheduleAutoCheck(900);
-        // Re-check hooks right after window load in case inline script defined functions later
         window.addEventListener('load', () => {
             hookLifecycleFunctions();
             scheduleAutoCheck(900);

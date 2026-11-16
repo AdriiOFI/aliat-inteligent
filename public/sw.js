@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aliat-pwa-v7';
+const CACHE_NAME = 'aliat-pwa-v8';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',

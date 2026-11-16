@@ -17398,21 +17398,23 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             }
         };
 
-        window.setFreeChatSubMode = function(subMode) {
+        window.setFreeChatSubMode = function(subMode, silent = false) {
             const next = subMode === 'study_free' ? 'study_free' : 'open_total';
             localStorage.setItem('aliat_free_chat_submode', next);
             window.syncFreeChatSubModeUI();
             if (appMode === 'free' && chatHistory.length === 0) {
                 renderChatbotWelcomeCard();
             }
-            const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
-            if (typeof showToast === 'function') {
-                showToast(
-                    next === 'study_free'
-                        ? (isEs ? 'Modo Estudio Libre activo: resuelve dudas y practica paso a paso.' : 'Mode Estudi Lliure actiu: resol dubtes i practica pas a pas.')
-                        : (isEs ? 'Modo Libre Total activo: habla de cualquier tema con información de internet en directo.' : 'Mode Lliure Total actiu: parla de qualsevol tema amb informació d\'internet en directe.'),
-                    'info'
-                );
+            if (!silent) {
+                const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+                if (typeof showToast === 'function') {
+                    showToast(
+                        next === 'study_free'
+                            ? (isEs ? 'Modo Estudio Libre activo: resuelve dudas y practica paso a paso.' : 'Mode Estudi Lliure actiu: resol dubtes i practica pas a pas.')
+                            : (isEs ? 'Modo Libre Total activo: habla de cualquier tema con información de internet en directo.' : 'Mode Lliure Total actiu: parla de qualsevol tema amb informació d\'internet en directe.'),
+                        'info'
+                    );
+                }
             }
         };
 
@@ -20704,6 +20706,142 @@ ${parsedBody}
             renderSidebarHistory();
         }
         window.backToHome = backToHome;
+
+        window._aliatTourHooks = {
+            hasUserChat: () => {
+                try { return Boolean(currentSessionHasUserContent()); } catch (_) { return false; }
+            },
+            getSnapshot: () => {
+                const isHidden = (id) => {
+                    const el = document.getElementById(id);
+                    return !el || el.classList.contains('hidden');
+                };
+                let view = 'welcome';
+                if (!isHidden('chat-view')) view = 'chat';
+                else if (!isHidden('setup-view')) view = 'setup';
+                else if (!isHidden('quiz-view')) view = 'quiz';
+                return {
+                    view,
+                    mode: appMode || 'none',
+                    freeSubMode: typeof window.getFreeChatSubMode === 'function' ? window.getFreeChatSubMode() : 'open_total'
+                };
+            },
+            restoreSnapshot: async (snap) => {
+                window._aliatTourHooks.closeAllMenus();
+                if (!snap || window._aliatTourHooks.hasUserChat()) return;
+                if (snap.freeSubMode && typeof window.setFreeChatSubMode === 'function') {
+                    window.setFreeChatSubMode(snap.freeSubMode, true);
+                }
+                if (snap.view === 'welcome') {
+                    await backToHome();
+                } else if (snap.view === 'setup') {
+                    await startStudyMode(false);
+                } else if (snap.view === 'chat') {
+                    if (snap.mode === 'free') await startFreeChatMode();
+                    else if (snap.mode === 'daily_use') await startDailyUseMode();
+                    else if (snap.mode === 'study') await window._aliatTourHooks.enterStudyChat();
+                }
+            },
+            enterStudySetupOrChat: async () => {
+                window._aliatTourHooks.closeAllMenus();
+                if (window._aliatTourHooks.hasUserChat()) return;
+                await startStudyMode(false);
+            },
+            enterStudyChat: async () => {
+                window._aliatTourHooks.closeAllMenus();
+                if (window._aliatTourHooks.hasUserChat()) return;
+                appMode = 'study';
+                document.getElementById('daily-use-banner')?.classList.add('hidden');
+                document.getElementById('welcome-view')?.classList.add('hidden');
+                document.getElementById('setup-view')?.classList.add('hidden');
+                document.getElementById('setup-view')?.classList.remove('flex');
+                document.getElementById('quiz-view')?.classList.add('hidden');
+                document.getElementById('quiz-view')?.classList.remove('flex');
+                document.getElementById('global-menu-btn')?.classList.add('hidden');
+                document.getElementById('chat-view')?.classList.remove('hidden');
+                document.getElementById('chat-view')?.classList.add('flex');
+                document.getElementById('chat-form')?.classList.remove('hidden');
+                document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
+                updateHeaderButtonsVisibility();
+                const label = document.getElementById('chat-mode-label');
+                const isEs = (typeof window.currentAppLang === 'string' ? window.currentAppLang : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+                if (label) label.innerText = isEs ? "Plan de Estudio (Chat)" : "Pla d'Estudis (Xat)";
+                const box = document.getElementById('chat-messages');
+                if (box && chatHistory.length === 0) {
+                    box.innerHTML = `
+                        <div class="mode-welcome-screen w-full max-w-2xl mx-auto my-auto py-4 sm:py-8 px-2 sm:px-4 space-y-4 sm:space-y-5 animate-fade-in">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/70 text-blue-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-base sm:text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight">${isEs ? "Plan de Estudios Activo" : "Pla d'Estudis Actiu"}</h2>
+                                    <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">${isEs ? "Aquí ves tus sesiones diarias en Calendario, Herramientas rápidas, Memoria, Juegos y Notebook." : "Aquí tens les sessions diàries al Calendari, Eines ràpides, Memòria, Jocs i Notebook."}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            },
+            enterFreeChat: async (subMode = null) => {
+                window._aliatTourHooks.closeAllMenus();
+                if (window._aliatTourHooks.hasUserChat()) return;
+                if (subMode && typeof window.setFreeChatSubMode === 'function') {
+                    window.setFreeChatSubMode(subMode, true);
+                }
+                await startFreeChatMode();
+            },
+            enterDailyChat: async () => {
+                window._aliatTourHooks.closeAllMenus();
+                if (window._aliatTourHooks.hasUserChat()) return;
+                await startDailyUseMode();
+            },
+            openPlusRoot: () => {
+                window._aliatTourHooks.closeHeaderMenu();
+                window._aliatTourHooks.closeDailyTools();
+                const menu = document.getElementById('plus-menu');
+                if (menu) {
+                    if (typeof window.showPlusFolder === 'function') window.showPlusFolder('root');
+                    if (typeof openDropdown === 'function') openDropdown(menu);
+                    else menu.classList.remove('hidden');
+                }
+            },
+            closePlus: () => {
+                if (typeof window.closePlusMenu === 'function') window.closePlusMenu();
+                else document.getElementById('plus-menu')?.classList.add('hidden');
+            },
+            openHeaderMenu: () => {
+                window._aliatTourHooks.closePlus();
+                window._aliatTourHooks.closeDailyTools();
+                const dropdown = document.getElementById('chat-header-menu-dropdown');
+                if (dropdown) {
+                    dropdown.classList.remove('hidden', 'opacity-0', 'scale-95');
+                    dropdown.classList.add('opacity-100', 'scale-100');
+                }
+            },
+            closeHeaderMenu: () => {
+                if (typeof window.closeChatHeaderMenu === 'function') window.closeChatHeaderMenu();
+                else document.getElementById('chat-header-menu-dropdown')?.classList.add('hidden');
+            },
+            openDailyTools: () => {
+                window._aliatTourHooks.closePlus();
+                window._aliatTourHooks.closeHeaderMenu();
+                const dropdown = document.getElementById('daily-tools-dropdown');
+                if (dropdown) {
+                    dropdown.classList.remove('hidden');
+                    if (typeof window.syncDailyOutputModeUI === 'function') window.syncDailyOutputModeUI();
+                }
+            },
+            closeDailyTools: () => {
+                if (typeof window.closeDailyToolsMenu === 'function') window.closeDailyToolsMenu();
+                else document.getElementById('daily-tools-dropdown')?.classList.add('hidden');
+            },
+            closeAllMenus: () => {
+                window._aliatTourHooks.closePlus();
+                window._aliatTourHooks.closeHeaderMenu();
+                window._aliatTourHooks.closeDailyTools();
+                document.getElementById('tutor-dropdown-menu')?.classList.add('hidden');
+            }
+        };
 
         // --- SISTEMA PDF I ESTUDI ---
         let selectedTopicPresets = [];

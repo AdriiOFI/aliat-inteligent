@@ -1703,9 +1703,9 @@
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/></svg>
                                 <span>6 Jocs Interactius</span>
                             </button>
-                            <button type="button" onclick="openGeminiNotebookModal()" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-extrabold transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+                            <button type="button" onclick="openAliatNotebookModal()" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-xs font-extrabold transition cursor-pointer flex items-center gap-1.5 shadow-xs">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
-                                <span>Gemini Notebook</span>
+                                <span>AliatNotebook</span>
                             </button>
                         </div>
                     </div>
@@ -1889,9 +1889,9 @@
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/></svg>
                                     <span>6 Jocs Actius</span>
                                 </button>
-                                <button type="button" onclick="openGeminiNotebookModal()" class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs active:scale-95" title="Obrir Gemini Notebook Studio amb Podcast IA a 2 veus">
+                                <button type="button" onclick="openAliatNotebookModal()" class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 font-bold text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs active:scale-95" title="Obrir AliatNotebook amb Podcast IA a 2 veus">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
-                                    <span>Gemini Notebook</span>
+                                    <span>AliatNotebook</span>
                                 </button>
                                 <button type="button" onclick="syncPlanToGoogleCalendar()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs active:scale-95" title="Sincronitzar sessions amb Google Calendar">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -2004,23 +2004,15 @@
                                     <span class="xatbot-submode-text">Lliure Total</span>
                                 </button>
                             </div>
-                            <button id="games-header-btn" onclick="openStudyGamesHubModal()" title="Laboratori de 6 Jocs d'Aprenentatge Actiu" class="text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-indigo-200/80 dark:border-zinc-800 text-indigo-700 dark:text-indigo-300 font-semibold py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-indigo-600 dark:text-indigo-400 shrink-0"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/></svg>
-                                <span class="hidden sm:inline text-[11px] sm:text-xs">Jocs</span>
-                            </button>
-                            <button id="notebook-header-btn" onclick="openGeminiNotebookModal()" title="Gemini Notebook Studio (Fonts, Citacions i Podcast IA a 2 veus)" class="text-xs bg-emerald-50 hover:bg-emerald-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-emerald-200/80 dark:border-zinc-800 text-emerald-700 dark:text-emerald-300 font-semibold py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
+                            <button id="notebook-header-btn" onclick="openAliatNotebookModal()" title="AliatNotebook (Fonts, Citacions, 8 Generadors i Podcast IA a 2 veus)" class="hidden text-xs bg-emerald-50 hover:bg-emerald-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-emerald-200/80 dark:border-zinc-800 text-emerald-700 dark:text-emerald-300 font-semibold py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-emerald-600 dark:text-emerald-400 shrink-0"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
-                                <span class="hidden sm:inline text-[11px] sm:text-xs">Notebook</span>
+                                <span class="hidden sm:inline text-[11px] sm:text-xs">AliatNotebook</span>
                             </button>
-                            <button id="calendar-header-btn" onclick="showCalendarModal()" title="Calendari d'Estudi" class="text-xs bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200/80 dark:border-zinc-800 text-blue-700 dark:text-blue-300 font-medium py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-blue-400 shrink-0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                <span class="hidden xs:inline sm:inline text-[11px] sm:text-xs">Calendari</span>
-                            </button>
-                            <button id="tools-header-btn" onclick="showToolsModal()" title="Eines" class="text-xs bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 border border-zinc-900 dark:border-zinc-700 font-medium py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shadow-2xs cursor-pointer shrink-0">
+                            <button id="tools-header-btn" onclick="showToolsModal()" title="Eines i Jocs d'Aprenentatge" class="hidden text-xs bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 border border-zinc-900 dark:border-zinc-700 font-medium py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shadow-2xs cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-amber-400 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                                 <span class="inline text-[11px] sm:text-xs">Eines</span>
                             </button>
-                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria i Resultats" class="text-xs bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
+                            <button id="memory-header-btn" onclick="showMemoryModal()" title="Memòria, Resultats i Calendari" class="hidden text-xs bg-zinc-100 hover:bg-zinc-200/80 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium py-1.5 px-2 sm:px-2.5 rounded-xl transition flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-sky-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58A2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
                                 <span class="hidden xs:inline sm:inline text-[11px] sm:text-xs">Memòria</span>
                             </button>
@@ -2610,6 +2602,16 @@
                                         </div>
 
                                         <div class="max-h-72 overflow-y-auto space-y-1 pr-0.5 custom-scrollbar">
+                                            <button type="button" id="plus-study-games-btn" onclick="event.stopPropagation(); openStudyGamesHubModal(); closePlusMenu();" class="hidden flex items-center gap-2.5 w-full p-2 hover:bg-indigo-50/90 dark:hover:bg-indigo-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-indigo-200/70 dark:border-indigo-900/50 group">
+                                                <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white flex items-center justify-center shrink-0 shadow-xs">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/></svg>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-xs text-zinc-900 dark:text-white truncate">Jocs d'Aprenentatge Actiu (6 Jocs)</div>
+                                                    <div class="text-[10px] text-zinc-500 truncate">Parelles, Fórmules, Seqüències, Caça-Errors i Sprint V/F</div>
+                                                </div>
+                                            </button>
+
                                             <button type="button" onclick="event.stopPropagation(); triggerToolFromChat('exam', null, 'Fes-me un quiz d\'examen sobre ' + (getCurrentChatTopic() || 'el tema actual')); closePlusMenu();" class="flex items-center gap-2.5 w-full p-2 hover:bg-emerald-50/90 dark:hover:bg-emerald-950/40 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-200 transition text-left cursor-pointer border border-emerald-200/70 dark:border-emerald-900/50 group">
                                                 <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white dark:bg-emerald-400 dark:text-zinc-950 flex items-center justify-center shrink-0 shadow-xs">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -3474,10 +3476,10 @@
 
     <!-- MODAL PANTALLA COMPLETA D'ESTUDI DE REDACCIÓ I ORGANITZACIÓ -->
     <div id="fullscreen-studio-modal" class="fixed inset-0 bg-zinc-950/90 z-[170] hidden flex flex-col p-2 sm:p-4 md:p-6 backdrop-blur-2xl opacity-0 transition-opacity duration-300 overflow-hidden text-zinc-900 dark:text-zinc-100">
-        <div class="bg-white/95 dark:bg-[#121217] w-full h-full rounded-[2rem] border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl flex flex-col overflow-hidden relative">
+        <div id="fullscreen-studio-shell" class="bg-white/95 dark:bg-[#121217] w-full h-full rounded-[2rem] border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl flex flex-col overflow-hidden relative">
             
             <!-- HEADER DEL MODAL -->
-            <div class="p-4 sm:px-6 py-3.5 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between bg-zinc-50/90 dark:bg-zinc-900/60 shrink-0">
+            <div class="p-4 sm:px-6 py-3.5 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between gap-2 bg-zinc-50/90 dark:bg-zinc-900/60 shrink-0">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-red-500/20">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
@@ -3492,6 +3494,10 @@
                 </div>
 
                 <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" id="studio-guide-btn" onclick="openFullscreenStudioGuide()" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/70 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80 font-bold text-xs transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap" title="Veure guia pas a pas de Pantalla Completa">
+                        <span class="w-4 h-4 rounded-full bg-amber-500/20 flex items-center justify-center text-[11px] font-black">?</span>
+                        <span class="hidden sm:inline">Com funciona</span>
+                    </button>
                     <button type="button" onclick="closeFullscreenStudioModal()" class="w-9 h-9 flex items-center justify-center rounded-xl text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 bg-zinc-100 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition cursor-pointer" title="Tancar Pantalla Completa">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
@@ -3499,7 +3505,7 @@
             </div>
 
             <!-- TABS SUPERIORS DE CATEGORIA -->
-            <div class="px-4 py-2 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/60 dark:bg-zinc-950/40 flex items-center gap-2 overflow-x-auto shrink-0">
+            <div data-studio-guide="categories" class="px-4 py-2 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/60 dark:bg-zinc-950/40 flex items-center gap-2 overflow-x-auto shrink-0 transition-all">
                 <button type="button" data-cat="redaccio" onclick="selectStudioCategory('redaccio')" class="studio-cat-btn flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-red-600 text-white shadow-xs cursor-pointer transition">
                     <span>✍️</span> <span>Redacció de Documents</span>
                 </button>
@@ -3521,13 +3527,13 @@
                 <div class="lg:col-span-5 p-3.5 sm:p-5 lg:overflow-y-auto space-y-4 bg-zinc-50/50 dark:bg-zinc-950/20 custom-scrollbar">
                     
                     <!-- SISTER TEMPLATES GRID -->
-                    <div>
+                    <div data-studio-guide="templates" class="rounded-2xl transition-all">
                         <label class="block text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-2">Plantilla Ràpida</label>
                         <div id="studio-templates-grid" class="grid grid-cols-2 gap-2"></div>
                     </div>
 
                     <!-- INPUT FIELDS -->
-                    <div class="space-y-3 pt-2">
+                    <div data-studio-guide="params" class="space-y-3 pt-2 rounded-2xl transition-all">
                         <div>
                             <label class="block text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-1">Títol / Concepte del Document</label>
                             <input type="text" id="studio-task-title" placeholder="Ex: Correu formal de sol·licitud o Planificador diari..." class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-xs outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 font-medium transition shadow-2xs">
@@ -3581,7 +3587,7 @@
                 </div>
 
                 <!-- PANNELL DRETA: RESULTAT I EDITOR DIRECTE (55% / 7 cols) -->
-                <div class="lg:col-span-7 p-3.5 sm:p-5 flex flex-col min-h-[340px] lg:min-h-0 lg:overflow-hidden bg-white dark:bg-[#121217]">
+                <div data-studio-guide="editor" class="lg:col-span-7 p-3.5 sm:p-5 flex flex-col min-h-[340px] lg:min-h-0 lg:overflow-hidden bg-white dark:bg-[#121217] transition-all">
                     
                     <!-- ACTION BAR SUPERIOR DE L'EDITOR -->
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2 pb-2.5 border-b border-zinc-200/80 dark:border-zinc-800/80 shrink-0">
@@ -4697,7 +4703,9 @@
                 id === 'calendar-header-btn' ||
                 id === 'chat-plus-btn' ||
                 Boolean(btn.closest('#study-games-hub-modal')) ||
+                Boolean(btn.closest('#aliat-notebook-modal')) ||
                 Boolean(btn.closest('#gemini-notebook-modal')) ||
+                Boolean(btn.closest('#fullscreen-studio-modal')) ||
                 (typeAttr === 'submit' && btn.closest('#chat-form')) ||
                 id === 'sidebar-new-session-btn' ||
                 id === 'sidebar-mode-study' ||
@@ -4707,6 +4715,9 @@
                 id === 'sidebar-tour-btn' ||
                 id === 'welcome-tour-btn' ||
                 id === 'landing-tour-btn' ||
+                id === 'studio-guide-btn' ||
+                id === 'nb-guide-btn' ||
+                id === 'memory-open-calendar-btn' ||
                 id === 'global-menu-btn' ||
                 onclickAttr.includes('startAliatOnboarding') ||
                 onclickAttr.includes('openInteractiveGuide') ||
@@ -4715,14 +4726,31 @@
                 onclickAttr.includes('closeStudyGamesHubModal') ||
                 onclickAttr.includes('selectStudyGameTab') ||
                 onclickAttr.includes('generateAndStartStudyGame') ||
+                onclickAttr.includes('launchRandomPostTheoryGame') ||
+                onclickAttr.includes('rerollPostTheoryGameCard') ||
+                onclickAttr.includes('openAliatNotebookModal') ||
+                onclickAttr.includes('closeAliatNotebookModal') ||
+                onclickAttr.includes('openAliatNotebookGuide') ||
                 onclickAttr.includes('openGeminiNotebookModal') ||
                 onclickAttr.includes('closeGeminiNotebookModal') ||
                 onclickAttr.includes('generateNotebookArtifact') ||
                 onclickAttr.includes('generateNotebookAudioOverview') ||
+                onclickAttr.includes('setNotebookWorkspaceView') ||
+                onclickAttr.includes('syncStudyPdfIntoNotebook') ||
+                onclickAttr.includes('toggleAllNotebookSources') ||
+                onclickAttr.includes('savePodcastTranscriptToNotes') ||
+                onclickAttr.includes('filterNotebookNotes') ||
+                onclickAttr.includes('editNotebookSavedNote') ||
+                onclickAttr.includes('sendNotebookNoteToChat') ||
+                onclickAttr.includes('openFullscreenStudioModal') ||
+                onclickAttr.includes('closeFullscreenStudioModal') ||
+                onclickAttr.includes('openFullscreenStudioGuide') ||
                 onclickAttr.includes('studySpecificPlanSession') ||
                 onclickAttr.includes('toggleStudySessionCompleted') ||
                 onclickAttr.includes('showCalendarModal') ||
                 onclickAttr.includes('showMemoryModal') ||
+                onclickAttr.includes('showToolsModal') ||
+                onclickAttr.includes('showToolsModalFolder') ||
                 onclickAttr.includes('switchMemoryD3ChartTab') ||
                 onclickAttr.includes('addManualStudyMinutesToday') ||
                 onclickAttr.includes('updateMemoryDailyTargetGoal') ||
@@ -6876,6 +6904,23 @@
 
             let htmlContent = `
             <div class="space-y-4 text-left mt-2 max-h-[75vh] overflow-y-auto pr-1">
+                <!-- BOTÓ PRINCIPAL DINS DE MEMÒRIA PER OBRIR EL CALENDARI DEL PLA D'ESTUDI -->
+                <button type="button" id="memory-open-calendar-btn" onclick="showCalendarModal(true)" class="w-full p-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-sm transition-all flex items-center justify-between gap-3 cursor-pointer group active:scale-[0.99]">
+                    <div class="flex items-center gap-3 min-w-0 text-left">
+                        <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs sm:text-sm font-black flex items-center gap-2">
+                                <span>📅 Calendari del Pla d'Estudi</span>
+                                <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-extrabold">${totalPlanSessions > 0 ? `${inferredCompletedSessions}/${totalPlanSessions} sessions` : 'Configurar'}</span>
+                            </div>
+                            <div class="text-[11px] text-blue-100 truncate mt-0.5">Veure totes les sessions per dia, estudiar lliçons, jugar minijocs i sincronitzar amb Google Calendar</div>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1.5 rounded-xl bg-white text-blue-700 text-[11px] font-black shrink-0 group-hover:translate-x-0.5 transition">Obrir Calendari →</span>
+                </button>
+
                 ${prefsBlockHtml}
                 
                 <!-- BLOC 1: NIVELL ACADÈMIC I RESULTATS -->
@@ -6900,7 +6945,10 @@
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                             <span>Progrés del Pla d'Estudi i Conceptes</span>
                         </span>
-                        ${paceBadgeHtml}
+                        <div class="flex items-center gap-1.5">
+                            ${paceBadgeHtml}
+                            <button type="button" onclick="showCalendarModal(true)" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[10px] font-extrabold transition cursor-pointer">📅 Veure Calendari</button>
+                        </div>
                     </div>
 
                     <!-- 3 mètriques clau: Conceptes estudiats, Temps invertit, % Completat del Pla -->
@@ -13682,7 +13730,7 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
         };
 
         window.showToolsModalFolder = function(folderId) {
-            const folderIds = ['root', 'study', 'workspace', 'creative', 'focus'];
+            const folderIds = ['root', 'games', 'study', 'workspace', 'creative', 'focus'];
             folderIds.forEach(id => {
                 const el = document.getElementById(`tools-folder-${id}`);
                 if (el) {
@@ -13697,6 +13745,7 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
 
         window.showToolsModal = function() {
             const currentTopic = escapeHtml(getCurrentChatTopic() || 'Estudi General');
+            const isStudyMode = (appMode === 'study');
             let htmlContent = `
             <div class="mt-1 text-left space-y-3">
                 <div class="p-2.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 rounded-xl flex items-center justify-between text-xs shadow-2xs">
@@ -13709,6 +13758,31 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
 
                 <!-- VISTA PRINCIPAL: CARPETES UNIFICADES -->
                 <div id="tools-folder-root" class="space-y-2">
+                    ${isStudyMode ? `
+                    <!-- CARPETA DESTACADA: JOCS D'APRENENTATGE ACTIU (NOMÉS EN PLA D'ESTUDIS) -->
+                    <div class="p-3 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/35 border border-indigo-200/90 dark:border-indigo-800/80 shadow-2xs space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <button type="button" onclick="showToolsModalFolder('games')" class="flex items-center gap-3 min-w-0 text-left flex-1 cursor-pointer group">
+                                <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white dark:bg-indigo-500 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/></svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors flex items-center gap-2">
+                                        <span>🎮 Jocs d'Aprenentatge Actiu</span>
+                                        <span class="text-[9px] bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 font-extrabold px-1.5 py-0.5 rounded-md">6 Jocs · Aleatoris Post-Teoria</span>
+                                    </div>
+                                    <div class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Apareixen aleatòriament després de la teoria o tria'n un aquí</div>
+                                </div>
+                            </button>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button type="button" onclick="Swal.close(); openStudyGamesHubModal('random');" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[10.5px] font-black cursor-pointer transition shadow-2xs">🎲 Joc Aleatori</button>
+                                <button type="button" onclick="showToolsModalFolder('games')" title="Triar un dels 6 jocs" class="p-1.5 rounded-xl bg-white/80 dark:bg-zinc-900 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 cursor-pointer transition">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>` : ''}
+
                     <!-- CARPETA 1: ESTUDI & TESTS -->
                     <button type="button" onclick="showToolsModalFolder('study')" class="flex items-center justify-between w-full p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40 border border-zinc-200/90 dark:border-zinc-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition cursor-pointer text-left group shadow-2xs active:scale-[0.99]">
                         <div class="flex items-center gap-3 min-w-0">
@@ -13810,39 +13884,80 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                         </div>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
-                    <!-- ACCÉS DIRECTE: GEMINI NOTEBOOK STUDIO (NOTEBOOKLM) -->
-                    <button type="button" onclick="Swal.close(); openGeminiNotebookModal();" class="w-full p-3.5 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/90 dark:border-emerald-800/70 rounded-2xl hover:border-emerald-500 dark:hover:border-emerald-400 transition-all group flex items-center justify-between gap-3 text-left cursor-pointer">
+
+                    ${isStudyMode ? `
+                    <!-- ACCÉS DIRECTE: ALIATNOTEBOOK (NOMÉS EN PLA D'ESTUDIS) -->
+                    <button type="button" onclick="Swal.close(); openAliatNotebookModal();" class="w-full p-3.5 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/90 dark:border-emerald-800/70 rounded-2xl hover:border-emerald-500 dark:hover:border-emerald-400 transition-all group flex items-center justify-between gap-3 text-left cursor-pointer">
                         <div class="flex items-center gap-3 min-w-0">
                             <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white dark:bg-emerald-500 dark:text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
                             </div>
                             <div class="min-w-0">
                                 <div class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors flex items-center gap-2">
-                                    <span>Gemini Notebook Studio (NotebookLM)</span>
-                                    <span class="text-[9px] bg-emerald-100 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-200 font-extrabold px-1.5 py-0.5 rounded-md">Podcast 2 Veus + Citacions</span>
+                                    <span>AliatNotebook</span>
+                                    <span class="text-[9px] bg-emerald-100 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-200 font-extrabold px-1.5 py-0.5 rounded-md">8 Generadors + Podcast 2 Veus</span>
                                 </div>
-                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Quadern multicapa amb Audio Overview a 2 veus, Briefing Doc, FAQ i Línia Temporal</div>
+                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Quadern multicapa amb Citacions clicables [Font X], Briefing, Simulacre i Pòdcast</div>
                             </div>
                         </div>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
-                    </button>
+                    </button>` : ''}
+                </div>
 
-                    <!-- ACCÉS DIRECTE: LABORATORI DE 6 JOCS D'APRENENTATGE ACTIU -->
-                    <button type="button" onclick="Swal.close(); openStudyGamesHubModal();" class="w-full p-3.5 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/90 dark:border-blue-800/70 rounded-2xl hover:border-blue-500 dark:hover:border-blue-400 transition-all group flex items-center justify-between gap-3 text-left cursor-pointer">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white dark:bg-blue-500 dark:text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/></svg>
-                            </div>
+                <!-- SUB-CARPETA JOCS: LABORATORI DE 6 JOCS D'APRENENTATGE ACTIU -->
+                <div id="tools-folder-games" class="hidden space-y-2.5">
+                    <div class="flex items-center justify-between pb-2 border-b border-zinc-200/80 dark:border-zinc-800/80">
+                        <button type="button" onclick="showToolsModalFolder('root')" class="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                            <span>Tornar a Eines</span>
+                        </button>
+                        <span class="text-xs font-black text-zinc-900 dark:text-white">🎮 6 Jocs d'Aprenentatge Actiu</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[55vh] overflow-y-auto pr-0.5 custom-scrollbar">
+                        <button type="button" onclick="Swal.close(); openStudyGamesHubModal('memory_pairs');" class="p-3 bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-2xl hover:border-indigo-500 transition-all flex items-start gap-2.5 text-left cursor-pointer">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 font-black text-xs">1</div>
                             <div class="min-w-0">
-                                <div class="font-bold text-xs sm:text-sm text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors flex items-center gap-2">
-                                    <span>Laboratori de 6 Jocs d'Aprenentatge Actiu</span>
-                                    <span class="text-[9px] bg-blue-100 dark:bg-blue-900/80 text-blue-700 dark:text-blue-200 font-extrabold px-1.5 py-0.5 rounded-md">Interactiu</span>
-                                </div>
-                                <div class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Parelles, Constructor de Fórmules, Ordenació, Caçador d'Errors i Sprint V/F</div>
+                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Parelles de Conceptes</div>
+                                <div class="text-[10.5px] text-zinc-500 leading-tight mt-0.5">Connecta cada concepte amb la seva definició exacta.</div>
                             </div>
-                        </div>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-zinc-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition shrink-0"><path d="m9 18 6-6-6-6"/></svg>
-                    </button>
+                        </button>
+                        <button type="button" onclick="Swal.close(); openStudyGamesHubModal('cloze_builder');" class="p-3 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl hover:border-blue-500 transition-all flex items-start gap-2.5 text-left cursor-pointer">
+                            <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 font-black text-xs">2</div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Constructor de Fórmules</div>
+                                <div class="text-[10.5px] text-zinc-500 leading-tight mt-0.5">Completa els buits clau d'enunciats i definicions.</div>
+                            </div>
+                        </button>
+                        <button type="button" onclick="Swal.close(); openStudyGamesHubModal('sequence_order');" class="p-3 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl hover:border-emerald-500 transition-all flex items-start gap-2.5 text-left cursor-pointer">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-black text-xs">3</div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Ordre Lògic i Cronològic</div>
+                                <div class="text-[10.5px] text-zinc-500 leading-tight mt-0.5">Ordena processos, fases o esdeveniments pas a pas.</div>
+                            </div>
+                        </button>
+                        <button type="button" onclick="Swal.close(); openStudyGamesHubModal('error_hunter');" class="p-3 bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-2xl hover:border-rose-500 transition-all flex items-start gap-2.5 text-left cursor-pointer">
+                            <div class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 font-black text-xs">4</div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Caçador d'Errors</div>
+                                <div class="text-[10.5px] text-zinc-500 leading-tight mt-0.5">Detecta la trampa conceptual i selecciona la correcció.</div>
+                            </div>
+                        </button>
+                        <button type="button" onclick="Swal.close(); openStudyGamesHubModal('speed_tf');" class="p-3 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl hover:border-amber-500 transition-all flex items-start gap-2.5 text-left cursor-pointer">
+                            <div class="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 font-black text-xs">5</div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Sprint Cert o Fals</div>
+                                <div class="text-[10.5px] text-zinc-500 leading-tight mt-0.5">Decideix ràpidament amb ratxa i justificació immediata.</div>
+                            </div>
+                        </button>
+                        <button type="button" onclick="Swal.close(); openStudyGamesHubModal('exam_simulator');" class="p-3 bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-2xl hover:border-purple-500 transition-all flex items-start gap-2.5 text-left cursor-pointer">
+                            <div class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 font-black text-xs">6</div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Simulacre Kahoot & Targetes 3D</div>
+                                <div class="text-[10.5px] text-zinc-500 leading-tight mt-0.5">Autoevaluació activa amb domini progressiu.</div>
+                            </div>
+                        </button>
+                    </div>
+                    <button type="button" onclick="Swal.close(); openStudyGamesHubModal('random');" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs cursor-pointer transition shadow-xs">🎲 Obrir Joc Aleatori Ara</button>
                 </div>
 
                 <!-- SUB-CARPETA 1: EINES D'ESTUDI & TESTS -->
@@ -13852,10 +13967,11 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
                             <span>Tornar a carpetes</span>
                         </button>
-                        <span class="text-xs font-black text-zinc-900 dark:text-white">Estudi Actiu, Jocs & Notebook</span>
+                        <span class="text-xs font-black text-zinc-900 dark:text-white">Estudi Actiu & Tests</span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[55vh] overflow-y-auto pr-0.5 custom-scrollbar">
-                        <button onclick="Swal.close(); openStudyGamesHubModal();" class="p-3 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl hover:border-blue-500 transition-all group flex items-start gap-2.5 text-left cursor-pointer">
+                        ${isStudyMode ? `
+                        <button onclick="Swal.close(); openStudyGamesHubModal('random');" class="p-3 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-2xl hover:border-blue-500 transition-all group flex items-start gap-2.5 text-left cursor-pointer">
                             <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/></svg>
                             </div>
@@ -13864,15 +13980,15 @@ Comença explicant-me l'enfocament ideal pas a pas, els conceptes clau necessari
                                 <div class="text-[10.5px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Parelles, Fórmules, Seqüències, Caça-Errors i V/F.</div>
                             </div>
                         </button>
-                        <button onclick="Swal.close(); openGeminiNotebookModal();" class="p-3 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl hover:border-emerald-500 transition-all group flex items-start gap-2.5 text-left cursor-pointer">
+                        <button onclick="Swal.close(); openAliatNotebookModal();" class="p-3 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl hover:border-emerald-500 transition-all group flex items-start gap-2.5 text-left cursor-pointer">
                             <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">Gemini Notebook Studio</div>
+                                <div class="font-bold text-zinc-900 dark:text-zinc-100 text-xs">AliatNotebook</div>
                                 <div class="text-[10.5px] text-zinc-600 dark:text-zinc-400 leading-tight mt-0.5">Podcast IA a 2 veus, Briefing i Citacions.</div>
                             </div>
-                        </button>
+                        </button>` : ''}
                         <button onclick="Swal.close(); launchDiagnosticQuizFromTools();" class="p-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-zinc-400 dark:hover:border-zinc-600 transition-all group flex items-start gap-2.5 text-left cursor-pointer col-span-1 sm:col-span-2">
                             <div class="w-9 h-9 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center shrink-0 shadow-xs">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -15828,7 +15944,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
 
         function updateHeaderButtonsVisibility() {
             const isStudy = (appMode === 'study');
-            const btns = ['calendar-header-btn', 'tools-header-btn', 'memory-header-btn', 'history-header-btn'];
+            const btns = ['notebook-header-btn', 'tools-header-btn', 'memory-header-btn', 'history-header-btn'];
             btns.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -15839,6 +15955,14 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     }
                 }
             });
+            const plusStudyGamesBtn = document.getElementById('plus-study-games-btn');
+            if (plusStudyGamesBtn) {
+                if (isStudy) {
+                    plusStudyGamesBtn.classList.remove('hidden');
+                } else {
+                    plusStudyGamesBtn.classList.add('hidden');
+                }
+            }
             const mindmapBtn = document.getElementById('mindmap-header-btn');
             if (mindmapBtn) mindmapBtn.classList.remove('hidden');
 
@@ -17131,8 +17255,8 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                                     <span class="text-xs font-extrabold text-indigo-900 dark:text-indigo-200">Laboratori de 6 Jocs d'Aprenentatge Actiu</span>
                                     <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 shrink-0">Jugar →</span>
                                 </button>
-                                <button type="button" onclick="openGeminiNotebookModal()" class="w-full p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 hover:border-emerald-500 transition cursor-pointer flex items-center justify-between gap-3 text-left">
-                                    <span class="text-xs font-extrabold text-emerald-900 dark:text-emerald-200">Gemini Notebook Studio (Podcast 2 Veus + Fonts)</span>
+                                <button type="button" onclick="openAliatNotebookModal()" class="w-full p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 hover:border-emerald-500 transition cursor-pointer flex items-center justify-between gap-3 text-left">
+                                    <span class="text-xs font-extrabold text-emerald-900 dark:text-emerald-200">AliatNotebook (Podcast 2 Veus + Fonts)</span>
                                     <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 shrink-0">Obrir →</span>
                                 </button>
                             </div>
@@ -18436,6 +18560,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
         };
 
         window.closeFullscreenStudioModal = function() {
+            if (typeof window.closeFullscreenStudioGuide === 'function') window.closeFullscreenStudioGuide();
             const modal = document.getElementById('fullscreen-studio-modal');
             if (!modal) return;
             modal.classList.add('opacity-0');
@@ -18921,31 +19046,172 @@ Instruccions de format:
 - Inclou un títol principal i una petita nota al final per si l'usuari vol fer alguna modificació.`;
 
             try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'daily_use',
-                        dailyOutputMode: isDirectMode ? 'direct' : 'guided',
-                        chatHistory: [{ role: 'user', content: promptText }]
-                    })
+                const caller = typeof window.callGenerateApi === 'function'
+                    ? window.callGenerateApi
+                    : (payload => fetch('/api/generate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }));
+                const res = await caller({
+                    action: 'daily_use',
+                    dailyOutputMode: isDirectMode ? 'direct' : 'guided',
+                    chatHistory: [{ role: 'user', content: promptText }]
                 });
-                const data = await res.json();
-                if (data.error) throw new Error(data.error);
+                const data = res && res.ok ? await res.json() : null;
+                if (!data || data.error || !data.reply) throw new Error(data?.error || 'Fallback');
 
                 textarea.value = data.reply;
                 window.currentStudioMarkdown = data.reply;
                 updateStudioStats();
                 setStudioViewTab('edit');
+                if (typeof showToast === 'function') showToast('Document generat correctament!', 'success');
             } catch (err) {
-                textarea.value = `❌ Error en generar el document: ${err.message}`;
+                const fallbackBoiler = window.studioTemplateBoilerplates[window.currentStudioTemplateId] || '';
+                const customDraft = isDirectMode
+                    ? `Assumpte: ${title}\n\nBenvolgut/da ${recipient},\n\n${notes ? notes : `Em poso en contacte amb vostè en relació amb ${title}.`}\n\nQuedo a la seva disposició per a qualsevol aclariment.\n\nCordialment,\n[El teu nom]`
+                    : `# ${title}\n\n**Destinatari:** ${recipient} | **To:** ${tone}\n\n## Detalls i Objectiu\n${notes || 'Estructura preparada a partir dels paràmetres indicats.'}\n\n${fallbackBoiler ? '---\n\n' + fallbackBoiler : ''}`;
+                textarea.value = customDraft;
+                window.currentStudioMarkdown = customDraft;
                 updateStudioStats();
+                setStudioViewTab('edit');
+                if (typeof showToast === 'function') showToast('Esborrany preparat a l\'editor!', 'info');
             } finally {
                 if (btn) {
                     btn.disabled = false;
                     btn.innerHTML = '✨ Generar Document amb IA';
                 }
             }
+        };
+
+        // --- GUIA INTERACTIVA PAS A PAS PER A PANTALLA COMPLETA (ÚS QUOTIDIÀ) ---
+        window._studioGuideStepIdx = 0;
+        window._studioGuideHighlightedEl = null;
+
+        window.closeFullscreenStudioGuide = function() {
+            if (window._studioGuideHighlightedEl) {
+                window._studioGuideHighlightedEl.classList.remove('ring-4', 'ring-amber-400', 'relative', 'z-[60]');
+                window._studioGuideHighlightedEl = null;
+            }
+            const ov = document.getElementById('studio-guide-overlay');
+            if (ov) ov.remove();
+        };
+
+        window.stepFullscreenStudioGuide = function(delta) {
+            window._studioGuideStepIdx = (window._studioGuideStepIdx || 0) + delta;
+            renderFullscreenStudioGuideStep();
+        };
+
+        function renderFullscreenStudioGuideStep() {
+            const shell = document.getElementById('fullscreen-studio-shell');
+            if (!shell) return;
+            const es = (typeof window.getAppLanguage === 'function' ? window.getAppLanguage() : (localStorage.getItem('aliat_app_language') || 'ca')) === 'es';
+
+            const steps = [
+                {
+                    selector: '[data-studio-guide="categories"]',
+                    badge: es ? 'Paso 1 de 5 · Categoría' : 'Pas 1 de 5 · Categoria',
+                    title: es ? '1. Elige la categoría de trabajo' : '1. Tria la categoria de treball',
+                    desc: es
+                        ? 'En estas 4 pestañas cambias entre Redacción de Documentos, Organización y Rutinas, Productividad y Tiempo o Consultas e Ideas. Cada pestaña carga plantillas profesionales adaptadas.'
+                        : 'En aquestes 4 pestanyes canvies entre Redacció de Documents, Organització i Rutines, Productivitat i Temps o Consultes i Idees. Cada pestanya carrega plantilles professionals adaptades.',
+                    tip: es ? 'Consejo: empieza por la categoría más cercana a tu tarea.' : 'Consell: comença per la categoria més propera a la teva tasca.'
+                },
+                {
+                    selector: '[data-studio-guide="templates"]',
+                    badge: es ? 'Paso 2 de 5 · Plantilla rápida' : 'Pas 2 de 5 · Plantilla ràpida',
+                    title: es ? '2. Selecciona una Plantilla Rápida' : '2. Selecciona una Plantilla Ràpida',
+                    desc: es
+                        ? 'Al pulsar cualquier tarjeta de plantilla se rellena automáticamente el título y se carga una estructura base lista en el editor derecho (correos, actas, horarios, matriz Eisenhower...).'
+                        : 'En prémer qualsevol targeta de plantilla s\'omple automàticament el títol i es carrega una estructura base llesta a l\'editor dret (correus, actes, horaris, matriu Eisenhower...).',
+                    tip: es ? 'Si el editor ya tenía texto, puedes cargarla cuando quieras con el botón «Esquelet Base».' : 'Si l\'editor ja tenia text, la pots carregar quan vulguis amb el botó «Esquelet Base».'
+                },
+                {
+                    selector: '[data-studio-guide="params"]',
+                    badge: es ? 'Paso 3 de 5 · Detalles y Modo' : 'Pas 3 de 5 · Detalls i Mode',
+                    title: es ? '3. Personaliza Tono, Contexto y Modo («Ja fet» vs «Guiat»)' : '3. Personalitza To, Context i Mode («Ja fet» vs «Guiat»)',
+                    desc: es
+                        ? 'Indica destinatario, tono y cualquier detalle en «Comentaris i Instruccions». Elige «Ja fet» para obtener solo el texto final limpio listo para enviar, o «Guiat» si quieres estructura con apartados y notas.'
+                        : 'Indica destinatari, to i qualsevol detall a «Comentaris i Instruccions». Tria «Ja fet» per obtenir només el text final net llest per enviar, o «Guiat» si vols estructura amb apartats i notes.',
+                    tip: es ? 'Cuantos más detalles pongas en Comentarios, más preciso será el resultado.' : 'Com més detalls posis a Comentaris, més precís serà el resultat.'
+                },
+                {
+                    selector: '#studio-generate-btn',
+                    badge: es ? 'Paso 4 de 5 · Generación IA' : 'Pas 4 de 5 · Generació IA',
+                    title: es ? '4. Genera el Documento con IA' : '4. Genera el Document amb IA',
+                    desc: es
+                        ? 'Pulsa «✨ Generar Document amb IA» y espera un instante: el texto completo aparecerá automáticamente en el editor de la derecha.'
+                        : 'Prem «✨ Generar Document amb IA» i espera un instant: el text complet apareixerà automàticament a l\'editor de la dreta.',
+                    tip: es ? 'Puedes regenerar cambiando el tono o añadiendo más detalles sin perder el resto de campos.' : 'Pots regenerar canviant el to o afegint més detalls sense perdre la resta de camps.'
+                },
+                {
+                    selector: '[data-studio-guide="editor"]',
+                    badge: es ? 'Paso 5 de 5 · Editor y Exportación' : 'Pas 5 de 5 · Editor i Exportació',
+                    title: es ? '5. Edita, Previsualiza y Exporta en 1 Clic' : '5. Edita, Previsualitza i Exporta en 1 Clic',
+                    desc: es
+                        ? 'Aquí puedes retocar el texto, añadir negritas, checklists o una tabla («+ Taula»), alternar entre Edició y Vista Prèvia, y exportar directo a Google Docs, Word (.doc), Correo, PDF o enviarlo Al Xat.'
+                        : 'Aquí pots retocar el text, afegir negretes, checklists o una taula («+ Taula»), alternar entre Edició i Vista Prèvia, i exportar directe a Google Docs, Word (.doc), Correu, PDF o enviar-ho Al Xat.',
+                    tip: es ? 'El botón «Google Docs» copia con formato rico (tablas y negritas) listo para pegar.' : 'El botó «Google Docs» copia amb format enriquit (taules i negretes) llest per enganxar.'
+                }
+            ];
+
+            if (window._studioGuideStepIdx < 0) window._studioGuideStepIdx = 0;
+            if (window._studioGuideStepIdx >= steps.length) {
+                window.closeFullscreenStudioGuide();
+                return;
+            }
+
+            const step = steps[window._studioGuideStepIdx];
+            if (window._studioGuideHighlightedEl) {
+                window._studioGuideHighlightedEl.classList.remove('ring-4', 'ring-amber-400', 'relative', 'z-[60]');
+                window._studioGuideHighlightedEl = null;
+            }
+
+            const targetEl = shell.querySelector(step.selector);
+            if (targetEl) {
+                window._studioGuideHighlightedEl = targetEl;
+                targetEl.classList.add('ring-4', 'ring-amber-400', 'relative', 'z-[60]');
+                try { targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (_) {}
+            }
+
+            let ov = document.getElementById('studio-guide-overlay');
+            if (!ov) {
+                ov = document.createElement('div');
+                ov.id = 'studio-guide-overlay';
+                ov.className = 'absolute inset-0 z-[70] bg-black/45 flex items-end sm:items-center justify-center p-3 sm:p-5';
+                shell.appendChild(ov);
+            }
+
+            const idx = window._studioGuideStepIdx;
+            ov.innerHTML = `
+                <div class="w-full max-w-md bg-white dark:bg-zinc-900 border-2 border-amber-400/90 rounded-2xl shadow-2xl p-4 sm:p-5 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold">${step.badge}</span>
+                        <button type="button" onclick="closeFullscreenStudioGuide()" class="text-xs font-bold text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer">${es ? 'Cerrar' : 'Tancar'} ✕</button>
+                    </div>
+                    <h4 class="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100">${step.title}</h4>
+                    <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">${step.desc}</p>
+                    <div class="p-2.5 rounded-xl bg-red-50/80 dark:bg-red-950/40 border border-red-200/80 dark:border-red-900/70 text-[11px] text-red-800 dark:text-red-200 font-medium">
+                        ${step.tip}
+                    </div>
+                    <div class="flex items-center justify-between gap-2 pt-1">
+                        <div class="flex items-center gap-1">
+                            ${steps.map((_, i) => `<span class="w-2 h-2 rounded-full ${i === idx ? 'bg-amber-500 w-4' : 'bg-zinc-300 dark:bg-zinc-700'} transition-all"></span>`).join('')}
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            ${idx > 0 ? `<button type="button" onclick="stepFullscreenStudioGuide(-1)" class="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">← ${es ? 'Anterior' : 'Anterior'}</button>` : ''}
+                            <button type="button" onclick="stepFullscreenStudioGuide(1)" class="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-extrabold cursor-pointer transition">
+                                ${idx === steps.length - 1 ? (es ? '¡Entendido! ✓' : 'Entesos! ✓') : (es ? 'Siguiente →' : 'Següent →')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.openFullscreenStudioGuide = function() {
+            window._studioGuideStepIdx = 0;
+            renderFullscreenStudioGuideStep();
         };
 
         window.copyStudioResult = function() {
@@ -21179,7 +21445,7 @@ ${parsedBody}
                         <div class="pt-2.5 border-t border-zinc-100 dark:border-zinc-800/80 flex flex-wrap items-center gap-1.5">
                             <button type="button" onclick="stopQuizTimer(); studySpecificPlanSession(${item.num}, '${safeTopicJs}')" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 text-[10px] font-extrabold transition cursor-pointer">Estudiar</button>
                             <button type="button" onclick="openStudyGamesHubModal('memory_pairs', '${safeTopicJs}')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[10px] font-extrabold transition cursor-pointer">Jugar Joc</button>
-                            <button type="button" onclick="openGeminiNotebookModal()" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[10px] font-extrabold transition cursor-pointer">Notebook</button>
+                            <button type="button" onclick="openAliatNotebookModal()" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[10px] font-extrabold transition cursor-pointer">AliatNotebook</button>
                         </div>
                     </div>`;
             });
@@ -21869,12 +22135,16 @@ ${parsedBody}
         }
 
         window.requestMinigame = function(btn) {
+            unlockTheory();
+            if (typeof window.launchRandomPostTheoryGame === 'function') {
+                window.launchRandomPostTheoryGame(btn);
+                return;
+            }
             if (btn) {
                 btn.disabled = true; 
                 btn.innerHTML = "⏳ Generant Quiz d'Examen Kahoot amb Temps..."; 
                 btn.classList.add('opacity-50');
             }
-            unlockTheory();
             triggerToolFromChat('exam', null, "Molt bé! He entès la teoria. Genera ara mateix el Test d'Examen Kahoot amb temps per posar-me a prova!");
         };
         
@@ -21900,10 +22170,19 @@ ${parsedBody}
             showMemoryModal();
         };
 
-        function showCalendarModal() {
-            let htmlContent = '';
+        function showCalendarModal(fromMemory = false) {
+            const backToMemoryBar = `
+                <div class="mb-3 flex items-center justify-between gap-2 pb-2.5 border-b border-zinc-200/80 dark:border-zinc-800">
+                    <button type="button" onclick="showMemoryModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-extrabold transition cursor-pointer">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                        <span>Tornar a Memòria i Resultats</span>
+                    </button>
+                    <span class="text-[10.5px] font-bold text-blue-600 dark:text-blue-400">📅 Calendari d'Estudi</span>
+                </div>
+            `;
+            let htmlContent = backToMemoryBar;
             if (!Array.isArray(generatedCalendarArray) || generatedCalendarArray.length === 0) {
-                htmlContent = `
+                htmlContent += `
                 <div class="p-4 text-center space-y-3">
                     <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-sm">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -21917,14 +22196,14 @@ ${parsedBody}
                 </div>`;
             } else {
                 const memCal = typeof getStudentMemory === 'function' ? getStudentMemory() : { learnedConcepts: [] };
-                htmlContent = '<div class="grid grid-cols-1 gap-2.5 mt-3 text-left overflow-y-auto max-h-[50vh] md:max-h-96 pr-1">';
+                htmlContent += '<div class="grid grid-cols-1 gap-2.5 mt-2 text-left overflow-y-auto max-h-[50vh] md:max-h-96 pr-1">';
                 generatedCalendarArray.forEach((item) => {
                     const isCompleted = Boolean(item.completed) || (memCal.learnedConcepts || []).includes(item.tema) || (typeof window.isStudySessionCompleted === 'function' && window.isStudySessionCompleted(item.num));
                     const safeTopicJs = String(item.tema || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
                     htmlContent += `
                     <div class="p-3 bg-zinc-50 dark:bg-zinc-800/60 border ${isCompleted ? 'border-emerald-500/60 bg-emerald-50/20 dark:bg-emerald-950/20' : 'border-zinc-200 dark:border-zinc-800'} rounded-2xl flex flex-col gap-2.5 hover:border-blue-400/50 transition">
                         <div class="flex gap-3 items-center">
-                            <button type="button" onclick="toggleStudySessionCompleted(${item.num}, '${safeTopicJs}'); toggleLessonCompletionByNum(${item.num}); showCalendarModal();" class="${isCompleted ? 'bg-emerald-600 text-white' : 'bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300'} font-bold rounded-xl w-8 h-8 flex items-center justify-center shrink-0 text-xs shadow-sm cursor-pointer">${isCompleted ? '✓' : item.num}</button>
+                            <button type="button" onclick="toggleStudySessionCompleted(${item.num}, '${safeTopicJs}'); toggleLessonCompletionByNum(${item.num}); showCalendarModal(true);" class="${isCompleted ? 'bg-emerald-600 text-white' : 'bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300'} font-bold rounded-xl w-8 h-8 flex items-center justify-center shrink-0 text-xs shadow-sm cursor-pointer">${isCompleted ? '✓' : item.num}</button>
                             <div class="min-w-0 flex-1">
                                 <div class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 mb-0.5 uppercase tracking-wide">${escapeHtml(item.dia_real || '')}</div>
                                 <div class="text-[13px] font-bold text-zinc-900 dark:text-zinc-100 truncate">${escapeHtml(item.tema || '')}</div>
@@ -21933,7 +22212,7 @@ ${parsedBody}
                         <div class="flex flex-wrap items-center gap-1.5 pl-11">
                             <button type="button" onclick="Swal.close(); studySpecificPlanSession(${item.num}, '${safeTopicJs}');" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 text-[10px] font-extrabold cursor-pointer">Estudiar Sessió</button>
                             <button type="button" onclick="Swal.close(); openStudyGamesHubModal('memory_pairs', '${safeTopicJs}');" class="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[10px] font-extrabold cursor-pointer">Jugar Joc</button>
-                            <button type="button" onclick="Swal.close(); openGeminiNotebookModal();" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[10px] font-extrabold cursor-pointer">Notebook IA</button>
+                            <button type="button" onclick="Swal.close(); openAliatNotebookModal();" class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[10px] font-extrabold cursor-pointer">AliatNotebook</button>
                         </div>
                     </div>`;
                 });
@@ -21943,8 +22222,8 @@ ${parsedBody}
                         <button onclick="Swal.close(); openStudyGamesHubModal();" class="py-2 px-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs">
                             <span>6 Jocs d'Aprenentatge</span>
                         </button>
-                        <button onclick="Swal.close(); openGeminiNotebookModal();" class="py-2 px-2.5 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs">
-                            <span>Gemini Notebook</span>
+                        <button onclick="Swal.close(); openAliatNotebookModal();" class="py-2 px-2.5 bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs">
+                            <span>AliatNotebook</span>
                         </button>
                         <button onclick="Swal.close(); syncPlanToGoogleCalendar();" class="py-2 px-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs active:scale-95" title="Sincronitzar pla a Google Calendar">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -21958,7 +22237,7 @@ ${parsedBody}
                 `;
             }
             Swal.fire({ 
-                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Pla d\'Estudi</div>', 
+                title: '<div class="flex items-center justify-center gap-2 text-zinc-900 dark:text-white"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Calendari del Pla d\'Estudi</div>', 
                 html: htmlContent, 
                 showCloseButton: true, 
                 confirmButtonText: 'Tancar', 
@@ -21966,6 +22245,7 @@ ${parsedBody}
                 customClass: { popup: 'rounded-[1.5rem] md:rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-md w-full', title: 'font-black text-zinc-900 dark:text-white' } 
             });
         }
+        window.showCalendarModal = showCalendarModal;
 
         window.showInitialQuizReview = function() {
             const quiz = window.initialQuizResults || (allSessions.find(s => s.id === currentSessionId)?.initial_quiz);
@@ -22652,17 +22932,26 @@ ${parsedBody}
 
             htmlContent = htmlContent.replace(/\[BOTON_FLASHCARDS\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="📖 Teoria General"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'flashcards')" class="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold py-3 px-5 rounded-2xl transition-all shadow-sm flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Esquema i Flashcards</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
+                const randomGameHtml = (appMode === 'study' && typeof window.buildRandomPostTheoryGameWidgetHtml === 'function')
+                    ? window.buildRandomPostTheoryGameWidgetHtml('📖 Teoria General')
+                    : '';
+                return `<div id="${mId}" class="theory-marker hidden" data-type="📖 Teoria General"></div>${randomGameHtml}<div class="my-4 mt-3 flex justify-end"><button onclick="requestNextPhase(this, 'flashcards')" class="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 border border-zinc-900 dark:border-zinc-200 font-bold py-3 px-5 rounded-2xl transition-all shadow-sm flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Esquema i Flashcards</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
             });
 
             htmlContent = htmlContent.replace(/\[BOTON_MNEMOTECNIA\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="🗂️ Esquema i Flashcards"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestNextPhase(this, 'mnemotecnia')" class="bg-blue-700 hover:bg-blue-800 text-white dark:bg-sky-400 dark:hover:bg-sky-300 dark:text-zinc-950 font-bold py-3 px-5 rounded-2xl transition-all shadow-sm flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Truc de Memòria</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
+                const randomGameHtml = (appMode === 'study' && typeof window.buildRandomPostTheoryGameWidgetHtml === 'function')
+                    ? window.buildRandomPostTheoryGameWidgetHtml('🗂️ Esquema i Flashcards')
+                    : '';
+                return `<div id="${mId}" class="theory-marker hidden" data-type="🗂️ Esquema i Flashcards"></div>${randomGameHtml}<div class="my-4 mt-3 flex justify-end"><button onclick="requestNextPhase(this, 'mnemotecnia')" class="bg-blue-700 hover:bg-blue-800 text-white dark:bg-sky-400 dark:hover:bg-sky-300 dark:text-zinc-950 font-bold py-3 px-5 rounded-2xl transition-all shadow-sm flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><span>Següent: Truc de Memòria</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transform group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>`;
             });
 
             htmlContent = htmlContent.replace(/\[BOTON_ENTENDIDO\]/gi, function() {
                 let mId = 'marker_' + Date.now() + Math.floor(Math.random() * 1000);
-                return `<div id="${mId}" class="theory-marker hidden" data-type="🧠 Mnemotècnia"></div><div class="my-4 mt-5 flex justify-end"><button onclick="requestMinigame(this)" class="bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-400 dark:hover:bg-emerald-300 dark:text-zinc-950 font-bold py-3 px-5 rounded-2xl transition-all shadow-sm flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Posar-me a prova amb Minijocs</span></button></div>`;
+                const randomGameHtml = (appMode === 'study' && typeof window.buildRandomPostTheoryGameWidgetHtml === 'function')
+                    ? window.buildRandomPostTheoryGameWidgetHtml('🧠 Mnemotècnia Final')
+                    : '';
+                return `<div id="${mId}" class="theory-marker hidden" data-type="🧠 Mnemotècnia"></div>${randomGameHtml}<div class="my-4 mt-3 flex justify-end"><button onclick="requestMinigame(this)" class="bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-400 dark:hover:bg-emerald-300 dark:text-zinc-950 font-bold py-3 px-5 rounded-2xl transition-all shadow-sm flex items-center gap-2 text-xs md:text-sm active:scale-[0.98] cursor-pointer group"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>🎲 Posar-me a prova amb Joc Aleatori</span></button></div>`;
             });
 
             for (let i = 0; i < interactiveBlocks.length; i++) {
@@ -23026,7 +23315,13 @@ ${parsedBody}
                             <span class="w-1.5 h-1.5 rounded-full bg-blue-500/70 dark:bg-sky-400/70 shrink-0"></span>
                         </div>
                         ${searchBadgeHtml}
-                        <div class="prose prose-sm dark:prose-invert max-w-none text-xs sm:text-[13.5px] leading-relaxed break-words overflow-x-auto">${formatMessage(text)}</div>
+                        <div class="prose prose-sm dark:prose-invert max-w-none text-xs sm:text-[13.5px] leading-relaxed break-words overflow-x-auto">${(() => {
+                            const formatted = formatMessage(text);
+                            if (appMode === 'study' && typeof window.buildRandomPostTheoryGameWidgetHtml === 'function' && !formatted.includes('post-theory-random-game-card') && String(text || '').trim().length >= 160) {
+                                return formatted + window.buildRandomPostTheoryGameWidgetHtml('📖 Teoria del Pla d\'Estudis');
+                            }
+                            return formatted;
+                        })()}</div>
                     </div>
                     <!-- BARRA D'ACCIONS EN L'APARTAT DE SEMPRE AMB SEPARADOR '|' I OPCIONS SEGONS EL MODE -->
                     <div class="flex items-center gap-1.5 mt-2 pl-1 text-zinc-400 dark:text-zinc-500 text-xs flex-wrap">
@@ -23564,8 +23859,8 @@ ${parsedBody}
                 document.body.appendChild(s);
             };
             const ts = Date.now();
-            loadTourScript('/onboarding-tour.js?v=10&ts=' + ts, () => {
-                loadTourScript('/public/onboarding-tour.js?v=10&ts=' + ts, () => {
+            loadTourScript('/onboarding-tour.js?v=11&ts=' + ts, () => {
+                loadTourScript('/public/onboarding-tour.js?v=11&ts=' + ts, () => {
                     if (typeof showToast === 'function') {
                         showToast("No s'ha pogut carregar la guia interactiva. Recarrega la pàgina.", "warning");
                     }
@@ -23579,8 +23874,8 @@ ${parsedBody}
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (!hadController) return;
                 try {
-                    if (sessionStorage.getItem('aliat_sw_reloaded_v10')) return;
-                    sessionStorage.setItem('aliat_sw_reloaded_v10', '1');
+                    if (sessionStorage.getItem('aliat_sw_reloaded_v13')) return;
+                    sessionStorage.setItem('aliat_sw_reloaded_v13', '1');
                 } catch (_) {}
                 window.location.reload();
             });
@@ -23607,8 +23902,8 @@ ${parsedBody}
             });
         }
     </script>
-    <script src="/cookie-consent.js?v=10" onerror="var s=document.createElement('script');s.src='/public/cookie-consent.js?v=10';document.body.appendChild(s);"></script>
-    <script src="/study-notebook-games.js?v=10" onerror="var s=document.createElement('script');s.src='/public/study-notebook-games.js?v=10';document.body.appendChild(s);"></script>
-    <script src="/onboarding-tour.js?v=10" onerror="var s=document.createElement('script');s.src='/public/onboarding-tour.js?v=10';document.body.appendChild(s);"></script>
+    <script src="/cookie-consent.js?v=13" onerror="var s=document.createElement('script');s.src='/public/cookie-consent.js?v=13';document.body.appendChild(s);"></script>
+    <script src="/study-notebook-games.js?v=13" onerror="var s=document.createElement('script');s.src='/public/study-notebook-games.js?v=13';document.body.appendChild(s);"></script>
+    <script src="/onboarding-tour.js?v=13" onerror="var s=document.createElement('script');s.src='/public/onboarding-tour.js?v=13';document.body.appendChild(s);"></script>
 </body>
 </html>

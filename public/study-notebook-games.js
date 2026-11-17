@@ -1,11 +1,12 @@
 /**
- * Aliat Intel·ligent — Pla d'Estudi Actiu, Laboratori de Jocs Interactius i Gemini Notebook Studio (NotebookLM)
+ * Aliat Intel·ligent — Pla d'Estudi Actiu, Laboratori de Jocs Interactius i AliatNotebook
  */
 (function () {
     'use strict';
 
     const STORAGE_KEY_MASTERY = 'aliat_study_plan_mastery_v1';
-    const STORAGE_KEY_NOTEBOOK = 'aliat_gemini_notebook_state_v1';
+    const STORAGE_KEY_NOTEBOOK = 'aliat_notebook_state_v1';
+    const LEGACY_STORAGE_KEY_NOTEBOOK = 'aliat_gemini_notebook_state_v1';
 
     function isEsLang() {
         const lang = (typeof window.currentAppLang === 'string' && window.currentAppLang)
@@ -555,9 +556,9 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
-                        <button type="button" onclick="openGeminiNotebookModal()" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/70 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap">
+                        <button type="button" onclick="openAliatNotebookModal()" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/70 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                            <span>Gemini Notebook</span>
+                            <span>AliatNotebook</span>
                         </button>
                         <button type="button" onclick="closeStudyGamesHubModal()" class="p-2 rounded-xl bg-zinc-200/70 hover:bg-zinc-300/80 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 transition cursor-pointer" aria-label="Tancar">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -616,8 +617,19 @@
         return modal;
     }
 
+    function normalizeStudyGameId(gameType) {
+        if (!gameType || gameType === 'random') {
+            return typeof window.pickRandomPostTheoryGame === 'function'
+                ? window.pickRandomPostTheoryGame().id
+                : 'memory_pairs';
+        }
+        if (gameType === 'speed_sprint') return 'speed_tf';
+        if (gameType === 'flashcard_station') return 'exam_simulator';
+        return gameType;
+    }
+
     window.openStudyGamesHubModal = function (initialGameType, customTopic) {
-        if (typeof Swal !== 'undefined') Swal.close();
+        if (typeof Swal !== 'undefined' && Swal && typeof Swal.close === 'function') Swal.close();
         const modal = ensureGamesHubModalDOM();
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -632,7 +644,7 @@
         const resolvedTopic = customTopic || resolveCurrentStudyTopic();
         if (topicInput) topicInput.value = resolvedTopic;
 
-        const targetGame = initialGameType || activeStudyGameState.gameType || 'memory_pairs';
+        const targetGame = normalizeStudyGameId(initialGameType || activeStudyGameState.gameType || 'memory_pairs');
         window.selectStudyLabGame(targetGame, resolvedTopic);
     };
 
@@ -657,18 +669,19 @@
 
     window.selectStudyLabGame = function (gameType, customTopic) {
         clearSpeedTfTimer();
-        activeStudyGameState.gameType = gameType || 'memory_pairs';
+        const normalizedType = normalizeStudyGameId(gameType);
+        activeStudyGameState.gameType = normalizedType;
         const topic = customTopic || resolveCurrentStudyTopic();
         activeStudyGameState.topic = topic;
         syncGameTabsUI();
 
-        if (gameType === 'exam_simulator') {
+        if (normalizedType === 'exam_simulator') {
             renderExamSimulatorHubStage(topic);
             return;
         }
 
-        const localData = buildLocalGameData(gameType, topic, resolveCurrentStudyContext());
-        initializeGameWithData(gameType, localData);
+        const localData = buildLocalGameData(normalizedType, topic, resolveCurrentStudyContext());
+        initializeGameWithData(normalizedType, localData);
     };
 
     window.regenerateCurrentStudyGameWithAI = async function () {
@@ -1499,7 +1512,7 @@
     }
 
     // ============================================================================
-    // GEMINI NOTEBOOK STUDIO (ESTIL GOOGLE NOTEBOOKLM INTEGRAT A L'APP)
+    // ALIATNOTEBOOK (QUADERN MULTIFONT AMB CITACIONS, ÀUDIO A 2 VEUS I GUIA)
     // ============================================================================
     let notebookState = {
         title: "Quadern d'Estudi i Investigació",
@@ -1509,12 +1522,19 @@
         audioOverview: null,
         audioPlaying: false,
         audioCurrentTurn: 0,
-        audioRate: 1.0
+        audioRate: 1.0,
+        showFullScript: false
+    };
+
+    let notebookBusy = {
+        artifact: false,
+        audio: false,
+        chat: false
     };
 
     function loadNotebookState() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY_NOTEBOOK);
+            const raw = localStorage.getItem(STORAGE_KEY_NOTEBOOK) || localStorage.getItem(LEGACY_STORAGE_KEY_NOTEBOOK);
             if (raw) {
                 const parsed = JSON.parse(raw);
                 if (parsed && typeof parsed === 'object') {
@@ -1568,7 +1588,8 @@
                 chatMessages: notebookState.chatMessages,
                 audioOverview: notebookState.audioOverview,
                 audioCurrentTurn: notebookState.audioCurrentTurn,
-                audioRate: notebookState.audioRate
+                audioRate: notebookState.audioRate,
+                showFullScript: !!notebookState.showFullScript
             }));
         } catch (_) {}
     }
@@ -1582,16 +1603,218 @@
         } catch (_) {}
     }
 
-    function ensureGeminiNotebookModalDOM() {
-        let modal = document.getElementById('gemini-notebook-modal');
+    async function callNotebookBackend(payload, timeoutMs = 14000) {
+        const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+        try {
+            const userAiProvider = localStorage.getItem('aliat_ai_provider') || '';
+            const rawStoredKey = localStorage.getItem('aliat_ai_key') || '';
+            const userAiKey = rawStoredKey.includes('••••') ? '' : rawStoredKey;
+            const userAiModel = localStorage.getItem('aliat_ai_model') || '';
+            const preferredLang = typeof window.getAppLanguage === 'function' ? window.getAppLanguage() : (isEsLang() ? 'es' : 'ca');
+
+            const headers = { 'Content-Type': 'application/json', 'x-app-lang': preferredLang };
+            if (typeof authToken !== 'undefined' && authToken) headers['Authorization'] = 'Bearer ' + authToken;
+            if (userAiProvider) headers['x-ai-provider'] = userAiProvider;
+            if (userAiKey) headers['x-ai-key'] = userAiKey;
+            if (userAiModel) headers['x-ai-model'] = userAiModel;
+
+            const bodyPayload = {
+                ...payload,
+                lang: preferredLang,
+                ai_provider: userAiProvider,
+                ai_api_key: userAiKey,
+                ai_model: userAiModel
+            };
+
+            const res = await fetch('/api/generate', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(bodyPayload),
+                signal: controller ? controller.signal : undefined
+            });
+            if (!res || !res.ok) return null;
+            const json = await res.json();
+            if (!json || json.error) return null;
+            return json;
+        } catch (err) {
+            console.warn('[AliatNotebook API fallback]', err?.message || err);
+            return null;
+        } finally {
+            if (timer) clearTimeout(timer);
+        }
+    }
+
+    function extractLocalNotebookPoints(sources, maxPerSource = 4) {
+        const pts = [];
+        (sources || []).forEach((s, idx) => {
+            const tag = `Font ${idx + 1}`;
+            const title = String(s?.title || (`Document ${idx + 1}`)).trim();
+            const rawLines = String(s?.content || '')
+                .split(/\n+/)
+                .map(l => l.replace(/^[-*•\d.)\s#]+/, '').trim())
+                .filter(l => l.length >= 12);
+            const picked = rawLines.slice(0, maxPerSource);
+            if (picked.length === 0 && s?.content) {
+                picked.push(String(s.content).trim().substring(0, 220));
+            }
+            picked.forEach(txt => {
+                pts.push({ tag, title, text: txt.substring(0, 260) });
+            });
+        });
+        return pts;
+    }
+
+    function synthesizeLocalArtifact(artifactType, notebookTitle, sources) {
+        const es = isEsLang();
+        const titleTopic = notebookTitle || tr("Quadern d'Estudi", "Cuaderno de Estudio");
+        const pts = extractLocalNotebookPoints(sources, 4);
+        const tagsList = (sources || []).map((_, i) => `[Font ${i + 1}]`).join(', ') || '[Font 1]';
+        const pointsMd = pts.length > 0
+            ? pts.map(p => `- **${p.title}**: ${p.text} [${p.tag}]`).join('\n')
+            : `- **${titleTopic}**: ${tr('Idees centrals extretes del material actiu del quadern.', 'Ideas centrales extraídas del material activo del cuaderno.')} [Font 1]`;
+
+        const labels = {
+            study_guide: tr("Guia d'Estudi Completa (amb Citacions)", "Guía de Estudio Completa (con Citas)"),
+            briefing_doc: tr("Document de Síntesi Executiva (Briefing Doc)", "Documento de Síntesis Ejecutiva (Briefing Doc)"),
+            faq: tr("Preguntes Freqüents d'Examen (FAQ)", "Preguntas Frecuentes de Examen (FAQ)"),
+            timeline: tr("Línia Temporal i Seqüència de Processos", "Línea Temporal y Secuencia de Procesos"),
+            glossary: tr("Glossari Acadèmic de Conceptes Clau", "Glosario Académico de Conceptos Clave"),
+            exam_traps: tr("Informe de Trampes d'Examen i Errors Freqüents", "Informe de Trampas de Examen y Errores Frecuentes"),
+            flashcards_deck: tr("Bateria de Targetes de Memòria Q&A", "Batería de Tarjetas de Memoria Q&A"),
+            mock_exam: tr("Simulacre d'Examen Autoavaluable", "Simulacro de Examen Autoevaluable")
+        };
+        const label = labels[artifactType] || labels.study_guide;
+
+        let content = '';
+        if (artifactType === 'briefing_doc') {
+            content = es
+                ? `### Briefing Ejecutivo · ${titleTopic}\n\n**Fuentes analizadas:** ${tagsList}\n\n#### 1. Puntos esenciales de las fuentes\n${pointsMd}\n\n#### 2. Conclusiones operativas\n- Prioriza la comprensión causal de **${titleTopic}** antes de memorizar detalles aislados [${pts[0]?.tag || 'Font 1'}].\n- Conecta cada apartado práctico con los criterios de evaluación.`
+                : `### Briefing Executiu · ${titleTopic}\n\n**Fonts analitzades:** ${tagsList}\n\n#### 1. Punts essencials de les fonts\n${pointsMd}\n\n#### 2. Conclusions operatives\n- Prioritza la comprensió causal de **${titleTopic}** abans de memoritzar detalls aïllats [${pts[0]?.tag || 'Font 1'}].\n- Connecta cada apartat pràctic amb els criteris d'avaluació.`;
+        } else if (artifactType === 'faq') {
+            const p0 = pts[0] || { tag: 'Font 1', text: titleTopic };
+            const p1 = pts[1] || p0;
+            content = es
+                ? `### Preguntas Clave de Examen (FAQ) · ${titleTopic}\n\n**1. ¿Cuál es la base fundamental de ${titleTopic}?**\n${p0.text} [${p0.tag}].\n\n**2. ¿Qué relaciones o procedimientos destacan las fuentes?**\n${p1.text} [${p1.tag}].\n\n**3. Puntos que suelen preguntarse:**\n${pointsMd}\n\n**4. ¿Cómo responder con nota alta?**\nDefine el concepto clave, cita el mecanismo o fórmula aplicable y concluye con un ejemplo breve [${p0.tag}].`
+                : `### Preguntes Clau d'Examen (FAQ) · ${titleTopic}\n\n**1. Quina és la base fonamental de ${titleTopic}?**\n${p0.text} [${p0.tag}].\n\n**2. Quines relacions o procediments destaquen les fonts?**\n${p1.text} [${p1.tag}].\n\n**3. Punts que solen sortir a examen:**\n${pointsMd}\n\n**4. Com respondre amb nota alta?**\nDefineix el concepte clau, cita el mecanisme o fórmula aplicable i conclou amb un exemple breu [${p0.tag}].`;
+        } else if (artifactType === 'timeline') {
+            const steps = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', text: titleTopic }])
+                .map((p, i) => `${i + 1}. **${tr('Fase', 'Fase')} ${i + 1} (${p.title}):** ${p.text} [${p.tag}]`)
+                .join('\n');
+            content = `### ${label} · ${titleTopic}\n\n${steps}`;
+        } else if (artifactType === 'glossary') {
+            const rows = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', title: titleTopic, text: tr('Definició principal del tema', 'Definición principal del tema') }])
+                .map((p, i) => `| ${tr('Concepte', 'Concepto')} ${i + 1} | ${p.text.replace(/\|/g, '/')} | [${p.tag}] |`)
+                .join('\n');
+            content = es
+                ? `### Glosario Clave · ${titleTopic}\n\n| Concepto / Bloque | Síntesis de las fuentes | Cita |\n| :--- | :--- | :---: |\n${rows}`
+                : `### Glossari Clau · ${titleTopic}\n\n| Concepte / Bloc | Síntesi de les fonts | Citació |\n| :--- | :--- | :---: |\n${rows}`;
+        } else if (artifactType === 'exam_traps') {
+            content = es
+                ? `### Trampas de Examen y Errores Frecuentes · ${titleTopic}\n\n#### Aspectos críticos a vigilar\n${pointsMd}\n\n#### Errores habituales que restan puntos\n1. **Confundir causa y efecto** al explicar los procesos de [${pts[0]?.tag || 'Font 1'}].\n2. **Omitir justificación o unidades** en problemas y respuestas desarrolladas.\n3. **Checklist pre-entrega:**\n   - [ ] He respondido exactamente a lo que pide el enunciado.\n   - [ ] He revisado excepciones y definiciones exactas (${tagsList}).`
+                : `### Trampes d'Examen i Errors Freqüents · ${titleTopic}\n\n#### Aspectes crítics a vigilar\n${pointsMd}\n\n#### Errors habituals que resten punts\n1. **Confondre causa i efecte** en explicar els processos de [${pts[0]?.tag || 'Font 1'}].\n2. **Ometre justificació o unitats** en problemes i respostes desenvolupades.\n3. **Checklist pre-lliurament:**\n   - [ ] He respost exactament el que demana l'enunciat.\n   - [ ] He revisat excepcions i definicions exactes (${tagsList}).`;
+        } else if (artifactType === 'flashcards_deck') {
+            const cards = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', title: titleTopic, text: titleTopic }])
+                .map((p, i) => es
+                    ? `**Tarjeta #${i + 1} · ${p.title}**\n- **Pregunta:** ¿Qué punto clave recoge esta fuente sobre ${p.title}?\n- **Respuesta:** ${p.text} [${p.tag}]`
+                    : `**Targeta #${i + 1} · ${p.title}**\n- **Pregunta:** Quin punt clau recull aquesta font sobre ${p.title}?\n- **Resposta:** ${p.text} [${p.tag}]`)
+                .join('\n\n');
+            content = `### ${label} · ${titleTopic}\n\n${cards}`;
+        } else if (artifactType === 'mock_exam') {
+            const p0 = pts[0] || { tag: 'Font 1', title: titleTopic, text: titleTopic };
+            const p1 = pts[1] || p0;
+            content = es
+                ? `### ${label} · ${titleTopic}\n\n#### Parte 1: Preguntas de Examen\n1. **Desarrolla y justifica el principio central expuesto en ${p0.title} [${p0.tag}].**\n2. **Analiza la relación práctica e implicaciones descritas en ${p1.title} [${p1.tag}].**\n\n#### Parte 2: Pauta de Corrección y Solucionario\n- **Pregunta 1 (5 pts):** Debe incluir: ${p0.text} [${p0.tag}].\n- **Pregunta 2 (5 pts):** Debe justificar: ${p1.text} [${p1.tag}].`
+                : `### ${label} · ${titleTopic}\n\n#### Part 1: Preguntes d'Examen\n1. **Desenvolupa i justifica el principi central exposat a ${p0.title} [${p0.tag}].**\n2. **Analitza la relació pràctica i implicacions descrites a ${p1.title} [${p1.tag}].**\n\n#### Part 2: Pauta de Correcció i Solucionari\n- **Pregunta 1 (5 pts):** Ha d'incloure: ${p0.text} [${p0.tag}].\n- **Pregunta 2 (5 pts):** Ha de justificar: ${p1.text} [${p1.tag}].`;
+        } else {
+            content = es
+                ? `### Guía de Estudio · ${titleTopic}\n\n#### Ideas clave de las fuentes activas (${tagsList})\n${pointsMd}\n\n#### Ruta de estudio recomendada\n1. Lee y subraya las definiciones centrales de ${tagsList}.\n2. Haz 2 preguntas concretas en el **Chat con Citas** para aclarar dudas.\n3. Repasa con el **Audio Overview (Marc y Laia)** o el **Laboratorio de 6 Juegos**.`
+                : `### Guia d'Estudi · ${titleTopic}\n\n#### Idees clau de les fonts actives (${tagsList})\n${pointsMd}\n\n#### Ruta d'estudi recomanada\n1. Llegeix i subratlla les definicions centrals de ${tagsList}.\n2. Fes 2 preguntes concretes al **Xat amb Citacions** per aclarir dubtes.\n3. Repassa amb l'**Audio Overview (Marc i Laia)** o el **Laboratori de 6 Jocs**.`;
+        }
+
+        return { title: `${label} · ${titleTopic}`, content };
+    }
+
+    function synthesizeLocalAudioOverview(notebookTitle, sources) {
+        const es = isEsLang();
+        const titleTopic = notebookTitle || tr("Quadern d'Estudi", "Cuaderno de Estudio");
+        const pts = extractLocalNotebookPoints(sources, 3);
+        const s1 = sources[0]?.title || titleTopic;
+        const p1 = pts[0]?.text || titleTopic;
+        const p2 = pts[1]?.text || p1;
+        const p3 = pts[2]?.text || p2;
+
+        const dialogue = es ? [
+            { speaker: "Marc", text: `¡Bienvenidos a AliatNotebook! Hoy vamos a repasar a fondo "${titleTopic}" analizando ${sources.length} ${sources.length === 1 ? 'fuente activa' : 'fuentes activas'}.` },
+            { speaker: "Laia", text: `¡Hola a todos! Empezando por ${s1} en la Font 1, lo primero que hay que dominar es esto: ${p1}` },
+            { speaker: "Marc", text: `Muy claro. ¿Y cuál sería el siguiente punto que suele marcar la diferencia en un examen?` },
+            { speaker: "Laia", text: `Mira lo que recoge el cuaderno: ${p2}. Entender cómo se conecta con la práctica evita la mayoría de errores.` },
+            { speaker: "Marc", text: `También destaca este detalle clave: ${p3}. ¿Algún truco rápido para recordarlo mejor?` },
+            { speaker: "Laia", text: `Sin duda: genera la Guía de Estudio o las Trampas de Examen aquí en AliatNotebook, y usa el botón de Interrumpir y Preguntar si te queda cualquier duda.` }
+        ] : [
+            { speaker: "Marc", text: `Benvinguts a AliatNotebook! Avui repassem a fons "${titleTopic}" analitzant ${sources.length} ${sources.length === 1 ? 'font activa' : 'fonts actives'}.` },
+            { speaker: "Laia", text: `Hola a tothom! Començant per ${s1} a la Font 1, el primer que cal dominar és això: ${p1}` },
+            { speaker: "Marc", text: `Molt clar. I quin seria el següent punt que acostuma a marcar la diferència en un examen?` },
+            { speaker: "Laia", text: `Fixa't en el que recull el quadern: ${p2}. Entendre com es connecta amb la pràctica evita la majoria d'errors.` },
+            { speaker: "Marc", text: `També destaca aquest detall clau: ${p3}. Algun truc ràpid per recordar-ho millor?` },
+            { speaker: "Laia", text: `Sens dubte: genera la Guia d'Estudi o les Trampes d'Examen aquí a AliatNotebook, i fes servir el botó d'Interrompre i Preguntar si et queda qualsevol dubte.` }
+        ];
+
+        return {
+            title: (es ? "Deep Dive Audio: " : "Deep Dive d'Àudio: ") + titleTopic,
+            durationEstimate: "2 min",
+            summary: es
+                ? `Conversación entre Marc y Laia sobre ${titleTopic} a partir de ${sources.length} fuente(s).`
+                : `Conversa entre en Marc i la Laia sobre ${titleTopic} a partir de ${sources.length} font(s).`,
+            keyTakeaways: pts.slice(0, 3).map(p => `${p.text.substring(0, 100)} [${p.tag}]`),
+            dialogue
+        };
+    }
+
+    function synthesizeLocalGroundedAnswer(question, notebookTitle, sources) {
+        const es = isEsLang();
+        const pts = extractLocalNotebookPoints(sources, 5);
+        const words = String(question || '').toLowerCase().split(/\s+/).filter(w => w.length > 3);
+        const ranked = [...pts].sort((a, b) => {
+            const score = (txt) => words.reduce((acc, w) => acc + (txt.toLowerCase().includes(w) ? 1 : 0), 0);
+            return score(b.text) - score(a.text);
+        }).slice(0, 4);
+
+        const citations = Array.from(new Set(ranked.map(r => r.tag)));
+        if (citations.length === 0) citations.push('Font 1');
+
+        const linesMd = ranked.length > 0
+            ? ranked.map(r => `- **${r.title}**: ${r.text} [${r.tag}]`).join('\n')
+            : `- **${notebookTitle}**: ${tr('Conceptes principals recollits a la font activa.', 'Conceptos principales recogidos en la fuente activa.')} [Font 1]`;
+
+        return {
+            answer: es
+                ? `Según las fuentes activas de **${notebookTitle}** sobre *"${question}"*:\n\n${linesMd}\n\n**Síntesis:** Utiliza estas referencias [${citations.join('], [')}] para justificar tu respuesta con rigor.`
+                : `Segons les fonts actives de **${notebookTitle}** sobre *"${question}"*:\n\n${linesMd}\n\n**Síntesi:** Utilitza aquestes referències [${citations.join('], [')}] per justificar la teva resposta amb rigor.`,
+            citations,
+            followUps: es
+                ? [`Resume las ideas clave de [${citations[0]}]`, `¿Qué preguntas trampa hay sobre ${notebookTitle}?`]
+                : [`Resumeix les idees clau de [${citations[0]}]`, `Quines preguntes trampa hi ha sobre ${notebookTitle}?`]
+        };
+    }
+
+    function decorateCitationBadges(htmlStr) {
+        return String(htmlStr || '').replace(/\[Font\s+(\d+)\]/gi, (match, numStr) => {
+            const idx = Math.max(0, (parseInt(numStr, 10) || 1) - 1);
+            return `<button type="button" onclick="event.stopPropagation(); viewNotebookSource(${idx})" class="inline-flex items-center px-1.5 py-0.5 mx-0.5 rounded-md bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-950/90 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-mono text-[10px] font-extrabold border border-indigo-300/70 dark:border-indigo-700/70 cursor-pointer transition" title="${tr('Veure Font', 'Ver Fuente')} ${numStr}">[Font ${numStr}]</button>`;
+        });
+    }
+
+    function ensureAliatNotebookModalDOM() {
+        let modal = document.getElementById('aliat-notebook-modal') || document.getElementById('gemini-notebook-modal');
         if (modal) return modal;
 
         modal = document.createElement('div');
-        modal.id = 'gemini-notebook-modal';
+        modal.id = 'aliat-notebook-modal';
         modal.className = 'fixed inset-0 z-[9996] hidden items-center justify-center bg-black/80 backdrop-blur-md p-1.5 sm:p-3 md:p-5 overflow-hidden';
         modal.innerHTML = `
-            <div class="w-full max-w-[1400px] h-[95dvh] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in">
-                <!-- Capçalera superior estil Google NotebookLM -->
+            <div id="aliat-notebook-shell" class="relative w-full max-w-[1440px] h-[95dvh] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in">
+                <!-- Capçalera superior AliatNotebook -->
                 <div class="px-4 sm:px-6 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
                     <div class="flex items-center gap-3 min-w-0">
                         <div class="w-9 h-9 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
@@ -1599,96 +1822,131 @@
                         </div>
                         <div class="min-w-0">
                             <div class="flex items-center gap-2">
-                                <input id="nb-title-input" type="text" onchange="updateNotebookTitle(this.value)" class="bg-transparent text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100 outline-none border-b border-transparent focus:border-indigo-500 truncate max-w-[260px] sm:max-w-md" value="Quadern d'Estudi">
-                                <span class="text-xs text-zinc-400 dark:text-zinc-500">· Gemini Notebook Studio</span>
+                                <input id="nb-title-input" type="text" onchange="updateNotebookTitle(this.value)" class="bg-transparent text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100 outline-none border-b border-transparent focus:border-indigo-500 truncate max-w-[200px] sm:max-w-md" value="Quadern d'Estudi">
+                                <span class="text-xs font-extrabold text-indigo-600 dark:text-indigo-400">· AliatNotebook</span>
                             </div>
-                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">${tr('Fonts verificades amb citacions [Font X], Audio Overview a 2 veus (Marc i Laia), Guia d\'Estudi i Notes', 'Fuentes verificadas con citas [Font X], Audio Overview a 2 voces (Marc y Laia), Guía de Estudio y Notas')}</p>
+                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">${tr('Quadern intel·ligent amb citacions clicables [Font X], 8 Generadors en 1 Clic, Pòdcast IA a 2 veus i Notes', 'Cuaderno inteligente con citas clicables [Font X], 8 Generadores en 1 Clic, Pódcast IA a 2 voces y Notas')}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 shrink-0">
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                        <button type="button" id="nb-guide-btn" onclick="openAliatNotebookGuide()" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/70 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap" title="${tr('Veure guia pas a pas d\'AliatNotebook', 'Ver guía paso a paso de AliatNotebook')}">
+                            <span class="w-4 h-4 rounded-full bg-amber-500/20 flex items-center justify-center text-[11px] font-black">?</span>
+                            <span>${tr('Com funciona', 'Cómo funciona')}</span>
+                        </button>
                         <button type="button" onclick="openStudyGamesHubModal(null, notebookState.title)" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/70 text-blue-700 dark:text-sky-300 border border-blue-200 dark:border-blue-800 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="15" cy="11" r="1"/><circle cx="17" cy="13" r="1"/></svg>
-                            <span>${tr('Jugar amb aquest Quadern', 'Jugar con este Cuaderno')}</span>
+                            <span class="hidden sm:inline">${tr('Jugar amb aquest Quadern', 'Jugar con este Cuaderno')}</span>
+                            <span class="sm:hidden">${tr('Jocs', 'Juegos')}</span>
                         </button>
                         <button type="button" onclick="exportNotebookToWord()" class="px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            <span>Exportar (.doc)</span>
+                            <span class="hidden sm:inline">Exportar (.doc)</span>
+                            <span class="sm:hidden">.doc</span>
                         </button>
-                        <button type="button" onclick="closeGeminiNotebookModal()" class="p-2 rounded-xl bg-zinc-200/70 hover:bg-zinc-300/80 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 transition cursor-pointer" aria-label="Tancar">
+                        <button type="button" onclick="closeAliatNotebookModal()" class="p-2 rounded-xl bg-zinc-200/70 hover:bg-zinc-300/80 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 transition cursor-pointer" aria-label="Tancar">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         </button>
                     </div>
                 </div>
 
-                <!-- Cos de 3 columnes estil NotebookLM -->
-                <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-zinc-200 dark:divide-zinc-800 overflow-y-auto lg:overflow-hidden">
+                <!-- Barra d'estat i selector de vista ràpida (3 columnes o focus per secció) -->
+                <div class="px-4 sm:px-6 py-2 bg-white dark:bg-zinc-950 border-b border-zinc-200/80 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 shrink-0">
+                    <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar">
+                        <button type="button" data-nb-view-btn="all" onclick="setNotebookWorkspaceView('all')" class="nb-view-tab-btn px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-[11px] font-bold cursor-pointer transition whitespace-nowrap">${tr('Vista Completa (3 panells)', 'Vista Completa (3 paneles)')}</button>
+                        <button type="button" data-nb-view-btn="sources" onclick="setNotebookWorkspaceView('sources')" class="nb-view-tab-btn px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap">1. ${tr('Fonts', 'Fuentes')}</button>
+                        <button type="button" data-nb-view-btn="studio" onclick="setNotebookWorkspaceView('studio')" class="nb-view-tab-btn px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap">2. ${tr('Generador i Xat', 'Generador y Chat')}</button>
+                        <button type="button" data-nb-view-btn="notes" onclick="setNotebookWorkspaceView('notes')" class="nb-view-tab-btn px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap">3. ${tr('Pòdcast i Notes', 'Pódcast y Notas')}</button>
+                    </div>
+                    <div id="nb-workspace-stats-pill" class="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hidden sm:block"></div>
+                </div>
+
+                <!-- Cos de 3 columnes d'AliatNotebook -->
+                <div id="nb-main-grid" class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-zinc-200 dark:divide-zinc-800 overflow-y-auto lg:overflow-hidden">
                     <!-- COLUMNA 1 (3 cols): FONTS DEL QUADERN (SOURCES) -->
-                    <div class="lg:col-span-3 flex flex-col min-h-0 bg-zinc-50/50 dark:bg-zinc-950/60 p-4 space-y-3 overflow-y-auto custom-scrollbar">
-                        <div class="flex items-center justify-between">
+                    <div id="nb-col-sources" data-nb-guide="sources" class="lg:col-span-3 flex flex-col min-h-0 bg-zinc-50/50 dark:bg-zinc-950/60 p-4 space-y-3 overflow-y-auto custom-scrollbar transition-all">
+                        <div class="flex items-center justify-between gap-2">
                             <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">${tr('Fonts del Quadern', 'Fuentes del Cuaderno')}</span>
-                            <span id="nb-sources-count-label" class="text-[11px] font-mono text-zinc-500">1 activa</span>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="toggleAllNotebookSources()" class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">${tr('Totes', 'Todas')}</button>
+                                <span id="nb-sources-count-label" class="text-[11px] font-mono text-zinc-500">1 activa</span>
+                            </div>
                         </div>
                         <div class="grid grid-cols-2 gap-1.5">
-                            <button type="button" onclick="promptAddNotebookTextSource()" class="py-2 px-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition cursor-pointer flex items-center justify-center gap-1">
+                            <button type="button" onclick="promptAddNotebookTextSource()" class="py-2 px-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition cursor-pointer flex items-center justify-center gap-1 active:scale-95">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                <span>${tr('Afegir Text/Apunt', 'Añadir Texto/Apunte')}</span>
+                                <span>${tr('Afegir Font', 'Añadir Fuente')}</span>
                             </button>
-                            <button type="button" onclick="importCurrentChatIntoNotebook()" class="py-2 px-2.5 rounded-xl bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold transition cursor-pointer flex items-center justify-center gap-1">
+                            <button type="button" onclick="importCurrentChatIntoNotebook()" class="py-2 px-2.5 rounded-xl bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold transition cursor-pointer flex items-center justify-center gap-1 active:scale-95">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                                 <span>${tr('Importar Xat', 'Importar Chat')}</span>
                             </button>
                         </div>
+                        <button type="button" onclick="syncStudyPdfIntoNotebook(true)" class="w-full py-1.5 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800/70 text-emerald-700 dark:text-emerald-300 text-[10.5px] font-bold transition cursor-pointer flex items-center justify-center gap-1.5">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span>${tr('Sincronitzar PDFs i Sessions del Pla', 'Sincronizar PDFs y Sesiones del Plan')}</span>
+                        </button>
                         <div id="nb-sources-list" class="space-y-2 flex-1 overflow-y-auto pr-0.5 custom-scrollbar"></div>
                     </div>
 
-                    <!-- COLUMNA 2 (5 cols): GUIA DEL QUADERN, ARTEFACTES EN 1 CLIC I XAT AMB CITACIONS -->
-                    <div class="lg:col-span-5 flex flex-col min-h-0 bg-white dark:bg-zinc-950 p-4 space-y-3 overflow-y-auto custom-scrollbar">
-                        <div>
-                            <div class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 mb-2">${tr('Generador d\'Estudi del Quadern (1 Clic amb Citacions)', 'Generador de Estudio del Cuaderno (1 Clic con Citas)')}</div>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                                <button type="button" onclick="generateNotebookArtifact('study_guide')" class="p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer">
+                    <!-- COLUMNA 2 (5 cols): ARTEFACTES EN 1 CLIC I XAT AMB CITACIONS -->
+                    <div id="nb-col-studio" class="lg:col-span-5 flex flex-col min-h-0 bg-white dark:bg-zinc-950 p-4 space-y-3 overflow-y-auto custom-scrollbar">
+                        <div data-nb-guide="artifacts" class="rounded-2xl transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">${tr('Generador d\'Estudi (8 Documents en 1 Clic amb Citacions)', 'Generador de Estudio (8 Documentos en 1 Clic con Citas)')}</span>
+                                <span class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">${tr('Es desa a Notes →', 'Se guarda en Notas →')}</span>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                                <button type="button" data-nb-artifact="study_guide" onclick="generateNotebookArtifact('study_guide', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
                                     <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Guia d\'Estudi', 'Guía de Estudio')}</div>
                                     <div class="text-[10px] text-zinc-500 truncate">${tr('Temari + Preguntes', 'Temario + Preguntas')}</div>
                                 </button>
-                                <button type="button" onclick="generateNotebookArtifact('briefing_doc')" class="p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer">
+                                <button type="button" data-nb-artifact="briefing_doc" onclick="generateNotebookArtifact('briefing_doc', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
                                     <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">Briefing Doc</div>
                                     <div class="text-[10px] text-zinc-500 truncate">${tr('Síntesi executiva', 'Síntesis ejecutiva')}</div>
                                 </button>
-                                <button type="button" onclick="generateNotebookArtifact('faq')" class="p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer">
+                                <button type="button" data-nb-artifact="faq" onclick="generateNotebookArtifact('faq', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
                                     <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">FAQ d'Examen</div>
                                     <div class="text-[10px] text-zinc-500 truncate">${tr('Preguntes clau', 'Preguntas clave')}</div>
                                 </button>
-                                <button type="button" onclick="generateNotebookArtifact('timeline')" class="p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer">
+                                <button type="button" data-nb-artifact="timeline" onclick="generateNotebookArtifact('timeline', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
                                     <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Línia Temporal', 'Línea Temporal')}</div>
                                     <div class="text-[10px] text-zinc-500 truncate">${tr('Seqüència i fases', 'Secuencia y fases')}</div>
                                 </button>
-                                <button type="button" onclick="generateNotebookArtifact('glossary')" class="p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer">
+                                <button type="button" data-nb-artifact="glossary" onclick="generateNotebookArtifact('glossary', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
                                     <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Glossari Clau', 'Glosario Clave')}</div>
                                     <div class="text-[10px] text-zinc-500 truncate">${tr('Definicions exactes', 'Definiciones exactas')}</div>
                                 </button>
-                                <button type="button" onclick="generateNotebookArtifact('exam_traps')" class="p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer">
+                                <button type="button" data-nb-artifact="exam_traps" onclick="generateNotebookArtifact('exam_traps', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
                                     <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Trampes Examen', 'Trampas Examen')}</div>
                                     <div class="text-[10px] text-zinc-500 truncate">${tr('Errors habituals', 'Errores habituales')}</div>
+                                </button>
+                                <button type="button" data-nb-artifact="flashcards_deck" onclick="generateNotebookArtifact('flashcards_deck', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
+                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Targetes Q&A', 'Tarjetas Q&A')}</div>
+                                    <div class="text-[10px] text-zinc-500 truncate">${tr(' Bateria memòria', 'Batería memoria')}</div>
+                                </button>
+                                <button type="button" data-nb-artifact="mock_exam" onclick="generateNotebookArtifact('mock_exam', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
+                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Simulacre Examen', 'Simulacro Examen')}</div>
+                                    <div class="text-[10px] text-zinc-500 truncate">${tr('Amb solucionari', 'Con solucionario')}</div>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Xat fonamentat en les fonts -->
-                        <div class="flex-1 min-h-[220px] flex flex-col border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden bg-zinc-50/40 dark:bg-zinc-900/40">
+                        <div data-nb-guide="chat" class="flex-1 min-h-[240px] flex flex-col border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden bg-zinc-50/40 dark:bg-zinc-900/40 transition-all">
                             <div class="px-3.5 py-2 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[11px] font-bold text-zinc-600 dark:text-zinc-300">
-                                <span>${tr('Xat d\'Investigació amb Citacions [Font X]', 'Chat de Investigación con Citas [Font X]')}</span>
+                                <span>${tr('Xat d\'Investigació amb Citacions Clicables [Font X]', 'Chat de Investigación con Citas Clicables [Font X]')}</span>
                                 <button type="button" onclick="clearNotebookChat()" class="text-[10px] text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer">${tr('Netejar', 'Limpiar')}</button>
                             </div>
                             <div id="nb-grounded-chat-box" class="flex-1 p-3.5 space-y-3 overflow-y-auto custom-scrollbar text-xs"></div>
                             <form onsubmit="submitNotebookGroundedQuestion(event)" class="p-2 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center gap-2">
-                                <input id="nb-grounded-chat-input" type="text" class="flex-1 bg-transparent px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 outline-none" placeholder="Pregunta sobre les fonts actives (ex: resumeix les idees clau amb citacions)...">
-                                <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold cursor-pointer shrink-0">${tr('Preguntar', 'Preguntar')}</button>
+                                <input id="nb-grounded-chat-input" type="text" class="flex-1 bg-transparent px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 outline-none" placeholder="${tr('Pregunta sobre les fonts actives (ex: resumeix les idees clau amb citacions)...', 'Pregunta sobre las fuentes activas (ej: resume las ideas clave con citas)...')}">
+                                <button type="submit" id="nb-chat-submit-btn" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold cursor-pointer shrink-0 active:scale-95">${tr('Preguntar', 'Preguntar')}</button>
                             </form>
                         </div>
                     </div>
 
                     <!-- COLUMNA 3 (4 cols): AUDIO OVERVIEW PODCAST A 2 VEUS + TAULER DE NOTES -->
-                    <div class="lg:col-span-4 flex flex-col min-h-0 bg-zinc-50/50 dark:bg-zinc-950/60 p-4 space-y-4 overflow-y-auto custom-scrollbar">
+                    <div data-nb-guide="audio-notes" id="nb-right-column" class="lg:col-span-4 flex flex-col min-h-0 bg-zinc-50/50 dark:bg-zinc-950/60 p-4 space-y-4 overflow-y-auto custom-scrollbar transition-all">
                         <!-- Audio Overview (Deep Dive Podcast) -->
                         <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3 shadow-2xs">
                             <div class="flex items-center justify-between gap-2">
@@ -1696,7 +1954,7 @@
                                     <div class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">Audio Overview · Deep Dive Podcast</div>
                                     <div class="text-[10px] text-zinc-500 dark:text-zinc-400">${tr('Conversa a 2 veus (Marc i Laia) sobre els teus apunts', 'Conversación a 2 voces (Marc y Laia) sobre tus apuntes')}</div>
                                 </div>
-                                <button type="button" onclick="generateNotebookAudioOverview()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition cursor-pointer shrink-0">
+                                <button type="button" id="nb-audio-generate-btn" onclick="generateNotebookAudioOverview()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition cursor-pointer shrink-0 active:scale-95">
                                     ${tr('Generar Pòdcast IA', 'Generar Pódcast IA')}
                                 </button>
                             </div>
@@ -1704,27 +1962,183 @@
                         </div>
 
                         <!-- Notes Desades del Quadern -->
-                        <div class="flex-1 flex flex-col min-h-[180px] space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">${tr('Notes i Documents del Quadern', 'Notas y Documentos del Cuaderno')}</span>
+                        <div class="flex-1 flex flex-col min-h-[200px] space-y-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                                    <span>${tr('Notes i Documents del Quadern', 'Notas y Documentos del Cuaderno')}</span>
+                                    <span id="nb-notes-count-badge" class="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">0</span>
+                                </span>
                                 <button type="button" onclick="addCustomNoteToNotebook()" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">+ ${tr('Nova Nota', 'Nueva Nota')}</button>
                             </div>
+                            <input id="nb-notes-search-input" type="text" oninput="filterNotebookNotes(this.value)" placeholder="${tr('Cercar a les notes i documents...', 'Buscar en las notas y documentos...')}" class="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-800 dark:text-zinc-200 outline-none focus:border-indigo-500">
                             <div id="nb-saved-notes-list" class="space-y-2.5 flex-1 overflow-y-auto pr-0.5 custom-scrollbar"></div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Sub-modal inline per formularis i lectura (evita window.prompt en iframes) -->
+                <div id="nb-inline-dialog-backdrop" class="hidden absolute inset-0 z-40 bg-black/60 backdrop-blur-xs items-center justify-center p-3 sm:p-5">
+                    <div id="nb-inline-dialog-card" class="w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"></div>
+                </div>
+
+                <!-- Capa de Guia Pas a Pas integrada dins AliatNotebook -->
+                <div id="nb-guide-overlay" class="hidden absolute inset-0 z-50 pointer-events-none"></div>
             </div>
         `;
         document.body.appendChild(modal);
         return modal;
     }
 
-    window.openGeminiNotebookModal = function () {
-        if (typeof Swal !== 'undefined') Swal.close();
+    function updateNotebookWorkspaceStats() {
+        const pill = document.getElementById('nb-workspace-stats-pill');
+        if (!pill) return;
+        const sources = notebookState.sources || [];
+        const active = sources.filter(s => s.checked !== false);
+        const totalWords = active.reduce((acc, s) => acc + String(s.content || '').trim().split(/\s+/).filter(Boolean).length, 0);
+        const notesCount = (notebookState.notes || []).length;
+        pill.textContent = `${active.length}/${sources.length} ${tr('fonts actives', 'fuentes activas')} · ${totalWords} ${tr('paraules', 'palabras')} · ${notesCount} ${tr('notes', 'notas')}`;
+    }
+
+    window.setNotebookWorkspaceView = function (viewMode) {
+        const colSources = document.getElementById('nb-col-sources');
+        const colStudio = document.getElementById('nb-col-studio');
+        const colNotes = document.getElementById('nb-right-column');
+        if (!colSources || !colStudio || !colNotes) return;
+
+        [colSources, colStudio, colNotes].forEach(c => {
+            c.classList.remove('hidden', 'lg:col-span-12', 'lg:col-span-3', 'lg:col-span-5', 'lg:col-span-4');
+        });
+
+        if (viewMode === 'sources') {
+            colSources.classList.add('lg:col-span-12');
+            colStudio.classList.add('hidden');
+            colNotes.classList.add('hidden');
+        } else if (viewMode === 'studio') {
+            colSources.classList.add('hidden');
+            colStudio.classList.add('lg:col-span-12');
+            colNotes.classList.add('hidden');
+        } else if (viewMode === 'notes') {
+            colSources.classList.add('hidden');
+            colStudio.classList.add('hidden');
+            colNotes.classList.add('lg:col-span-12');
+        } else {
+            colSources.classList.add('lg:col-span-3');
+            colStudio.classList.add('lg:col-span-5');
+            colNotes.classList.add('lg:col-span-4');
+        }
+
+        const shell = document.getElementById('aliat-notebook-shell');
+        if (shell && shell.querySelectorAll) {
+            shell.querySelectorAll('.nb-view-tab-btn').forEach(btn => {
+                const isAct = btn.getAttribute('data-nb-view-btn') === viewMode;
+                btn.className = isAct
+                    ? 'nb-view-tab-btn px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-[11px] font-bold cursor-pointer transition whitespace-nowrap'
+                    : 'nb-view-tab-btn px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap';
+            });
+        }
+    };
+
+    window.syncStudyPdfIntoNotebook = function (notify = false) {
+        let added = 0;
+        const existingTitles = new Set((notebookState.sources || []).map(s => String(s.title || '').toLowerCase()));
+        if (typeof pdfTextContent !== 'undefined' && pdfTextContent && String(pdfTextContent).trim().length > 30) {
+            const pdfTitle = tr('Apunts PDF del Pla d\'Estudis', 'Apuntes PDF del Plan de Estudios');
+            if (!existingTitles.has(pdfTitle.toLowerCase())) {
+                notebookState.sources.push({
+                    id: 'src_pdf_' + Date.now(),
+                    title: pdfTitle,
+                    type: 'PDF Pla',
+                    checked: true,
+                    content: String(pdfTextContent).trim().substring(0, 18000)
+                });
+                existingTitles.add(pdfTitle.toLowerCase());
+                added++;
+            }
+        }
+        if (typeof generatedCalendarArray !== 'undefined' && Array.isArray(generatedCalendarArray) && generatedCalendarArray.length > 0) {
+            const calTitle = tr('Calendari i Temari de Sessions', 'Calendario y Temario de Sesiones');
+            if (!existingTitles.has(calTitle.toLowerCase())) {
+                const calText = generatedCalendarArray
+                    .map(s => `Sessió ${s.num} (${s.dia_real || ''}): ${s.tema || ''}`)
+                    .join('\n');
+                notebookState.sources.push({
+                    id: 'src_cal_' + Date.now(),
+                    title: calTitle,
+                    type: 'Pla d\'Estudi',
+                    checked: true,
+                    content: calText
+                });
+                added++;
+            }
+        }
+        if (added > 0) {
+            saveNotebookState();
+            renderNotebookSourcesList();
+            if (notify && typeof showToast === 'function') {
+                showToast(tr(`S'han sincronitzat ${added} font(s) del teu Pla d'Estudi!`, `¡Se han sincronizado ${added} fuente(s) de tu Plan de Estudio!`), 'success');
+            }
+        } else if (notify && typeof showToast === 'function') {
+            showToast(tr('Les fonts del teu Pla d\'Estudi i xat ja estan sincronitzades.', 'Las fuentes de tu Plan de Estudio y chat ya están sincronizadas.'), 'info');
+        }
+    };
+
+    window.toggleAllNotebookSources = function () {
+        const sources = notebookState.sources || [];
+        if (sources.length === 0) return;
+        const allChecked = sources.every(s => s.checked !== false);
+        sources.forEach(s => { s.checked = !allChecked; });
+        saveNotebookState();
+        renderNotebookSourcesList();
+    };
+
+    function closeNotebookInlineDialog() {
+        const backdrop = document.getElementById('nb-inline-dialog-backdrop');
+        if (backdrop) {
+            backdrop.classList.add('hidden');
+            backdrop.classList.remove('flex');
+        }
+    }
+    window.closeNotebookInlineDialog = closeNotebookInlineDialog;
+
+    function openNotebookInlineDialog({ title, bodyHtml, confirmLabel, onConfirm, maxWidthClass = 'max-w-lg' }) {
+        const backdrop = document.getElementById('nb-inline-dialog-backdrop');
+        const card = document.getElementById('nb-inline-dialog-card');
+        if (!backdrop || !card) return;
+
+        card.className = `w-full ${maxWidthClass} bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[86vh]`;
+        card.innerHTML = `
+            <div class="px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-2 bg-zinc-50 dark:bg-zinc-950/60">
+                <h3 class="text-sm font-extrabold text-zinc-900 dark:text-zinc-100 truncate">${esc(title)}</h3>
+                <button type="button" onclick="closeNotebookInlineDialog()" class="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-500 cursor-pointer">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div id="nb-inline-dialog-body" class="p-4 space-y-3 overflow-y-auto custom-scrollbar text-xs">${bodyHtml}</div>
+            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-end gap-2 bg-zinc-50/70 dark:bg-zinc-950/40">
+                <button type="button" onclick="closeNotebookInlineDialog()" class="px-3.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-bold cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800">${tr('Tancar', 'Cerrar')}</button>
+                ${confirmLabel ? `<button type="button" id="nb-inline-dialog-submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold cursor-pointer transition active:scale-95">${esc(confirmLabel)}</button>` : ''}
+            </div>
+        `;
+
+        backdrop.classList.remove('hidden');
+        backdrop.classList.add('flex');
+
+        if (confirmLabel && typeof onConfirm === 'function') {
+            const btn = document.getElementById('nb-inline-dialog-submit');
+            if (btn) {
+                btn.onclick = () => onConfirm();
+            }
+        }
+    }
+
+    window.openAliatNotebookModal = function () {
+        if (typeof Swal !== 'undefined' && Swal && typeof Swal.close === 'function') Swal.close();
         loadNotebookState();
-        const modal = ensureGeminiNotebookModalDOM();
+        const modal = ensureAliatNotebookModalDOM();
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+
+        window.syncStudyPdfIntoNotebook(false);
 
         const titleInput = document.getElementById('nb-title-input');
         if (titleInput) titleInput.value = notebookState.title || resolveCurrentStudyTopic();
@@ -1733,16 +2147,21 @@
         renderNotebookGroundedChat();
         renderNotebookAudioOverview();
         renderNotebookSavedNotes();
+        updateNotebookWorkspaceStats();
     };
+    window.openGeminiNotebookModal = window.openAliatNotebookModal;
 
-    window.closeGeminiNotebookModal = function () {
+    window.closeAliatNotebookModal = function () {
         stopNotebookPodcastSpeech();
-        const modal = document.getElementById('gemini-notebook-modal');
+        closeNotebookInlineDialog();
+        window.closeAliatNotebookGuide && window.closeAliatNotebookGuide();
+        const modal = document.getElementById('aliat-notebook-modal') || document.getElementById('gemini-notebook-modal');
         if (modal) {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
     };
+    window.closeGeminiNotebookModal = window.closeAliatNotebookModal;
 
     window.updateNotebookTitle = function (val) {
         if (val && val.trim()) {
@@ -1766,17 +2185,17 @@
         if (countEl) countEl.textContent = `${activeCount}/${sources.length} ${tr('actives', 'activas')}`;
 
         listEl.innerHTML = sources.map((src, idx) => `
-            <div class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border ${src.checked !== false ? 'border-indigo-400/80 dark:border-indigo-600/80' : 'border-zinc-200 dark:border-zinc-800 opacity-65'} space-y-1.5 transition">
+            <div onclick="viewNotebookSource(${idx})" class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border ${src.checked !== false ? 'border-indigo-400/80 dark:border-indigo-600/80' : 'border-zinc-200 dark:border-zinc-800 opacity-65'} space-y-1.5 transition hover:border-indigo-500 cursor-pointer">
                 <div class="flex items-start justify-between gap-2">
-                    <label class="flex items-start gap-2 cursor-pointer min-w-0 flex-1">
+                    <label class="flex items-start gap-2 cursor-pointer min-w-0 flex-1" onclick="event.stopPropagation()">
                         <input type="checkbox" ${src.checked !== false ? 'checked' : ''} onchange="toggleNotebookSourceChecked(${idx})" class="mt-0.5 rounded accent-indigo-600 cursor-pointer">
                         <div class="min-w-0">
                             <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">[Font ${idx + 1}] ${esc(src.title)}</div>
-                            <div class="text-[10px] text-zinc-500">${esc(src.type || 'Document')} · ${String(src.content || '').length} caràct.</div>
+                            <div class="text-[10px] text-zinc-500">${esc(src.type || 'Document')} · ${String(src.content || '').length} ${tr('caràct.', 'caract.')}</div>
                         </div>
                     </label>
                     ${sources.length > 1 ? `
-                        <button type="button" onclick="removeNotebookSource(${idx})" class="text-zinc-400 hover:text-rose-500 p-1 cursor-pointer" title="Eliminar font">
+                        <button type="button" onclick="event.stopPropagation(); removeNotebookSource(${idx});" class="text-zinc-400 hover:text-rose-500 p-1 cursor-pointer" title="${tr('Eliminar font', 'Eliminar fuente')}">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         </button>
                     ` : ''}
@@ -1784,6 +2203,7 @@
                 <p class="text-[11px] text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-snug">${esc(String(src.content || '').substring(0, 160))}</p>
             </div>
         `).join('');
+        updateNotebookWorkspaceStats();
     }
 
     window.toggleNotebookSourceChecked = function (idx) {
@@ -1799,21 +2219,125 @@
         renderNotebookSourcesList();
     };
 
-    window.promptAddNotebookTextSource = function () {
-        const title = window.prompt(tr('Títol de la nova font (ex: Tema 2 - Termodinàmica):', 'Título de la nueva fuente (ej: Tema 2 - Termodinámica):'), tr('Apunts de Classe', 'Apuntes de Clase'));
-        if (!title) return;
-        const content = window.prompt(tr('Enganxa el contingut o resum de la font:', 'Pega el contenido o resumen de la fuente:'), '');
-        if (!content || !content.trim()) return;
-        notebookState.sources.push({
-            id: 'src_' + Date.now(),
-            title: title.trim(),
-            type: tr('Text / Apunt', 'Texto / Apunte'),
-            checked: true,
-            content: content.trim()
+    window.viewNotebookSource = function (idx) {
+        const src = notebookState.sources[idx];
+        if (!src) return;
+        openNotebookInlineDialog({
+            title: `[Font ${idx + 1}] ${src.title}`,
+            confirmLabel: tr('Desar Canvis', 'Guardar Cambios'),
+            bodyHtml: `
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">${tr('Títol de la font', 'Título de la fuente')}</label>
+                    <input id="nb-edit-src-title" type="text" value="${esc(src.title)}" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">${tr('Contingut de la font', 'Contenido de la fuente')}</label>
+                    <textarea id="nb-edit-src-content" rows="9" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none focus:border-indigo-500 leading-relaxed custom-scrollbar">${esc(src.content)}</textarea>
+                </div>
+            `,
+            onConfirm: () => {
+                const newTitle = document.getElementById('nb-edit-src-title')?.value.trim();
+                const newContent = document.getElementById('nb-edit-src-content')?.value.trim();
+                if (!newTitle || !newContent) return;
+                notebookState.sources[idx].title = newTitle;
+                notebookState.sources[idx].content = newContent;
+                saveNotebookState();
+                renderNotebookSourcesList();
+                closeNotebookInlineDialog();
+                if (typeof showToast === 'function') showToast(tr('Font actualitzada a AliatNotebook', 'Fuente actualizada en AliatNotebook'), 'success');
+            }
         });
-        saveNotebookState();
-        renderNotebookSourcesList();
-        if (typeof showToast === 'function') showToast(tr('Font afegida al Gemini Notebook', 'Fuente añadida al Gemini Notebook'), 'success');
+    };
+
+    window.promptAddNotebookTextSource = function () {
+        openNotebookInlineDialog({
+            title: tr('Afegir Nova Font a AliatNotebook', 'Añadir Nueva Fuente a AliatNotebook'),
+            confirmLabel: tr('Afegir Font', 'Añadir Fuente'),
+            bodyHtml: `
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">${tr('Títol de la font', 'Título de la fuente')}</label>
+                    <input id="nb-add-src-title" type="text" placeholder="${tr('Ex: Tema 2 - Termodinàmica', 'Ej: Tema 2 - Termodinámica')}" value="${tr('Apunts de Classe', 'Apuntes de Clase')}" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="font-bold text-zinc-700 dark:text-zinc-300">${tr('Contingut o apunts', 'Contenido o apuntes')}</label>
+                        <label class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">
+                            <span>+ ${tr('Carregar arxiu (.txt/.md/.pdf)', 'Cargar archivo (.txt/.md/.pdf)')}</span>
+                            <input id="nb-add-src-file" type="file" accept=".txt,.md,.csv,.json,.pdf" class="hidden">
+                        </label>
+                    </div>
+                    <textarea id="nb-add-src-content" rows="7" placeholder="${tr('Enganxa aquí els teus apunts, resum o text de referència...', 'Pega aquí tus apuntes, resumen o texto de referencia...')}" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none focus:border-indigo-500 leading-relaxed custom-scrollbar"></textarea>
+                    <p id="nb-add-src-status" class="text-[10.5px] text-zinc-500 mt-1 hidden"></p>
+                </div>
+            `,
+            onConfirm: () => {
+                const titleEl = document.getElementById('nb-add-src-title');
+                const contentEl = document.getElementById('nb-add-src-content');
+                const title = (titleEl?.value || '').trim() || tr('Apunts del Quadern', 'Apuntes del Cuaderno');
+                const content = (contentEl?.value || '').trim();
+                if (!content) {
+                    if (typeof showToast === 'function') showToast(tr('Escriu o carrega contingut per a la font.', 'Escribe o carga contenido para la fuente.'), 'warning');
+                    contentEl?.focus();
+                    return;
+                }
+                notebookState.sources.push({
+                    id: 'src_' + Date.now(),
+                    title,
+                    type: tr('Text / Apunt', 'Texto / Apunte'),
+                    checked: true,
+                    content: content.substring(0, 18000)
+                });
+                saveNotebookState();
+                renderNotebookSourcesList();
+                closeNotebookInlineDialog();
+                if (typeof showToast === 'function') showToast(tr('Font afegida a AliatNotebook!', '¡Fuente añadida a AliatNotebook!'), 'success');
+            }
+        });
+
+        const fileInput = document.getElementById('nb-add-src-file');
+        if (fileInput) {
+            fileInput.onchange = async (evt) => {
+                const file = evt.target.files?.[0];
+                if (!file) return;
+                const titleInput = document.getElementById('nb-add-src-title');
+                const contentInput = document.getElementById('nb-add-src-content');
+                const statusEl = document.getElementById('nb-add-src-status');
+                if (titleInput && (!titleInput.value || titleInput.value === 'Apunts de Classe' || titleInput.value === 'Apuntes de Clase')) {
+                    titleInput.value = file.name.replace(/\.[^.]+$/, '');
+                }
+                if (file.name.toLowerCase().endsWith('.pdf') && typeof pdfjsLib !== 'undefined') {
+                    try {
+                        if (statusEl) {
+                            statusEl.textContent = tr('Llegint text del PDF...', 'Leyendo texto del PDF...');
+                            statusEl.classList.remove('hidden');
+                        }
+                        const buf = await file.arrayBuffer();
+                        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+                        let txt = '';
+                        const maxPages = Math.min(pdf.numPages, 20);
+                        for (let p = 1; p <= maxPages; p++) {
+                            const page = await pdf.getPage(p);
+                            const tc = await page.getTextContent();
+                            txt += tc.items.map(it => it.str).join(' ') + '\n\n';
+                        }
+                        if (contentInput) contentInput.value = txt.trim().substring(0, 18000);
+                        if (statusEl) statusEl.textContent = tr(`PDF carregat (${maxPages} pàgines).`, `PDF cargado (${maxPages} páginas).`);
+                    } catch (err) {
+                        if (statusEl) statusEl.textContent = tr('No s\'ha pogut llegir el PDF; prova enganxant el text.', 'No se pudo leer el PDF; prueba pegando el texto.');
+                    }
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        if (contentInput) contentInput.value = String(reader.result || '').substring(0, 18000);
+                        if (statusEl) {
+                            statusEl.textContent = tr('Fitxer carregat correctament!', '¡Archivo cargado correctamente!');
+                            statusEl.classList.remove('hidden');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+        }
     };
 
     window.importCurrentChatIntoNotebook = function () {
@@ -1831,7 +2355,7 @@
         if (titleInput) titleInput.value = topic;
         saveNotebookState();
         renderNotebookSourcesList();
-        if (typeof showToast === 'function') showToast(tr('Sessió actual importada com a font del Quadern', 'Sesión actual importada como fuente del Cuaderno'), 'success');
+        if (typeof showToast === 'function') showToast(tr('Sessió actual importada a AliatNotebook', 'Sesión actual importada a AliatNotebook'), 'success');
     };
 
     function renderNotebookGroundedChat() {
@@ -1848,7 +2372,7 @@
             box.innerHTML = `
                 <div class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2.5">
                     <div class="font-bold text-zinc-900 dark:text-zinc-100">${tr('Pregunta qualsevol dubte sobre les teves fonts actives', 'Pregunta cualquier duda sobre tus fuentes activas')}</div>
-                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400">${tr('Cada resposta inclou citacions directes [Font 1] i es pot desar com a nota del quadern.', 'Cada respuesta incluye citas directas [Font 1] y puede guardarse como nota del cuaderno.')}</p>
+                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400">${tr('Cada resposta inclou citacions clicables [Font 1] i es pot desar com a nota del quadern.', 'Cada respuesta incluye citas clicables [Font 1] y puede guardarse como nota del cuaderno.')}</p>
                     <div class="flex flex-wrap gap-1.5 pt-1">
                         ${suggestions.map(q => `
                             <button type="button" onclick="askNotebookSuggestedQuestion('${esc(q).replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold text-left transition cursor-pointer">
@@ -1865,12 +2389,13 @@
             if (m.role === 'user') {
                 return `<div class="flex justify-end"><div class="px-3.5 py-2 rounded-2xl bg-indigo-600 text-white font-semibold max-w-[85%]">${esc(m.content)}</div></div>`;
             }
-            const formatted = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(m.content || '') : esc(m.content || ''));
+            const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(m.content || '') : esc(m.content || ''));
+            const formatted = decorateCitationBadges(rawHtml);
             return `
                 <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                     <div class="prose prose-xs dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 leading-relaxed">${formatted}</div>
                     <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                        <span class="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">${(m.citations || ['Font 1']).map(c => `[${esc(c)}]`).join(' ')}</span>
+                        <div class="flex flex-wrap items-center gap-1">${(m.citations || ['Font 1']).map(c => decorateCitationBadges(`[${esc(c)}]`)).join(' ')}</div>
                         <button type="button" onclick="saveChatAnswerToNotebookNotes(${idx})" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer">+ ${tr('Desar a Notes', 'Guardar en Notas')}</button>
                     </div>
                     ${Array.isArray(m.followUps) && m.followUps.length > 0 ? `
@@ -1904,10 +2429,18 @@
 
     window.submitNotebookGroundedQuestion = async function (e) {
         if (e && e.preventDefault) e.preventDefault();
+        if (notebookBusy.chat) return;
         const input = document.getElementById('nb-grounded-chat-input');
         if (!input || !input.value.trim()) return;
         const q = input.value.trim();
         input.value = '';
+
+        notebookBusy.chat = true;
+        const submitBtn = document.getElementById('nb-chat-submit-btn');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = '...';
+        }
 
         notebookState.chatMessages.push({ role: 'user', content: q });
         renderNotebookGroundedChat();
@@ -1916,47 +2449,47 @@
         if (box) {
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'nb-chat-loading';
-            loadingDiv.className = 'p-3 text-xs text-zinc-500 animate-pulse';
+            loadingDiv.className = 'p-3 text-xs text-indigo-600 dark:text-indigo-400 font-semibold animate-pulse';
             loadingDiv.textContent = tr('Analitzant les fonts actives i verificant citacions...', 'Analizando las fuentes activas y verificando citas...');
             box.appendChild(loadingDiv);
             box.scrollTop = box.scrollHeight;
         }
 
+        const activeSources = getCheckedNotebookSources();
         try {
-            const caller = typeof window.callGenerateApi === 'function'
-                ? window.callGenerateApi
-                : (payload => fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                }));
-            const res = await caller({
+            const data = await callNotebookBackend({
                 action: 'notebook_studio',
                 subAction: 'chat',
                 notebookTitle: notebookState.title,
-                sources: getCheckedNotebookSources(),
+                sources: activeSources,
                 question: q
             });
-            const data = await res.json();
+
             document.getElementById('nb-chat-loading')?.remove();
-            notebookState.chatMessages.push({
-                role: 'assistant',
-                content: data.answer || tr('Resposta verificada a partir de [Font 1].', 'Respuesta verificada a partir de [Font 1].'),
-                citations: data.citations || ['Font 1'],
-                followUps: data.followUps || []
-            });
+            if (data && data.answer) {
+                notebookState.chatMessages.push({
+                    role: 'assistant',
+                    content: data.answer,
+                    citations: Array.isArray(data.citations) && data.citations.length ? data.citations : ['Font 1'],
+                    followUps: Array.isArray(data.followUps) ? data.followUps : []
+                });
+            } else {
+                const localAns = synthesizeLocalGroundedAnswer(q, notebookState.title, activeSources);
+                notebookState.chatMessages.push({
+                    role: 'assistant',
+                    content: localAns.answer,
+                    citations: localAns.citations,
+                    followUps: localAns.followUps
+                });
+            }
             saveNotebookState();
             renderNotebookGroundedChat();
-        } catch (err) {
-            document.getElementById('nb-chat-loading')?.remove();
-            notebookState.chatMessages.push({
-                role: 'assistant',
-                content: tr(`Segons [Font 1] sobre **${notebookState.title}**, els punts fonamentals responen directament a "${q}" relacionant la definició teòrica amb els casos pràctics del temari.`, `Según [Font 1] sobre **${notebookState.title}**, los puntos fundamentales responden directamente a "${q}" relacionando la definición teórica con los casos prácticos del temario.`),
-                citations: ['Font 1'],
-                followUps: []
-            });
-            saveNotebookState();
-            renderNotebookGroundedChat();
+        } finally {
+            notebookBusy.chat = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = tr('Preguntar', 'Preguntar');
+            }
         }
     };
 
@@ -1966,47 +2499,85 @@
         notebookState.notes.unshift({
             id: 'note_' + Date.now(),
             title: tr('Resposta amb Citació', 'Respuesta con Cita') + ' · ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            content: m.content
+            content: m.content,
+            isNew: true
         });
         saveNotebookState();
         renderNotebookSavedNotes();
-        if (typeof showToast === 'function') showToast(tr('Resposta fixada al tauler de Notes del Quadern', 'Respuesta fijada en el tablero de Notas del Cuaderno'), 'success');
+        if (typeof showToast === 'function') showToast(tr('Resposta fixada a Notes d\'AliatNotebook', 'Respuesta fijada en Notas de AliatNotebook'), 'success');
     };
 
-    window.generateNotebookArtifact = async function (artifactType) {
-        if (typeof showToast === 'function') {
-            showToast(tr('Generant document d\'estudi des de les fonts actives...', 'Generando documento de estudio desde las fuentes activas...'), 'info');
+    window.generateNotebookArtifact = async function (artifactType, triggerBtn) {
+        if (notebookBusy.artifact) {
+            if (typeof showToast === 'function') showToast(tr('Ja s\'està generant un document...', 'Ya se está generando un documento...'), 'info');
+            return;
         }
+
+        const activeSources = getCheckedNotebookSources();
+        notebookBusy.artifact = true;
+        const btn = triggerBtn || document.querySelector(`.nb-artifact-btn[data-nb-artifact="${artifactType}"]`);
+        const origHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add('ring-2', 'ring-indigo-500', 'opacity-80');
+            btn.innerHTML = `<div class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">⏳ ${tr('Generant...', 'Generando...')}</div><div class="text-[10px] text-zinc-500 truncate">${tr('Processant fonts', 'Procesando fuentes')}</div>`;
+        }
+
+        const notesList = document.getElementById('nb-saved-notes-list');
+        if (notesList) {
+            const loaderCard = document.createElement('div');
+            loaderCard.id = 'nb-artifact-loader-card';
+            loaderCard.className = 'p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-300 dark:border-indigo-700 text-xs font-semibold text-indigo-700 dark:text-indigo-300 animate-pulse';
+            loaderCard.textContent = tr('⏳ Creant document amb citacions [Font X]...', '⏳ Creando documento con citas [Font X]...');
+            notesList.prepend(loaderCard);
+            if (window.innerWidth < 1024) {
+                notesList.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
         try {
-            const caller = typeof window.callGenerateApi === 'function'
-                ? window.callGenerateApi
-                : (payload => fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                }));
-            const res = await caller({
+            const data = await callNotebookBackend({
                 action: 'notebook_studio',
                 subAction: 'artifact',
                 artifactType,
                 notebookTitle: notebookState.title,
-                sources: getCheckedNotebookSources()
+                sources: activeSources
             });
-            const data = await res.json();
-            if (data && data.content) {
-                notebookState.notes.unshift({
-                    id: 'art_' + Date.now(),
-                    title: data.title || 'Document del Quadern',
-                    content: data.content
-                });
-                saveNotebookState();
-                renderNotebookSavedNotes();
-                if (typeof showToast === 'function') {
-                    showToast(tr('Document afegit a les Notes del Quadern!', '¡Documento añadido a las Notas del Cuaderno!'), 'success');
-                }
+
+            document.getElementById('nb-artifact-loader-card')?.remove();
+
+            const result = (data && data.content && String(data.content).trim().length > 15)
+                ? { title: data.title || tr('Document d\'AliatNotebook', 'Documento de AliatNotebook'), content: data.content }
+                : synthesizeLocalArtifact(artifactType, notebookState.title, activeSources);
+
+            const newNoteId = 'art_' + Date.now();
+            notebookState.notes.unshift({
+                id: newNoteId,
+                title: result.title,
+                content: result.content,
+                isNew: true
+            });
+            notebookState.chatHistory.push({
+                role: 'assistant',
+                text: `### ${result.title}\n\n${result.content}`
+            });
+            saveNotebookState();
+            renderNotebookSavedNotes();
+            renderNotebookChatMessages();
+            updateNotebookWorkspaceStats();
+
+            if (notesList) notesList.scrollTop = 0;
+            if (typeof showToast === 'function') {
+                showToast(tr('Document generat al panell central i desat a Notes!', '¡Documento generado en el panel central y guardado en Notas!'), 'success');
             }
-        } catch (err) {
-            console.warn('[generateNotebookArtifact]', err);
+        } finally {
+            notebookBusy.artifact = false;
+            document.getElementById('nb-artifact-loader-card')?.remove();
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('ring-2', 'ring-indigo-500', 'opacity-80');
+                btn.innerHTML = origHtml;
+            }
         }
     };
 
@@ -2027,12 +2598,21 @@
 
         const turnIdx = Math.min(notebookState.audioCurrentTurn || 0, ov.dialogue.length - 1);
         const currentTurn = ov.dialogue[turnIdx] || ov.dialogue[0];
+        const rateLabel = (Number(notebookState.audioRate) || 1.0).toFixed(2).replace(/\.00$/, '') + 'x';
+        const progressPct = Math.round(((turnIdx + 1) / Math.max(1, ov.dialogue.length)) * 100);
 
         box.innerHTML = `
             <div class="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-xs font-bold text-indigo-950 dark:text-indigo-200 truncate">${esc(ov.title || 'Deep Dive Audio')}</span>
-                    <span class="text-[10px] font-mono text-indigo-600 dark:text-indigo-400"> Torn ${turnIdx + 1}/${ov.dialogue.length}</span>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" onclick="savePodcastTranscriptToNotes()" class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer" title="${tr('Desar tot el guió com a Nota', 'Guardar todo el guion como Nota')}">+ ${tr('Desar a Notes', 'Guardar en Notas')}</button>
+                        <span class="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">${tr('Torn', 'Turno')} ${turnIdx + 1}/${ov.dialogue.length}</span>
+                    </div>
+                </div>
+
+                <div class="w-full h-1.5 rounded-full bg-indigo-200/70 dark:bg-indigo-950 overflow-hidden">
+                    <div class="h-full bg-indigo-600 dark:bg-indigo-400 transition-all duration-300" style="width: ${progressPct}%"></div>
                 </div>
 
                 <!-- Transcripció activa del locutor -->
@@ -2045,52 +2625,129 @@
                 </div>
 
                 <!-- Controls de reproducció a 2 veus -->
-                <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-                    <div class="flex items-center gap-1.5">
-                        <button type="button" onclick="togglePlayNotebookPodcast()" class="px-3 py-1.5 rounded-xl ${notebookState.audioPlaying ? 'bg-rose-600 hover:bg-rose-500' : 'bg-indigo-600 hover:bg-indigo-500'} text-white text-[11px] font-bold cursor-pointer transition flex items-center gap-1">
-                            <span>${notebookState.audioPlaying ? tr('Pausar Veu', 'Pausar Voz') : tr('Escoltar (2 Veus)', 'Escuchar (2 Voces)')}</span>
+                <div class="flex flex-wrap items-center justify-between gap-1.5 pt-1">
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="togglePlayNotebookPodcast()" class="px-2.5 py-1.5 rounded-xl ${notebookState.audioPlaying ? 'bg-rose-600 hover:bg-rose-500' : 'bg-indigo-600 hover:bg-indigo-500'} text-white text-[11px] font-bold cursor-pointer transition flex items-center gap-1 active:scale-95">
+                            <span>${notebookState.audioPlaying ? tr('Pausar', 'Pausar') : tr('Escoltar', 'Escuchar')}</span>
                         </button>
-                        <button type="button" onclick="stepNotebookPodcastTurn(-1)" class="p-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs cursor-pointer" title="Anterior">←</button>
-                        <button type="button" onclick="stepNotebookPodcastTurn(1)" class="p-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs cursor-pointer" title="Següent">→</button>
+                        <button type="button" onclick="stepNotebookPodcastTurn(-1)" class="p-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs cursor-pointer" title="${tr('Anterior', 'Anterior')}">←</button>
+                        <button type="button" onclick="stepNotebookPodcastTurn(1)" class="p-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs cursor-pointer" title="${tr('Següent', 'Siguiente')}">→</button>
+                        <button type="button" onclick="cycleNotebookAudioRate()" class="px-2 py-1 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer" title="${tr('Velocitat de lectura', 'Velocidad de lectura')}">${rateLabel}</button>
                     </div>
-                    <button type="button" onclick="interruptNotebookPodcastToAsk()" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10.5px] font-bold cursor-pointer transition" title="Interrompre i preguntar als locutors">
-                        ${tr('Interrompre i Preguntar', 'Interrumpir y Preguntar')}
-                    </button>
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="toggleNotebookPodcastScript()" class="px-2 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer">
+                            ${notebookState.showFullScript ? tr('Ocultar Guió', 'Ocultar Guion') : tr('Guió', 'Guion')}
+                        </button>
+                        <button type="button" onclick="interruptNotebookPodcastToAsk()" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10.5px] font-bold cursor-pointer transition active:scale-95" title="${tr('Interrompre i preguntar als locutors', 'Interrumpir y preguntar a los locutores')}">
+                            ${tr('Preguntar en viu', 'Preguntar en vivo')}
+                        </button>
+                    </div>
                 </div>
+
+                ${notebookState.showFullScript ? `
+                    <div class="max-h-40 overflow-y-auto custom-scrollbar space-y-1.5 pt-2 border-t border-indigo-200/70 dark:border-indigo-800/60">
+                        ${ov.dialogue.map((d, i) => `
+                            <button type="button" onclick="jumpNotebookPodcastTurn(${i})" class="w-full text-left p-2 rounded-lg text-[11px] transition cursor-pointer ${i === turnIdx ? 'bg-indigo-600 text-white' : 'bg-white/80 dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-900'}">
+                                <span class="font-extrabold">${esc(d.speaker)}:</span> ${esc(d.text)}
+                            </button>
+                        `).join('')}
+                    </div>
+                ` : ''}
             </div>
         `;
     }
 
-    window.generateNotebookAudioOverview = async function () {
+    window.savePodcastTranscriptToNotes = function () {
+        const ov = notebookState.audioOverview;
+        if (!ov || !Array.isArray(ov.dialogue) || ov.dialogue.length === 0) return;
+        const scriptMd = ov.dialogue.map(d => `- **${d.speaker}:** ${d.text}`).join('\n');
+        const takeawaysMd = Array.isArray(ov.keyTakeaways) && ov.keyTakeaways.length > 0
+            ? `#### ${tr('Punts Clau del Pòdcast', 'Puntos Clave del Pódcast')}\n` + ov.keyTakeaways.map(k => `- ${k}`).join('\n') + '\n\n'
+            : '';
+        notebookState.notes.unshift({
+            id: 'podcast_' + Date.now(),
+            title: (ov.title || 'Audio Overview') + ' · ' + tr('Guió Complet', 'Guion Completo'),
+            content: `${takeawaysMd}#### ${tr('Transcripció (Marc & Laia)', 'Transcripción (Marc & Laia)')}\n${scriptMd}`,
+            isNew: true
+        });
+        saveNotebookState();
+        renderNotebookSavedNotes();
+        updateNotebookWorkspaceStats();
+        if (typeof showToast === 'function') showToast(tr('Guió del pòdcast desat a Notes!', '¡Guion del pódcast guardado en Notas!'), 'success');
+    };
+
+    window.toggleNotebookPodcastScript = function () {
+        notebookState.showFullScript = !notebookState.showFullScript;
+        saveNotebookState();
+        renderNotebookAudioOverview();
+    };
+
+    window.jumpNotebookPodcastTurn = function (idx) {
+        const ov = notebookState.audioOverview;
+        if (!ov || !Array.isArray(ov.dialogue)) return;
+        const wasPlaying = notebookState.audioPlaying;
         stopNotebookPodcastSpeech();
+        notebookState.audioCurrentTurn = Math.max(0, Math.min(ov.dialogue.length - 1, idx));
+        saveNotebookState();
+        if (wasPlaying) {
+            notebookState.audioPlaying = true;
+            speakCurrentNotebookTurn();
+        } else {
+            renderNotebookAudioOverview();
+        }
+    };
+
+    window.cycleNotebookAudioRate = function () {
+        const rates = [1.0, 1.25, 1.5];
+        const curr = Number(notebookState.audioRate) || 1.0;
+        const nextIdx = (rates.findIndex(r => Math.abs(r - curr) < 0.05) + 1) % rates.length;
+        notebookState.audioRate = rates[nextIdx];
+        saveNotebookState();
+        if (notebookState.audioPlaying) {
+            speakCurrentNotebookTurn();
+        } else {
+            renderNotebookAudioOverview();
+        }
+    };
+
+    window.generateNotebookAudioOverview = async function () {
+        if (notebookBusy.audio) return;
+        notebookBusy.audio = true;
+        stopNotebookPodcastSpeech();
+
+        const genBtn = document.getElementById('nb-audio-generate-btn');
+        if (genBtn) {
+            genBtn.disabled = true;
+            genBtn.textContent = tr('Generant...', 'Generando...');
+        }
+
         const box = document.getElementById('nb-audio-overview-box');
         if (box) {
             box.innerHTML = `<div class="p-4 text-center text-xs text-indigo-600 dark:text-indigo-400 font-semibold animate-pulse">${tr('Sintetitzant el guió de pòdcast entre en Marc i la Laia a partir de les fonts...', 'Sintetizando el guion de pódcast entre Marc y Laia a partir de las fuentes...')}</div>`;
         }
+
+        const activeSources = getCheckedNotebookSources();
         try {
-            const caller = typeof window.callGenerateApi === 'function'
-                ? window.callGenerateApi
-                : (payload => fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                }));
-            const res = await caller({
+            const data = await callNotebookBackend({
                 action: 'notebook_studio',
                 subAction: 'audio_overview',
                 notebookTitle: notebookState.title,
-                sources: getCheckedNotebookSources()
+                sources: activeSources
             });
-            const data = await res.json();
-            if (data && data.overview) {
-                notebookState.audioOverview = data.overview;
-                notebookState.audioCurrentTurn = 0;
-                saveNotebookState();
-                renderNotebookAudioOverview();
-                return;
+
+            notebookState.audioOverview = (data && data.overview && Array.isArray(data.overview.dialogue) && data.overview.dialogue.length > 0)
+                ? data.overview
+                : synthesizeLocalAudioOverview(notebookState.title, activeSources);
+            notebookState.audioCurrentTurn = 0;
+            saveNotebookState();
+            renderNotebookAudioOverview();
+            if (typeof showToast === 'function') showToast(tr('Pòdcast d\'AliatNotebook llest per escoltar!', '¡Pódcast de AliatNotebook listo para escuchar!'), 'success');
+        } finally {
+            notebookBusy.audio = false;
+            if (genBtn) {
+                genBtn.disabled = false;
+                genBtn.textContent = tr('Generar Pòdcast IA', 'Generar Pódcast IA');
             }
-        } catch (err) {
-            console.warn('[generateNotebookAudioOverview]', err);
         }
     };
 
@@ -2112,26 +2769,48 @@
 
         renderNotebookAudioOverview();
         const turn = ov.dialogue[idx];
-        if (!('speechSynthesis' in window)) return;
+        if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+            notebookState.audioPlaying = false;
+            notebookState.showFullScript = true;
+            renderNotebookAudioOverview();
+            if (typeof showToast === 'function') showToast(tr('Aquest navegador no admet lectura per veu; pots llegir el guió complet aquí.', 'Este navegador no admite síntesis de voz; puedes leer el guion completo aquí.'), 'info');
+            return;
+        }
 
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(turn.text);
-        utter.lang = isEsLang() ? 'es-ES' : 'ca-ES';
-        // Distinct vocal profiles for Marc vs Laia
-        utter.pitch = turn.speaker === 'Laia' ? 1.16 : 0.92;
-        utter.rate = notebookState.audioRate || 1.04;
+        try {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(turn.text);
+            const targetLang = isEsLang() ? 'es' : 'ca';
+            utter.lang = isEsLang() ? 'es-ES' : 'ca-ES';
+            const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+            const matchingVoices = voices.filter(v => (v.lang || '').toLowerCase().startsWith(targetLang));
+            if (matchingVoices.length > 1) {
+                utter.voice = turn.speaker === 'Laia' ? matchingVoices[0] : matchingVoices[1];
+            } else if (matchingVoices.length === 1) {
+                utter.voice = matchingVoices[0];
+            }
+            utter.pitch = turn.speaker === 'Laia' ? 1.15 : 0.92;
+            utter.rate = notebookState.audioRate || 1.0;
 
-        utter.onend = () => {
-            if (!notebookState.audioPlaying) return;
-            if (notebookState.audioCurrentTurn < ov.dialogue.length - 1) {
-                notebookState.audioCurrentTurn++;
-                speakCurrentNotebookTurn();
-            } else {
+            utter.onend = () => {
+                if (!notebookState.audioPlaying) return;
+                if (notebookState.audioCurrentTurn < ov.dialogue.length - 1) {
+                    notebookState.audioCurrentTurn++;
+                    speakCurrentNotebookTurn();
+                } else {
+                    notebookState.audioPlaying = false;
+                    renderNotebookAudioOverview();
+                }
+            };
+            utter.onerror = () => {
                 notebookState.audioPlaying = false;
                 renderNotebookAudioOverview();
-            }
-        };
-        window.speechSynthesis.speak(utter);
+            };
+            window.speechSynthesis.speak(utter);
+        } catch (err) {
+            notebookState.audioPlaying = false;
+            renderNotebookAudioOverview();
+        }
     }
 
     window.togglePlayNotebookPodcast = function () {
@@ -2161,45 +2840,104 @@
     window.interruptNotebookPodcastToAsk = function () {
         stopNotebookPodcastSpeech();
         renderNotebookAudioOverview();
-        const userQ = window.prompt(tr('Fes una pregunta en directe a en Marc i la Laia sobre el que estan comentant:', 'Haz una pregunta en directo a Marc y Laia sobre lo que están comentando:'), '');
-        if (!userQ || !userQ.trim()) return;
-
         if (!notebookState.audioOverview || !Array.isArray(notebookState.audioOverview.dialogue)) return;
-        const insertPos = (notebookState.audioCurrentTurn || 0) + 1;
-        notebookState.audioOverview.dialogue.splice(
-            insertPos,
-            0,
-            { speaker: "Marc", text: tr(`Atenció, Laia! Ens acaben de fer una pregunta molt interessant en directe: "${userQ.trim()}". Com ho veus segons les fonts?`, `¡Atención, Laia! Nos acaban de hacer una pregunta muy interesante en directo: "${userQ.trim()}". ¿Cómo lo ves según las fuentes?`) },
-            { speaker: "Laia", text: tr(`Molt bona pregunta! Segons la Font 1 del nostre quadern sobre ${notebookState.title}, la resposta clau rau a connectar aquest concepte amb l'aplicació pràctica de l'examen.`, `¡Muy buena pregunta! Según la Font 1 de nuestro cuaderno sobre ${notebookState.title}, la respuesta clave está en conectar ese concepto con la aplicación práctica del examen.`) }
-        );
-        notebookState.audioCurrentTurn = insertPos;
-        saveNotebookState();
-        notebookState.audioPlaying = true;
-        speakCurrentNotebookTurn();
+
+        openNotebookInlineDialog({
+            title: tr('Interrompre i Preguntar en Directe (Marc & Laia)', 'Interrumpir y Preguntar en Directo (Marc & Laia)'),
+            confirmLabel: tr('Enviar Pregunta al Pòdcast', 'Enviar Pregunta al Pódcast'),
+            bodyHtml: `
+                <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">${tr('En Marc i la Laia aturaran el tema actual i respondran al teu dubte basant-se en les fonts actives.', 'Marc y Laia pausarán el tema actual y responderán a tu duda basándose en las fuentes activas.')}</p>
+                <input id="nb-podcast-live-q" type="text" placeholder="${tr('Ex: Em podeu posar un exemple pràctic d\'aquest concepte?', 'Ej: ¿Me podéis poner un ejemplo práctico de este concepto?')}" class="w-full px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none focus:border-indigo-500">
+            `,
+            onConfirm: async () => {
+                const qInput = document.getElementById('nb-podcast-live-q');
+                const userQ = (qInput?.value || '').trim();
+                if (!userQ) return;
+                closeNotebookInlineDialog();
+
+                const activeSources = getCheckedNotebookSources();
+                const apiAns = await callNotebookBackend({
+                    action: 'notebook_studio',
+                    subAction: 'chat',
+                    notebookTitle: notebookState.title,
+                    sources: activeSources,
+                    question: userQ
+                }, 10000);
+
+                const rawReply = (apiAns && apiAns.answer)
+                    ? apiAns.answer
+                    : synthesizeLocalGroundedAnswer(userQ, notebookState.title, activeSources).answer;
+                const spokenReply = String(rawReply).replace(/[#*`_\[\]]+/g, '').replace(/\s+/g, ' ').trim().substring(0, 320);
+
+                const insertPos = (notebookState.audioCurrentTurn || 0) + 1;
+                notebookState.audioOverview.dialogue.splice(
+                    insertPos,
+                    0,
+                    { speaker: "Marc", text: tr(`Atenció, Laia! Ens acaben de preguntar en directe: "${userQ}". Què diuen les nostres fonts?`, `¡Atención, Laia! Nos acaban de preguntar en directo: "${userQ}". ¿Qué dicen nuestras fuentes?`) },
+                    { speaker: "Laia", text: spokenReply }
+                );
+                notebookState.audioCurrentTurn = insertPos;
+                saveNotebookState();
+                notebookState.audioPlaying = true;
+                speakCurrentNotebookTurn();
+            }
+        });
     };
 
     // --- NOTES DESADES DEL QUADERN ---
+    let notebookNoteSearchQuery = '';
+    window.filterNotebookNotes = function (val) {
+        notebookNoteSearchQuery = String(val || '').trim().toLowerCase();
+        renderNotebookSavedNotes();
+    };
+
     function renderNotebookSavedNotes() {
         const listEl = document.getElementById('nb-saved-notes-list');
+        const countBadge = document.getElementById('nb-notes-count-badge');
         if (!listEl) return;
 
         const notes = notebookState.notes || [];
+        if (countBadge) countBadge.textContent = String(notes.length);
+        updateNotebookWorkspaceStats();
+
         if (notes.length === 0) {
             listEl.innerHTML = `
                 <div class="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-[11px] text-zinc-500 dark:text-zinc-400">
-                    ${tr('Encara no has desat cap nota. Clica qualsevol dels 6 botons del Generador d\'Estudi (Guia, Briefing, FAQ, Glossari...) per crear documents al teu quadern.', 'Aún no has guardado ninguna nota. Haz clic en cualquiera de los 6 botones del Generador de Estudio (Guía, Briefing, FAQ, Glosario...) para crear documentos en tu cuaderno.')}
+                    ${tr('Encara no has desat cap nota. Clica qualsevol dels 8 botons del Generador d\'Estudi (Guia, Briefing, FAQ, Glossari, Targetes, Simulacre...) per crear documents al teu quadern.', 'Aún no has guardado ninguna nota. Haz clic en cualquiera de los 8 botones del Generador de Estudio (Guía, Briefing, FAQ, Glosario, Tarjetas, Simulacro...) para crear documentos en tu cuaderno.')}
                 </div>
             `;
             return;
         }
 
-        listEl.innerHTML = notes.map((n, idx) => {
-            const rendered = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(n.content || '') : esc(n.content || ''));
+        const filtered = notes
+            .map((n, idx) => ({ n, idx }))
+            .filter(({ n }) => {
+                if (!notebookNoteSearchQuery) return true;
+                return String(n.title || '').toLowerCase().includes(notebookNoteSearchQuery) ||
+                    String(n.content || '').toLowerCase().includes(notebookNoteSearchQuery);
+            });
+
+        if (filtered.length === 0) {
+            listEl.innerHTML = `<div class="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-500">${tr('Cap nota coincideix amb la cerca.', 'Ninguna nota coincide con la búsqueda.')}</div>`;
+            return;
+        }
+
+        listEl.innerHTML = filtered.map(({ n, idx }) => {
+            const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(n.content || '') : esc(n.content || ''));
+            const rendered = decorateCitationBadges(rawHtml);
+            const highlightCls = n.isNew ? 'ring-2 ring-indigo-500 border-indigo-400 dark:border-indigo-500' : 'border-zinc-200 dark:border-zinc-800';
+            if (n.isNew) delete n.isNew;
             return `
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
+                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border ${highlightCls} space-y-2 transition-all">
                     <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 truncate">${esc(n.title)}</span>
-                        <button type="button" onclick="deleteNotebookSavedNote(${idx})" class="text-zinc-400 hover:text-rose-500 text-xs cursor-pointer" title="Eliminar">✕</button>
+                        <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 truncate flex-1">${esc(n.title)}</span>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button type="button" onclick="viewNotebookNoteFull(${idx})" class="px-2 py-0.5 rounded-lg bg-zinc-100 hover:bg-indigo-100 dark:bg-zinc-800 dark:hover:bg-indigo-950/70 text-[10px] font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer" title="${tr('Ampliar document', 'Ampliar documento')}">${tr('Obrir', 'Abrir')}</button>
+                            <button type="button" onclick="editNotebookSavedNote(${idx})" class="px-2 py-0.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer" title="${tr('Editar nota', 'Editar nota')}">${tr('Editar', 'Editar')}</button>
+                            <button type="button" onclick="sendNotebookNoteToChat(${idx})" class="px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer" title="${tr('Enviar al xat d\'estudi', 'Enviar al chat de estudio')}">${tr('Al Xat', 'Al Chat')}</button>
+                            <button type="button" onclick="copyNotebookNote(${idx})" class="px-2 py-0.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer" title="${tr('Copiar text', 'Copiar texto')}">${tr('Copiar', 'Copiar')}</button>
+                            <button type="button" onclick="deleteNotebookSavedNote(${idx})" class="text-zinc-400 hover:text-rose-500 px-1 text-xs cursor-pointer" title="${tr('Eliminar', 'Eliminar')}">✕</button>
+                        </div>
                     </div>
                     <div class="prose prose-xs dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 max-h-44 overflow-y-auto custom-scrollbar text-[11.5px] leading-relaxed">${rendered}</div>
                 </div>
@@ -2207,14 +2945,112 @@
         }).join('');
     }
 
+    window.viewNotebookNoteFull = function (idx) {
+        const n = notebookState.notes[idx];
+        if (!n) return;
+        const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(n.content || '') : esc(n.content || ''));
+        const rendered = decorateCitationBadges(rawHtml);
+        openNotebookInlineDialog({
+            title: n.title,
+            maxWidthClass: 'max-w-2xl',
+            confirmLabel: tr('Copiar Contingut', 'Copiar Contenido'),
+            bodyHtml: `<div class="prose prose-sm dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 leading-relaxed">${rendered}</div>`,
+            onConfirm: () => {
+                window.copyNotebookNote(idx);
+                closeNotebookInlineDialog();
+            }
+        });
+    };
+
+    window.editNotebookSavedNote = function (idx) {
+        const n = notebookState.notes[idx];
+        if (!n) return;
+        openNotebookInlineDialog({
+            title: tr('Editar Nota / Document', 'Editar Nota / Documento'),
+            maxWidthClass: 'max-w-xl',
+            confirmLabel: tr('Desar Canvis', 'Guardar Cambios'),
+            bodyHtml: `
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">${tr('Títol', 'Título')}</label>
+                    <input id="nb-edit-note-title" type="text" value="${esc(n.title)}" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">${tr('Contingut (Markdown)', 'Contenido (Markdown)')}</label>
+                    <textarea id="nb-edit-note-content" rows="10" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none focus:border-indigo-500 leading-relaxed custom-scrollbar">${esc(n.content)}</textarea>
+                </div>
+            `,
+            onConfirm: () => {
+                const newTitle = document.getElementById('nb-edit-note-title')?.value.trim();
+                const newContent = document.getElementById('nb-edit-note-content')?.value.trim();
+                if (!newTitle || !newContent) return;
+                notebookState.notes[idx].title = newTitle;
+                notebookState.notes[idx].content = newContent;
+                saveNotebookState();
+                renderNotebookSavedNotes();
+                closeNotebookInlineDialog();
+                if (typeof showToast === 'function') showToast(tr('Nota actualitzada!', '¡Nota actualizada!'), 'success');
+            }
+        });
+    };
+
+    window.sendNotebookNoteToChat = function (idx) {
+        const n = notebookState.notes[idx];
+        if (!n) return;
+        const msg = `### 📌 ${n.title}\n\n${n.content}`;
+        window.closeAliatNotebookModal();
+        if (typeof appendMessage === 'function') {
+            appendMessage('ai', msg);
+            if (typeof chatHistory !== 'undefined' && Array.isArray(chatHistory)) {
+                chatHistory.push({ role: 'model', content: msg });
+            }
+            if (typeof saveSession === 'function') saveSession();
+            if (typeof showToast === 'function') showToast(tr('Document d\'AliatNotebook enviat al xat!', '¡Documento de AliatNotebook enviado al chat!'), 'success');
+        } else {
+            window.copyNotebookNote(idx);
+        }
+    };
+
+    window.copyNotebookNote = function (idx) {
+        const n = notebookState.notes[idx];
+        if (!n) return;
+        const txt = `# ${n.title}\n\n${n.content}`;
+        if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(txt).then(() => {
+                if (typeof showToast === 'function') showToast(tr('Nota copiada al porta-retalls!', '¡Nota copiada al portapapeles!'), 'success');
+            }).catch(() => {});
+        }
+    };
+
     window.addCustomNoteToNotebook = function () {
-        const title = window.prompt(tr('Títol de la nota:', 'Título de la nota:'), tr('Apunt clau d\'examen', 'Apunte clave de examen'));
-        if (!title) return;
-        const content = window.prompt(tr('Contingut de la nota:', 'Contenido de la nota:'), '');
-        if (!content) return;
-        notebookState.notes.unshift({ id: 'note_' + Date.now(), title: title.trim(), content: content.trim() });
-        saveNotebookState();
-        renderNotebookSavedNotes();
+        openNotebookInlineDialog({
+            title: tr('Crear Nova Nota al Quadern', 'Crear Nueva Nota en el Cuaderno'),
+            confirmLabel: tr('Desar Nota', 'Guardar Nota'),
+            bodyHtml: `
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">${tr('Títol de la nota', 'Título de la nota')}</label>
+                    <input id="nb-custom-note-title" type="text" value="${tr('Apunt clau d\'examen', 'Apunte clave de examen')}" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">${tr('Contingut de la nota', 'Contenido de la nota')}</label>
+                    <textarea id="nb-custom-note-content" rows="6" placeholder="${tr('Escriu aquí la teva nota, fórmula o resum...', 'Escribe aquí tu nota, fórmula o resumen...')}" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 outline-none focus:border-indigo-500 leading-relaxed custom-scrollbar"></textarea>
+                </div>
+            `,
+            onConfirm: () => {
+                const tEl = document.getElementById('nb-custom-note-title');
+                const cEl = document.getElementById('nb-custom-note-content');
+                const title = (tEl?.value || '').trim() || tr('Nota personal', 'Nota personal');
+                const content = (cEl?.value || '').trim();
+                if (!content) {
+                    cEl?.focus();
+                    return;
+                }
+                notebookState.notes.unshift({ id: 'note_' + Date.now(), title, content, isNew: true });
+                saveNotebookState();
+                renderNotebookSavedNotes();
+                closeNotebookInlineDialog();
+                if (typeof showToast === 'function') showToast(tr('Nota desada a AliatNotebook!', '¡Nota guardada en AliatNotebook!'), 'success');
+            }
+        });
     };
 
     window.deleteNotebookSavedNote = function (idx) {
@@ -2236,11 +3072,141 @@
         });
         const fullText = parts.join('\n\n');
         if (typeof window.exportAsWordDocument === 'function') {
-            window.exportAsWordDocument(fullText, `Gemini_Notebook_${(notebookState.title || 'Estudi').replace(/\s+/g, '_')}.doc`);
+            window.exportAsWordDocument(fullText, `AliatNotebook_${(notebookState.title || 'Estudi').replace(/\s+/g, '_')}.doc`);
         } else if (typeof showToast === 'function') {
             navigator.clipboard?.writeText(fullText);
             showToast(tr('Contingut del Quadern copiat al porta-retalls!', '¡Contenido del Cuaderno copiado al portapapeles!'), 'success');
         }
+    };
+
+    // --- GUIA INTERACTIVA PAS A PAS DINS D'ALIATNOTEBOOK ---
+    let nbGuideStepIdx = 0;
+    let nbGuideHighlightedEl = null;
+
+    function getAliatNotebookGuideSteps() {
+        return [
+            {
+                targetSelector: '[data-nb-guide="sources"]',
+                badge: tr('Pas 1 de 4 · Fonts', 'Paso 1 de 4 · Fuentes'),
+                title: tr('1. Carrega i filtra les teves Fonts', '1. Carga y filtra tus Fuentes'),
+                desc: tr(
+                    'A l\'esquerra tens les fonts del quadern ([Font 1], [Font 2]...). Pots afegir apunts de text, carregar fitxers (.txt, .md o PDF), importar el xat actual o marcar/desmarcar les caselles per decidir quines fonts fa servir la IA.',
+                    'A la izquierda tienes las fuentes del cuaderno ([Font 1], [Font 2]...). Puedes añadir apuntes de texto, cargar archivos (.txt, .md o PDF), importar el chat actual o marcar/desmarcar las casillas para elegir qué fuentes usa la IA.'
+                ),
+                tip: tr('Consell: fes clic sobre qualsevol targeta de font per llegir-la sencera o editar-ne el contingut.', 'Consejo: haz clic sobre cualquier tarjeta de fuente para leerla entera o editar su contenido.')
+            },
+            {
+                targetSelector: '[data-nb-guide="artifacts"]',
+                badge: tr('Pas 2 de 4 · Generador 1-Clic', 'Paso 2 de 4 · Generador 1-Clic'),
+                title: tr('2. Genera Documents d\'Estudi en 1 Clic', '2. Genera Documentos de Estudio en 1 Clic'),
+                desc: tr(
+                    'Prem qualsevol dels 6 botons (Guia d\'Estudi, Briefing Doc, FAQ d\'Examen, Línia Temporal, Glossari o Trampes d\'Examen) i AliatNotebook sintetitzarà totes les fonts actives amb citacions [Font X].',
+                    'Pulsa cualquiera de los 6 botones (Guía de Estudio, Briefing Doc, FAQ de Examen, Línea Temporal, Glosario o Trampas de Examen) y AliatNotebook sintetizará todas las fuentes activas con citas [Font X].'
+                ),
+                tip: tr('Els documents generats apareixen automàticament a la columna dreta («Notes i Documents»), llestos per obrir, copiar o exportar a Word.', 'Los documentos generados aparecen automáticamente en la columna derecha («Notas y Documentos»), listos para abrir, copiar o exportar a Word.')
+            },
+            {
+                targetSelector: '[data-nb-guide="chat"]',
+                badge: tr('Pas 3 de 4 · Xat Verificat', 'Paso 3 de 4 · Chat Verificado'),
+                title: tr('3. Xat d\'Investigació amb Citacions [Font X]', '3. Chat de Investigación con Citas [Font X]'),
+                desc: tr(
+                    'Escriu dubtes concrets o fes clic als suggeriments ràpids. Cada resposta cita exactament d\'on ha tret la dada i té un botó «+ Desar a Notes» per guardar-la al quadern.',
+                    'Escribe dudas concretas o haz clic en las sugerencias rápidas. Cada respuesta cita exactamente de dónde sacó el dato y tiene un botón «+ Guardar en Notas» para fijarla.'
+                ),
+                tip: tr('Ideal per comparar temes o preparar possibles preguntes de desenvolupament.', 'Ideal para comparar temas o preparar posibles preguntas de desarrollo.')
+            },
+            {
+                targetSelector: '[data-nb-guide="audio-notes"]',
+                badge: tr('Pas 4 de 4 · Pòdcast, Notes i Exportació', 'Paso 4 de 4 · Pódcast, Notas y Exportación'),
+                title: tr('4. Audio Overview (Marc i Laia), Notes i Exportació', '4. Audio Overview (Marc y Laia), Notas y Exportación'),
+                desc: tr(
+                    'Genera un Pòdcast a 2 veus sobre les teves fonts, regula la velocitat (1x / 1.25x / 1.5x), desplega el guió o prem «Preguntar en viu» per interrompre i resoldre un dubte en directe. A sota queden totes les teves Notes i a dalt pots passar a Jocs o exportar a Word (.doc).',
+                    'Genera un Pódcast a 2 voces sobre tus fuentes, regula la velocidad (1x / 1.25x / 1.5x), despliega el guion o pulsa «Preguntar en vivo» para interrumpir y resolver una duda en directo. Debajo quedan todas tus Notas y arriba puedes ir a Juegos o exportar a Word (.doc).'
+                ),
+                tip: tr('Tot el quadern es desa automàticament perquè no perdis la feina en canviar de pantalla.', 'Todo el cuaderno se guarda automáticamente para que no pierdas tu trabajo al cambiar de pantalla.')
+            }
+        ];
+    }
+
+    function clearNbGuideHighlight() {
+        if (nbGuideHighlightedEl) {
+            nbGuideHighlightedEl.classList.remove('ring-4', 'ring-amber-400', 'relative', 'z-[45]', 'bg-white', 'dark:bg-zinc-950');
+            nbGuideHighlightedEl = null;
+        }
+    }
+
+    window.closeAliatNotebookGuide = function () {
+        clearNbGuideHighlight();
+        const overlay = document.getElementById('nb-guide-overlay');
+        if (overlay) {
+            overlay.classList.add('hidden');
+            overlay.classList.remove('pointer-events-auto');
+            overlay.classList.add('pointer-events-none');
+            overlay.innerHTML = '';
+        }
+    };
+
+    function renderAliatNotebookGuideStep() {
+        const overlay = document.getElementById('nb-guide-overlay');
+        const shell = document.getElementById('aliat-notebook-shell');
+        if (!overlay || !shell) return;
+
+        const steps = getAliatNotebookGuideSteps();
+        if (nbGuideStepIdx < 0) nbGuideStepIdx = 0;
+        if (nbGuideStepIdx >= steps.length) {
+            window.closeAliatNotebookGuide();
+            return;
+        }
+
+        const step = steps[nbGuideStepIdx];
+        clearNbGuideHighlight();
+
+        const targetEl = shell.querySelector(step.targetSelector);
+        if (targetEl) {
+            nbGuideHighlightedEl = targetEl;
+            targetEl.classList.add('ring-4', 'ring-amber-400', 'relative', 'z-[45]');
+            try {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (_) {}
+        }
+
+        overlay.classList.remove('hidden', 'pointer-events-none');
+        overlay.classList.add('pointer-events-auto', 'bg-black/45', 'flex', 'items-end', 'sm:items-center', 'justify-center', 'p-3', 'sm:p-5');
+
+        overlay.innerHTML = `
+            <div class="w-full max-w-md bg-white dark:bg-zinc-900 border-2 border-amber-400/90 rounded-2xl shadow-2xl p-4 sm:p-5 space-y-3 pointer-events-auto">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold">${esc(step.badge)}</span>
+                    <button type="button" onclick="closeAliatNotebookGuide()" class="text-xs font-bold text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer">${tr('Tancar', 'Cerrar')} ✕</button>
+                </div>
+                <h4 class="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100">${esc(step.title)}</h4>
+                <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">${esc(step.desc)}</p>
+                <div class="p-2.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/70 text-[11px] text-indigo-800 dark:text-indigo-200 font-medium">
+                    ${esc(step.tip)}
+                </div>
+                <div class="flex items-center justify-between gap-2 pt-1">
+                    <div class="flex items-center gap-1">
+                        ${steps.map((_, i) => `<span class="w-2 h-2 rounded-full ${i === nbGuideStepIdx ? 'bg-amber-500 w-4' : 'bg-zinc-300 dark:bg-zinc-700'} transition-all"></span>`).join('')}
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        ${nbGuideStepIdx > 0 ? `<button type="button" onclick="stepAliatNotebookGuide(-1)" class="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">← ${tr('Anterior', 'Anterior')}</button>` : ''}
+                        <button type="button" onclick="stepAliatNotebookGuide(1)" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold cursor-pointer transition">
+                            ${nbGuideStepIdx === steps.length - 1 ? tr('Entesos! ✓', '¡Entendido! ✓') : tr('Següent →', 'Siguiente →')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    window.stepAliatNotebookGuide = function (delta) {
+        nbGuideStepIdx += delta;
+        renderAliatNotebookGuideStep();
+    };
+
+    window.openAliatNotebookGuide = function () {
+        nbGuideStepIdx = 0;
+        renderAliatNotebookGuideStep();
     };
 
     // ============================================================================
@@ -2271,9 +3237,9 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="15" cy="11" r="1"/><circle cx="17" cy="13" r="1"/></svg>
                         <span>${tr('Laboratori de 6 Jocs d\'Estudi', 'Laboratorio de 6 Juegos de Estudio')}</span>
                     </button>
-                    <button type="button" onclick="openGeminiNotebookModal()" class="py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs">
+                    <button type="button" onclick="openAliatNotebookModal()" class="py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                        <span>${tr('Obrir Gemini Notebook Studio', 'Abrir Gemini Notebook Studio')}</span>
+                        <span>${tr('Obrir AliatNotebook', 'Abrir AliatNotebook')}</span>
                     </button>
                 </div>
             </div>
@@ -2322,8 +3288,132 @@
         }
     };
 
+    // ============================================================================
+    // MOTOR DE MINIJOCS ALEATORIS DESPRÉS DE LA TEORIA (NOMÉS EN PLA D'ESTUDIS)
+    // ============================================================================
+    const POST_THEORY_GAMES = [
+        {
+            id: 'memory_pairs',
+            icon: '🧩',
+            titleCa: 'Parelles de Conceptes',
+            titleEs: 'Parejas de Conceptos',
+            descCa: 'Connecta cada concepte clau de la teoria amb la seva definició exacta.',
+            descEs: 'Conecta cada concepto clave de la teoría con su definición exacta.'
+        },
+        {
+            id: 'cloze_builder',
+            icon: '✍️',
+            titleCa: 'Constructor de Fórmules i Definicions',
+            titleEs: 'Constructor de Fórmulas y Definiciones',
+            descCa: 'Completa els buits clau dels conceptes que acabes d\'estudiar.',
+            descEs: 'Completa los huecos clave de los conceptos que acabas de estudiar.'
+        },
+        {
+            id: 'sequence_order',
+            icon: '🔢',
+            titleCa: 'Ordenació Lògica i Cronològica',
+            titleEs: 'Ordenación Lógica y Cronológica',
+            descCa: 'Ordena pas a pas el procés o seqüència explicada a la teoria.',
+            descEs: 'Ordena paso a paso el proceso o secuencia explicada en la teoría.'
+        },
+        {
+            id: 'error_hunter',
+            icon: '🕵️',
+            titleCa: 'Caçador de Trampes d\'Examen',
+            titleEs: 'Cazador de Trampas de Examen',
+            descCa: 'Detecta l\'error conceptual infiltrat i selecciona la correcció exacta.',
+            descEs: 'Detecta el error conceptual infiltrado y selecciona la corrección exacta.'
+        },
+        {
+            id: 'speed_tf',
+            icon: '⚡',
+            titleCa: 'Sprint Veritat o Fals',
+            titleEs: 'Sprint Verdadero o Falso',
+            descCa: 'Decideix a contrarellotge si les afirmacions de la teoria són certes o falses.',
+            descEs: 'Decide a contrarreloj si las afirmaciones de la teoría son verdaderas o falsas.'
+        },
+        {
+            id: 'exam_simulator',
+            icon: '🏆',
+            titleCa: 'Simulacre Kahoot i Targetes 3D',
+            titleEs: 'Simulacro Kahoot y Tarjetas 3D',
+            descCa: 'Posa\'t a prova amb un test cronometrat sobre el bloc teòric.',
+            descEs: 'Ponte a prueba con un test cronometrado sobre el bloque teórico.'
+        }
+    ];
+    window.POST_THEORY_GAMES = POST_THEORY_GAMES;
+
+    let _lastPickedRandomGameId = '';
+    window.pickRandomPostTheoryGame = function (excludeId) {
+        const blocked = excludeId || _lastPickedRandomGameId;
+        const pool = POST_THEORY_GAMES.filter(g => g.id !== blocked);
+        const list = pool.length > 0 ? pool : POST_THEORY_GAMES;
+        const chosen = list[Math.floor(Math.random() * list.length)] || POST_THEORY_GAMES[0];
+        _lastPickedRandomGameId = chosen.id;
+        return chosen;
+    };
+
+    window.buildRandomPostTheoryGameWidgetHtml = function (phaseLabel) {
+        const g = window.pickRandomPostTheoryGame();
+        const title = tr(g.titleCa, g.titleEs);
+        const desc = tr(g.descCa, g.descEs);
+        const badge = phaseLabel || tr('Repàs Actiu Post-Teoria', 'Repaso Activo Post-Teoría');
+        return `
+            <div class="post-theory-random-game-card my-3.5 p-3.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/35 border border-indigo-200/90 dark:border-indigo-800/80 shadow-xs space-y-2.5" data-random-game-id="${g.id}">
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-100/90 dark:bg-indigo-900/70 px-2.5 py-0.5 rounded-full">
+                        <span>🎲 ${tr('Joc Aleatori Post-Teoria', 'Juego Aleatorio Post-Teoría')}</span>
+                        <span>·</span>
+                        <span>${esc(badge)}</span>
+                    </span>
+                    <button type="button" onclick="rerollPostTheoryGameCard(this)" class="text-[10.5px] font-extrabold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer flex items-center gap-1">
+                        <span>🔀 ${tr('Altre joc aleatori', 'Otro juego aleatorio')}</span>
+                    </button>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div class="flex items-start gap-2.5 min-w-0">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 text-base shadow-2xs post-theory-game-icon">${g.icon}</div>
+                        <div class="min-w-0">
+                            <div class="text-xs sm:text-sm font-black text-zinc-900 dark:text-white post-theory-game-title">${esc(title)}</div>
+                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-snug post-theory-game-desc">${esc(desc)}</div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="launchRandomPostTheoryGame(this)" class="post-theory-game-play-btn px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold transition cursor-pointer shrink-0 shadow-xs active:scale-95 flex items-center justify-center gap-1.5">
+                        <span>🎮 ${tr('Jugar ara', 'Jugar ahora')}: ${esc(title)}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    };
+
+    window.rerollPostTheoryGameCard = function (btn) {
+        const card = btn && btn.closest ? btn.closest('.post-theory-random-game-card') : null;
+        if (!card) return;
+        const currentId = card.getAttribute('data-random-game-id') || '';
+        const nextGame = window.pickRandomPostTheoryGame(currentId);
+        card.setAttribute('data-random-game-id', nextGame.id);
+        const iconEl = card.querySelector('.post-theory-game-icon');
+        const titleEl = card.querySelector('.post-theory-game-title');
+        const descEl = card.querySelector('.post-theory-game-desc');
+        const playBtn = card.querySelector('.post-theory-game-play-btn');
+        const title = tr(nextGame.titleCa, nextGame.titleEs);
+        const desc = tr(nextGame.descCa, nextGame.descEs);
+        if (iconEl) iconEl.textContent = nextGame.icon;
+        if (titleEl) titleEl.textContent = title;
+        if (descEl) descEl.textContent = desc;
+        if (playBtn) playBtn.innerHTML = `<span>🎮 ${tr('Jugar ara', 'Jugar ahora')}: ${esc(title)}</span>`;
+    };
+
+    window.launchRandomPostTheoryGame = function (btn, forcedGameId) {
+        const card = btn && btn.closest ? btn.closest('.post-theory-random-game-card') : null;
+        const gameId = forcedGameId || (card && card.getAttribute('data-random-game-id')) || window.pickRandomPostTheoryGame().id;
+        const topic = resolveCurrentStudyTopic();
+        window.openStudyGamesHubModal(gameId, topic);
+    };
+
     // Observador per enriquir automàticament #welcome-card quan s'inicia una classe del Pla d'Estudi
     const observer = new MutationObserver(() => {
+        if (typeof appMode !== 'undefined' && appMode !== 'study') return;
         if (document.getElementById('welcome-card') && !document.getElementById('active-study-plan-interactive-bar')) {
             window.refreshActiveStudyPlanBanner();
         }

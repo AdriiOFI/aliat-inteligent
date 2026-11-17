@@ -744,11 +744,11 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 messages[messages.length - 1].content += '\n\nRespond ONLY with valid JSON.';
             }
 
-            const modelsToTry = ['openai', 'mistral'];
+            const modelsToTry = ['openai'];
             let lastErr = null;
             for (const modelName of modelsToTry) {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 16000);
+                const timeoutId = setTimeout(() => controller.abort(), 6500);
                 try {
                     const response = await fetch('https://text.pollinations.ai/openai', {
                         method: 'POST',
@@ -2075,22 +2075,59 @@ RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID sense text fora del JSON.`);
             return res.status(200).json({ success: true, gameType, topic, gameData: null, fallback: true });
         }
 
-        // ACCIÓ 10: GEMINI NOTEBOOK STUDIO (ESTIL GOOGLE NOTEBOOKLM)
+        // ACCIÓ 10: ALIATNOTEBOOK (QUADERN MULTIFONT AMB CITACIONS I ÀUDIO A 2 VEUS)
         if (action === 'notebook_studio') {
             const subAction = body.subAction || 'artifact';
             const artifactType = body.artifactType || 'study_guide';
             const notebookTitle = (body.notebookTitle || "Quadern d'Estudi").trim();
-            const sources = Array.isArray(body.sources) ? body.sources : [];
+            const rawSources = Array.isArray(body.sources) ? body.sources : [];
+            const sources = rawSources.length > 0
+                ? rawSources.map((s, idx) => ({
+                    tag: `Font ${idx + 1}`,
+                    title: String(s?.title || (`Document ${idx + 1}`)).trim(),
+                    content: String(s?.content || s?.text || '').trim()
+                })).filter(s => s.title || s.content)
+                : [{
+                    tag: 'Font 1',
+                    title: notebookTitle,
+                    content: (pdfText || studentContext || notebookTitle).trim()
+                }];
+
             const question = (body.question || "").trim();
             const isEs = effectiveLang === 'es';
 
-            const formattedSources = sources.length > 0
-                ? sources.map((s, idx) => `=== [Font ${idx + 1}: ${s.title || ('Document ' + (idx + 1))}] ===\n${String(s.content || '').substring(0, 7000)}`).join('\n\n')
-                : `=== [Font 1: ${notebookTitle}] ===\n${(pdfText || studentContext || notebookTitle).substring(0, 12000)}`;
+            const formattedSources = sources
+                .map((s) => `=== [${s.tag}: ${s.title}] ===\n${s.content.substring(0, 7000)}`)
+                .join('\n\n');
+
+            // Helper ràpid per no sobrepassar timeouts en entorns serverless
+            const executeAiWithCap = (opts, ms = 8500) => Promise.race([
+                executeAI(opts),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('AI timeout')), ms))
+            ]);
+
+            // Extractor local d'idees reals per a contingència robusta des de les fonts actives
+            function extractSourcePoints() {
+                const points = [];
+                sources.forEach((src) => {
+                    const lines = src.content
+                        .split(/\n+/)
+                        .map(l => l.replace(/^[-*•\d.)\s#]+/, '').trim())
+                        .filter(l => l.length >= 14);
+                    const picked = lines.slice(0, 4);
+                    if (picked.length === 0 && src.content.length > 0) {
+                        picked.push(src.content.substring(0, 220));
+                    }
+                    picked.forEach(txt => {
+                        points.push({ tag: src.tag, title: src.title, text: txt.substring(0, 260) });
+                    });
+                });
+                return points;
+            }
 
             if (subAction === 'audio_overview') {
                 const systemPromptPodcast = isEs
-                    ? `Eres el motor de "Audio Overview" (Resumen de Audio estilo Google NotebookLM).
+                    ? `Eres el motor "Audio Overview" de AliatNotebook.
 Genera un guion de podcast académico apasionante, natural y didáctico entre 2 presentadores ("Marc" - analítico y curioso, y "Laia" - experta pedagógica que pone ejemplos claros y trucos de examen) basado EXCLUSIVAMENTE en las fuentes del cuaderno "${notebookTitle}".
 RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO con esta estructura exacta:
 {
@@ -2099,12 +2136,12 @@ RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO con esta estructura exacta:
   "summary": "Resumen de 1 frase sobre qué debaten Marc y Laia.",
   "keyTakeaways": ["Punto clave 1 [Font 1]", "Punto clave 2 [Font 1]", "Punto clave 3"],
   "dialogue": [
-    { "speaker": "Marc", "text": "¡Bienvenidos al análisis a fondo! Hoy tenemos delante los apuntes sobre..." },
+    { "speaker": "Marc", "text": "¡Bienvenidos al análisis a fondo de AliatNotebook! Hoy tenemos delante los apuntes sobre..." },
     { "speaker": "Laia", "text": "¡Exacto, Marc! Y ojo porque en la [Font 1] hay un concepto que siempre cae en los exámenes..." }
   ]
 }
 Genera entre 8 y 10 intervenciones dinámicas, sin emojis, listas para ser leídas por síntesis de voz.`
-                    : `Ets el motor d'"Audio Overview" (Resum d'Àudio estil Google NotebookLM).
+                    : `Ets el motor d'"Audio Overview" d'AliatNotebook.
 Genera un guió de pòdcast acadèmic apassionant, natural i didàctic entre 2 locutors ("Marc" - analític i curiós, i "Laia" - experta pedagògica que posa exemples clars i trucs d'examen) basat EXCLUSIVAMENT en les fonts del quadern "${notebookTitle}".
 RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura exacta:
 {
@@ -2113,14 +2150,14 @@ RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura exacta:
   "summary": "Resum d'1 frase sobre què debaten en Marc i la Laia.",
   "keyTakeaways": ["Punt clau 1 [Font 1]", "Punt clau 2 [Font 1]", "Punt clau 3"],
   "dialogue": [
-    { "speaker": "Marc", "text": "Benvinguts a l'anàlisi a fons! Avui tenim al davant les fonts sobre..." },
+    { "speaker": "Marc", "text": "Benvinguts a l'anàlisi a fons d'AliatNotebook! Avui tenim al davant les fonts sobre..." },
     { "speaker": "Laia", "text": "Exacte, Marc! I molta atenció perquè a la [Font 1] hi ha un concepte clau que sempre surt a examen..." }
   ]
 }
 Genera entre 8 i 10 intervencions dinàmiques, sense emojis, llestes per ser llegides per síntesi de veu.`;
 
                 try {
-                    const aiRes = await executeAI({
+                    const aiRes = await executeAiWithCap({
                         systemPrompt: systemPromptPodcast,
                         contents: [{ role: "user", parts: [{ text: `FONTS DEL QUADERN:\n${formattedSources}\n\nGenera l'Audio Overview en JSON.` }] }],
                         jsonMode: true
@@ -2133,20 +2170,27 @@ Genera entre 8 i 10 intervencions dinàmiques, sense emojis, llestes per ser lle
                     console.warn("[notebook_studio audio_overview] Fallback:", err.message);
                 }
 
+                const pts = extractSourcePoints();
+                const firstSrc = sources[0];
+                const secondSrc = sources[1] || firstSrc;
+                const p1 = pts[0]?.text || notebookTitle;
+                const p2 = pts[1]?.text || (pts[0]?.text || notebookTitle);
+                const p3 = pts[2]?.text || p1;
+
                 const fallbackDialogue = isEs ? [
-                    { speaker: "Marc", text: `Bienvenidos al estudio profundo de nuestro cuaderno sobre ${notebookTitle}. Hoy vamos a desgranar las fuentes activas para quedarnos con lo esencial.` },
-                    { speaker: "Laia", text: `Así es, Marc. Revisando la Font 1, lo primero que debemos dominar es la estructura fundamental de ${notebookTitle} y cómo se conectan sus conceptos principales.` },
-                    { speaker: "Marc", text: `Muchas veces cuando estudiamos este tema memorizamos sin entender el porqué. ¿Cuál dirías que es la clave para no fallar en el examen?` },
-                    { speaker: "Laia", text: `La clave está en distinguir bien las definiciones base de sus aplicaciones prácticas. Si entiendes la causa y el efecto que describe la Font 1, puedes resolver cualquier pregunta trampa.` },
-                    { speaker: "Marc", text: `Totalmente. Además, conviene repasar los pasos en orden lógico y practicar con los juegos interactivos del Plan de Estudio para fijar la memoria a largo plazo.` },
-                    { speaker: "Laia", text: `Exacto. Mi recomendación final: revisad las citas del cuaderno, haced el reto de Cazar Errores y tendréis ${notebookTitle} completamente dominado.` }
+                    { speaker: "Marc", text: `¡Hola y bienvenidos a AliatNotebook! Hoy analizamos el cuaderno "${notebookTitle}" trabajando sobre ${sources.length} ${sources.length === 1 ? 'fuente activa' : 'fuentes activas'}.` },
+                    { speaker: "Laia", text: `Así es, Marc. Empezando por ${firstSrc.title} en la [Font 1], destaca especialmente este punto clave: ${p1}` },
+                    { speaker: "Marc", text: `Interesante. Y si profundizamos un poco más en el contenido, ¿qué conexión práctica debemos recordar para el examen?` },
+                    { speaker: "Laia", text: `Fíjate en lo que recoge ${secondSrc.title}: ${p2}. Si entiendes esa lógica de base, evitas memorizar a ciegas.` },
+                    { speaker: "Marc", text: `Además veo otro detalle relevante: ${p3}. ¿Cuál dirías que es la trampa típica cuando preguntan esto?` },
+                    { speaker: "Laia", text: `Confundir el concepto teórico con su aplicación o responder sin justificar con la referencia correcta. Mi consejo: usa ahora los botones de Guía de Estudio y Trampas de Examen de AliatNotebook para fijarlo.` }
                 ] : [
-                    { speaker: "Marc", text: `Benvinguts a l'anàlisi a fons del nostre quadern sobre ${notebookTitle}. Avui desgranarem les fonts actives per quedar-nos amb l'essència.` },
-                    { speaker: "Laia", text: `Així és, Marc. Analitzant la Font 1, el primer que cal dominar és l'estructura fonamental de ${notebookTitle} i com es relacionen els seus conceptes centrals.` },
-                    { speaker: "Marc", text: `Moltes vegades quan estudiem aquest bloc memoritzem sense entendre el perquè. Quina diries que és la clau per no fallar a l'examen?` },
-                    { speaker: "Laia", text: `La clau és diferenciar les definicions base de les aplicacions pràctiques. Si entens la relació causa-efecte que recull la Font 1, podràs resoldre qualsevol pregunta trampa.` },
-                    { speaker: "Marc", text: `Totalment d'acord. A més, val la pena repassar la seqüència de passos i practicar amb els jocs interactius del Pla d'Estudi per consolidar la memòria.` },
-                    { speaker: "Laia", text: `Exacte! El meu consell final: reviseu les citacions del quadern, feu una partida al Caçador d'Errors i tindreu ${notebookTitle} 100% dominat.` }
+                    { speaker: "Marc", text: `Hola i benvinguts a AliatNotebook! Avui analitzem el quadern "${notebookTitle}" treballant sobre ${sources.length} ${sources.length === 1 ? 'font activa' : 'fonts actives'}.` },
+                    { speaker: "Laia", text: `Així és, Marc. Començant per ${firstSrc.title} a la [Font 1], destaca especialment aquest punt clau: ${p1}` },
+                    { speaker: "Marc", text: `Molt interessant. I si aprofundim una mica més en el material, quina connexió pràctica hem de recordar per a l'examen?` },
+                    { speaker: "Laia", text: `Fixa't en el que recull ${secondSrc.title}: ${p2}. Si entens aquesta lògica base, evites memoritzar sense sentit.` },
+                    { speaker: "Marc", text: `A més veig un altre detall rellevant: ${p3}. Quina diries que és la trampa típica quan pregunten això?` },
+                    { speaker: "Laia", text: `Confondre el concepte teòric amb la seva aplicació o respondre sense justificar amb la referència adequada. El meu consell: fes servir ara els botons de Guia d'Estudi i Trampes d'Examen d'AliatNotebook per consolidar-ho.` }
                 ];
 
                 return res.status(200).json({
@@ -2154,12 +2198,8 @@ Genera entre 8 i 10 intervencions dinàmiques, sense emojis, llestes per ser lle
                     overview: {
                         title: (isEs ? "Deep Dive Audio: " : "Deep Dive d'Àudio: ") + notebookTitle,
                         durationEstimate: "2 min",
-                        summary: isEs ? `Conversación analítica entre Marc y Laia sobre ${notebookTitle}.` : `Conversa analítica entre en Marc i la Laia sobre ${notebookTitle}.`,
-                        keyTakeaways: [
-                            `${notebookTitle}: estructura conceptual i idees centrals [Font 1]`,
-                            isEs ? `Errores frecuentes de examen y cómo evitarlos [Font 1]` : `Errors freqüents d'examen i com evitar-los [Font 1]`,
-                            isEs ? `Estrategia práctica de repaso activo` : `Estratègia pràctica de repàs actiu`
-                        ],
+                        summary: isEs ? `Conversación analítica entre Marc y Laia sobre ${notebookTitle} (${sources.length} fuentes).` : `Conversa analítica entre en Marc i la Laia sobre ${notebookTitle} (${sources.length} fonts).`,
+                        keyTakeaways: pts.slice(0, 3).map(p => `${p.text.substring(0, 110)} [${p.tag}]`),
                         dialogue: fallbackDialogue
                     }
                 });
@@ -2167,7 +2207,7 @@ Genera entre 8 i 10 intervencions dinàmiques, sense emojis, llestes per ser lle
 
             if (subAction === 'chat') {
                 const systemPromptNbChat = isEs
-                    ? `Eres el asistente de investigación de Gemini Notebook (estilo Google NotebookLM).
+                    ? `Eres el asistente de investigación de AliatNotebook.
 Responde a la consulta del estudiante basándote ESTRICTAMENTE en las fuentes del cuaderno y añade citas explícitas entre corchetes como [Font 1], [Font 2] al final de las frases respaldadas por cada fuente.
 No uses emojis.
 RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO con esta estructura:
@@ -2176,10 +2216,10 @@ RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO con esta estructura:
   "citations": ["Font 1"],
   "followUps": ["¿Pregunta sugerida 1?", "¿Pregunta sugerida 2?", "¿Pregunta sugerida 3?"]
 }`
-                    : `Ets l'assistent d'investigació de Gemini Notebook (estil Google NotebookLM).
+                    : `Ets l'assistent d'investigació d'AliatNotebook.
 Respon a la consulta de l'estudiant basant-te ESTRICTAMENT en les fonts del quadern i afegeix citacions explícites entre claudàtors com [Font 1], [Font 2] al final de les frases recolzades per cada font.
 No utilitzis emojis.
-RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura:
+RETORNA ÚNICAMENT UN OBJETE JSON VÀLID amb aquesta estructura:
 {
   "answer": "Resposta ben estructurada en Markdown amb citacions [Font 1]...",
   "citations": ["Font 1"],
@@ -2187,7 +2227,7 @@ RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura:
 }`;
 
                 try {
-                    const aiRes = await executeAI({
+                    const aiRes = await executeAiWithCap({
                         systemPrompt: systemPromptNbChat,
                         contents: [{ role: "user", parts: [{ text: `FONTS ACTIVES DEL QUADERN:\n${formattedSources}\n\nPREGUNTA DE L'USUARI: ${question}` }] }],
                         jsonMode: true
@@ -2200,15 +2240,28 @@ RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura:
                     console.warn("[notebook_studio chat] Fallback:", err.message);
                 }
 
+                const pts = extractSourcePoints();
+                const keywords = question.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+                const ranked = [...pts].sort((a, b) => {
+                    const score = (txt) => keywords.reduce((acc, k) => acc + (txt.toLowerCase().includes(k) ? 1 : 0), 0);
+                    return score(b.text) - score(a.text);
+                }).slice(0, 4);
+                const citedTags = Array.from(new Set(ranked.map(r => r.tag)));
+                if (citedTags.length === 0) citedTags.push('Font 1');
+
+                const bulletsMd = ranked.length > 0
+                    ? ranked.map(r => `- **${r.title}**: ${r.text} [${r.tag}]`).join('\n')
+                    : `- **${notebookTitle}**: Síntesi principal extreta del material actiu [${citedTags[0]}].`;
+
                 return res.status(200).json({
                     success: true,
                     answer: isEs
-                        ? `Según el análisis de las fuentes activas sobre **${notebookTitle}** [Font 1]:\n\n- **Respuesta directa a "${question}"**: Los apuntes destacan los fundamentos teóricos y su aplicación práctica directa dentro del temario [Font 1].\n- **Punto clave para examen**: Conviene relacionar este concepto con las definiciones principales del documento para justificar la respuesta con rigor académico [Font 1].`
-                        : `Segons l'anàlisi de les fonts actives sobre **${notebookTitle}** [Font 1]:\n\n- **Resposta directa a "${question}"**: Els apunts destaquen els fonaments teòrics i la seva aplicació pràctica directa dins del temari [Font 1].\n- **Punt clau per a l'examen**: Convé relacionar aquest concepte amb les definicions principals del document per justificar la resposta amb rigor acadèmic [Font 1].`,
-                    citations: ["Font 1"],
+                        ? `Basado en las fuentes activas de **${notebookTitle}** sobre *"${question}"*:\n\n${bulletsMd}\n\n**Conclusión práctica**: Relaciona estos apartados entre sí para justificar tus respuestas con precisión [${citedTags.join('], [')}].`
+                        : `Basat en les fonts actives de **${notebookTitle}** sobre *"${question}"*:\n\n${bulletsMd}\n\n**Conclusió pràctica**: Relaciona aquests apartats entre si per justificar les teves respostes amb rigor [${citedTags.join('], [')}].`,
+                    citations: citedTags,
                     followUps: isEs
-                        ? [`¿Cuáles son las preguntas de examen más probables sobre ${notebookTitle}?`, `¿Qué relación hay entre los conceptos principales de la Font 1?`, `Haz una tabla comparativa de los puntos clave`]
-                        : [`Quines són les preguntes d'examen més probables sobre ${notebookTitle}?`, `Quina relació hi ha entre els conceptes principals de la Font 1?`, `Fes una taula comparativa dels punts clau`]
+                        ? [`¿Cuáles son las preguntas de examen más probables sobre ${notebookTitle}?`, `¿Cómo se relacionan los conceptos de la [${citedTags[0]}]?`, `Resume los errores más frecuentes`]
+                        : [`Quines són les preguntes d'examen més probables sobre ${notebookTitle}?`, `Com es relacionen els conceptes de la [${citedTags[0]}]?`, `Resumeix els errors més freqüents`]
                 });
             }
 
@@ -2219,18 +2272,20 @@ RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura:
                 faq: isEs ? "Preguntas Frecuentes de Examen (FAQ)" : "Preguntes Freqüents d'Examen (FAQ)",
                 timeline: isEs ? "Línea Temporal y Secuencia de Procesos" : "Línia Temporal i Seqüència de Processos",
                 glossary: isEs ? "Glosario Académico de Conceptos Clave" : "Glossari Acadèmic de Conceptes Clau",
-                exam_traps: isEs ? "Informe de Trampas de Examen y Errores Comunes" : "Informe de Trampes d'Examen i Errors Freqüents"
+                exam_traps: isEs ? "Informe de Trampas de Examen y Errores Comunes" : "Informe de Trampes d'Examen i Errors Freqüents",
+                flashcards_deck: isEs ? "Batería de Tarjetas de Memoria Q&A (con Citas)" : "Bateria de Targetes de Memòria Q&A (amb Citacions)",
+                mock_exam: isEs ? "Simulacro de Examen Autoevaluable (con Solucionario)" : "Simulacre d'Examen Autoavaluable (amb Solucionari)"
             };
             const selectedTitle = artifactLabels[artifactType] || artifactLabels.study_guide;
 
             const systemPromptArtifact = isEs
-                ? `Eres el motor de documentos de Google NotebookLM. Genera el artefacto "${selectedTitle}" sobre "${notebookTitle}" basándote en las fuentes proporcionadas.
+                ? `Eres el motor de documentos de AliatNotebook. Genera el artefacto "${selectedTitle}" sobre "${notebookTitle}" basándote en las fuentes proporcionadas.
 Incluye citas constantes como [Font 1], [Font 2] junto a cada afirmación, usa Markdown estructurado con tablas o listas claras y NO uses emojis.`
-                : `Ets el motor de documents de Google NotebookLM. Genera l'artefacte "${selectedTitle}" sobre "${notebookTitle}" basant-te en les fonts proporcionades.
+                : `Ets el motor de documents d'AliatNotebook. Genera l'artefacte "${selectedTitle}" sobre "${notebookTitle}" basant-te en les fonts proporcionades.
 Inclou citacions constants com [Font 1], [Font 2] al costat de cada afirmació, utilitza Markdown estructurat amb taules o llistes clares i NO utilitzis emojis.`;
 
             try {
-                const aiRes = await executeAI({
+                const aiRes = await executeAiWithCap({
                     systemPrompt: systemPromptArtifact,
                     contents: [{ role: "user", parts: [{ text: `FONTS DEL QUADERN:\n${formattedSources}\n\nGenera ara: ${selectedTitle}` }] }]
                 });
@@ -2242,10 +2297,55 @@ Inclou citacions constants com [Font 1], [Font 2] al costat de cada afirmació, 
                 console.warn("[notebook_studio artifact] Fallback:", err.message);
             }
 
+            const pts = extractSourcePoints();
+            const pointsList = pts.length > 0
+                ? pts.map(p => `- **${p.title}**: ${p.text} [${p.tag}]`).join('\n')
+                : `- **${notebookTitle}**: Conceptes fonamentals de la font principal [Font 1].`;
+
+            let fallbackContent = '';
+            if (artifactType === 'faq') {
+                fallbackContent = isEs
+                    ? `### ${selectedTitle}\n\n**1. ¿Cuál es la idea central de ${notebookTitle}?**\n${pts[0]?.text || notebookTitle} [${pts[0]?.tag || 'Font 1'}].\n\n**2. ¿Qué puntos clave destacan las fuentes activas?**\n${pointsList}\n\n**3. ¿Cómo aplicarlo en un ejercicio o caso de examen?**\nIdentifica primero el principio teórico en [${pts[0]?.tag || 'Font 1'}], estructura los pasos en orden lógico y valida el resultado final.`
+                    : `### ${selectedTitle}\n\n**1. Quina és la idea central de ${notebookTitle}?**\n${pts[0]?.text || notebookTitle} [${pts[0]?.tag || 'Font 1'}].\n\n**2. Quins punts clau destaquen les fonts actives?**\n${pointsList}\n\n**3. Com aplicar-ho en un exercici o supòsit d'examen?**\nIdentifica primer el principi teòric a [${pts[0]?.tag || 'Font 1'}], estructura els passos en ordre lògic i valida el resultat final.`;
+            } else if (artifactType === 'glossary') {
+                const rows = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', title: notebookTitle, text: 'Concepte estructural principal' }])
+                    .map((p, idx) => `| Concepte ${idx + 1} (${p.title}) | ${p.text.replace(/\|/g, '/')} | [${p.tag}] |`)
+                    .join('\n');
+                fallbackContent = isEs
+                    ? `### ${selectedTitle}\n\n| Término / Bloque | Síntesis de las fuentes | Referencia |\n| :--- | :--- | :---: |\n${rows}`
+                    : `### ${selectedTitle}\n\n| Terme / Bloc | Síntesi de les fonts | Referència |\n| :--- | :--- | :---: |\n${rows}`;
+            } else if (artifactType === 'timeline') {
+                const stepsMd = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', text: notebookTitle }])
+                    .map((p, idx) => `${idx + 1}. **Fase ${idx + 1}:** ${p.text} [${p.tag}]`)
+                    .join('\n');
+                fallbackContent = `### ${selectedTitle}: ${notebookTitle}\n\n${stepsMd}`;
+            } else if (artifactType === 'exam_traps') {
+                fallbackContent = isEs
+                    ? `### ${selectedTitle}: ${notebookTitle}\n\n- **Trampa 1 (Confusión conceptual):** Mezclar definiciones clave extraídas de las fuentes:\n${pointsList}\n- **Trampa 2 (Falta de justificación):** Responder sin vincular el dato con su contexto o fuente de origen [${pts[0]?.tag || 'Font 1'}].\n- **Lista de verificación pre-entrega:**\n  - [ ] He contrastado todas las condiciones del enunciado.\n  - [ ] He revisado unidades, excepciones y casos límite [Font 1].`
+                    : `### ${selectedTitle}: ${notebookTitle}\n\n- **Trampa 1 (Confusió conceptual):** Barrejar definicions clau extretes de les fonts:\n${pointsList}\n- **Trampa 2 (Falta de justificació):** Respondre sense vincular la dada amb el seu context o font d'origen [${pts[0]?.tag || 'Font 1'}].\n- **Llista de verificació prèvia al lliurament:**\n  - [ ] He contrastat totes les condicions de l'enunciat.\n  - [ ] He revisat unitats, excepcions i casos límit [Font 1].`;
+            } else if (artifactType === 'flashcards_deck') {
+                const cardsMd = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', title: notebookTitle, text: notebookTitle }])
+                    .map((p, idx) => isEs
+                        ? `**Tarjeta #${idx + 1} (${p.title})**\n- **Pregunta:** ¿Qué establece la fuente respecto a este apartado clave?\n- **Respuesta:** ${p.text} [${p.tag}]`
+                        : `**Targeta #${idx + 1} (${p.title})**\n- **Pregunta:** Què estableix la font respecte a aquest apartat clau?\n- **Resposta:** ${p.text} [${p.tag}]`)
+                    .join('\n\n');
+                fallbackContent = `### ${selectedTitle}: ${notebookTitle}\n\n${cardsMd}`;
+            } else if (artifactType === 'mock_exam') {
+                const p0 = pts[0] || { tag: 'Font 1', title: notebookTitle, text: notebookTitle };
+                const p1 = pts[1] || p0;
+                fallbackContent = isEs
+                    ? `### ${selectedTitle}: ${notebookTitle}\n\n#### Parte 1: Preguntas de Desarrollo Corto\n1. **Explica y justifica el concepto principal recogido en ${p0.title} [${p0.tag}].**\n2. **Relaciona los puntos clave de las fuentes activas y señala posibles excepciones [${p1.tag}].**\n\n#### Parte 2: Solucionario Oficial con Citas\n- **Solución 1:** ${p0.text} [${p0.tag}].\n- **Solución 2:** ${p1.text} [${p1.tag}].`
+                    : `### ${selectedTitle}: ${notebookTitle}\n\n#### Part 1: Preguntes de Desenvolupament Curt\n1. **Explica i justifica el concepte principal recollit a ${p0.title} [${p0.tag}].**\n2. **Relaciona els punts clau de les fonts actives i assenyala possibles excepcions [${p1.tag}].**\n\n#### Part 2: Solucionari Oficial amb Citacions\n- **Solució 1:** ${p0.text} [${p0.tag}].\n- **Solució 2:** ${p1.text} [${p1.tag}].`;
+            } else {
+                fallbackContent = isEs
+                    ? `### ${selectedTitle}: ${notebookTitle}\n\n#### Puntos extraídos de las fuentes activas\n${pointsList}\n\n#### Plan de repaso recomendado\n1. Revisa los conceptos principales de cada fuente marcada [${sources.map(s => s.tag).join('], [')}].\n2. Haz una pregunta concreta en el Chat de Investigación de AliatNotebook para profundizar en los apartados complejos.\n3. Consolida el temario generando el Pódcast IA o jugando al Laboratorio de 6 Juegos.`
+                    : `### ${selectedTitle}: ${notebookTitle}\n\n#### Punts extrets de les fonts actives\n${pointsList}\n\n#### Pla de repàs recomanat\n1. Revisa els conceptes principals de cada font marcada [${sources.map(s => s.tag).join('], [')}].\n2. Fes una pregunta concreta al Xat d'Investigació d'AliatNotebook per aprofundir en els apartats complexos.\n3. Consolida el temari generant el Pòdcast IA o jugant al Laboratori de 6 Jocs.`;
+            }
+
             return res.status(200).json({
                 success: true,
                 title: `${selectedTitle} · ${notebookTitle}`,
-                content: `### ${selectedTitle}: ${notebookTitle}\n\n- **Síntesi fonamental**: Document generat a partir de les fonts actives del quadern sobre **${notebookTitle}** [Font 1].\n- **Conceptes vertebradors**: Estructura teòrica, definicions essencials i relacions causals extretes del material d'estudi [Font 1].\n- **Orientació d'examen**: Revisa els termes clau i practica amb el Laboratori de Jocs Interactius per consolidar el domini de la matèria [Font 1].`
+                content: fallbackContent
             });
         }
 

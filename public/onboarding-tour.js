@@ -161,47 +161,26 @@
             }
 
             steps.push({
-                selector: '#calendar-header-btn, #tools-header-btn, #memory-header-btn',
+                selector: '#notebook-header-btn, #tools-header-btn, #memory-header-btn',
                 onEnter: async () => {
                     if (hooks) await hooks.enterStudyChat();
                     else if (typeof window.startStudyMode === 'function') await window.startStudyMode(false);
                 },
-                actionLabel: isEs ? 'Botones superiores de Estudio' : 'Botons superiors d’Estudi',
-                title: isEs ? 'Barra superior en Pla d’Estudis' : 'Barra superior al Pla d’Estudis',
+                actionLabel: isEs ? 'Botones superiores del chat' : 'Botons superiors del xat',
+                title: isEs ? 'AliatNotebook, Eines (con Jocs) y Memòria (con Calendari)' : 'AliatNotebook, Eines (amb Jocs) i Memòria (amb Calendari)',
                 desc: isEs
-                    ? 'Cuando estás dentro de un chat de Pla d’Estudis, arriba tienes 3 botones clave:'
-                    : 'Quan ets dins d’un xat de Pla d’Estudis, a dalt tens 3 botons clau:',
+                    ? 'En la barra superior del chat tienes todo organizado en 3 botones principales:'
+                    : 'A la barra superior del xat tens tot organitzat en 3 botons principals:',
                 bullets: isEs
                     ? [
-                        'Calendari: consulta las sesiones por día, márcalas como completadas o pídele repaso a la IA.',
-                        'Eines: abre al instante generador de examen, mapas mentales, cámara OCR o apuntes.',
-                        'Memòria: revisa tus puntos, resultados de test y todo lo que Aliat recuerda de este chat.'
+                        'AliatNotebook: cuaderno multifuente con citas clicables [Font X], 8 generadores en 1 clic y Podcast IA a 2 voces.',
+                        'Eines: incluye el Laboratorio de 6 Jocs de aprendizaje activo, generador de examen, mapas mentales y Google Workspace.',
+                        'Memòria: revisa tus puntos, resultados y pulsa el botón «Calendari del Pla d’Estudi» para ver y marcar todas las sesiones por día.'
                     ]
                     : [
-                        'Calendari: consulta les sessions per dia, marca-les com a completades o demana repàs a la IA.',
-                        'Eines: obre a l’instant generador d’examen, mapes mentals, càmera OCR o apunts.',
-                        'Memòria: revisa els teus punts, resultats de test i tot el que Aliat recorda d’aquest xat.'
-                    ]
-            });
-
-            steps.push({
-                selector: '#games-header-btn',
-                onEnter: async () => {
-                    if (hooks) await hooks.enterStudyChat();
-                },
-                actionLabel: isEs ? 'Botón superior «Jocs» y «Notebook»' : 'Botó superior «Jocs» i «Notebook»',
-                title: isEs ? 'Juegos Interactivos y Gemini Notebook' : 'Jocs Interactius i Gemini Notebook',
-                desc: isEs
-                    ? 'Estos dos botones están siempre arriba en cualquier chat para estudiar de forma activa:'
-                    : 'Aquests dos botons són sempre a dalt en qualsevol xat per estudiar de manera activa:',
-                bullets: isEs
-                    ? [
-                        'Jocs: abre el laboratorio con 6 juegos (Quiz Kahoot, Flashcards, Unir parejas, Ordenar secuencia, V/F relámpago y Completar huecos).',
-                        'Notebook: abre Gemini Notebook Studio con tus fuentes, guía de estudio con citas numeradas y Podcast IA a 2 voces.'
-                    ]
-                    : [
-                        'Jocs: obre el laboratori amb 6 jocs (Quiz Kahoot, Flashcards, Unir parelles, Ordenar seqüència, V/F llampec i Omplir buits).',
-                        'Notebook: obre Gemini Notebook Studio amb les teves fonts, guia d’estudi amb citacions numerades i Podcast IA a 2 veus.'
+                        'AliatNotebook: quadern multifont amb citacions clicables [Font X], 8 generadors en 1 clic i Podcast IA a 2 veus.',
+                        'Eines: inclou el Laboratori de 6 Jocs d’aprenentatge actiu, generador d’examen, mapes mentals i Google Workspace.',
+                        'Memòria: revisa els teus punts, resultats i prem el botó «Calendari del Pla d’Estudi» per veure i marcar totes les sessions per dia.'
                     ]
             });
 
@@ -357,20 +336,12 @@
         } else {
             // User manually replayed tour while inside an existing conversation with messages: explain current view safely without wiping it
             steps.push({
-                selector: '#xatbot-submode-header-pill, #calendar-header-btn, #daily-tools-header-btn',
+                selector: '#notebook-header-btn, #tools-header-btn, #memory-header-btn, #daily-tools-header-btn',
                 actionLabel: isEs ? 'Botones superiores del modo activo' : 'Botons superiors del mode actiu',
-                title: isEs ? 'Controles superiores de este chat' : 'Controls superiors d’aquest xat',
+                title: isEs ? 'AliatNotebook, Eines (con Jocs) y Memòria (con Calendari)' : 'AliatNotebook, Eines (amb Jocs) i Memòria (amb Calendari)',
                 desc: isEs
-                    ? 'Arriba a la derecha cambian las herramientas según el chat: Calendario/Eines/Memoria en Pla d’Estudis, Estudi Lliure/Lliure Total en XatBot, o Eines Ús Quotidià.'
-                    : 'A dalt a la dreta canvien les eines segons el xat: Calendari/Eines/Memòria a Pla d’Estudis, Estudi Lliure/Lliure Total a XatBot, o Eines Ús Quotidià.'
-            });
-            steps.push({
-                selector: '#games-header-btn, #notebook-header-btn',
-                actionLabel: isEs ? 'Jocs y Gemini Notebook' : 'Jocs i Gemini Notebook',
-                title: isEs ? 'Juegos Interactivos y Notebook' : 'Jocs Interactius i Notebook',
-                desc: isEs
-                    ? 'Pulsa Jocs para practicar con 6 minijuegos activos o Notebook para estudiar con fuentes, citas y Podcast IA a 2 voces.'
-                    : 'Prem Jocs per practicar amb 6 minijocs actius o Notebook per estudiar amb fonts, citacions i Podcast IA a 2 veus.'
+                    ? 'Arriba a la derecha tienes AliatNotebook (8 generadores, citas [Font X] y Podcast IA), Eines (donde están los 6 Jocs de aprendizaje activo) y Memòria (con el botón del Calendari del Pla d’Estudi).'
+                    : 'A dalt a la dreta tens AliatNotebook (8 generadors, citacions [Font X] i Podcast IA), Eines (on hi ha els 6 Jocs d’aprenentatge actiu) i Memòria (amb el botó del Calendari del Pla d’Estudi).'
             });
             steps.push({
                 selector: '#chat-header-menu-dropdown, #chat-header-menu-btn',

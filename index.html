@@ -1634,6 +1634,14 @@
         </aside>
 
         <main class="flex-1 flex flex-col relative w-full h-full min-h-0 min-w-0 overflow-hidden bg-zinc-50 dark:bg-zinc-950">
+            <!-- GOOGLE MAPS PLATFORM QUOTA DEFENSE BANNER -->
+            <div id="gmp-quota-exceeded-banner" class="hidden bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2.5 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm">
+                <span>
+                    Google Maps Platform quota reached. If you are the app owner, visit
+                    <a href="https://developers.google.com/maps/ai/ai-studio?utm_campaign=gmp_mcp_codeassist_v1_aistudio#quota_exceeded_errors" target="_blank" rel="noopener noreferrer" class="underline font-semibold text-amber-950 hover:text-amber-800">maps developer site</a>
+                    for instructions to update your account.
+                </span>
+            </div>
             <!-- BANNER INFORMATIU DE MODE CONVIDAT (SENSE SESSIÓ INICIADA) -->
             <div id="guest-mode-banner" class="hidden bg-amber-50/95 dark:bg-zinc-900 border-b border-amber-200/90 dark:border-zinc-800 px-3 sm:px-5 py-1.5 sm:py-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 sm:gap-2 z-30 shrink-0">
                 <div class="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-amber-900 dark:text-zinc-200 min-w-0 flex-1">
@@ -2097,7 +2105,12 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600 dark:text-sky-400 shrink-0"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04zm5 0a2.5 2.5 0 0 1 4.44 2.04 2.5 2.5 0 0 1 1.32 4.24 3 3 0 0 1-.34 5.58A2.5 2.5 0 0 1 12 19.5V4.5A2.5 2.5 0 0 1 14.5 2z"/></svg>
                                 <span class="hidden xs:inline sm:inline text-[11px] sm:text-xs">Memòria</span>
                             </button>
-                            <!-- BOTÓ D'EINES D'ÚS QUOTIDIÀ (NOMÉS A MÒDUL D'ÚS QUOTIDIÀ) -->
+                            <!-- BOTONS D'EINES I ALIAMAPS D'ÚS QUOTIDIÀ (NOMÉS A MÒDUL D'ÚS QUOTIDIÀ) -->
+                            <button id="daily-maps-header-btn" type="button" onclick="window.openDailyMapsModal && window.openDailyMapsModal('transit')" title="AliatMaps: Horaris de bus/tren, on has aparcat el cotxe, serveis propers i rutes" class="hidden text-xs bg-blue-50 hover:bg-blue-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-blue-200/80 dark:border-zinc-800 text-blue-700 dark:text-sky-300 font-bold py-1.5 px-2.5 rounded-xl transition items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shadow-2xs shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 dark:text-sky-400 shrink-0"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span class="inline sm:hidden text-[11px]">AliatMaps</span>
+                                <span class="hidden sm:inline">📍 AliatMaps</span>
+                            </button>
                             <div class="relative inline-block text-left shrink-0">
                                 <button id="daily-tools-header-btn" onclick="toggleDailyToolsMenu(event)" title="Eines i Integracions d'Ús Quotidià" class="hidden text-xs bg-red-50 hover:bg-red-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-red-200/80 dark:border-zinc-800 text-red-700 dark:text-red-400 font-bold py-1.5 px-2.5 rounded-xl transition items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer shadow-2xs">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-red-600 dark:text-red-400 shrink-0"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
@@ -2112,6 +2125,44 @@
                                             Eines d'Ús Quotidià
                                         </span>
                                         <button type="button" onclick="closeDailyToolsMenu()" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1 rounded-md text-xs">✕</button>
+                                    </div>
+
+                                    <!-- BLOC DESTACAT: ALIAMAPS (HORARIS BUS/TREN, APARCAMENT DEL COTXE I SERVEIS PROPERS) -->
+                                    <div class="mb-2.5 p-2 rounded-xl bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/70 space-y-1.5">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 dark:text-sky-300">📍 AliatMaps · Mobilitat</span>
+                                            <span class="px-1.5 py-0.5 rounded-md bg-blue-600 text-white text-[9px] font-extrabold">Bus/Tren · GPS</span>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-1.5">
+                                            <button type="button" onclick="closeDailyToolsMenu(); window.openDailyMapsModal && window.openDailyMapsModal('transit');" class="p-2 rounded-xl bg-white dark:bg-zinc-900 hover:bg-blue-100/60 dark:hover:bg-zinc-800 border border-blue-200/70 dark:border-zinc-800 flex items-center gap-2 text-left cursor-pointer transition">
+                                                <span class="text-base shrink-0">🚆</span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">Bus i Tren</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Horaris i preguntes</div>
+                                                </div>
+                                            </button>
+                                            <button type="button" onclick="closeDailyToolsMenu(); window.openDailyMapsModal && window.openDailyMapsModal('parking');" class="p-2 rounded-xl bg-white dark:bg-zinc-900 hover:bg-blue-100/60 dark:hover:bg-zinc-800 border border-blue-200/70 dark:border-zinc-800 flex items-center gap-2 text-left cursor-pointer transition">
+                                                <span class="text-base shrink-0">🚗</span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">On és el cotxe</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Aparcar i tornar</div>
+                                                </div>
+                                            </button>
+                                            <button type="button" onclick="closeDailyToolsMenu(); window.openDailyMapsModal && window.openDailyMapsModal('nearby');" class="p-2 rounded-xl bg-white dark:bg-zinc-900 hover:bg-blue-100/60 dark:hover:bg-zinc-800 border border-blue-200/70 dark:border-zinc-800 flex items-center gap-2 text-left cursor-pointer transition">
+                                                <span class="text-base shrink-0">🛒</span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">A prop meu</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Farmàcies, Súper...</div>
+                                                </div>
+                                            </button>
+                                            <button type="button" onclick="closeDailyToolsMenu(); window.openDailyMapsModal && window.openDailyMapsModal('saved');" class="p-2 rounded-xl bg-white dark:bg-zinc-900 hover:bg-blue-100/60 dark:hover:bg-zinc-800 border border-blue-200/70 dark:border-zinc-800 flex items-center gap-2 text-left cursor-pointer transition">
+                                                <span class="text-base shrink-0">📌</span>
+                                                <div class="min-w-0">
+                                                    <div class="font-bold text-zinc-900 dark:text-white text-[11px] truncate">Casa i Insti</div>
+                                                    <div class="text-[9px] text-zinc-500 truncate">Llocs freqüents</div>
+                                                </div>
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <!-- BLOC 1: GOOGLE WORKSPACE & ESTUDI -->
@@ -4482,6 +4533,9 @@
                     if (data.ai_model) window.persistPermanentPreference('aliat_ai_model', data.ai_model);
                     window.applyAppLanguageUI();
                     updateProfileUI();
+                    if (typeof window.syncAliatMapsPlacesFromDb === 'function') {
+                        window.syncAliatMapsPlacesFromDb().catch(() => {});
+                    }
                 }
             } catch(e) { console.error("Error carregant settings del núvol:", e); }
         }
@@ -14355,7 +14409,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             saveSession();
 
             const loadingId = 'loading-' + Date.now();
-            appendLoading(loadingId);
+            appendLoading(loadingId, { toolType, userText: topic, action: apiPayload.action });
 
             try {
                 const res = await callGenerateApi(apiPayload);
@@ -14872,7 +14926,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             chatHistory.push({ role: 'user', content: userMsg });
 
             const loadingId = 'loading-' + Date.now();
-            appendLoading(loadingId);
+            appendLoading(loadingId, { toolType: 'diagram', userText: topic, action: 'generate_diagram' });
 
             try {
                 const res = await callGenerateApi({ action: 'generate_diagram', topic: topic, style: style, context: getFullChatContext() });
@@ -14929,7 +14983,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             chatHistory.push({ role: 'user', content: userMsg });
 
             const loadingId = 'loading-' + Date.now();
-            appendLoading(loadingId);
+            appendLoading(loadingId, { toolType: 'anki', userText: topic, action: 'generate_anki_deck' });
 
             try {
                 const res = await callGenerateApi({ action: 'generate_anki_deck', topic: topic, context: getFullChatContext() });
@@ -14986,7 +15040,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             chatHistory.push({ role: 'user', content: userMsg });
 
             const loadingId = 'loading-' + Date.now();
-            appendLoading(loadingId);
+            appendLoading(loadingId, { toolType: 'exam', userText: topic, action: 'chat' });
 
             try {
                 const res = await callGenerateApi({
@@ -15059,7 +15113,7 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             chatHistory.push({ role: 'user', content: userMsg });
 
             const loadingId = 'loading-' + Date.now();
-            appendLoading(loadingId);
+            appendLoading(loadingId, { toolType: 'cheatsheet', userText: sourceText, action: 'generate_cheatsheet' });
 
             try {
                 const res = await callGenerateApi({ action: 'generate_cheatsheet', sourceText: sourceText, topic: getCurrentChatTopic(), formatType: formatType });
@@ -16048,6 +16102,7 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
             if (mindmapBtn) mindmapBtn.classList.remove('hidden');
 
             const dailyToolsBtn = document.getElementById('daily-tools-header-btn') || document.getElementById('studio-header-btn');
+            const dailyMapsBtn = document.getElementById('daily-maps-header-btn');
             if (dailyToolsBtn) {
                 if (appMode === 'daily_use') {
                     dailyToolsBtn.classList.remove('hidden');
@@ -16056,6 +16111,15 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                     dailyToolsBtn.classList.add('hidden');
                     dailyToolsBtn.classList.remove('flex');
                     document.getElementById('daily-tools-dropdown')?.classList.add('hidden');
+                }
+            }
+            if (dailyMapsBtn) {
+                if (appMode === 'daily_use') {
+                    dailyMapsBtn.classList.remove('hidden');
+                    dailyMapsBtn.classList.add('flex');
+                } else {
+                    dailyMapsBtn.classList.add('hidden');
+                    dailyMapsBtn.classList.remove('flex');
                 }
             }
 
@@ -17515,6 +17579,64 @@ Com a tutor pedagògic d'elit, avalua el meu volcat de memòria de manera clara 
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                             </span>
                         </button>
+                    </div>
+                    <!-- TARGETA DESTACADA: ALIAMAPS (HORARIS BUS/TREN, APARCAMENT DEL COTXE, SERVEIS PROPERS I RUTES) -->
+                    <div class="p-3.5 sm:p-4 rounded-2xl bg-blue-50/75 dark:bg-blue-950/25 border border-blue-200/90 dark:border-blue-800/70 space-y-3 text-left shadow-2xs">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-white flex items-center gap-2">
+                                        <span>AliatMaps</span>
+                                        <span class="px-1.5 py-0.5 rounded-md bg-blue-600 text-white text-[9px] font-black uppercase">Bus/Tren & GPS</span>
+                                    </div>
+                                    <p class="text-[11px] text-zinc-600 dark:text-zinc-300 truncate">Pregunta horaris de bus/tren ("puc sortir a les 8 i arribar abans de les 9?"), guarda el cotxe o cerca serveis.</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="window.openDailyMapsModal && window.openDailyMapsModal('transit')" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold transition cursor-pointer shrink-0 flex items-center justify-center gap-1.5 shadow-2xs">
+                                <span>Obrir AliatMaps</span>
+                                <span>→</span>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                            <button type="button" onclick="window.openDailyMapsModal && window.openDailyMapsModal('transit')" class="p-2 rounded-xl bg-blue-600/10 dark:bg-blue-900/40 hover:border-blue-500 border border-blue-300/90 dark:border-blue-700 text-left cursor-pointer transition flex items-center gap-2 col-span-2 sm:col-span-1">
+                                <span class="text-base shrink-0">🚆</span>
+                                <div class="min-w-0">
+                                    <div class="text-[11px] font-extrabold text-blue-800 dark:text-sky-200 truncate">Bus i Tren</div>
+                                    <div class="text-[9.5px] text-blue-700/80 dark:text-sky-300/80 truncate">Horaris i IA</div>
+                                </div>
+                            </button>
+                            <button type="button" onclick="window.openDailyMapsModal && window.openDailyMapsModal('parking')" class="p-2 rounded-xl bg-white dark:bg-zinc-900/90 hover:border-blue-400 border border-zinc-200/80 dark:border-zinc-800 text-left cursor-pointer transition flex items-center gap-2">
+                                <span class="text-base shrink-0">🚗</span>
+                                <div class="min-w-0">
+                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-white truncate">On és el cotxe</div>
+                                    <div class="text-[9.5px] text-zinc-500 truncate">GPS + Parquímetre</div>
+                                </div>
+                            </button>
+                            <button type="button" onclick="window.openDailyMapsModal && window.openDailyMapsModal('nearby')" class="p-2 rounded-xl bg-white dark:bg-zinc-900/90 hover:border-blue-400 border border-zinc-200/80 dark:border-zinc-800 text-left cursor-pointer transition flex items-center gap-2">
+                                <span class="text-base shrink-0">💊</span>
+                                <div class="min-w-0">
+                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-white truncate">A prop meu</div>
+                                    <div class="text-[9.5px] text-zinc-500 truncate">Farmàcies, Súper, EV</div>
+                                </div>
+                            </button>
+                            <button type="button" onclick="window.openDailyMapsModal && window.openDailyMapsModal('routes')" class="p-2 rounded-xl bg-white dark:bg-zinc-900/90 hover:border-blue-400 border border-zinc-200/80 dark:border-zinc-800 text-left cursor-pointer transition flex items-center gap-2">
+                                <span class="text-base shrink-0">🧭</span>
+                                <div class="min-w-0">
+                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-white truncate">Trajectes</div>
+                                    <div class="text-[9.5px] text-zinc-500 truncate">Temps a peu / cotxe</div>
+                                </div>
+                            </button>
+                            <button type="button" onclick="window.openDailyMapsModal && window.openDailyMapsModal('saved')" class="p-2 rounded-xl bg-white dark:bg-zinc-900/90 hover:border-blue-400 border border-zinc-200/80 dark:border-zinc-800 text-left cursor-pointer transition flex items-center gap-2">
+                                <span class="text-base shrink-0">📌</span>
+                                <div class="min-w-0">
+                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-white truncate">Llocs Guardats</div>
+                                    <div class="text-[9.5px] text-zinc-500 truncate">Casa, Insti, Feina</div>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                     <div class="pt-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <button type="button" onclick="openGoogleWorkspaceHubModal('daily')" class="w-full p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-400 dark:hover:border-blue-500/70 hover:bg-blue-50/30 dark:hover:bg-blue-950/20 transition cursor-pointer group flex items-center justify-between gap-3 text-left shadow-2xs active:scale-[0.99]">
@@ -22098,9 +22220,16 @@ ${parsedBody}
 
         async function triggerAiResponse() {
             const loadingId = 'loading-' + Date.now();
-            appendLoading(loadingId);
+            const actionToSend = appMode === 'free' ? 'free_chat' : (appMode === 'daily_use' ? 'daily_use' : 'chat');
+            const lastUserEntry = [...(chatHistory || [])].reverse().find(m => m && m.role === 'user');
+            const lastUserText = typeof lastUserEntry?.content === 'string' ? lastUserEntry.content : '';
+            appendLoading(loadingId, {
+                action: actionToSend,
+                userText: lastUserText,
+                useGoogleSearch: window.isGoogleSearchActive === true,
+                hasStudyNotes: appMode === 'study' && Boolean((finalStudyText || '').trim())
+            });
             try {
-                const actionToSend = appMode === 'free' ? 'free_chat' : (appMode === 'daily_use' ? 'daily_use' : 'chat');
                 const res = await callGenerateApi({ 
                     action: actionToSend, 
                     chatHistory: chatHistory, 
@@ -23437,9 +23566,67 @@ ${parsedBody}
             // El xat de text roman 100% per escrit. La veu només s'activa quan s'obre el Xat de Veu / Trucada.
         }
 
-        function appendLoading(id) {
+        function buildAiLoadingStages(meta = {}) {
+            const isEs = (typeof window.getAppLanguage === 'function' ? window.getAppLanguage() : (window.currentAppLang || 'ca')) === 'es';
+            const userText = String(meta.userText || '').toLowerCase();
+            const isLiveQuery = /\b(bar[çc]a|barcelona|madrid|girona|espanyol|champions|laliga|lliga|liga|partido|partit|marcador|resultado|resultat|alineaci[oó]n?|clasificaci[oó]n?|avui|hoy|noticias|not[ií]cies|actualidad|actualitat|temps|tiempo|meteo|precio|preu|última hora|ultima hora|busca en internet|busca a la web)\b/i.test(userText);
+            const willSearchWeb = Boolean(meta.useGoogleSearch) || isLiveQuery;
+
+            if (willSearchWeb) {
+                return [
+                    { delay: 0, icon: 'thought', text: isEs ? 'Pensando...' : 'Pensant...' },
+                    { delay: 650, icon: 'web', text: isEs ? 'Buscando en la web...' : 'Buscant a la web...' },
+                    { delay: 2300, icon: 'web', text: isEs ? 'Contrastando fuentes...' : 'Contrastant fonts...' },
+                    { delay: 4200, icon: 'write', text: isEs ? 'Redactando respuesta...' : 'Redactant resposta...' }
+                ];
+            }
+            if (meta.toolType === 'diagram') {
+                return [
+                    { delay: 0, icon: 'thought', text: isEs ? 'Pensando...' : 'Pensant...' },
+                    { delay: 800, icon: 'study', text: isEs ? 'Estructurando esquema...' : 'Estructurant l\'esquema...' },
+                    { delay: 2400, icon: 'write', text: isEs ? 'Generando diagrama visual...' : 'Generant diagrama visual...' }
+                ];
+            }
+            if (meta.toolType === 'anki') {
+                return [
+                    { delay: 0, icon: 'thought', text: isEs ? 'Pensando...' : 'Pensant...' },
+                    { delay: 800, icon: 'study', text: isEs ? 'Extrayendo conceptos clave...' : 'Extraient conceptes clau...' },
+                    { delay: 2300, icon: 'write', text: isEs ? 'Creando tarjetas Anki...' : 'Creant targetes Anki...' }
+                ];
+            }
+            if (meta.toolType === 'exam') {
+                return [
+                    { delay: 0, icon: 'thought', text: isEs ? 'Pensando...' : 'Pensant...' },
+                    { delay: 800, icon: 'study', text: isEs ? 'Preparando preguntas...' : 'Preparant preguntes...' },
+                    { delay: 2300, icon: 'write', text: isEs ? 'Validando respuestas...' : 'Validant respostes...' }
+                ];
+            }
+            if (meta.toolType === 'cheatsheet') {
+                return [
+                    { delay: 0, icon: 'thought', text: isEs ? 'Pensando...' : 'Pensant...' },
+                    { delay: 800, icon: 'study', text: isEs ? 'Sintetizando fórmulas...' : 'Sintetitzant fórmules...' },
+                    { delay: 2300, icon: 'write', text: isEs ? 'Organizando resumen...' : 'Organitzant resum...' }
+                ];
+            }
+            if (meta.hasStudyNotes || meta.action === 'chat') {
+                return [
+                    { delay: 0, icon: 'thought', text: isEs ? 'Pensando...' : 'Pensant...' },
+                    { delay: 850, icon: 'study', text: meta.hasStudyNotes ? (isEs ? 'Analizando tus apuntes...' : 'Analitzant els teus apunts...') : (isEs ? 'Preparando explicación...' : 'Preparant explicació...') },
+                    { delay: 2400, icon: 'write', text: isEs ? 'Redactando respuesta...' : 'Redactant resposta...' }
+                ];
+            }
+            return [
+                { delay: 0, icon: 'thought', text: isEs ? 'Pensando...' : 'Pensant...' },
+                { delay: 900, icon: 'thought', text: isEs ? 'Analizando tu consulta...' : 'Analitzant la consulta...' },
+                { delay: 2400, icon: 'write', text: isEs ? 'Redactando respuesta...' : 'Redactant resposta...' }
+            ];
+        }
+
+        function appendLoading(id, meta = {}) {
             const box = document.getElementById('chat-messages');
             if (!box) return;
+            const stages = buildAiLoadingStages(meta);
+            const firstStage = stages[0];
             const div = document.createElement('div');
             div.id = id;
             div.className = "flex justify-start gap-2.5 sm:gap-3 w-full mb-4";
@@ -23449,13 +23636,51 @@ ${parsedBody}
                     <img src="/assets/aistudio/logoOFI_048f1d3b.png" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='/public/assets/aistudio/logoOFI_048f1d3b.png';}else if(this.dataset.r==1){this.dataset.r=2;this.classList.remove('aliat-logo-img');this.src='/icon-192.png';}else if(this.dataset.r==2){this.dataset.r=3;this.src='/public/icon-192.png';}" alt="Aliat IA" class="aliat-logo-img w-full h-full object-contain">
                 </div>
             </div>
-            <div class="chat-msg-ai-card px-4 py-2.5 flex gap-1.5 items-center h-9">
-                <div class="w-1.5 h-1.5 bg-blue-600 dark:bg-sky-400 rounded-full animate-bounce"></div>
-                <div class="w-1.5 h-1.5 bg-zinc-500 dark:bg-zinc-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
-                <div class="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+            <div class="chat-msg-ai-card px-3.5 py-2.5 flex items-center gap-2.5 min-h-[38px]">
+                <div class="flex items-center gap-1 shrink-0">
+                    <div class="w-1.5 h-1.5 bg-blue-600 dark:bg-sky-400 rounded-full animate-bounce"></div>
+                    <div class="w-1.5 h-1.5 bg-zinc-500 dark:bg-zinc-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                    <div class="w-1.5 h-1.5 bg-zinc-400 dark:bg-zinc-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                </div>
+                <span data-loading-badge class="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300 tracking-tight transition-opacity duration-200">
+                    <span data-loading-icon class="text-blue-600 dark:text-sky-400 hidden"></span>
+                    <span data-loading-label>${firstStage.text}</span>
+                </span>
             </div>`;
             box.appendChild(div);
             box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+
+            stages.slice(1).forEach((st) => {
+                setTimeout(() => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    const labelEl = el.querySelector('[data-loading-label]');
+                    const iconEl = el.querySelector('[data-loading-icon]');
+                    if (iconEl) {
+                        if (st.icon === 'web') {
+                            iconEl.className = 'inline-flex items-center text-cyan-600 dark:text-cyan-400 animate-pulse';
+                            iconEl.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
+                        } else if (st.icon === 'study') {
+                            iconEl.className = 'inline-flex items-center text-indigo-600 dark:text-indigo-400';
+                            iconEl.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>';
+                        } else if (st.icon === 'write') {
+                            iconEl.className = 'inline-flex items-center text-emerald-600 dark:text-emerald-400';
+                            iconEl.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>';
+                        } else {
+                            iconEl.className = 'hidden';
+                            iconEl.innerHTML = '';
+                        }
+                    }
+                    if (labelEl) {
+                        labelEl.style.opacity = '0.35';
+                        setTimeout(() => {
+                            if (!document.getElementById(id)) return;
+                            labelEl.textContent = st.text;
+                            labelEl.style.opacity = '1';
+                        }, 120);
+                    }
+                }, st.delay);
+            });
         }
 
         // Si la barra lateral està col·lapsada, clicar a fons buit la fa gran, però clicar a botons executa l'acció directament
@@ -24095,8 +24320,74 @@ ${parsedBody}
             });
         }
     </script>
-    <script src="/cookie-consent.js?v=13" onerror="var s=document.createElement('script');s.src='/public/cookie-consent.js?v=13';document.body.appendChild(s);"></script>
-    <script src="/study-notebook-games.js?v=13" onerror="var s=document.createElement('script');s.src='/public/study-notebook-games.js?v=13';document.body.appendChild(s);"></script>
-    <script src="/onboarding-tour.js?v=13" onerror="var s=document.createElement('script');s.src='/public/onboarding-tour.js?v=13';document.body.appendChild(s);"></script>
+    <!-- MODAL D'ALIAMAPS (HORARIS DE BUS I TREN, ON HE APARCAT EL COTXE, SERVEIS PROPERS, RUTES I LLOCS GUARDATS) -->
+    <div id="daily-maps-modal" class="fixed inset-0 z-[120] hidden items-center justify-center p-2 sm:p-4 bg-black/65 backdrop-blur-md">
+        <div class="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl w-full max-w-6xl h-[92dvh] max-h-[860px] flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="px-4 sm:px-6 py-3.5 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-white truncate">AliatMaps · Mobilitat i Ús Quotidià</h3>
+                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">Horaris reals de bus/tren, plans propers amb IA, configurar Casa, pàrquing i llocs guardats.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 ml-auto">
+                    <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                        <button type="button" data-daily-maps-tab="transit" onclick="window.switchDailyMapsTab('transit')" class="py-2 px-3 rounded-xl text-xs font-extrabold transition cursor-pointer bg-blue-600 text-white shadow-2xs flex items-center gap-1.5 whitespace-nowrap">
+                            <span>🚆</span><span>Bus i Tren</span>
+                        </button>
+                        <button type="button" data-daily-maps-tab="parking" onclick="window.switchDailyMapsTab('parking')" class="py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5 whitespace-nowrap">
+                            <span>🚗</span><span>On és el cotxe</span>
+                        </button>
+                        <button type="button" data-daily-maps-tab="nearby" onclick="window.switchDailyMapsTab('nearby')" class="py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5 whitespace-nowrap">
+                            <span>🛒</span><span>A prop meu</span>
+                        </button>
+                        <button type="button" data-daily-maps-tab="routes" onclick="window.switchDailyMapsTab('routes')" class="py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5 whitespace-nowrap">
+                            <span>🧭</span><span>Rutes i Temps</span>
+                        </button>
+                        <button type="button" data-daily-maps-tab="saved" onclick="window.switchDailyMapsTab('saved')" class="py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5 whitespace-nowrap">
+                            <span>📌</span><span>Els meus llocs</span>
+                        </button>
+                    </div>
+                    <button type="button" onclick="window.closeDailyMapsModal()" class="w-9 h-9 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 flex items-center justify-center cursor-pointer shrink-0" aria-label="Tancar">
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main 2-column body -->
+            <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
+                <!-- Left Control Panel -->
+                <div class="lg:col-span-5 h-full overflow-y-auto p-4 sm:p-5 space-y-3 border-b lg:border-b-0 lg:border-r border-zinc-200 dark:border-zinc-800">
+                    <!-- PlaceAutocompleteElement container -->
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400">Cercador d'adreces i llocs (Google Places)</label>
+                        <div id="daily-gmp-autocomplete-host" class="w-full rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 min-h-[40px]"></div>
+                    </div>
+
+                    <!-- Live Route Summary Banner -->
+                    <div id="daily-route-live-summary" class="hidden"></div>
+
+                    <!-- Dynamic Tab Content -->
+                    <div id="daily-maps-tab-panel"></div>
+                </div>
+
+                <!-- Right Interactive Google Map Canvas (explicit height to prevent CF2 0x0 collapse) -->
+                <div class="lg:col-span-7 relative w-full h-[360px] sm:h-[420px] lg:h-full min-h-[340px] bg-zinc-200 dark:bg-zinc-900">
+                    <div id="daily-gmp-map-canvas" class="w-full h-full min-h-[340px]"></div>
+                    <div id="daily-gmp-map-pick-banner" class="hidden absolute top-3 left-3 right-14 z-20 pointer-events-auto"></div>
+                    <div id="daily-gmp-map-status" class="hidden absolute inset-0 bg-zinc-50/90 dark:bg-zinc-950/90 flex items-center justify-center z-10"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/cookie-consent.js?v=18" onerror="var s=document.createElement('script');s.src='/public/cookie-consent.js?v=18';document.body.appendChild(s);"></script>
+    <script src="/study-notebook-games.js?v=18" onerror="var s=document.createElement('script');s.src='/public/study-notebook-games.js?v=18';document.body.appendChild(s);"></script>
+    <script src="/daily-maps.js?v=18" onerror="var s=document.createElement('script');s.src='/public/daily-maps.js?v=18';document.body.appendChild(s);"></script>
+    <script src="/onboarding-tour.js?v=18" onerror="var s=document.createElement('script');s.src='/public/onboarding-tour.js?v=18';document.body.appendChild(s);"></script>
 </body>
 </html>

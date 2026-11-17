@@ -1,10 +1,11 @@
-const CACHE_NAME = 'aliat-pwa-v13';
+const CACHE_NAME = 'aliat-pwa-v18';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/onboarding-tour.js',
   '/study-notebook-games.js',
+  '/daily-maps.js',
   '/cookie-consent.js',
   '/favicon.ico',
   '/favicon.png',

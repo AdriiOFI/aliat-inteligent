@@ -58,6 +58,13 @@
             .replace(/'/g, '&#39;');
     }
 
+    function iconSvg(name, cls = 'w-4 h-4 shrink-0') {
+        if (typeof window.aliatSvg === 'function') {
+            return window.aliatSvg(name, cls);
+        }
+        return `<span data-aliat-icon="${esc(name)}" data-icon-class="${esc(cls)}" class="inline-flex items-center justify-center shrink-0"></span>`;
+    }
+
     // State
     let loaderConfigured = false;
     let loaderModulePromise = null;
@@ -117,19 +124,25 @@
         homeEditorOpen: false,
         homeSearchQuery: '',
         homeSearchCandidates: [],
-        homeSearchLoading: false
+        homeSearchLoading: false,
+        placeEditorRole: null, // null | 'home' | 'school'
+        placeSearchQuery: '',
+        placeSearchCandidates: [],
+        placeSearchLoading: false,
+        inputMode: 'ai', // 'ai' | 'manual'
+        manualFiltersOpen: true
     };
 
     // Everyday nearby categories (Places API New)
     const NEARBY_CATEGORIES = [
-        { id: 'pharmacy', label: 'Farmàcies', icon: '💊', types: ['pharmacy'], color: '#10b981' },
-        { id: 'supermarket', label: 'Supermercats', icon: '🛒', types: ['supermarket', 'grocery_store'], color: '#f59e0b' },
-        { id: 'gas', label: 'Gasolineres', icon: '⛽', types: ['gas_station'], color: '#ef4444' },
-        { id: 'ev', label: 'Càrrega EV', icon: '⚡', types: ['electric_vehicle_charging_station'], color: '#06b6d4' },
-        { id: 'atm', label: 'Caixers / Bancs', icon: '🏧', types: ['atm', 'bank'], color: '#6366f1' },
-        { id: 'cafe', label: 'Cafeteries / Wi-Fi', icon: '☕', types: ['cafe', 'bakery'], color: '#d97706' },
-        { id: 'parking', label: 'Pàrquings', icon: '🅿️', types: ['parking'], color: '#2563eb' },
-        { id: 'transit', label: 'Transport Públic', icon: '🚇', types: ['transit_station', 'subway_station', 'bus_station'], color: '#8b5cf6' }
+        { id: 'pharmacy', label: 'Farmàcies', iconName: 'pharmacy', types: ['pharmacy'], color: '#10b981' },
+        { id: 'supermarket', label: 'Supermercats', iconName: 'cart', types: ['supermarket', 'grocery_store'], color: '#f59e0b' },
+        { id: 'gas', label: 'Gasolineres', iconName: 'fuel', types: ['gas_station'], color: '#ef4444' },
+        { id: 'ev', label: 'Càrrega EV', iconName: 'bolt', types: ['electric_vehicle_charging_station'], color: '#06b6d4' },
+        { id: 'atm', label: 'Caixers / Bancs', iconName: 'atm', types: ['atm', 'bank'], color: '#6366f1' },
+        { id: 'cafe', label: 'Cafeteries / Wi-Fi', iconName: 'coffee', types: ['cafe', 'bakery'], color: '#d97706' },
+        { id: 'parking', label: 'Pàrquings', iconName: 'parking', types: ['parking'], color: '#2563eb' },
+        { id: 'transit', label: 'Transport Públic', iconName: 'metro', types: ['transit_station', 'subway_station', 'bus_station'], color: '#8b5cf6' }
     ];
 
     let pushPlacesTimeoutId = null;
@@ -314,7 +327,12 @@
                 if (!apiKey) {
                     throw new Error('MISSING_MAPS_KEY');
                 }
-                const loaderMod = await import('/vendor/googlemaps-js-api-loader.mjs');
+                let loaderMod;
+                try {
+                    loaderMod = await import('/vendor/googlemaps-js-api-loader.mjs');
+                } catch (_) {
+                    loaderMod = await import('/public/vendor/googlemaps-js-api-loader.mjs');
+                }
                 if (!loaderConfigured) {
                     const lang = (window.currentAppLang === 'es') ? 'es' : 'ca';
                     loaderMod.setOptions({
@@ -408,9 +426,10 @@
 
         const { AdvancedMarkerElement } = mapClasses;
         const badge = document.createElement('div');
-        const vIcon = parked.vehicleType === 'moto' ? '🛵' : (parked.vehicleType === 'bici' ? '🚲' : '🚗');
+        const vIconName = parked.vehicleType === 'moto' ? 'moto' : (parked.vehicleType === 'bici' ? 'bike' : 'car');
+        const vIcon = iconSvg(vIconName, 'w-3.5 h-3.5 shrink-0');
         badge.className = 'px-2.5 py-1.5 rounded-2xl bg-blue-600 text-white font-extrabold text-xs shadow-lg border-2 border-white flex items-center gap-1.5 cursor-pointer';
-        badge.innerHTML = `<span>${vIcon}</span><span>El meu vehicle</span>`;
+        badge.innerHTML = `${vIcon}<span>El meu vehicle</span>`;
 
         parkingMarker = new AdvancedMarkerElement({
             map: mapInstance,
@@ -424,7 +443,7 @@
             const spotInfo = [parked.floorSpot, parked.notes].filter(Boolean).join(' · ');
             sharedInfoWindow.setContent(`
                 <div class="p-1.5 text-zinc-900 text-xs max-w-[230px] space-y-1">
-                    <div class="font-extrabold text-blue-700">${vIcon} Vehicle aparcat aquí</div>
+                    <div class="font-extrabold text-blue-700 flex items-center gap-1.5">${vIcon}<span>Vehicle aparcat aquí</span></div>
                     <div class="text-[11px] font-medium text-zinc-700">${esc(parked.address || '')}</div>
                     ${spotInfo ? `<div class="text-[11px] text-zinc-500">${esc(spotInfo)}</div>` : ''}
                 </div>
@@ -466,7 +485,7 @@
         if (home && typeof home.lat === 'number' && typeof home.lng === 'number') {
             const badge = document.createElement('div');
             badge.className = 'px-2.5 py-1 rounded-xl bg-emerald-600 text-white font-extrabold text-[11px] shadow-md border-2 border-white flex items-center gap-1 cursor-pointer';
-            badge.innerHTML = `<span>🏠</span><span>Casa</span>`;
+            badge.innerHTML = `${iconSvg('home', 'w-3.5 h-3.5 shrink-0')}<span>Casa</span>`;
             homeMarker = new AdvancedMarkerElement({
                 map: mapInstance,
                 position: { lat: home.lat, lng: home.lng },
@@ -477,7 +496,7 @@
                 if (!sharedInfoWindow) sharedInfoWindow = new mapClasses.InfoWindow();
                 sharedInfoWindow.setContent(`
                     <div class="p-1.5 text-zinc-900 text-xs max-w-[230px] space-y-1">
-                        <div class="font-extrabold text-emerald-700">🏠 Casa teva</div>
+                        <div class="font-extrabold text-emerald-700 flex items-center gap-1.5">${iconSvg('home', 'w-3.5 h-3.5 shrink-0')}<span>Casa teva</span></div>
                         <div class="text-[11px] text-zinc-600">${esc(home.address || home.title)}</div>
                         <div class="pt-1 flex gap-1.5">
                             <button type="button" onclick="window.applyTransitPresetOrigin('home')" class="px-2 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[10px] cursor-pointer">Usar com a origen</button>
@@ -493,7 +512,7 @@
         if (school && typeof school.lat === 'number' && typeof school.lng === 'number') {
             const badge = document.createElement('div');
             badge.className = 'px-2.5 py-1 rounded-xl bg-indigo-600 text-white font-extrabold text-[11px] shadow-md border-2 border-white flex items-center gap-1 cursor-pointer';
-            badge.innerHTML = `<span>🎓</span><span>${esc(school.title === 'Institut / Universitat' ? 'Insti' : school.title.slice(0, 14))}</span>`;
+            badge.innerHTML = `${iconSvg('school', 'w-3.5 h-3.5 shrink-0')}<span>${esc(school.title === 'Institut / Universitat' ? 'Insti' : school.title.slice(0, 14))}</span>`;
             schoolMarker = new AdvancedMarkerElement({
                 map: mapInstance,
                 position: { lat: school.lat, lng: school.lng },
@@ -516,12 +535,12 @@
             return;
         }
         const label = mapPickMode === 'home'
-            ? '🏠 Fes clic a qualsevol punt del mapa per situar CASA teva'
-            : '🎓 Fes clic a qualsevol punt del mapa per situar el teu INSTITUT / FEINA';
+            ? `<span class="inline-flex items-center gap-1.5">${iconSvg('home', 'w-4 h-4 shrink-0')}<span>Fes clic a qualsevol punt del mapa per situar CASA teva</span></span>`
+            : `<span class="inline-flex items-center gap-1.5">${iconSvg('school', 'w-4 h-4 shrink-0')}<span>Fes clic a qualsevol punt del mapa per situar el teu INSTITUT / FEINA</span></span>`;
         banner.classList.remove('hidden');
         banner.innerHTML = `
             <div class="px-3.5 py-2.5 rounded-2xl bg-emerald-600 text-white shadow-xl border-2 border-white flex items-center justify-between gap-3 text-xs font-extrabold">
-                <span>${label}</span>
+                ${label}
                 <button type="button" onclick="window.cancelMapPickMode()" class="px-2.5 py-1 rounded-xl bg-black/25 hover:bg-black/40 text-white text-[11px] font-bold cursor-pointer shrink-0">Cancel·lar</button>
             </div>
         `;
@@ -689,7 +708,7 @@
         const list = loadSavedEverydayPlaces();
         const isHome = role === 'home';
         const isSchool = role === 'school';
-        const cat = isHome ? '🏠 Casa' : (isSchool ? '🎓 Institut / Universitat' : '💼 Feina / Estudis');
+        const cat = isHome ? 'Casa' : (isSchool ? 'Institut / Universitat' : 'Feina / Estudis');
         const finalTitle = title || (isHome ? 'Casa' : (isSchool ? 'Institut / Universitat' : 'Feina'));
 
         const filtered = list.filter((p) => {
@@ -718,12 +737,18 @@
             transitState.homeEditorOpen = false;
             transitState.homeSearchCandidates = [];
             transitState.homeSearchQuery = '';
+            transitState.placeEditorRole = null;
+            transitState.placeSearchCandidates = [];
+            transitState.placeSearchQuery = '';
             transitState.needsPlaceSetup = null;
         } else if (isSchool) {
             transitState.destMode = 'saved';
             transitState.destCoords = { lat: item.lat, lng: item.lng };
             transitState.destAddress = item.address;
             transitState.destLabel = item.title;
+            transitState.placeEditorRole = null;
+            transitState.placeSearchCandidates = [];
+            transitState.placeSearchQuery = '';
             transitState.needsPlaceSetup = null;
         }
         renderSavedHomeAndSchoolMarkers();
@@ -764,19 +789,16 @@
     function showSelectedPlaceOnMap(place, lat, lng) {
         if (!mapInstance || !mapClasses) return;
         clearActivePlaceMarkers();
-        const { AdvancedMarkerElement, PinElement } = mapClasses;
-        const pin = new PinElement({
-            background: '#e11d48',
-            borderColor: '#ffffff',
-            glyphColor: '#ffffff',
-            glyphText: '★'
-        });
+        const { AdvancedMarkerElement } = mapClasses;
+        const markerBadge = document.createElement('div');
+        markerBadge.className = 'w-8 h-8 rounded-full bg-rose-600 text-white border-2 border-white shadow-lg flex items-center justify-center cursor-pointer';
+        markerBadge.innerHTML = iconSvg('pin', 'w-4 h-4');
         const marker = new AdvancedMarkerElement({
             map: mapInstance,
             position: { lat, lng },
-            title: place.displayName || 'Lloc seleccionat'
+            title: place.displayName || 'Lloc seleccionat',
+            content: markerBadge
         });
-        marker.append(pin);
         activePlaceMarkers.push(marker);
 
         const rawAddr = place.formattedAddress || place.displayName || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
@@ -788,9 +810,9 @@
                 <div class="font-extrabold text-zinc-900">${esc(place.displayName || 'Ubicació')}</div>
                 <div class="text-[11px] text-zinc-600">${esc(rawAddr)}</div>
                 <div class="pt-1 flex flex-wrap items-center gap-1.5">
-                    <button type="button" onclick="window.setPlaceRoleFromCoords('home', ${lat}, ${lng}, 'Casa', '${safeAddr}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[10.5px] cursor-pointer">🏠 Posar com a Casa</button>
-                    <button type="button" onclick="window.setPlaceRoleFromCoords('school', ${lat}, ${lng}, '${safeTitle}', '${safeAddr}')" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[10.5px] cursor-pointer">🎓 Posar com a Insti</button>
-                    <button type="button" onclick="window.setTransitDestAndOpen(${lat}, ${lng}, '${safeTitle}')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10.5px] cursor-pointer">🚆 Bus / Tren</button>
+                    <button type="button" onclick="window.setPlaceRoleFromCoords('home', ${lat}, ${lng}, 'Casa', '${safeAddr}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[10.5px] cursor-pointer inline-flex items-center gap-1">${iconSvg('home', 'w-3 h-3')}<span>Posar com a Casa</span></button>
+                    <button type="button" onclick="window.setPlaceRoleFromCoords('school', ${lat}, ${lng}, '${safeTitle}', '${safeAddr}')" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[10.5px] cursor-pointer inline-flex items-center gap-1">${iconSvg('school', 'w-3 h-3')}<span>Posar com a Insti</span></button>
+                    <button type="button" onclick="window.setTransitDestAndOpen(${lat}, ${lng}, '${safeTitle}')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10.5px] cursor-pointer inline-flex items-center gap-1">${iconSvg('train', 'w-3 h-3')}<span>Bus / Tren</span></button>
                     <button type="button" onclick="window.traceDailyRouteTo(${lat}, ${lng}, '${safeTitle}')" class="px-2.5 py-1 rounded-lg bg-sky-600 text-white font-bold text-[10.5px] cursor-pointer">Traçar ruta</button>
                     <button type="button" onclick="window.saveSpotAsParkedVehicle(${lat}, ${lng})" class="px-2.5 py-1 rounded-lg bg-zinc-900 text-white font-bold text-[10.5px] cursor-pointer">Aparcar aquí</button>
                 </div>
@@ -821,7 +843,7 @@
             window.pendingSavedPlaceCoords = { lat, lng, address: addr };
             const coordsHint = document.getElementById('daily-saved-coords-hint');
             if (coordsHint) {
-                coordsHint.textContent = `📍 Punt seleccionat al mapa: ${addr}`;
+                coordsHint.innerHTML = `<span class="inline-flex items-center gap-1">${iconSvg('pin', 'w-3.5 h-3.5 text-blue-600')}<span>Punt seleccionat al mapa: ${esc(addr)}</span></span>`;
             }
         } else if (activeTab === 'transit') {
             const addr = await reverseGeocodeCoords(lat, lng);
@@ -849,12 +871,12 @@
         const btn = document.getElementById('daily-save-gps-parking-btn');
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = `<span>⏳ Obtenint GPS exacte...</span>`;
+            btn.innerHTML = `${iconSvg('spinner', 'w-4 h-4 animate-spin')}<span>Obtenint GPS exacte...</span>`;
         }
         const loc = await requestUserGeolocation(false);
         if (btn) {
             btn.disabled = false;
-            btn.innerHTML = `<span>📍 Guardar on he aparcat ara (GPS)</span>`;
+            btn.innerHTML = `${iconSvg('gps', 'w-4 h-4')}<span>Guardar on he aparcat ara (GPS)</span>`;
         }
         if (!loc) return;
         await window.saveSpotAsParkedVehicle(loc.lat, loc.lng);
@@ -1008,23 +1030,24 @@
 
             const summaryBox = document.getElementById('daily-route-live-summary');
             if (summaryBox) {
-                const modeLabel = mode === 'DRIVING' ? '🚗 En cotxe' : (mode === 'BICYCLING' ? '🚲 En bici/patinet' : (mode === 'TRANSIT' ? '🚇 Transport públic' : '🚶 A peu'));
+                const modeIconName = mode === 'DRIVING' ? 'car' : (mode === 'BICYCLING' ? 'bike' : (mode === 'TRANSIT' ? 'metro' : 'walk'));
+                const modeLabelText = mode === 'DRIVING' ? 'En cotxe' : (mode === 'BICYCLING' ? 'En bici/patinet' : (mode === 'TRANSIT' ? 'Transport públic' : 'A peu'));
                 const betaNote = (mode === 'WALKING' || mode === 'BICYCLING')
-                    ? `<div class="w-full text-[10px] text-zinc-500 dark:text-zinc-400 pt-1 border-t border-blue-200/60 dark:border-blue-800/50">⚠️ Nota: les indicacions a peu i en bicicleta són en fase beta; comprova voreres i passos senyalitzats.</div>`
+                    ? `<div class="w-full text-[10px] text-zinc-500 dark:text-zinc-400 pt-1 border-t border-blue-200/60 dark:border-blue-800/50 flex items-center gap-1.5">${iconSvg('warn', 'w-3.5 h-3.5 text-amber-500 shrink-0')}<span>Nota: les indicacions a peu i en bicicleta són orientatives; comprova voreres i passos senyalitzats.</span></div>`
                     : '';
                 summaryBox.classList.remove('hidden');
                 summaryBox.innerHTML = `
                     <div class="p-3 rounded-2xl bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80 flex flex-wrap items-center justify-between gap-2">
                         <div class="space-y-0.5">
-                            <div class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-sky-400">${modeLabel} fins a ${esc(destTitle)}</div>
+                            <div class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-sky-400 flex items-center gap-1.5">${iconSvg(modeIconName, 'w-3.5 h-3.5')}<span>${modeLabelText} fins a ${esc(destTitle)}</span></div>
                             <div class="text-xs sm:text-sm font-black text-zinc-900 dark:text-white tabular-nums">${esc(distText)} · ${esc(durText)}</div>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <button type="button" onclick="window.sendDailyMapSummaryToChat('${esc(destTitle)}', '${esc(distText)}', '${esc(durText)}', '${mode}')" class="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold transition cursor-pointer">
                                 Enviar al xat
                             </button>
-                            <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${destLat},${destLng}`)}&travelmode=${mode.toLowerCase()}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 text-[11px] font-bold transition">
-                                Obrir Maps ↗
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${destLat},${destLng}`)}&travelmode=${mode.toLowerCase()}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 text-[11px] font-bold transition inline-flex items-center gap-1">
+                                <span>Obrir Maps</span>${iconSvg('external', 'w-3 h-3')}
                             </a>
                         </div>
                         ${betaNote}
@@ -1047,7 +1070,7 @@
         const cat = NEARBY_CATEGORIES.find((c) => c.id === categoryId) || NEARBY_CATEGORIES[0];
         const resultsBox = document.getElementById('daily-nearby-results-list');
         if (resultsBox) {
-            resultsBox.innerHTML = `<div class="p-4 text-center text-xs text-zinc-500 dark:text-zinc-400">⏳ Cercant ${esc(cat.label.toLowerCase())} a prop teu amb Google Places...</div>`;
+            resultsBox.innerHTML = `<div class="p-4 text-center text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center gap-2">${iconSvg('spinner', 'w-4 h-4 animate-spin text-blue-600')}<span>Cercant ${esc(cat.label.toLowerCase())} a prop teu amb Google Places...</span></div>`;
         }
 
         try {
@@ -1083,7 +1106,7 @@
 
         const resultsBox = document.getElementById('daily-nearby-results-list');
         if (resultsBox) {
-            resultsBox.innerHTML = `<div class="p-4 text-center text-xs text-zinc-500 dark:text-zinc-400">⏳ Cercant "${esc(query)}"...</div>`;
+            resultsBox.innerHTML = `<div class="p-4 text-center text-xs text-zinc-500 dark:text-zinc-400 flex items-center justify-center gap-2">${iconSvg('spinner', 'w-4 h-4 animate-spin text-blue-600')}<span>Cercant "${esc(query)}"...</span></div>`;
         }
 
         try {
@@ -1100,7 +1123,7 @@
                 maxResultCount: 10
             });
 
-            renderPlacesResultsList(places || [], { label: query, icon: '📍', color: '#2563eb' });
+            renderPlacesResultsList(places || [], { label: query, iconName: 'pin', color: '#2563eb' });
         } catch (err) {
             if (isQuotaError(err)) {
                 window.dispatchEvent(new CustomEvent('gmp-quota-exceeded'));
@@ -1152,7 +1175,7 @@
                     <div class="p-1.5 text-zinc-900 text-xs max-w-[230px] space-y-1">
                         <div class="font-extrabold">${idx + 1}. ${esc(place.displayName || '')}</div>
                         <div class="text-[11px] text-zinc-600">${esc(place.formattedAddress || '')}</div>
-                        ${place.rating ? `<div class="text-[11px] font-bold text-amber-600">★ ${place.rating.toFixed(1)} (${place.userRatingCount || 0})</div>` : ''}
+                        ${place.rating ? `<div class="text-[11px] font-bold text-amber-600 inline-flex items-center gap-1">${iconSvg('star', 'w-3 h-3')}<span>${place.rating.toFixed(1)} (${place.userRatingCount || 0})</span></div>` : ''}
                         <div class="pt-1">
                             <button type="button" onclick="window.traceDailyRouteTo(${lat}, ${lng}, '${esc(place.displayName || '')}')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10.5px] cursor-pointer">Com arribar-hi</button>
                         </div>
@@ -1168,8 +1191,8 @@
                         <div class="text-xs font-extrabold text-zinc-900 dark:text-white truncate">${idx + 1}. ${esc(place.displayName || 'Establiment')}</div>
                         <div class="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1">${esc(place.formattedAddress || '')}</div>
                         <div class="flex items-center gap-2 pt-0.5">
-                            ${place.rating ? `<span class="text-[10.5px] font-bold text-amber-600 dark:text-amber-400 tabular-nums">★ ${place.rating.toFixed(1)} (${place.userRatingCount || 0})</span>` : ''}
-                            ${place.googleMapsURI ? `<a href="${esc(place.googleMapsURI)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="text-[10.5px] font-bold text-blue-600 dark:text-sky-400 hover:underline">Fitxa Google Maps ↗</a>` : ''}
+                            ${place.rating ? `<span class="text-[10.5px] font-bold text-amber-600 dark:text-amber-400 tabular-nums inline-flex items-center gap-0.5">${iconSvg('star', 'w-3 h-3')}<span>${place.rating.toFixed(1)} (${place.userRatingCount || 0})</span></span>` : ''}
+                            ${place.googleMapsURI ? `<a href="${esc(place.googleMapsURI)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="text-[10.5px] font-bold text-blue-600 dark:text-sky-400 hover:underline inline-flex items-center gap-0.5"><span>Fitxa Maps</span>${iconSvg('external', 'w-3 h-3')}</a>` : ''}
                         </div>
                     </div>
                     <button type="button" onclick="window.traceDailyRouteTo(${lat}, ${lng}, '${esc(place.displayName || 'Destinació')}')" class="px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-700 dark:text-sky-300 border border-blue-200/80 dark:border-blue-800 text-[10.5px] font-extrabold shrink-0 cursor-pointer">
@@ -1200,7 +1223,7 @@
         const categorySelect = document.getElementById('daily-saved-place-cat');
         const addrInput = document.getElementById('daily-saved-place-addr');
         const name = nameInput ? nameInput.value.trim() : '';
-        const cat = categorySelect ? categorySelect.value : '🏠 Casa';
+        const cat = categorySelect ? categorySelect.value : 'Casa';
         const typedAddr = addrInput ? addrInput.value.trim() : '';
 
         let coords = window.pendingSavedPlaceCoords;
@@ -1301,9 +1324,9 @@
             const diffMs = parked.expiresAt - Date.now();
             if (diffMs > 0) {
                 const minsLeft = Math.ceil(diffMs / 60000);
-                timerBadgeHtml = `<span id="daily-parking-countdown-badge" class="px-2 py-0.5 rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10.5px] font-extrabold tabular-nums">⏱️ Parquímetre: queden ${minsLeft} min</span>`;
+                timerBadgeHtml = `<span id="daily-parking-countdown-badge" class="px-2 py-0.5 rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10.5px] font-extrabold tabular-nums inline-flex items-center gap-1">${iconSvg('timer', 'w-3 h-3')}<span>Parquímetre: queden ${minsLeft} min</span></span>`;
             } else {
-                timerBadgeHtml = `<span class="px-2 py-0.5 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-[10.5px] font-extrabold">⚠️ Temps de parquímetre esgotat!</span>`;
+                timerBadgeHtml = `<span class="px-2 py-0.5 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-[10.5px] font-extrabold inline-flex items-center gap-1">${iconSvg('warn', 'w-3 h-3')}<span>Temps de parquímetre esgotat!</span></span>`;
             }
         }
 
@@ -1312,7 +1335,7 @@
                 <div class="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/60 space-y-2.5">
                     <div class="flex items-center justify-between gap-2">
                         <span class="text-xs font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                            <span>🚗</span>
+                            ${iconSvg('car', 'w-4 h-4 text-blue-600 dark:text-sky-400')}
                             <span>On he deixat el cotxe / vehicle?</span>
                         </span>
                         ${timerBadgeHtml}
@@ -1321,7 +1344,7 @@
                         Guarda el punt exacte on has aparcat amb el GPS o fent clic a qualsevol carrer del mapa. Quan acabis les teves gestions, traça la ruta a peu fins al teu vehicle.
                     </p>
                     <button id="daily-save-gps-parking-btn" type="button" onclick="window.saveCurrentGpsAsParkedVehicle()" class="w-full py-2.5 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-xs">
-                        <span>📍 Guardar on he aparcat ara (GPS)</span>
+                        ${iconSvg('gps', 'w-4 h-4')}<span>Guardar on he aparcat ara (GPS)</span>
                     </button>
                 </div>
 
@@ -1329,7 +1352,7 @@
                 <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2.5 shadow-2xs">
                     <div class="flex items-start justify-between gap-2">
                         <div class="space-y-0.5 min-w-0">
-                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">✓ Vehicle guardat al mapa</span>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">${iconSvg('check', 'w-3 h-3')}<span>Vehicle guardat al mapa</span></span>
                             <div class="text-xs font-bold text-zinc-900 dark:text-white break-words">${esc(parked.address)}</div>
                             <div class="text-[10.5px] text-zinc-400 tabular-nums">Guardat a les ${new Date(parked.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                         </div>
@@ -1339,15 +1362,15 @@
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button type="button" onclick="window.routeBackToParkedVehicle('WALKING')" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5">
-                            <span>🚶 Ruta a peu al cotxe</span>
+                            ${iconSvg('walk', 'w-3.5 h-3.5')}<span>Ruta a peu al cotxe</span>
                         </button>
                         <button type="button" onclick="window.routeBackToParkedVehicle('DRIVING')" class="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-[11px] font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5">
-                            <span>🚗 Ruta en vehicle</span>
+                            ${iconSvg('car', 'w-3.5 h-3.5')}<span>Ruta en vehicle</span>
                         </button>
                     </div>
                     <div class="flex items-center justify-between pt-1 border-t border-zinc-100 dark:border-zinc-800">
-                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${parked.lat},${parked.lng}`)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-blue-600 dark:text-sky-400 hover:underline">
-                            Obrir ubicació a Google Maps ↗
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${parked.lat},${parked.lng}`)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-blue-600 dark:text-sky-400 hover:underline inline-flex items-center gap-1">
+                            <span>Obrir ubicació a Google Maps</span>${iconSvg('external', 'w-3 h-3')}
                         </a>
                         <button type="button" onclick="window.clearParkedVehicle()" class="text-[11px] font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">
                             Esborrar aparcament
@@ -1367,9 +1390,9 @@
                         <div>
                             <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Tipus de vehicle</label>
                             <select id="daily-parking-vehicle-type" class="w-full px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs font-semibold text-zinc-800 dark:text-zinc-100">
-                                <option value="cotxe" ${(!parked || parked.vehicleType === 'cotxe') ? 'selected' : ''}>🚗 Cotxe</option>
-                                <option value="moto" ${(parked && parked.vehicleType === 'moto') ? 'selected' : ''}>🛵 Moto / Ciclomotor</option>
-                                <option value="bici" ${(parked && parked.vehicleType === 'bici') ? 'selected' : ''}>🚲 Bici / Patinet</option>
+                                <option value="cotxe" ${(!parked || parked.vehicleType === 'cotxe') ? 'selected' : ''}>Cotxe</option>
+                                <option value="moto" ${(parked && parked.vehicleType === 'moto') ? 'selected' : ''}>Moto / Ciclomotor</option>
+                                <option value="bici" ${(parked && parked.vehicleType === 'bici') ? 'selected' : ''}>Bici / Patinet</option>
                             </select>
                         </div>
                         <div>
@@ -1399,7 +1422,7 @@
 
         const catBtns = NEARBY_CATEGORIES.map((c) => `
             <button type="button" onclick="window.searchEverydayNearbyCategory('${c.id}')" class="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-sky-400 transition flex items-center gap-2 text-left cursor-pointer shadow-2xs">
-                <span class="text-base shrink-0">${c.icon}</span>
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style="background-color:${c.color}1a;color:${c.color}">${iconSvg(c.iconName, 'w-4 h-4')}</span>
                 <span class="text-[11px] font-bold text-zinc-800 dark:text-zinc-100 truncate">${esc(c.label)}</span>
             </button>
         `).join('');
@@ -1416,8 +1439,8 @@
 
                 <div class="flex items-center gap-1.5">
                     <input id="daily-nearby-custom-query" type="text" onkeydown="if(event.key==='Enter'){event.preventDefault();window.searchEverydayByTextQuery();}" placeholder="Cerca lliure: ferreteria, correus, gimnàs..." class="flex-1 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs text-zinc-800 dark:text-zinc-100">
-                    <button type="button" onclick="window.searchEverydayByTextQuery()" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold cursor-pointer shrink-0">
-                        Cercar
+                    <button type="button" onclick="window.searchEverydayByTextQuery()" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold cursor-pointer shrink-0 inline-flex items-center gap-1">
+                        ${iconSvg('search', 'w-3.5 h-3.5')}<span>Cercar</span>
                     </button>
                 </div>
 
@@ -1450,10 +1473,10 @@
                     <div>
                         <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Mitjà de transport</label>
                         <div class="grid grid-cols-2 gap-1.5">
-                            <button type="button" onclick="window.setDailyTravelModeAndCompute('WALKING')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition ${selectedTravelMode === 'WALKING' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">🚶 A peu</button>
-                            <button type="button" onclick="window.setDailyTravelModeAndCompute('DRIVING')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition ${selectedTravelMode === 'DRIVING' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">🚗 En cotxe</button>
-                            <button type="button" onclick="window.setDailyTravelModeAndCompute('BICYCLING')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition ${selectedTravelMode === 'BICYCLING' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">🚲 Bici / Patinet</button>
-                            <button type="button" onclick="window.setDailyTravelModeAndCompute('TRANSIT')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition ${selectedTravelMode === 'TRANSIT' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">🚇 Transport públic</button>
+                            <button type="button" onclick="window.setDailyTravelModeAndCompute('WALKING')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition inline-flex items-center justify-center gap-1.5 ${selectedTravelMode === 'WALKING' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('walk', 'w-3.5 h-3.5')}<span>A peu</span></button>
+                            <button type="button" onclick="window.setDailyTravelModeAndCompute('DRIVING')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition inline-flex items-center justify-center gap-1.5 ${selectedTravelMode === 'DRIVING' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('car', 'w-3.5 h-3.5')}<span>En cotxe</span></button>
+                            <button type="button" onclick="window.setDailyTravelModeAndCompute('BICYCLING')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition inline-flex items-center justify-center gap-1.5 ${selectedTravelMode === 'BICYCLING' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('bike', 'w-3.5 h-3.5')}<span>Bici / Patinet</span></button>
+                            <button type="button" onclick="window.setDailyTravelModeAndCompute('TRANSIT')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition inline-flex items-center justify-center gap-1.5 ${selectedTravelMode === 'TRANSIT' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('metro', 'w-3.5 h-3.5')}<span>Transport públic</span></button>
                         </div>
                     </div>
 
@@ -1506,6 +1529,16 @@
         }
     };
 
+    function getPlaceRoleIconName(catOrTitle) {
+        const s = String(catOrTitle || '').toLowerCase();
+        if (/casa|llar|home/.test(s)) return 'home';
+        if (/insti|uni|escola|estud|cole/.test(s)) return 'school';
+        if (/feina|oficina|trabajo/.test(s)) return 'work';
+        if (/gimn|esport/.test(s)) return 'gym';
+        if (/super|compra/.test(s)) return 'cart';
+        return 'pin';
+    }
+
     function renderSavedPlacesTabContent() {
         const box = document.getElementById('daily-maps-tab-panel');
         if (!box || activeTab !== 'saved') return;
@@ -1514,13 +1547,16 @@
         const itemsHtml = list.length
             ? list.map((item) => `
                 <div class="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 flex items-center justify-between gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 flex items-center justify-center shrink-0">
+                        ${iconSvg(getPlaceRoleIconName(`${item.title} ${item.category}`), 'w-4 h-4')}
+                    </div>
                     <div class="min-w-0 flex-1 cursor-pointer" onclick="window.focusDailyMapPoint(${item.lat}, ${item.lng})">
                         <div class="text-xs font-extrabold text-zinc-900 dark:text-white truncate">${esc(item.title)}</div>
                         <div class="text-[10.5px] text-zinc-500 dark:text-zinc-400 truncate">${esc(item.address)}</div>
                     </div>
                     <div class="flex items-center gap-1 shrink-0">
                         <button type="button" onclick="window.traceDailyRouteTo(${item.lat}, ${item.lng}, '${esc(item.title)}')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10.5px] font-bold cursor-pointer">Ruta</button>
-                        <button type="button" onclick="window.deleteSavedEverydayPlace('${esc(item.id)}')" class="p-1 text-zinc-400 hover:text-rose-500 cursor-pointer" title="Eliminar">✕</button>
+                        <button type="button" onclick="window.deleteSavedEverydayPlace('${esc(item.id)}')" class="p-1 text-zinc-400 hover:text-rose-500 cursor-pointer" title="Eliminar">${iconSvg('close', 'w-3.5 h-3.5')}</button>
                     </div>
                 </div>
             `).join('')
@@ -1532,25 +1568,25 @@
                     <div class="text-xs font-extrabold text-zinc-900 dark:text-white">Desar un lloc quotidià freqüent</div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <select id="daily-saved-place-cat" class="px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs font-semibold text-zinc-800 dark:text-zinc-100">
-                            <option value="🏠 Casa">🏠 Casa</option>
-                            <option value="🎓 Institut / Universitat">🎓 Institut / Universitat</option>
-                            <option value="💼 Feina / Estudis">💼 Feina / Estudis</option>
-                            <option value="🏋️ Gimnàs / Esport">🏋️ Gimnàs / Esport</option>
-                            <option value="🛒 Supermercat habitual">🛒 Supermercat habitual</option>
-                            <option value="📍 Punt de trobada">📍 Punt de trobada</option>
+                            <option value="Casa">Casa</option>
+                            <option value="Institut / Universitat">Institut / Universitat</option>
+                            <option value="Feina / Estudis">Feina / Estudis</option>
+                            <option value="Gimnàs / Esport">Gimnàs / Esport</option>
+                            <option value="Supermercat habitual">Supermercat habitual</option>
+                            <option value="Punt de trobada">Punt de trobada</option>
                         </select>
                         <input id="daily-saved-place-name" type="text" placeholder="Nom (ex: Casa meva / Institut)" class="px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
                     </div>
                     <input id="daily-saved-place-addr" type="text" placeholder="Escriu l'adreça o ciutat (ex: Carrer Major 15, Sabadell)..." class="w-full px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
                     <div class="flex flex-wrap gap-1.5">
-                        <button type="button" onclick="window.startMapPickMode(document.getElementById('daily-saved-place-cat')?.value?.includes('Institut') ? 'school' : 'home')" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer">🗺️ Marcar al mapa</button>
-                        <button type="button" onclick="window.setHomeFromCurrentGps()" class="px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-[11px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer">📍 Posició actual com a Casa</button>
+                        <button type="button" onclick="window.startMapPickMode(document.getElementById('daily-saved-place-cat')?.value?.includes('Institut') ? 'school' : 'home')" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer inline-flex items-center gap-1.5">${iconSvg('map', 'w-3.5 h-3.5')}<span>Marcar al mapa</span></button>
+                        <button type="button" onclick="window.setHomeFromCurrentGps()" class="px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-[11px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer inline-flex items-center gap-1.5">${iconSvg('gps', 'w-3.5 h-3.5')}<span>Posició actual com a Casa</span></button>
                     </div>
                     <div id="daily-saved-coords-hint" class="text-[10.5px] text-zinc-500 dark:text-zinc-400">
                         Escriu l'adreça a dalt, fes clic al mapa o usa el teu GPS. Si deses "Casa" i "Institut", AliatMaps calcularà busos i trens i plans a prop de casa!
                     </div>
-                    <button type="button" onclick="window.addSavedEverydayPlace()" class="w-full py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-extrabold transition cursor-pointer">
-                        + Guardar lloc quotidià
+                    <button type="button" onclick="window.addSavedEverydayPlace()" class="w-full py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5">
+                        ${iconSvg('plus', 'w-3.5 h-3.5')}<span>Guardar lloc quotidià</span>
                     </button>
                 </div>
 
@@ -1610,14 +1646,22 @@
         return m ? Math.round(parseFloat(m[1])) : 0;
     }
 
-    function vehicleEmoji(vehicleType) {
+    function vehicleSvg(vehicleType, cls = 'w-3.5 h-3.5 shrink-0') {
         const t = String(vehicleType || '').toUpperCase();
-        if (t.includes('BUS') || t.includes('TROLLEYBUS')) return '🚌';
-        if (t.includes('SUBWAY') || t.includes('METRO')) return '🚇';
-        if (t.includes('TRAM') || t.includes('LIGHT_RAIL') || t.includes('MONORAIL')) return '🚊';
-        if (t.includes('RAIL') || t.includes('TRAIN')) return '🚆';
-        if (t.includes('FERRY')) return '⛴️';
-        return '🚆';
+        if (t.includes('BUS') || t.includes('TROLLEYBUS')) return iconSvg('bus', cls);
+        if (t.includes('SUBWAY') || t.includes('METRO')) return iconSvg('metro', cls);
+        if (t.includes('TRAM') || t.includes('LIGHT_RAIL') || t.includes('MONORAIL')) return iconSvg('tram', cls);
+        if (t.includes('FERRY')) return iconSvg('ferry', cls);
+        return iconSvg('train', cls);
+    }
+
+    function vehicleTextLabel(vehicleType) {
+        const t = String(vehicleType || '').toUpperCase();
+        if (t.includes('BUS') || t.includes('TROLLEYBUS')) return 'Bus';
+        if (t.includes('SUBWAY') || t.includes('METRO')) return 'Metro';
+        if (t.includes('TRAM') || t.includes('LIGHT_RAIL') || t.includes('MONORAIL')) return 'Tram';
+        if (t.includes('FERRY')) return 'Ferri';
+        return 'Tren';
     }
 
     function normalizeRestTransitRoute(rawRoute, idx, baseQueryTimeMs, isArrivalQuery) {
@@ -1879,40 +1923,70 @@
         return { address: clean, label: clean };
     }
 
-    window.openHomeEditor = function (isOpen = true) {
-        transitState.homeEditorOpen = Boolean(isOpen);
+    window.openPlaceRoleEditor = function (role) {
+        const nextRole = (role === 'home' || role === 'school')
+            ? (transitState.placeEditorRole === role ? null : role)
+            : null;
+        transitState.placeEditorRole = nextRole;
+        transitState.homeEditorOpen = nextRole === 'home';
+        transitState.placeSearchQuery = '';
+        transitState.placeSearchCandidates = [];
+        transitState.placeSearchLoading = false;
         renderTransitTabContent();
-        if (transitState.homeEditorOpen) {
+        if (nextRole) {
             setTimeout(() => {
-                const inp = document.getElementById('daily-home-quick-search');
+                const inp = document.getElementById('daily-place-role-search');
                 if (inp) inp.focus();
             }, 30);
         }
     };
 
-    window.updateHomeQuickSearchInput = function (val) {
-        transitState.homeSearchQuery = String(val || '');
+    window.openHomeEditor = function (isOpen = true) {
+        transitState.homeEditorOpen = Boolean(isOpen);
+        transitState.placeEditorRole = isOpen ? 'home' : null;
+        transitState.placeSearchQuery = '';
+        transitState.placeSearchCandidates = [];
+        renderTransitTabContent();
+        if (transitState.placeEditorRole) {
+            setTimeout(() => {
+                const inp = document.getElementById('daily-place-role-search');
+                if (inp) inp.focus();
+            }, 30);
+        }
     };
+
+    window.updatePlaceRoleSearchInput = function (val) {
+        transitState.placeSearchQuery = String(val || '');
+        transitState.homeSearchQuery = transitState.placeSearchQuery;
+    };
+    window.updateHomeQuickSearchInput = window.updatePlaceRoleSearchInput;
 
     window.setHomeFromCurrentGps = async function () {
         const loc = userLocation || (await requestUserGeolocation(false));
         if (!loc) return;
         const addr = await reverseGeocodeCoords(loc.lat, loc.lng);
-        await window.setPlaceRoleFromCoords('home', loc.lat, loc.lng, 'Casa', addr);
+        const role = transitState.placeEditorRole === 'school' ? 'school' : 'home';
+        await window.setPlaceRoleFromCoords(role, loc.lat, loc.lng, role === 'home' ? 'Casa' : 'Institut / Universitat', addr);
     };
 
-    window.searchHomeCandidates = async function () {
-        const inp = document.getElementById('daily-home-quick-search');
-        const q = (inp ? inp.value.trim() : transitState.homeSearchQuery.trim());
-        transitState.homeSearchQuery = q;
+    window.searchPlaceRoleCandidates = async function () {
+        const role = transitState.placeEditorRole || 'home';
+        const inp = document.getElementById('daily-place-role-search');
+        const q = (inp ? inp.value.trim() : transitState.placeSearchQuery.trim());
+        transitState.placeSearchQuery = q;
         if (!q) {
             if (typeof window.showToast === 'function') {
-                window.showToast('Escriu el teu carrer, número o població per trobar Casa teva.', 'info');
+                window.showToast(
+                    role === 'school'
+                        ? 'Escriu el nom o adreça del teu institut o universitat.'
+                        : 'Escriu el teu carrer, número o població per trobar Casa teva.',
+                    'info'
+                );
             }
             return;
         }
-        transitState.homeSearchLoading = true;
-        transitState.homeSearchCandidates = [];
+        transitState.placeSearchLoading = true;
+        transitState.placeSearchCandidates = [];
         renderTransitTabContent();
 
         try {
@@ -1924,7 +1998,7 @@
                 locationBias: { center: biasLoc, radius: 50000 },
                 maxResultCount: 4
             });
-            transitState.homeSearchCandidates = (places || [])
+            transitState.placeSearchCandidates = (places || [])
                 .filter((p) => p && p.location)
                 .map((p) => ({
                     displayName: p.displayName || q,
@@ -1934,11 +2008,10 @@
                 }));
         } catch (_) {}
 
-        // Fallback via server /api/maps/geocode if browser SDK Places returned empty
-        if (transitState.homeSearchCandidates.length === 0) {
+        if (transitState.placeSearchCandidates.length === 0) {
             const single = await resolveTextAddressOrPlace(q);
             if (single && typeof single.lat === 'number') {
-                transitState.homeSearchCandidates = [{
+                transitState.placeSearchCandidates = [{
                     displayName: q,
                     formattedAddress: single.label || q,
                     lat: single.lat,
@@ -1947,21 +2020,26 @@
             }
         }
 
-        transitState.homeSearchLoading = false;
-        if (transitState.homeSearchCandidates.length === 1) {
-            const only = transitState.homeSearchCandidates[0];
-            await window.setPlaceRoleFromCoords('home', only.lat, only.lng, 'Casa', only.formattedAddress);
+        transitState.placeSearchLoading = false;
+        if (transitState.placeSearchCandidates.length === 1) {
+            const only = transitState.placeSearchCandidates[0];
+            const finalTitle = role === 'home' ? 'Casa' : (only.displayName || q || 'Institut / Universitat');
+            await window.setPlaceRoleFromCoords(role, only.lat, only.lng, finalTitle, only.formattedAddress);
             return;
         }
         renderTransitTabContent();
     };
+    window.searchHomeCandidates = window.searchPlaceRoleCandidates;
 
-    window.pickHomeCandidate = async function (idx) {
-        const list = transitState.homeSearchCandidates || [];
+    window.pickPlaceRoleCandidate = async function (idx) {
+        const list = transitState.placeSearchCandidates || [];
         const cand = list[idx];
         if (!cand) return;
-        await window.setPlaceRoleFromCoords('home', cand.lat, cand.lng, 'Casa', cand.formattedAddress || cand.displayName);
+        const role = transitState.placeEditorRole || 'home';
+        const finalTitle = role === 'home' ? 'Casa' : (cand.displayName || 'Institut / Universitat');
+        await window.setPlaceRoleFromCoords(role, cand.lat, cand.lng, finalTitle, cand.formattedAddress || cand.displayName);
     };
+    window.pickHomeCandidate = window.pickPlaceRoleCandidate;
 
     window.pickAiSetPlaceCandidate = async function (idx) {
         const list = transitState.setPlaceCandidates || [];
@@ -1969,7 +2047,7 @@
         if (!cand) return;
         const role = transitState.setPlaceRole || 'home';
         transitState.setPlaceCandidates = [];
-        await window.setPlaceRoleFromCoords(role, cand.lat, cand.lng, role === 'home' ? 'Casa' : 'Institut / Universitat', cand.formattedAddress || cand.displayName);
+        await window.setPlaceRoleFromCoords(role, cand.lat, cand.lng, role === 'home' ? 'Casa' : (cand.displayName || 'Institut / Universitat'), cand.formattedAddress || cand.displayName);
     };
 
     window.applyTransitPresetOrigin = async function (preset) {
@@ -2097,7 +2175,7 @@
         });
 
         if (typeof window.showToast === 'function') {
-            window.showToast(`${isHome ? '🏠 Casa' : '🎓 Institut'} desat correctament!`, 'success');
+            window.showToast(`${isHome ? 'Casa' : 'Institut'} desat correctament!`, 'success');
         }
         renderTransitTabContent();
     };
@@ -2112,26 +2190,26 @@
             return {
                 status: 'none',
                 html: isEs
-                    ? `❌ No se han encontrado rutas en transporte público entre <strong>${esc(originLabel)}</strong> y <strong>${esc(destLabel)}</strong> para ${whenTag}. Revisa que las direcciones sean concretas (ciudad/parada) o prueba "Todos los transportes".`
-                    : `❌ No s'han trobat rutes en transport públic entre <strong>${esc(originLabel)}</strong> i <strong>${esc(destLabel)}</strong> per ${whenTag}. Revisa que les adreces siguin concretes o prova "Tots els transports".`,
+                    ? `<div class="flex items-start gap-2">${iconSvg('xCircle', 'w-4 h-4 text-rose-600 shrink-0 mt-0.5')}<span>No se han encontrado rutas en transporte público entre <strong>${esc(originLabel)}</strong> y <strong>${esc(destLabel)}</strong> para ${whenTag}. Revisa que las direcciones sean concretas (ciudad/parada) o prueba "Todos los transportes".</span></div>`
+                    : `<div class="flex items-start gap-2">${iconSvg('xCircle', 'w-4 h-4 text-rose-600 shrink-0 mt-0.5')}<span>No s'han trobat rutes en transport públic entre <strong>${esc(originLabel)}</strong> i <strong>${esc(destLabel)}</strong> per ${whenTag}. Revisa que les adreces siguin concretes o prova "Tots els transports".</span></div>`,
                 plainText: isEs
-                    ? `No s'han trobat rutes en transport públic entre ${originLabel} i ${destLabel}.`
+                    ? `No se han encontrado rutas en transporte público entre ${originLabel} y ${destLabel}.`
                     : `No s'han trobat rutes en transport públic entre ${originLabel} i ${destLabel}.`
             };
         }
 
         const primary = routes[0];
         const transitSteps = primary.steps.filter((s) => s.isTransit);
-        const mainStep = transitSteps[0] || null;
-        const linesDesc = transitSteps.map((s) => `${vehicleEmoji(s.vehicleType)} ${s.lineShort}${s.departureStopName ? ` (${s.departureStopName} ${s.departureTimeText})` : ''}`).join(' → ');
+        const linesDesc = transitSteps.map((s) => `<span class="inline-flex items-center gap-1 font-bold">${vehicleSvg(s.vehicleType, 'w-3.5 h-3.5')} ${esc(s.lineShort)}${s.departureStopName ? ` (${esc(s.departureStopName)} ${esc(s.departureTimeText)})` : ''}</span>`).join(' → ');
+        const linesText = transitSteps.map((s) => `${vehicleTextLabel(s.vehicleType)} ${s.lineShort}${s.departureStopName ? ` (${s.departureStopName} ${s.departureTimeText})` : ''}`).join(' -> ');
 
         if (deadlineMs) {
-            // Find best route that meets deadline (preferring arriving 3+ mins early if slightlyBefore)
             const fittingRoutes = routes.filter((r) => r.arrivalMs <= deadlineMs);
             const chosen = fittingRoutes[0] || primary;
             const cTransit = chosen.steps.filter((s) => s.isTransit);
             const cMain = cTransit[0] || null;
-            const cLines = cTransit.map((s) => `${vehicleEmoji(s.vehicleType)} ${s.lineShort}`).join(' + ') || (isEs ? 'Transporte público' : 'Transport públic');
+            const cLinesHtml = cTransit.map((s) => `<span class="inline-flex items-center gap-1">${vehicleSvg(s.vehicleType, 'w-3.5 h-3.5')} ${esc(s.lineShort)}</span>`).join(' + ') || (isEs ? 'Transporte público' : 'Transport públic');
+            const cLinesPlain = cTransit.map((s) => `${vehicleTextLabel(s.vehicleType)} ${s.lineShort}`).join(' + ') || (isEs ? 'Transporte público' : 'Transport públic');
             const diffMin = Math.round((deadlineMs - chosen.arrivalMs) / 60000);
             const deadlineTxt = formatTimeHHMM(deadlineMs);
 
@@ -2144,8 +2222,8 @@
                     : `arribes just a les ${deadlineTxt}`;
                 const stopNote = cMain
                     ? (isEs
-                        ? ` Coges <strong>${esc(cLines)}</strong> en <em>${esc(cMain.departureStopName)}</em> (${esc(cMain.departureTimeText)}) y bajas en <em>${esc(cMain.arrivalStopName)}</em> (${esc(cMain.arrivalTimeText)}).`
-                        : ` Agafes <strong>${esc(cLines)}</strong> a <em>${esc(cMain.departureStopName)}</em> (${esc(cMain.departureTimeText)}) i baixes a <em>${esc(cMain.arrivalStopName)}</em> (${esc(cMain.arrivalTimeText)}).`)
+                        ? ` Coges <strong>${cLinesHtml}</strong> en <em>${esc(cMain.departureStopName)}</em> (${esc(cMain.departureTimeText)}) y bajas en <em>${esc(cMain.arrivalStopName)}</em> (${esc(cMain.arrivalTimeText)}).`
+                        : ` Agafes <strong>${cLinesHtml}</strong> a <em>${esc(cMain.departureStopName)}</em> (${esc(cMain.departureTimeText)}) i baixes a <em>${esc(cMain.arrivalStopName)}</em> (${esc(cMain.arrivalTimeText)}).`)
                     : '';
 
                 const plain = isEs
@@ -2156,37 +2234,36 @@
                     status: (slightlyBefore && diffMin < 2) ? 'tight' : 'ok',
                     bestIdx: chosen.index,
                     html: isEs
-                        ? `✅ <strong>¡Sí, llegas a tiempo!</strong> (${esc(whenTag)}): saliendo a las <strong>${esc(chosen.departureTimeText)}</strong> llegas a las <strong>${esc(chosen.arrivalTimeText)}</strong> (${esc(marginNoteEs)}, ${esc(chosen.durationText)}).${stopNote}`
-                        : `✅ <strong>Sí, hi arribes a temps!</strong> (${esc(whenTag)}): sortint a les <strong>${esc(chosen.departureTimeText)}</strong> arribes a les <strong>${esc(chosen.arrivalTimeText)}</strong> (${esc(marginNoteCa)}, ${esc(chosen.durationText)}).${stopNote}`,
+                        ? `<div class="flex items-start gap-2">${iconSvg('checkCircle', 'w-4 h-4 text-emerald-600 shrink-0 mt-0.5')}<span><strong>¡Sí, llegas a tiempo!</strong> (${esc(whenTag)}): saliendo a las <strong>${esc(chosen.departureTimeText)}</strong> llegas a las <strong>${esc(chosen.arrivalTimeText)}</strong> (${esc(marginNoteEs)}, ${esc(chosen.durationText)}).${stopNote}</span></div>`
+                        : `<div class="flex items-start gap-2">${iconSvg('checkCircle', 'w-4 h-4 text-emerald-600 shrink-0 mt-0.5')}<span><strong>Sí, hi arribes a temps!</strong> (${esc(whenTag)}): sortint a les <strong>${esc(chosen.departureTimeText)}</strong> arribes a les <strong>${esc(chosen.arrivalTimeText)}</strong> (${esc(marginNoteCa)}, ${esc(chosen.durationText)}).${stopNote}</span></div>`,
                     plainText: plain
                 };
             } else {
                 const lateMin = Math.abs(diffMin);
                 const plain = isEs
-                    ? `Saliendo sobre esa hora llegarías a las ${chosen.arrivalTimeText} (${lateMin} min después de las ${deadlineTxt}). Línea: ${cLines}.`
-                    : `Sortint cap a aquella hora arribaries a les ${chosen.arrivalTimeText} (${lateMin} min després de les ${deadlineTxt}). Línia: ${cLines}.`;
+                    ? `Saliendo sobre esa hora llegarías a las ${chosen.arrivalTimeText} (${lateMin} min después de las ${deadlineTxt}). Línea: ${cLinesPlain}.`
+                    : `Sortint cap a aquella hora arribaries a les ${chosen.arrivalTimeText} (${lateMin} min després de les ${deadlineTxt}). Línia: ${cLinesPlain}.`;
                 return {
                     status: 'late',
                     bestIdx: chosen.index,
                     html: isEs
-                        ? `⚠️ <strong>Con esa salida llegarías ${lateMin} min tarde</strong> (llegada a las <strong>${esc(chosen.arrivalTimeText)}</strong> en lugar de antes de las ${esc(deadlineTxt)}). Línea: ${linesDesc || esc(cLines)}.`
-                        : `⚠️ <strong>Amb aquesta sortida arribaries ${lateMin} min tard</strong> (arribada a les <strong>${esc(chosen.arrivalTimeText)}</strong> en comptes d'abans de les ${esc(deadlineTxt)}). Línia: ${linesDesc || esc(cLines)}.`,
+                        ? `<div class="flex items-start gap-2">${iconSvg('warn', 'w-4 h-4 text-rose-600 shrink-0 mt-0.5')}<span><strong>Con esa salida llegarías ${lateMin} min tarde</strong> (llegada a las <strong>${esc(chosen.arrivalTimeText)}</strong> en lugar de antes de las ${esc(deadlineTxt)}). Línea: ${linesDesc || esc(cLinesPlain)}.</span></div>`
+                        : `<div class="flex items-start gap-2">${iconSvg('warn', 'w-4 h-4 text-rose-600 shrink-0 mt-0.5')}<span><strong>Amb aquesta sortida arribaries ${lateMin} min tard</strong> (arribada a les <strong>${esc(chosen.arrivalTimeText)}</strong> en comptes d'abans de les ${esc(deadlineTxt)}). Línia: ${linesDesc || esc(cLinesPlain)}.</span></div>`,
                     plainText: plain
                 };
             }
         }
 
-        // Standard schedule summary (no deadline comparison)
         const plain = isEs
-            ? `Próxima opción (${whenTag}): salida a las ${primary.departureTimeText}, llegada a las ${primary.arrivalTimeText} (${primary.durationText}). ${transitSteps.map(s => `${s.lineShort} en ${s.departureStopName} (${s.departureTimeText})`).join(' -> ')}.`
-            : `Propera opció (${whenTag}): sortida a les ${primary.departureTimeText}, arribada a les ${primary.arrivalTimeText} (${primary.durationText}). ${transitSteps.map(s => `${s.lineShort} a ${s.departureStopName} (${s.departureTimeText})`).join(' -> ')}.`;
+            ? `Próxima opción (${whenTag}): salida a las ${primary.departureTimeText}, llegada a las ${primary.arrivalTimeText} (${primary.durationText}). ${linesText}.`
+            : `Propera opció (${whenTag}): sortida a les ${primary.departureTimeText}, arribada a les ${primary.arrivalTimeText} (${primary.durationText}). ${linesText}.`;
 
         return {
             status: 'ok',
             bestIdx: 0,
             html: isEs
-                ? `🕒 <strong>Horario encontrado (${esc(whenTag)}):</strong> Sales a las <strong>${esc(primary.departureTimeText)}</strong> y llegas a las <strong>${esc(primary.arrivalTimeText)}</strong> (${esc(primary.durationText)}). ${linesDesc}`
-                : `🕒 <strong>Horari trobat (${esc(whenTag)}):</strong> Surts a les <strong>${esc(primary.departureTimeText)}</strong> i arribes a les <strong>${esc(primary.arrivalTimeText)}</strong> (${esc(primary.durationText)}). ${linesDesc}`,
+                ? `<div class="flex items-start gap-2">${iconSvg('clock', 'w-4 h-4 text-emerald-600 shrink-0 mt-0.5')}<span><strong>Horario encontrado (${esc(whenTag)}):</strong> Sales a las <strong>${esc(primary.departureTimeText)}</strong> y llegas a las <strong>${esc(primary.arrivalTimeText)}</strong> (${esc(primary.durationText)}). ${linesDesc}</span></div>`
+                : `<div class="flex items-start gap-2">${iconSvg('clock', 'w-4 h-4 text-emerald-600 shrink-0 mt-0.5')}<span><strong>Horari trobat (${esc(whenTag)}):</strong> Surts a les <strong>${esc(primary.departureTimeText)}</strong> i arribes a les <strong>${esc(primary.arrivalTimeText)}</strong> (${esc(primary.durationText)}). ${linesDesc}</span></div>`,
             plainText: plain
         };
     }
@@ -2254,7 +2331,7 @@
                 badge.className = 'px-2 py-1 rounded-xl text-[10px] font-extrabold shadow-md border-2 border-white flex items-center gap-1 cursor-pointer';
                 badge.style.backgroundColor = step.lineColor || '#2563eb';
                 badge.style.color = step.lineTextColor || '#ffffff';
-                badge.textContent = `${vehicleEmoji(step.vehicleType)} ${step.lineShort} · ${step.departureTimeText}`;
+                badge.innerHTML = `${vehicleSvg(step.vehicleType, 'w-3 h-3 shrink-0')}<span>${esc(step.lineShort)} · ${esc(step.departureTimeText)}</span>`;
                 const m = new mapClasses.AdvancedMarkerElement({
                     map: mapInstance,
                     position: step.departureStopLatLng,
@@ -2265,7 +2342,7 @@
                     if (!sharedInfoWindow) sharedInfoWindow = new mapClasses.InfoWindow();
                     sharedInfoWindow.setContent(`
                         <div class="p-1.5 text-xs text-zinc-900 space-y-0.5 max-w-[230px]">
-                            <div class="font-extrabold">${vehicleEmoji(step.vehicleType)} ${esc(step.lineShort)} ${step.headsign ? `→ ${esc(step.headsign)}` : ''}</div>
+                            <div class="font-extrabold flex items-center gap-1.5">${vehicleSvg(step.vehicleType, 'w-3.5 h-3.5')}<span>${esc(step.lineShort)} ${step.headsign ? `→ ${esc(step.headsign)}` : ''}</span></div>
                             <div class="text-[11px]">Parada pujada: <strong>${esc(step.departureStopName)}</strong> (${esc(step.departureTimeText)})</div>
                             <div class="text-[11px] text-zinc-600">Parada baixada: ${esc(step.arrivalStopName)} (${esc(step.arrivalTimeText)}) · ${step.stopCount} parades</div>
                         </div>
@@ -2286,8 +2363,8 @@
         let extra = '';
         if (sel) {
             const stepsSummary = sel.steps.map((s) => s.isTransit
-                ? `${vehicleEmoji(s.vehicleType)} ${s.lineShort} (${s.departureStopName} ${s.departureTimeText} -> ${s.arrivalStopName} ${s.arrivalTimeText})`
-                : `🚶 ${s.durationText || ''}`
+                ? `${vehicleTextLabel(s.vehicleType)} ${s.lineShort} (${s.departureStopName} ${s.departureTimeText} -> ${s.arrivalStopName} ${s.arrivalTimeText})`
+                : `A peu ${s.durationText || ''}`
             ).join(' | ');
             extra = `\nDetall del trajecte: ${stepsSummary}`;
         }
@@ -2350,10 +2427,10 @@
                         <div class="font-extrabold">${idx + 1}. ${safeTitle}</div>
                         ${p.primaryType ? `<div class="text-[10.5px] font-bold text-teal-700">${esc(p.primaryType)}</div>` : ''}
                         <div class="text-[11px] text-zinc-600">${esc(p.formattedAddress || '')}</div>
-                        ${p.rating ? `<div class="text-[11px] font-bold text-amber-600">★ ${p.rating.toFixed(1)} (${p.userRatingCount || 0})</div>` : ''}
+                        ${p.rating ? `<div class="text-[11px] font-bold text-amber-600 inline-flex items-center gap-1">${iconSvg('star', 'w-3 h-3')}<span>${p.rating.toFixed(1)} (${p.userRatingCount || 0})</span></div>` : ''}
                         <div class="pt-1 flex flex-wrap gap-1">
-                            <button type="button" onclick="window.setTransitDestAndOpen(${p.lat}, ${p.lng}, '${safeTitle}')" class="px-2 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10px] cursor-pointer">🚆 Bus / Tren</button>
-                            <button type="button" onclick="window.traceDailyRouteTo(${p.lat}, ${p.lng}, '${safeTitle}', 'WALKING')" class="px-2 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[10px] cursor-pointer">🚶 A peu</button>
+                            <button type="button" onclick="window.setTransitDestAndOpen(${p.lat}, ${p.lng}, '${safeTitle}')" class="px-2 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10px] cursor-pointer inline-flex items-center gap-1">${iconSvg('train', 'w-3 h-3')}<span>Bus / Tren</span></button>
+                            <button type="button" onclick="window.traceDailyRouteTo(${p.lat}, ${p.lng}, '${safeTitle}', 'WALKING')" class="px-2 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[10px] cursor-pointer inline-flex items-center gap-1">${iconSvg('walk', 'w-3 h-3')}<span>A peu</span></button>
                         </div>
                     </div>
                 `);
@@ -2491,7 +2568,7 @@
                         transitState.setPlaceCandidates = cands;
                         transitState.routes = [];
                         transitState.verdictHtml = cands.length === 0
-                            ? `⚠️ No s'ha trobat l'adreça "${esc(askJson.query || question)}". Prova d'escriure el carrer i ciutat o prem "🗺️ Marcar al mapa" a la targeta de Casa.`
+                            ? `<div class="flex items-start gap-2">${iconSvg('warn', 'w-4 h-4 text-amber-600 shrink-0 mt-0.5')}<span>No s'ha trobat l'adreça "${esc(askJson.query || question)}". Prova d'escriure el carrer i ciutat o prem "Marcar al mapa" a la targeta de Casa.</span></div>`
                             : '';
                         renderTransitTabContent();
                         return;
@@ -2601,7 +2678,12 @@
             transitState.loading = false;
             transitState.routes = [];
             transitState.verdictHtml = '';
-            if (transitState.needsPlaceSetup.missingHome) transitState.homeEditorOpen = true;
+            if (transitState.needsPlaceSetup.missingHome) {
+                transitState.homeEditorOpen = true;
+                transitState.placeEditorRole = 'home';
+            } else if (transitState.needsPlaceSetup.missingSchool) {
+                transitState.placeEditorRole = 'school';
+            }
             renderTransitTabContent();
             return;
         }
@@ -2657,8 +2739,8 @@
             transitState.loading = false;
             transitState.routes = [];
             transitState.verdictHtml = (!originWp
-                ? '📍 Selecciona un <strong>origen</strong> (GPS o configura Casa teva a dalt).'
-                : '🎯 Indica una <strong>destinació</strong> (escriu l\'adreça, cerca-la a dalt o fes clic sobre el mapa).');
+                ? `<div class="flex items-center gap-2">${iconSvg('pin', 'w-4 h-4 text-blue-600 shrink-0')}<span>Selecciona un <strong>origen</strong> (GPS o configura Casa teva a sota).</span></div>`
+                : `<div class="flex items-center gap-2">${iconSvg('target', 'w-4 h-4 text-blue-600 shrink-0')}<span>Indica una <strong>destinació</strong> (escriu l'adreça, cerca-la a dalt o fes clic sobre el mapa).</span></div>`);
             renderTransitTabContent();
             return;
         }
@@ -2753,7 +2835,7 @@
         return `
             <div class="p-3 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/30 border border-indigo-200/90 dark:border-indigo-800/70 space-y-2">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">💬 Comentaris sobre aquesta ruta / consulta</span>
+                    <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 inline-flex items-center gap-1.5">${iconSvg('chat', 'w-3.5 h-3.5')}<span>Comentaris sobre aquesta ruta</span></span>
                     <button type="button" onclick="window.clearAliatMapsFollowupChat()" class="text-[10px] font-bold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 cursor-pointer">Netejar</button>
                 </div>
                 <div class="space-y-1.5">
@@ -2772,8 +2854,8 @@
 
         const loadingBannerHtml = `
             <div class="p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/35 border border-blue-200 dark:border-blue-800/70 text-center space-y-1">
-                <div class="text-xs font-extrabold text-blue-700 dark:text-sky-300">✨ Consultant AliatMaps IA i Google Maps en directe...</div>
-                <div class="text-[11px] text-zinc-500 dark:text-zinc-400">Analitzant el comentari, parades i horaris reals.</div>
+                <div class="text-xs font-extrabold text-blue-700 dark:text-sky-300 inline-flex items-center justify-center gap-2">${iconSvg('spinner', 'w-4 h-4 animate-spin')}<span>Consultant AliatMaps IA i Google Maps en directe...</span></div>
+                <div class="text-[11px] text-zinc-500 dark:text-zinc-400">Analitzant la consulta, parades i horaris reals.</div>
             </div>
         `;
 
@@ -2783,10 +2865,11 @@
         }
 
         if (transitState.aiMode === 'set_place' && transitState.setPlaceCandidates && transitState.setPlaceCandidates.length > 0) {
-            const roleLabel = transitState.setPlaceRole === 'school' ? '🎓 Institut / Universitat' : '🏠 Casa';
+            const roleIcon = transitState.setPlaceRole === 'school' ? iconSvg('school', 'w-4 h-4') : iconSvg('home', 'w-4 h-4');
+            const roleLabel = transitState.setPlaceRole === 'school' ? 'Institut / Universitat' : 'Casa';
             resBox.innerHTML = `
                 <div class="p-3.5 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/70 space-y-2">
-                    <div class="text-xs font-extrabold text-emerald-900 dark:text-emerald-200">Tria l'adreça exacta per desar com a ${roleLabel}:</div>
+                    <div class="text-xs font-extrabold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">${roleIcon}<span>Tria l'adreça exacta per desar com a ${roleLabel}:</span></div>
                     <div class="space-y-1.5">
                         ${transitState.setPlaceCandidates.map((c, idx) => `
                             <button type="button" onclick="window.pickAiSetPlaceCandidate(${idx})" class="w-full p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-800 hover:border-emerald-500 text-left cursor-pointer transition">
@@ -2815,14 +2898,14 @@
                             </div>
                             <div class="flex items-center gap-1 shrink-0">
                                 ${openBadge}
-                                ${p.rating ? `<span class="text-[10.5px] font-bold text-amber-600 dark:text-amber-400 tabular-nums">★ ${p.rating.toFixed(1)}</span>` : ''}
+                                ${p.rating ? `<span class="text-[10.5px] font-bold text-amber-600 dark:text-amber-400 tabular-nums inline-flex items-center gap-0.5">${iconSvg('star', 'w-3 h-3')}<span>${p.rating.toFixed(1)}</span></span>` : ''}
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-1.5 pt-0.5">
                             ${p.primaryType ? `<span class="px-1.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 text-[9.5px] font-bold">${esc(p.primaryType)}</span>` : ''}
-                            <button type="button" onclick="window.setTransitDestAndOpen(${p.lat}, ${p.lng}, '${safeTitle}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold cursor-pointer">🚆 Bus / Tren</button>
-                            <button type="button" onclick="window.traceDailyRouteTo(${p.lat}, ${p.lng}, '${safeTitle}', 'WALKING')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold cursor-pointer">🚶 Ruta a peu</button>
-                            ${p.googleMapsURI ? `<a href="${esc(p.googleMapsURI)}" target="_blank" rel="noopener noreferrer" class="ml-auto text-[10px] font-bold text-blue-600 dark:text-sky-400 hover:underline">Fitxa Google Maps ↗</a>` : ''}
+                            <button type="button" onclick="window.setTransitDestAndOpen(${p.lat}, ${p.lng}, '${safeTitle}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold cursor-pointer inline-flex items-center gap-1">${iconSvg('train', 'w-3 h-3')}<span>Bus / Tren</span></button>
+                            <button type="button" onclick="window.traceDailyRouteTo(${p.lat}, ${p.lng}, '${safeTitle}', 'WALKING')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold cursor-pointer inline-flex items-center gap-1">${iconSvg('walk', 'w-3 h-3')}<span>Ruta a peu</span></button>
+                            ${p.googleMapsURI ? `<a href="${esc(p.googleMapsURI)}" target="_blank" rel="noopener noreferrer" class="ml-auto text-[10px] font-bold text-blue-600 dark:text-sky-400 hover:underline inline-flex items-center gap-0.5"><span>Fitxa Maps</span>${iconSvg('external', 'w-3 h-3')}</a>` : ''}
                         </div>
                     </div>
                 `;
@@ -2832,8 +2915,8 @@
                 ${transitState.loading ? loadingBannerHtml : ''}
                 <div class="p-3.5 rounded-2xl bg-teal-50/90 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/80 space-y-2 shadow-2xs">
                     <div class="flex items-center justify-between gap-2">
-                        <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-teal-700 dark:text-teal-300">✨ AliatMaps IA · ${esc(transitState.exploreCenterLabel || 'A prop teu')}</span>
-                        <button type="button" onclick="window.sendExploreResultToChat()" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-[10px] font-extrabold cursor-pointer">💬 Enviar al xat</button>
+                        <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-teal-700 dark:text-teal-300 inline-flex items-center gap-1.5">${iconSvg('spark', 'w-3.5 h-3.5')}<span>AliatMaps IA · ${esc(transitState.exploreCenterLabel || 'A prop teu')}</span></span>
+                        <button type="button" onclick="window.sendExploreResultToChat()" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-[10px] font-extrabold cursor-pointer inline-flex items-center gap-1">${iconSvg('chat', 'w-3 h-3')}<span>Enviar al xat</span></button>
                     </div>
                     <div class="text-xs text-zinc-900 dark:text-zinc-100 leading-relaxed">${formatExploreMarkdownLight(transitState.exploreAnswerText)}</div>
                 </div>
@@ -2846,13 +2929,13 @@
         if (transitState.needsPlaceSetup && (transitState.needsPlaceSetup.missingHome || transitState.needsPlaceSetup.missingSchool)) {
             resBox.innerHTML = `
                 <div class="p-3.5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/30 border border-amber-300/80 dark:border-amber-800/70 space-y-2.5">
-                    <div class="text-xs font-extrabold text-amber-900 dark:text-amber-200">📍 Faltava saber on és Casa teva o el teu Institut!</div>
+                    <div class="text-xs font-extrabold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">${iconSvg('pin', 'w-4 h-4')}<span>Faltava saber on és Casa teva o el teu Institut</span></div>
                     <p class="text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">
-                        Pots marcar-ho amb 1 clic a la targeta <strong>🏠 Casa teva</strong> de dalt (escrivint l'adreça, usant GPS o clicant sobre el mapa):
+                        Configura-ho en un clic escrivint l'adreça, usant el teu GPS o clicant sobre el mapa:
                     </p>
                     <div class="flex flex-wrap gap-1.5">
-                        ${transitState.needsPlaceSetup.missingHome ? `<button type="button" onclick="window.startMapPickMode('home')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white text-[11px] font-bold cursor-pointer">🗺️ Marcar Casa al mapa</button><button type="button" onclick="window.setHomeFromCurrentGps()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-amber-300 dark:border-amber-700 text-[11px] font-bold cursor-pointer">📍 GPS actual és Casa</button>` : ''}
-                        ${transitState.needsPlaceSetup.missingSchool ? `<button type="button" onclick="window.startMapPickMode('school')" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white text-[11px] font-bold cursor-pointer">🎓 Marcar Insti al mapa</button>` : ''}
+                        ${transitState.needsPlaceSetup.missingHome ? `<button type="button" onclick="window.startMapPickMode('home')" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white text-[11px] font-bold cursor-pointer inline-flex items-center gap-1.5">${iconSvg('map', 'w-3.5 h-3.5')}<span>Marcar Casa al mapa</span></button><button type="button" onclick="window.setHomeFromCurrentGps()" class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-amber-300 dark:border-amber-700 text-[11px] font-bold cursor-pointer inline-flex items-center gap-1.5">${iconSvg('gps', 'w-3.5 h-3.5')}<span>GPS actual és Casa</span></button>` : ''}
+                        ${transitState.needsPlaceSetup.missingSchool ? `<button type="button" onclick="window.startMapPickMode('school')" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white text-[11px] font-bold cursor-pointer inline-flex items-center gap-1.5">${iconSvg('school', 'w-3.5 h-3.5')}<span>Marcar Insti al mapa</span></button>` : ''}
                     </div>
                 </div>
             `;
@@ -2861,11 +2944,13 @@
 
         if (!transitState.verdictHtml && (!transitState.routes || transitState.routes.length === 0)) {
             resBox.innerHTML = `
-                <div class="p-3.5 rounded-2xl bg-zinc-100/70 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-[11px] text-zinc-500 dark:text-zinc-400 space-y-1">
-                    <div class="font-bold text-zinc-700 dark:text-zinc-300">Pots preguntar a AliatMaps IA el que vulguis:</div>
-                    <div>• <em>"Què puc fer per aquí a prop ara?"</em> o <em>"Cafeteries tranquil·les per estudiar"</em></div>
-                    <div>• <em>"La meva casa és Carrer Major 15, Sabadell"</em></div>
-                    <div>• <em>"Puc sortir de casa a les 8 i arribar abans de les 9 a l'insti?"</em></div>
+                <div class="p-3.5 rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-400 space-y-2">
+                    <div class="font-extrabold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">${iconSvg('lightbulb', 'w-3.5 h-3.5 text-blue-600')}<span>Com fer servir AliatMaps en 3 passos</span></div>
+                    <div class="space-y-1.5">
+                        <div class="flex items-start gap-2"><span class="w-4 h-4 rounded-md bg-emerald-600/15 text-emerald-700 dark:text-emerald-300 text-[10px] font-black inline-flex items-center justify-center shrink-0 mt-0.5">1</span><span>Desa <strong>Casa</strong> i <strong>Insti</strong> a dalt (es guarden al teu compte).</span></div>
+                        <div class="flex items-start gap-2"><span class="w-4 h-4 rounded-md bg-blue-600/15 text-blue-700 dark:text-sky-300 text-[10px] font-black inline-flex items-center justify-center shrink-0 mt-0.5">2</span><span>Escriu la pregunta com parles o tria <strong>Origen i Destinació</strong>.</span></div>
+                        <div class="flex items-start gap-2"><span class="w-4 h-4 rounded-md bg-indigo-600/15 text-indigo-700 dark:text-indigo-300 text-[10px] font-black inline-flex items-center justify-center shrink-0 mt-0.5">3</span><span>Quan surti la ruta, pregunta dubtes de seguiment (on baixar, transbords o temps a peu).</span></div>
+                    </div>
                 </div>
             `;
             return;
@@ -2881,10 +2966,10 @@
             <div class="p-3.5 rounded-2xl border ${statusClasses} space-y-2 shadow-2xs">
                 <div class="text-xs leading-relaxed">${transitState.verdictHtml}</div>
                 ${transitState.verdictPlainText ? `
-                <div class="flex items-center justify-between gap-2 pt-1 border-t border-black/10 dark:border-white/10">
+                <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-black/10 dark:border-white/10">
                     <span class="text-[10px] font-bold opacity-75">Dades oficials Google Maps Transit</span>
-                    <button type="button" onclick="window.sendTransitResultToChat()" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-[10.5px] font-extrabold cursor-pointer">
-                        💬 Enviar al xat
+                    <button type="button" onclick="window.sendTransitResultToChat()" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-[10.5px] font-extrabold cursor-pointer inline-flex items-center gap-1">
+                        ${iconSvg('chat', 'w-3 h-3')}<span>Enviar al xat</span>
                     </button>
                 </div>` : ''}
             </div>
@@ -2894,9 +2979,9 @@
             const isSelected = idx === transitState.selectedRouteIdx;
             const badgesHtml = route.steps.map((s) => {
                 if (!s.isTransit) {
-                    return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[10px] font-bold">🚶 ${esc(s.durationText || `${Math.max(1, Math.round(s.durationSec / 60))}m`)}</span>`;
+                    return `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[10px] font-bold">${iconSvg('walk', 'w-3 h-3')}<span>${esc(s.durationText || `${Math.max(1, Math.round(s.durationSec / 60))}m`)}</span></span>`;
                 }
-                return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10.5px] font-black shadow-2xs" style="background-color:${esc(s.lineColor || '#2563eb')};color:${esc(s.lineTextColor || '#ffffff')}">${vehicleEmoji(s.vehicleType)} ${esc(s.lineShort)}</span>`;
+                return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10.5px] font-black shadow-2xs" style="background-color:${esc(s.lineColor || '#2563eb')};color:${esc(s.lineTextColor || '#ffffff')}">${vehicleSvg(s.vehicleType, 'w-3 h-3')}<span>${esc(s.lineShort)}</span></span>`;
             }).join('<span class="text-zinc-400 text-[10px] mx-0.5">›</span>');
 
             const stepsDetailHtml = isSelected ? `
@@ -2905,7 +2990,7 @@
                         if (!s.isTransit) {
                             return `
                                 <div class="flex items-start gap-2 text-[11px] text-zinc-600 dark:text-zinc-400">
-                                    <span class="shrink-0">🚶</span>
+                                    <span class="shrink-0 mt-0.5 text-zinc-500">${iconSvg('walk', 'w-3.5 h-3.5')}</span>
                                     <div class="min-w-0 flex-1">
                                         <span class="font-bold text-zinc-800 dark:text-zinc-200">Camina ${esc(s.durationText || '')}</span>
                                         ${s.distanceText ? `<span>(${esc(s.distanceText)})</span>` : ''}
@@ -2915,33 +3000,35 @@
                             `;
                         }
                         return `
-                            <div class="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
+                            <div class="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
                                 <div class="flex items-center justify-between gap-2">
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10.5px] font-black" style="background-color:${esc(s.lineColor || '#2563eb')};color:${esc(s.lineTextColor || '#ffffff')}">
-                                        ${vehicleEmoji(s.vehicleType)} ${esc(s.lineShort)}
+                                        ${vehicleSvg(s.vehicleType, 'w-3 h-3')}<span>${esc(s.lineShort)}</span>
                                     </span>
                                     <span class="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 tabular-nums">${s.stopCount ? `${s.stopCount} parades · ` : ''}${esc(s.durationText || '')}</span>
                                 </div>
                                 ${s.headsign ? `<div class="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400">Direcció: ${esc(s.headsign)}</div>` : ''}
-                                <div class="text-[11px] text-zinc-800 dark:text-zinc-200 space-y-0.5 tabular-nums">
-                                    <div>🟢 <strong>${esc(s.departureTimeText)}</strong> · Puja a <strong>${esc(s.departureStopName)}</strong></div>
-                                    <div>🏁 <strong>${esc(s.arrivalTimeText)}</strong> · Baixa a <strong>${esc(s.arrivalStopName)}</strong></div>
+                                <div class="text-[11px] text-zinc-800 dark:text-zinc-200 space-y-1 tabular-nums pt-0.5">
+                                    <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span><span><strong>${esc(s.departureTimeText)}</strong> · Puja a <strong>${esc(s.departureStopName)}</strong></span></div>
+                                    <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-600 shrink-0"></span><span><strong>${esc(s.arrivalTimeText)}</strong> · Baixa a <strong>${esc(s.arrivalStopName)}</strong></span></div>
                                 </div>
                             </div>
                         `;
                     }).join('')}
-                    <div class="text-[10px] text-zinc-400 pt-0.5">⚠️ Els trams a peu són orientatius (beta).</div>
+                    <div class="text-[10px] text-zinc-400 pt-0.5 flex items-center gap-1">${iconSvg('warn', 'w-3 h-3 text-amber-500')}<span>Els trams a peu són orientatius.</span></div>
                 </div>
             ` : '';
 
             return `
                 <div onclick="window.drawTransitRouteOnMap(${idx})" class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border ${isSelected ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-zinc-200/90 dark:border-zinc-800 hover:border-blue-400'} transition cursor-pointer space-y-1.5 shadow-2xs">
                     <div class="flex items-center justify-between gap-2">
-                        <div class="text-xs sm:text-sm font-black text-zinc-900 dark:text-white tabular-nums">
-                            ${esc(route.departureTimeText)} → ${esc(route.arrivalTimeText)}
+                        <div class="text-xs sm:text-sm font-black text-zinc-900 dark:text-white tabular-nums inline-flex items-center gap-1.5">
+                            <span>${esc(route.departureTimeText)}</span>
+                            ${iconSvg('arrowRight', 'w-3.5 h-3.5 text-zinc-400')}
+                            <span>${esc(route.arrivalTimeText)}</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            ${route.recommendedEarlier ? `<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[9.5px] font-extrabold">Recomanada per arribar abans</span>` : ''}
+                            ${route.recommendedEarlier ? `<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[9.5px] font-extrabold">Recomanada</span>` : ''}
                             <span class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-[10.5px] font-extrabold tabular-nums">${esc(route.durationText)}</span>
                         </div>
                     </div>
@@ -2970,6 +3057,49 @@
     window.updateTransitDayOffset = function (val) {
         transitState.dayOffset = parseInt(val, 10) === 1 ? 1 : 0;
     };
+    window.swapAliatTransitPoints = function () {
+        const tmpMode = transitState.originMode;
+        const tmpAddr = transitState.originAddress;
+        const tmpCoords = transitState.originCoords;
+        const tmpLabel = transitState.originLabel;
+
+        transitState.originMode = transitState.destMode === 'saved' ? 'saved' : 'custom';
+        transitState.originAddress = transitState.destAddress || '';
+        transitState.originCoords = transitState.destCoords || null;
+        transitState.originLabel = transitState.destLabel || transitState.destAddress || 'Origen';
+
+        transitState.destMode = tmpMode === 'saved' ? 'saved' : 'custom';
+        transitState.destAddress = tmpAddr || '';
+        transitState.destCoords = tmpCoords || null;
+        transitState.destLabel = tmpLabel || tmpAddr || 'Destinació';
+        renderTransitTabContent();
+    };
+    window.setTransitInputMode = function (mode) {
+        transitState.inputMode = mode === 'manual' ? 'manual' : 'ai';
+        renderTransitTabContent();
+    };
+
+    window.resetAliatTransitSession = function () {
+        transitState.question = '';
+        transitState.routes = [];
+        transitState.verdictHtml = '';
+        transitState.verdictPlainText = '';
+        transitState.exploreAnswerText = '';
+        transitState.explorePlaces = [];
+        transitState.lastExploreContext = null;
+        transitState.conversation = [];
+        transitState.aiMode = 'transit';
+        clearActiveRouteGraphics();
+        clearActivePlaceMarkers();
+        renderTransitTabContent();
+    };
+
+    window.askTransitFollowupChip = function (promptText) {
+        const inp = document.getElementById('daily-transit-question-input');
+        if (inp) inp.value = promptText;
+        transitState.question = promptText;
+        window.askAliatMapsTransit();
+    };
 
     function renderTransitTabContent() {
         const box = document.getElementById('daily-maps-tab-panel');
@@ -2978,15 +3108,16 @@
         const homeSaved = findSavedPlaceByRole('home');
         const schoolSaved = findSavedPlaceByRole('school');
         const workSaved = findSavedPlaceByRole('work');
-        const showHomeEditor = !homeSaved || transitState.homeEditorOpen;
         const syncBadgeHtml = transitState.placesSyncedWithAccount
-            ? `<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[9.5px] font-bold">☁️ Compte</span>`
+            ? `<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-1">${iconSvg('cloud', 'w-3 h-3')}<span>Compte</span></span>`
             : '';
 
-        const homeCandidatesHtml = (transitState.homeSearchCandidates && transitState.homeSearchCandidates.length > 0)
+        const editingRole = transitState.placeEditorRole;
+        const isEditingSchool = editingRole === 'school';
+        const candidatesHtml = (transitState.placeSearchCandidates && transitState.placeSearchCandidates.length > 0)
             ? `<div class="space-y-1 pt-1">
-                ${transitState.homeSearchCandidates.map((c, idx) => `
-                    <button type="button" onclick="window.pickHomeCandidate(${idx})" class="w-full p-2 rounded-xl bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-800 hover:border-emerald-500 text-left cursor-pointer transition">
+                ${transitState.placeSearchCandidates.map((c, idx) => `
+                    <button type="button" onclick="window.pickPlaceRoleCandidate(${idx})" class="w-full p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-blue-500 text-left cursor-pointer transition">
                         <div class="text-[11px] font-extrabold text-zinc-900 dark:text-white truncate">${esc(c.displayName)}</div>
                         <div class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">${esc(c.formattedAddress)}</div>
                     </button>
@@ -2994,130 +3125,181 @@
                </div>`
             : '';
 
-        const homeWidgetHtml = showHomeEditor ? `
-            <div class="p-3 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/90 dark:border-emerald-800/70 space-y-2">
+        const inlineEditorHtml = editingRole ? `
+            <div class="p-3 rounded-2xl bg-zinc-100/90 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 space-y-2">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-xs font-extrabold text-emerald-950 dark:text-emerald-200 flex items-center gap-1.5">🏠 ${homeSaved ? 'Canviar adreça de Casa teva' : 'Configura on és Casa teva'} ${syncBadgeHtml}</span>
-                    ${homeSaved ? `<button type="button" onclick="window.openHomeEditor(false)" class="text-[10.5px] font-bold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 cursor-pointer">Tancar</button>` : ''}
+                    <span class="text-xs font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                        ${isEditingSchool ? iconSvg('school', 'w-4 h-4 text-indigo-600') : iconSvg('home', 'w-4 h-4 text-emerald-600')}
+                        <span>${isEditingSchool ? 'Configurar Institut / Centre' : 'Configurar Casa teva'}</span>
+                    </span>
+                    <button type="button" onclick="window.openPlaceRoleEditor(null)" class="text-[10.5px] font-bold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 cursor-pointer">Tancar</button>
                 </div>
                 <div class="flex items-center gap-1.5">
-                    <input id="daily-home-quick-search" type="text" value="${esc(transitState.homeSearchQuery)}" oninput="window.updateHomeQuickSearchInput(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();window.searchHomeCandidates();}" placeholder="Escriu carrer, número i ciutat..." class="flex-1 px-2.5 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100">
-                    <button type="button" onclick="window.searchHomeCandidates()" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-extrabold cursor-pointer shrink-0">
-                        ${transitState.homeSearchLoading ? '⏳' : 'Cercar'}
+                    <input id="daily-place-role-search" type="text" value="${esc(transitState.placeSearchQuery)}" oninput="window.updatePlaceRoleSearchInput(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();window.searchPlaceRoleCandidates();}" placeholder="${isEditingSchool ? 'Nom de l\'institut o adreça...' : 'Carrer, número i ciutat...'}" class="flex-1 px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100">
+                    <button type="button" onclick="window.searchPlaceRoleCandidates()" class="px-2.5 py-1.5 rounded-xl ${isEditingSchool ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-emerald-600 hover:bg-emerald-500'} text-white text-[11px] font-extrabold cursor-pointer shrink-0 inline-flex items-center gap-1">
+                        ${transitState.placeSearchLoading ? iconSvg('spinner', 'w-3.5 h-3.5 animate-spin') : 'Cercar'}
                     </button>
                 </div>
                 <div class="flex flex-wrap gap-1.5">
-                    <button type="button" onclick="window.setHomeFromCurrentGps()" class="px-2 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-800 text-[10.5px] font-bold text-emerald-800 dark:text-emerald-300 cursor-pointer">📍 Ubicació actual és Casa</button>
-                    <button type="button" onclick="window.startMapPickMode('home')" class="px-2 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-800 text-[10.5px] font-bold text-emerald-800 dark:text-emerald-300 cursor-pointer">🗺️ Marcar al mapa</button>
+                    <button type="button" onclick="window.startMapPickMode('${isEditingSchool ? 'school' : 'home'}')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 text-[10.5px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer inline-flex items-center gap-1">${iconSvg('map', 'w-3 h-3 text-blue-600')}<span>Marcar clicant al mapa</span></button>
+                    ${!isEditingSchool ? `<button type="button" onclick="window.setHomeFromCurrentGps()" class="px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 text-[10.5px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer inline-flex items-center gap-1">${iconSvg('gps', 'w-3 h-3 text-emerald-600')}<span>Usar GPS actual</span></button>` : ''}
                 </div>
-                ${homeCandidatesHtml}
+                ${candidatesHtml}
             </div>
-        ` : `
-            <div class="px-3 py-2 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/25 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-between gap-2">
-                <div class="min-w-0 flex-1 cursor-pointer" onclick="window.applyTransitPresetOrigin('home')">
-                    <div class="text-[10px] font-extrabold uppercase text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5"><span>🏠 Casa desada</span>${syncBadgeHtml}</div>
-                    <div class="text-[11px] font-bold text-zinc-800 dark:text-zinc-200 truncate">${esc(homeSaved.address || homeSaved.title)}</div>
-                </div>
-                <button type="button" onclick="window.openHomeEditor(true)" class="px-2 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-800 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer shrink-0">✏️ Canviar</button>
-            </div>
-        `;
+        ` : '';
 
         const hasFollowupTarget = (transitState.routes && transitState.routes.length > 0) || (transitState.explorePlaces && transitState.explorePlaces.length > 0);
         const promptPlaceholder = hasFollowupTarget
-            ? "Pregunta o comenta sobre aquesta ruta/llocs (ex: 'On haig de baixar?', 'Quant es camina?') o demana una altra consulta..."
-            : "Ex: 'Què puc fer per aquí a prop?', 'La meva casa és Carrer Major 12', o 'Puc sortir a les 8 en bus i arribar abans de les 9?'";
+            ? "Comenta o pregunta sobre aquesta ruta (ex: 'On baixo?', 'Quant es camina?', 'I si surto abans?')..."
+            : "Ex: 'Puc sortir de casa a les 8 en bus i arribar abans de les 9 a l'insti?'";
 
-        box.innerHTML = `
-            <div class="space-y-3">
-                <!-- Pregunta directa a AliatMaps IA (bus/tren, seguiment ruta, què puc fer, casa) -->
-                <div class="p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/35 border border-blue-200/90 dark:border-blue-800/70 space-y-2">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                            <span>✨</span><span>${hasFollowupTarget ? 'Comenta la ruta o pregunta a AliatMaps IA' : 'Pregunta a AliatMaps IA'}</span>
-                        </span>
-                        <span class="px-1.5 py-0.5 rounded-md bg-blue-600 text-white text-[9.5px] font-black uppercase">Maps + IA</span>
+        const aiCardHtml = `
+            <div class="p-3.5 rounded-2xl ${hasFollowupTarget ? 'bg-indigo-50/75 dark:bg-indigo-950/30 border-indigo-200/90 dark:border-indigo-800/70' : 'bg-blue-50/80 dark:bg-blue-950/35 border-blue-200/90 dark:border-blue-800/70'} border space-y-2.5">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                        ${iconSvg(hasFollowupTarget ? 'chat' : 'spark', `w-3.5 h-3.5 ${hasFollowupTarget ? 'text-indigo-600 dark:text-indigo-400' : 'text-blue-600 dark:text-sky-400'}`)}
+                        <span>${hasFollowupTarget ? 'Comenta sobre aquesta ruta' : 'Pregunta el que necessitis'}</span>
+                    </span>
+                    ${hasFollowupTarget
+                        ? `<button type="button" onclick="window.resetAliatTransitSession()" class="text-[10.5px] font-bold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 cursor-pointer inline-flex items-center gap-1">${iconSvg('refresh', 'w-3 h-3')}<span>Nova consulta</span></button>`
+                        : `<span class="text-[10px] font-bold text-blue-700 dark:text-sky-300">IA + Horaris reals</span>`
+                    }
+                </div>
+                <textarea id="daily-transit-question-input" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();window.askAliatMapsTransit();}" placeholder="${esc(promptPlaceholder)}" class="w-full px-3 py-2 rounded-xl border border-zinc-200/90 dark:border-zinc-700/80 bg-white dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500">${esc(transitState.question)}</textarea>
+                <div class="flex flex-wrap items-center justify-between gap-1.5">
+                    <div class="flex flex-wrap items-center gap-1">
+                        ${hasFollowupTarget ? `
+                            <button type="button" onclick="window.askTransitFollowupChip('On he de baixar exactament?')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-indigo-200/80 dark:border-zinc-700 text-[10px] font-bold text-indigo-700 dark:text-indigo-300 cursor-pointer hover:bg-indigo-50">On baixo?</button>
+                            <button type="button" onclick="window.askTransitFollowupChip('Quant es camina en total?')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-indigo-200/80 dark:border-zinc-700 text-[10px] font-bold text-indigo-700 dark:text-indigo-300 cursor-pointer hover:bg-indigo-50">Quant es camina?</button>
+                        ` : `
+                            <button type="button" onclick="window.runTransitExamplePrompt('school')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-blue-200/80 dark:border-zinc-700 text-[10px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer hover:bg-blue-100/60 inline-flex items-center gap-1">${iconSvg('bus', 'w-3 h-3')}<span>8h &lt; 9h</span></button>
+                            <button type="button" onclick="window.runTransitExamplePrompt('train')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-blue-200/80 dark:border-zinc-700 text-[10px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer hover:bg-blue-100/60 inline-flex items-center gap-1">${iconSvg('train', 'w-3 h-3')}<span>Proper bus/tren</span></button>
+                            <button type="button" onclick="window.runTransitExamplePrompt('explore')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-teal-300/80 dark:border-teal-800 text-[10px] font-bold text-teal-700 dark:text-teal-300 cursor-pointer hover:bg-teal-50 inline-flex items-center gap-1">${iconSvg('compass', 'w-3 h-3')}<span>Què fer a prop</span></button>
+                        `}
                     </div>
-                    <textarea id="daily-transit-question-input" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();window.askAliatMapsTransit();}" placeholder="${esc(promptPlaceholder)}" class="w-full px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800/80 bg-white dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500">${esc(transitState.question)}</textarea>
-                    <div class="flex flex-wrap items-center justify-between gap-1.5">
-                        <div class="flex flex-wrap items-center gap-1">
-                            <button type="button" onclick="window.runTransitExamplePrompt('explore')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-teal-300/80 dark:border-teal-800 text-[10px] font-bold text-teal-700 dark:text-teal-300 cursor-pointer hover:bg-teal-50">✨ Què puc fer?</button>
-                            <button type="button" onclick="window.runTransitExamplePrompt('study')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-teal-300/80 dark:border-teal-800 text-[10px] font-bold text-teal-700 dark:text-teal-300 cursor-pointer hover:bg-teal-50">☕ Estudiar a prop</button>
-                            <button type="button" onclick="window.runTransitExamplePrompt('school')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-blue-200/80 dark:border-zinc-700 text-[10px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer hover:bg-blue-100/60">🚌 Sortir 8:00 &lt; 9:00</button>
-                            <button type="button" onclick="window.runTransitExamplePrompt('train')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-blue-200/80 dark:border-zinc-700 text-[10px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer hover:bg-blue-100/60">🚆 Proper bus/tren</button>
-                        </div>
-                        <button type="button" onclick="window.askAliatMapsTransit()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold transition cursor-pointer shrink-0 shadow-2xs">
-                            ✨ Preguntar a la IA
-                        </button>
-                    </div>
+                    <button type="button" onclick="window.askAliatMapsTransit()" class="px-3.5 py-2 rounded-xl ${hasFollowupTarget ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-blue-600 hover:bg-blue-500'} text-white text-xs font-extrabold transition cursor-pointer shrink-0 shadow-2xs inline-flex items-center gap-1.5">
+                        ${iconSvg(hasFollowupTarget ? 'chat' : 'spark', 'w-3.5 h-3.5')}<span>${hasFollowupTarget ? 'Preguntar' : 'Consultar IA'}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const manualCardHtml = `
+            <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 space-y-2.5">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                        ${iconSvg('clock', 'w-3.5 h-3.5 text-blue-600 dark:text-sky-400')}
+                        <span>Cerca d'horari Origen i Destinació</span>
+                    </span>
+                    <button type="button" onclick="window.swapAliatTransitPoints()" title="Intercanviar origen i destinació" class="px-2 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer inline-flex items-center gap-1">
+                        ${iconSvg('swap', 'w-3 h-3')}<span>Invertir</span>
+                    </button>
                 </div>
 
-                <!-- Targeta ràpida de Casa -->
-                ${homeWidgetHtml}
-
-                <!-- Origen / Destinació / Hora / Filtres -->
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 space-y-2.5">
+                <div class="space-y-2">
                     <div>
                         <div class="flex items-center justify-between gap-1 mb-1">
-                            <label class="text-[10px] font-extrabold uppercase text-zinc-400">Origen</label>
+                            <label class="text-[10px] font-extrabold uppercase text-zinc-400">Sortida (Origen)</label>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="window.applyTransitPresetOrigin('current')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer ${transitState.originMode === 'current' ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}">📍 Ara</button>
-                                <button type="button" onclick="window.applyTransitPresetOrigin('home')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer ${transitState.originMode === 'saved' ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}">🏠 Casa${homeSaved ? '' : ' +'}</button>
+                                <button type="button" onclick="window.applyTransitPresetOrigin('current')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer inline-flex items-center gap-1 ${transitState.originMode === 'current' ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}">${iconSvg('gps', 'w-3 h-3')}<span>Ara</span></button>
+                                <button type="button" onclick="window.applyTransitPresetOrigin('home')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer inline-flex items-center gap-1 ${transitState.originMode === 'saved' ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}">${iconSvg('home', 'w-3 h-3')}<span>Casa</span></button>
                             </div>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <input id="daily-transit-origin-input" type="text" value="${esc(transitState.originAddress)}" oninput="window.updateTransitOriginInput(this.value)" onchange="window.updateTransitOriginInput(this.value)" placeholder="La teva ubicació GPS o escriu adreça d'origen..." class="flex-1 px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
-                            <button type="button" onclick="window.saveQuickHomeOrSchoolFromInput('home')" title="Guardar aquest origen com a Casa" class="px-2 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 text-[10px] font-bold cursor-pointer shrink-0">💾 Casa</button>
-                        </div>
+                        <input id="daily-transit-origin-input" type="text" value="${esc(transitState.originAddress)}" oninput="window.updateTransitOriginInput(this.value)" onchange="window.updateTransitOriginInput(this.value)" placeholder="GPS actual o escriu carrer/estació d'origen..." class="w-full px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
                     </div>
 
                     <div>
                         <div class="flex items-center justify-between gap-1 mb-1">
                             <label class="text-[10px] font-extrabold uppercase text-zinc-400">Destinació (o clic al mapa)</label>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="window.applyTransitPresetDest('school')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer bg-zinc-100 hover:bg-blue-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">🎓 Insti${schoolSaved ? '' : ' +'}</button>
-                                ${workSaved ? `<button type="button" onclick="window.applyTransitPresetDest('work')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer bg-zinc-100 hover:bg-blue-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">💼 Feina</button>` : ''}
+                                <button type="button" onclick="window.applyTransitPresetDest('school')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer inline-flex items-center gap-1 ${transitState.destMode === 'saved' && schoolSaved && transitState.destAddress === (schoolSaved.address || schoolSaved.title) ? 'bg-indigo-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300'}">${iconSvg('school', 'w-3 h-3')}<span>Insti</span></button>
+                                ${workSaved ? `<button type="button" onclick="window.applyTransitPresetDest('work')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer bg-zinc-100 hover:bg-blue-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 inline-flex items-center gap-1">${iconSvg('work', 'w-3 h-3')}<span>Feina</span></button>` : ''}
                             </div>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <input id="daily-transit-dest-input" type="text" value="${esc(transitState.destAddress)}" oninput="window.updateTransitDestInput(this.value)" onchange="window.updateTransitDestInput(this.value)" placeholder="Nom de l'institut, parada, estació o adreça..." class="flex-1 px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
-                            <button type="button" onclick="window.saveQuickHomeOrSchoolFromInput('school')" title="Guardar com a Institut" class="px-2 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 text-[10px] font-bold cursor-pointer shrink-0">💾 Insti</button>
-                        </div>
+                        <input id="daily-transit-dest-input" type="text" value="${esc(transitState.destAddress)}" oninput="window.updateTransitDestInput(this.value)" onchange="window.updateTransitDestInput(this.value)" placeholder="Escriu parada, estació, institut o adreça..." class="w-full px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
                     </div>
+                </div>
 
-                    <div class="grid grid-cols-12 gap-1.5 items-end">
-                        <div class="col-span-5">
-                            <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Criteri horari</label>
-                            <select onchange="window.setTransitTimeMode(this.value)" class="w-full px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100">
-                                <option value="departure" ${transitState.timeMode === 'departure' ? 'selected' : ''}>Sortir a les</option>
-                                <option value="arrival" ${transitState.timeMode === 'arrival' ? 'selected' : ''}>Arribar abans de</option>
-                            </select>
-                        </div>
-                        <div class="col-span-4">
-                            <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Hora</label>
-                            <input id="daily-transit-time-input" type="time" value="${esc(transitState.timeStr)}" onchange="window.updateTransitTimeInput(this.value)" class="w-full px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100 tabular-nums">
-                        </div>
-                        <div class="col-span-3">
-                            <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Dia</label>
-                            <select id="daily-transit-day-select" onchange="window.updateTransitDayOffset(this.value)" class="w-full px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100">
-                                <option value="0" ${transitState.dayOffset === 0 ? 'selected' : ''}>Avui</option>
-                                <option value="1" ${transitState.dayOffset === 1 ? 'selected' : ''}>Demà</option>
-                            </select>
-                        </div>
+                <div class="grid grid-cols-12 gap-1.5 items-end pt-1">
+                    <div class="col-span-5">
+                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Quan</label>
+                        <select onchange="window.setTransitTimeMode(this.value)" class="w-full px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100">
+                            <option value="departure" ${transitState.timeMode === 'departure' ? 'selected' : ''}>Sortir a les</option>
+                            <option value="arrival" ${transitState.timeMode === 'arrival' ? 'selected' : ''}>Arribar abans de</option>
+                        </select>
                     </div>
-
-                    <div class="grid grid-cols-4 gap-1">
-                        <button type="button" onclick="window.setTransitModeFilter('ALL')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer ${transitState.modeFilter === 'ALL' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">Tot</button>
-                        <button type="button" onclick="window.setTransitModeFilter('BUS')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer ${transitState.modeFilter === 'BUS' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">🚌 Bus</button>
-                        <button type="button" onclick="window.setTransitModeFilter('RAIL')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer ${transitState.modeFilter === 'RAIL' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">🚆 Tren</button>
-                        <button type="button" onclick="window.setTransitModeFilter('SUBWAY')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer ${transitState.modeFilter === 'SUBWAY' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">🚇 Metro</button>
+                    <div class="col-span-4">
+                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Hora</label>
+                        <input id="daily-transit-time-input" type="time" value="${esc(transitState.timeStr)}" onchange="window.updateTransitTimeInput(this.value)" class="w-full px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100 tabular-nums">
                     </div>
+                    <div class="col-span-3">
+                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Dia</label>
+                        <select id="daily-transit-day-select" onchange="window.updateTransitDayOffset(this.value)" class="w-full px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100">
+                            <option value="0" ${transitState.dayOffset === 0 ? 'selected' : ''}>Avui</option>
+                            <option value="1" ${transitState.dayOffset === 1 ? 'selected' : ''}>Demà</option>
+                        </select>
+                    </div>
+                </div>
 
-                    <button type="button" onclick="window.askAliatMapsTransit(true)" class="w-full py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-extrabold transition cursor-pointer">
-                        🔍 Cercar horaris reals de bus i tren
+                <div class="grid grid-cols-4 gap-1">
+                    <button type="button" onclick="window.setTransitModeFilter('ALL')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer ${transitState.modeFilter === 'ALL' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">Tot</button>
+                    <button type="button" onclick="window.setTransitModeFilter('BUS')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer inline-flex items-center justify-center gap-1 ${transitState.modeFilter === 'BUS' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('bus', 'w-3 h-3')}<span>Bus</span></button>
+                    <button type="button" onclick="window.setTransitModeFilter('RAIL')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer inline-flex items-center justify-center gap-1 ${transitState.modeFilter === 'RAIL' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('train', 'w-3 h-3')}<span>Tren</span></button>
+                    <button type="button" onclick="window.setTransitModeFilter('SUBWAY')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer inline-flex items-center justify-center gap-1 ${transitState.modeFilter === 'SUBWAY' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('metro', 'w-3 h-3')}<span>Metro</span></button>
+                </div>
+
+                <button type="button" onclick="window.askAliatMapsTransit(true)" class="w-full py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5 shadow-2xs">
+                    ${iconSvg('search', 'w-3.5 h-3.5')}<span>Cercar horaris de bus i tren</span>
+                </button>
+            </div>
+        `;
+
+        box.innerHTML = `
+            <div class="space-y-3">
+                <!-- Llocs habituals (Casa & Insti) -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between px-0.5">
+                        <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Els teus llocs habituals</span>
+                        ${syncBadgeHtml}
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="window.openPlaceRoleEditor('home')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer flex items-center gap-2 min-w-0 ${editingRole === 'home' ? 'ring-2 ring-emerald-500/40 border-emerald-500' : (homeSaved ? 'bg-emerald-50/70 dark:bg-emerald-950/25 border-emerald-200/80 dark:border-emerald-800/70' : 'bg-white dark:bg-zinc-900 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-emerald-400')}">
+                            <span class="w-7 h-7 rounded-xl ${homeSaved ? 'bg-emerald-600 text-white' : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'} flex items-center justify-center shrink-0">${iconSvg('home', 'w-3.5 h-3.5')}</span>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-[10.5px] font-extrabold text-zinc-900 dark:text-white flex items-center justify-between gap-1">
+                                    <span>${homeSaved ? 'Casa' : 'Fixar Casa'}</span>
+                                    ${homeSaved ? iconSvg('edit', 'w-2.5 h-2.5 text-zinc-400 shrink-0') : ''}
+                                </div>
+                                <div class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">${homeSaved ? esc(homeSaved.address || homeSaved.title) : 'GPS, carrer o mapa'}</div>
+                            </div>
+                        </button>
+                        <button type="button" onclick="window.openPlaceRoleEditor('school')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer flex items-center gap-2 min-w-0 ${editingRole === 'school' ? 'ring-2 ring-indigo-500/40 border-indigo-500' : (schoolSaved ? 'bg-indigo-50/70 dark:bg-indigo-950/25 border-indigo-200/80 dark:border-indigo-800/70' : 'bg-white dark:bg-zinc-900 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-indigo-400')}">
+                            <span class="w-7 h-7 rounded-xl ${schoolSaved ? 'bg-indigo-600 text-white' : 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'} flex items-center justify-center shrink-0">${iconSvg('school', 'w-3.5 h-3.5')}</span>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-[10.5px] font-extrabold text-zinc-900 dark:text-white flex items-center justify-between gap-1">
+                                    <span>${schoolSaved ? 'Insti' : 'Fixar Insti'}</span>
+                                    ${schoolSaved ? iconSvg('edit', 'w-2.5 h-2.5 text-zinc-400 shrink-0') : ''}
+                                </div>
+                                <div class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">${schoolSaved ? esc(schoolSaved.address || schoolSaved.title) : 'Centre o feina'}</div>
+                            </div>
+                        </button>
+                    </div>
+                    ${inlineEditorHtml}
+                </div>
+
+                <!-- Selector clar entre Preguntar amb IA o Cercar horari manual -->
+                <div class="grid grid-cols-2 gap-1 p-1 rounded-2xl bg-zinc-200/60 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
+                    <button type="button" onclick="window.setTransitInputMode('ai')" class="py-1.5 px-2.5 rounded-xl text-[11px] font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5 ${transitState.inputMode !== 'manual' ? 'bg-white dark:bg-zinc-800 text-blue-700 dark:text-sky-300 shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'}">
+                        ${iconSvg('spark', 'w-3.5 h-3.5')}<span>Pregunta amb IA</span>
+                    </button>
+                    <button type="button" onclick="window.setTransitInputMode('manual')" class="py-1.5 px-2.5 rounded-xl text-[11px] font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5 ${transitState.inputMode === 'manual' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'}">
+                        ${iconSvg('clock', 'w-3.5 h-3.5')}<span>Horari manual</span>
                     </button>
                 </div>
 
-                <!-- Resultats IA / Horaris -->
+                ${transitState.inputMode === 'manual' ? manualCardHtml : aiCardHtml}
+
+                <!-- Resultats immediats a sota sense haver de fer scroll -->
                 <div id="daily-transit-results-box" class="space-y-2"></div>
             </div>
         `;
@@ -3129,8 +3311,8 @@
         document.querySelectorAll('[data-daily-maps-tab]').forEach((btn) => {
             const isAct = btn.getAttribute('data-daily-maps-tab') === activeTab;
             btn.className = isAct
-                ? 'py-2 px-3 rounded-xl text-xs font-extrabold transition cursor-pointer bg-blue-600 text-white shadow-2xs flex items-center gap-1.5 whitespace-nowrap'
-                : 'py-2 px-3 rounded-xl text-xs font-bold transition cursor-pointer bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-zinc-700 flex items-center gap-1.5 whitespace-nowrap';
+                ? 'py-1.5 px-2.5 sm:px-3 rounded-xl text-xs font-extrabold transition cursor-pointer bg-blue-600 text-white shadow-2xs flex items-center gap-1.5 whitespace-nowrap'
+                : 'py-1.5 px-2.5 sm:px-3 rounded-xl text-xs font-bold transition cursor-pointer text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200/70 dark:hover:bg-zinc-700/70 flex items-center gap-1.5 whitespace-nowrap';
         });
 
         if (activeTab === 'transit') renderTransitTabContent();
@@ -3145,6 +3327,9 @@
         if (!modal) return;
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        if (typeof window.hydrateAliatSvgIcons === 'function') {
+            window.hydrateAliatSvgIcons(modal);
+        }
         window.switchDailyMapsTab(initialTab);
         syncMapsPlacesFromServer().catch(() => {});
         await ensureMapInitialized();

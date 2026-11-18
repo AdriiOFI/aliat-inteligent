@@ -18,6 +18,30 @@
       "destination": "/api/workspace?service=:service"
     },
     {
+      "source": "/api/reminders/:action",
+      "destination": "/api/reminders?action=:action"
+    },
+    {
+      "source": "/api/maps/config",
+      "destination": "/api/maps?action=config"
+    },
+    {
+      "source": "/api/maps/geocode",
+      "destination": "/api/maps?action=geocode"
+    },
+    {
+      "source": "/api/maps/transit-routes",
+      "destination": "/api/maps?action=transit-routes"
+    },
+    {
+      "source": "/api/maps/ask-ai",
+      "destination": "/api/maps?action=ask-ai"
+    },
+    {
+      "source": "/api/maps/parse-commute",
+      "destination": "/api/maps?action=parse-commute"
+    },
+    {
       "source": "/favicon.ico",
       "destination": "/public/favicon.ico"
     },
@@ -56,6 +80,18 @@
     {
       "source": "/sw.js",
       "destination": "/public/sw.js"
+    },
+    {
+      "source": "/aliat-icons.js",
+      "destination": "/public/aliat-icons.js"
+    },
+    {
+      "source": "/daily-maps.js",
+      "destination": "/public/daily-maps.js"
+    },
+    {
+      "source": "/vendor/:path*",
+      "destination": "/public/vendor/:path*"
     },
     {
       "source": "/onboarding-tour.js",

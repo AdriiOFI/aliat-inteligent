@@ -1,8 +1,9 @@
-const CACHE_NAME = 'aliat-pwa-v18';
+const CACHE_NAME = 'aliat-pwa-v19';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/aliat-icons.js',
   '/onboarding-tour.js',
   '/study-notebook-games.js',
   '/daily-maps.js',
@@ -113,7 +114,7 @@ self.addEventListener('fetch', (event) => {
 // NOTIFICACIONS EN SEGON PLA, WEB PUSH I ALERTA DE FOCUS / POMODORO
 self.addEventListener('push', (event) => {
   let payload = {
-    title: "📚 Recordatori d'Estudi — Aliat",
+    title: "Recordatori d'Estudi — Aliat",
     body: "És hora de la teva sessió d'estudi programada!",
     url: '/',
     tag: 'aliat-study-reminder'

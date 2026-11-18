@@ -380,7 +380,7 @@
         const dateStr = c.timestamp ? new Date(c.timestamp).toLocaleString(isEs ? 'es-ES' : 'ca-ES') : '';
         el.innerHTML = `
             <div class="flex flex-wrap items-center gap-2 text-xs">
-                <span class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-bold">✓ ${isEs ? 'Técnicas: Activas' : 'Tècniques: Actives'}</span>
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-bold inline-flex items-center gap-1">${typeof window.aliatSvg === 'function' ? window.aliatSvg('check', 'w-3.5 h-3.5') : ''}${isEs ? 'Técnicas: Activas' : 'Tècniques: Actives'}</span>
                 <span class="px-2.5 py-1 rounded-lg ${c.ai_processing ? 'bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-sky-300' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'} font-bold">${isEs ? 'Datos IA:' : 'Dades IA:'} ${c.ai_processing ? (isEs ? 'Autorizado' : 'Autoritzat') : (isEs ? 'Limitado' : 'Limitat')}</span>
                 <span class="px-2.5 py-1 rounded-lg ${c.preferences ? 'bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'} font-bold">${isEs ? 'Preferencias:' : 'Preferències:'} ${c.preferences ? (isEs ? 'Activas' : 'Actives') : (isEs ? 'Rechazadas' : 'Rebutjades')}</span>
                 <span class="px-2.5 py-1 rounded-lg ${c.workspace ? 'bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'} font-bold">Workspace: ${c.workspace ? (isEs ? 'Autorizado' : 'Autoritzat') : (isEs ? 'Desactivado' : 'Desactivat')}</span>

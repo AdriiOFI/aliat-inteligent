@@ -28,6 +28,13 @@
             .replace(/'/g, '&#39;');
     }
 
+    function iconSvg(name, cls = 'w-4 h-4 shrink-0') {
+        if (typeof window.aliatSvg === 'function') {
+            return window.aliatSvg(name, cls);
+        }
+        return `<span data-aliat-icon="${esc(name)}" data-icon-class="${esc(cls)}" class="inline-flex items-center justify-center shrink-0"></span>`;
+    }
+
     function sanitizeHtmlFragment(html) {
         return String(html || '')
             .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
@@ -843,7 +850,7 @@
                     <div class="p-3.5 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border-2 border-emerald-400 dark:border-emerald-700 text-left flex flex-col justify-between min-h-[112px] transition-all">
                         <div class="flex items-center justify-between text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
                             <span>${esc(card.kind)}</span>
-                            <span>✓ Parella #${card.pairId + 1}</span>
+                            <span class="inline-flex items-center gap-1">${iconSvg('check', 'w-3 h-3')}<span>Parella #${card.pairId + 1}</span></span>
                         </div>
                         <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-snug my-1.5">${esc(card.text)}</div>
                         <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">${tr('Dominat', 'Dominado')}</div>
@@ -856,7 +863,7 @@
                     <button type="button" class="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border-2 border-blue-500 text-left flex flex-col justify-between min-h-[112px] transition-all shadow-sm cursor-default">
                         <div class="flex items-center justify-between text-[10px] font-bold text-blue-600 dark:text-sky-400">
                             <span>${esc(card.kind)}</span>
-                            <span>● Activa</span>
+                            <span class="inline-flex items-center gap-1">${iconSvg('statusDot', 'w-2.5 h-2.5')}<span>Activa</span></span>
                         </div>
                         <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-snug my-1.5">${esc(card.text)}</div>
                         <div class="text-[10px] text-blue-600 dark:text-sky-400 font-medium">${tr('Selecciona la seva parella...', 'Selecciona su pareja...')}</div>
@@ -1154,7 +1161,7 @@
                         </span>
                         <div class="min-w-0 flex-1">
                             <div class="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">${esc(step.label)}</div>
-                            ${isChecked ? `<div class="text-[11px] mt-1 ${isRightPos ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}">${isRightPos ? '✓ Posició correcta' : `Posició real: Pas #${step.order}`} · ${esc(step.detail || '')}</div>` : ''}
+                            ${isChecked ? `<div class="text-[11px] mt-1 inline-flex items-center gap-1 ${isRightPos ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}">${isRightPos ? `${iconSvg('check', 'w-3 h-3')}<span>Posició correcta</span>` : `<span>Posició real: Pas #${step.order}</span>`} · ${esc(step.detail || '')}</div>` : ''}
                         </div>
                     </div>
                     ${!isChecked ? `
@@ -1294,10 +1301,10 @@
                                 cls += 'bg-zinc-50 hover:bg-amber-50/70 dark:bg-zinc-950 dark:hover:bg-amber-950/30 border-zinc-200 dark:border-zinc-800 hover:border-amber-500 text-zinc-800 dark:text-zinc-100';
                             } else if (idx === errorIdx) {
                                 cls += 'bg-emerald-50 dark:bg-emerald-950/50 border-2 border-emerald-500 text-emerald-950 dark:text-emerald-200 font-bold';
-                                badge = '✓';
+                                badge = iconSvg('check', 'w-3.5 h-3.5');
                             } else if (idx === picked && picked !== errorIdx) {
                                 cls += 'bg-rose-50 dark:bg-rose-950/50 border-2 border-rose-500 text-rose-950 dark:text-rose-200';
-                                badge = '✗';
+                                badge = iconSvg('close', 'w-3.5 h-3.5');
                             } else {
                                 cls += 'bg-zinc-50/60 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 text-zinc-500 opacity-70';
                             }
@@ -2520,15 +2527,15 @@
         if (btn) {
             btn.disabled = true;
             btn.classList.add('ring-2', 'ring-indigo-500', 'opacity-80');
-            btn.innerHTML = `<div class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">⏳ ${tr('Generant...', 'Generando...')}</div><div class="text-[10px] text-zinc-500 truncate">${tr('Processant fonts', 'Procesando fuentes')}</div>`;
+            btn.innerHTML = `<div class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 inline-flex items-center gap-1.5">${iconSvg('spinner', 'w-3.5 h-3.5 animate-spin')}<span>${tr('Generant...', 'Generando...')}</span></div><div class="text-[10px] text-zinc-500 truncate">${tr('Processant fonts', 'Procesando fuentes')}</div>`;
         }
 
         const notesList = document.getElementById('nb-saved-notes-list');
         if (notesList) {
             const loaderCard = document.createElement('div');
             loaderCard.id = 'nb-artifact-loader-card';
-            loaderCard.className = 'p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-300 dark:border-indigo-700 text-xs font-semibold text-indigo-700 dark:text-indigo-300 animate-pulse';
-            loaderCard.textContent = tr('⏳ Creant document amb citacions [Font X]...', '⏳ Creando documento con citas [Font X]...');
+            loaderCard.className = 'p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-300 dark:border-indigo-700 text-xs font-semibold text-indigo-700 dark:text-indigo-300 animate-pulse flex items-center gap-2';
+            loaderCard.innerHTML = `${iconSvg('spinner', 'w-3.5 h-3.5 animate-spin shrink-0')}<span>${tr('Creant document amb citacions [Font X]...', 'Creando documento con citas [Font X]...')}</span>`;
             notesList.prepend(loaderCard);
             if (window.innerWidth < 1024) {
                 notesList.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2936,7 +2943,7 @@
                             <button type="button" onclick="editNotebookSavedNote(${idx})" class="px-2 py-0.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer" title="${tr('Editar nota', 'Editar nota')}">${tr('Editar', 'Editar')}</button>
                             <button type="button" onclick="sendNotebookNoteToChat(${idx})" class="px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer" title="${tr('Enviar al xat d\'estudi', 'Enviar al chat de estudio')}">${tr('Al Xat', 'Al Chat')}</button>
                             <button type="button" onclick="copyNotebookNote(${idx})" class="px-2 py-0.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer" title="${tr('Copiar text', 'Copiar texto')}">${tr('Copiar', 'Copiar')}</button>
-                            <button type="button" onclick="deleteNotebookSavedNote(${idx})" class="text-zinc-400 hover:text-rose-500 px-1 text-xs cursor-pointer" title="${tr('Eliminar', 'Eliminar')}">✕</button>
+                            <button type="button" onclick="deleteNotebookSavedNote(${idx})" class="text-zinc-400 hover:text-rose-500 p-1 cursor-pointer inline-flex items-center justify-center" title="${tr('Eliminar', 'Eliminar')}">${iconSvg('close', 'w-3.5 h-3.5')}</button>
                         </div>
                     </div>
                     <div class="prose prose-xs dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 max-h-44 overflow-y-auto custom-scrollbar text-[11.5px] leading-relaxed">${rendered}</div>
@@ -2996,7 +3003,7 @@
     window.sendNotebookNoteToChat = function (idx) {
         const n = notebookState.notes[idx];
         if (!n) return;
-        const msg = `### 📌 ${n.title}\n\n${n.content}`;
+        const msg = `### ${n.title}\n\n${n.content}`;
         window.closeAliatNotebookModal();
         if (typeof appendMessage === 'function') {
             appendMessage('ai', msg);
@@ -3177,7 +3184,7 @@
             <div class="w-full max-w-md bg-white dark:bg-zinc-900 border-2 border-amber-400/90 rounded-2xl shadow-2xl p-4 sm:p-5 space-y-3 pointer-events-auto">
                 <div class="flex items-center justify-between gap-2">
                     <span class="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold">${esc(step.badge)}</span>
-                    <button type="button" onclick="closeAliatNotebookGuide()" class="text-xs font-bold text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer">${tr('Tancar', 'Cerrar')} ✕</button>
+                    <button type="button" onclick="closeAliatNotebookGuide()" class="text-xs font-bold text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer inline-flex items-center gap-1"><span>${tr('Tancar', 'Cerrar')}</span>${iconSvg('close', 'w-3.5 h-3.5')}</button>
                 </div>
                 <h4 class="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100">${esc(step.title)}</h4>
                 <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">${esc(step.desc)}</p>
@@ -3189,9 +3196,9 @@
                         ${steps.map((_, i) => `<span class="w-2 h-2 rounded-full ${i === nbGuideStepIdx ? 'bg-amber-500 w-4' : 'bg-zinc-300 dark:bg-zinc-700'} transition-all"></span>`).join('')}
                     </div>
                     <div class="flex items-center gap-1.5">
-                        ${nbGuideStepIdx > 0 ? `<button type="button" onclick="stepAliatNotebookGuide(-1)" class="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">← ${tr('Anterior', 'Anterior')}</button>` : ''}
-                        <button type="button" onclick="stepAliatNotebookGuide(1)" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold cursor-pointer transition">
-                            ${nbGuideStepIdx === steps.length - 1 ? tr('Entesos! ✓', '¡Entendido! ✓') : tr('Següent →', 'Siguiente →')}
+                        ${nbGuideStepIdx > 0 ? `<button type="button" onclick="stepAliatNotebookGuide(-1)" class="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer inline-flex items-center gap-1">${iconSvg('arrowLeft', 'w-3 h-3')}<span>${tr('Anterior', 'Anterior')}</span></button>` : ''}
+                        <button type="button" onclick="stepAliatNotebookGuide(1)" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold cursor-pointer transition inline-flex items-center gap-1">
+                            ${nbGuideStepIdx === steps.length - 1 ? `<span>${tr('Entesos!', '¡Entendido!')}</span>${iconSvg('check', 'w-3.5 h-3.5')}` : `<span>${tr('Següent', 'Siguiente')}</span>${iconSvg('arrowRight', 'w-3 h-3')}`}
                         </button>
                     </div>
                 </div>
@@ -3294,7 +3301,7 @@
     const POST_THEORY_GAMES = [
         {
             id: 'memory_pairs',
-            icon: '🧩',
+            iconName: 'puzzle',
             titleCa: 'Parelles de Conceptes',
             titleEs: 'Parejas de Conceptos',
             descCa: 'Connecta cada concepte clau de la teoria amb la seva definició exacta.',
@@ -3302,7 +3309,7 @@
         },
         {
             id: 'cloze_builder',
-            icon: '✍️',
+            iconName: 'pen',
             titleCa: 'Constructor de Fórmules i Definicions',
             titleEs: 'Constructor de Fórmulas y Definiciones',
             descCa: 'Completa els buits clau dels conceptes que acabes d\'estudiar.',
@@ -3310,7 +3317,7 @@
         },
         {
             id: 'sequence_order',
-            icon: '🔢',
+            iconName: 'numbers',
             titleCa: 'Ordenació Lògica i Cronològica',
             titleEs: 'Ordenación Lógica y Cronológica',
             descCa: 'Ordena pas a pas el procés o seqüència explicada a la teoria.',
@@ -3318,7 +3325,7 @@
         },
         {
             id: 'error_hunter',
-            icon: '🕵️',
+            iconName: 'detective',
             titleCa: 'Caçador de Trampes d\'Examen',
             titleEs: 'Cazador de Trampas de Examen',
             descCa: 'Detecta l\'error conceptual infiltrat i selecciona la correcció exacta.',
@@ -3326,7 +3333,7 @@
         },
         {
             id: 'speed_tf',
-            icon: '⚡',
+            iconName: 'bolt',
             titleCa: 'Sprint Veritat o Fals',
             titleEs: 'Sprint Verdadero o Falso',
             descCa: 'Decideix a contrarellotge si les afirmacions de la teoria són certes o falses.',
@@ -3334,7 +3341,7 @@
         },
         {
             id: 'exam_simulator',
-            icon: '🏆',
+            iconName: 'trophy',
             titleCa: 'Simulacre Kahoot i Targetes 3D',
             titleEs: 'Simulacro Kahoot y Tarjetas 3D',
             descCa: 'Posa\'t a prova amb un test cronometrat sobre el bloc teòric.',
@@ -3362,24 +3369,24 @@
             <div class="post-theory-random-game-card my-3.5 p-3.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/35 border border-indigo-200/90 dark:border-indigo-800/80 shadow-xs space-y-2.5" data-random-game-id="${g.id}">
                 <div class="flex items-center justify-between gap-2 flex-wrap">
                     <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-100/90 dark:bg-indigo-900/70 px-2.5 py-0.5 rounded-full">
-                        <span>🎲 ${tr('Joc Aleatori Post-Teoria', 'Juego Aleatorio Post-Teoría')}</span>
+                        <span class="inline-flex items-center gap-1">${iconSvg('gamepad', 'w-3 h-3')}<span>${tr('Joc Aleatori Post-Teoria', 'Juego Aleatorio Post-Teoría')}</span></span>
                         <span>·</span>
                         <span>${esc(badge)}</span>
                     </span>
                     <button type="button" onclick="rerollPostTheoryGameCard(this)" class="text-[10.5px] font-extrabold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer flex items-center gap-1">
-                        <span>🔀 ${tr('Altre joc aleatori', 'Otro juego aleatorio')}</span>
+                        ${iconSvg('shuffle', 'w-3 h-3')}<span>${tr('Altre joc aleatori', 'Otro juego aleatorio')}</span>
                     </button>
                 </div>
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                     <div class="flex items-start gap-2.5 min-w-0">
-                        <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 text-base shadow-2xs post-theory-game-icon">${g.icon}</div>
+                        <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-2xs post-theory-game-icon">${iconSvg(g.iconName, 'w-5 h-5')}</div>
                         <div class="min-w-0">
                             <div class="text-xs sm:text-sm font-black text-zinc-900 dark:text-white post-theory-game-title">${esc(title)}</div>
                             <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-snug post-theory-game-desc">${esc(desc)}</div>
                         </div>
                     </div>
                     <button type="button" onclick="launchRandomPostTheoryGame(this)" class="post-theory-game-play-btn px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold transition cursor-pointer shrink-0 shadow-xs active:scale-95 flex items-center justify-center gap-1.5">
-                        <span>🎮 ${tr('Jugar ara', 'Jugar ahora')}: ${esc(title)}</span>
+                        ${iconSvg('gamepad', 'w-4 h-4')}<span>${tr('Jugar ara', 'Jugar ahora')}: ${esc(title)}</span>
                     </button>
                 </div>
             </div>
@@ -3398,10 +3405,10 @@
         const playBtn = card.querySelector('.post-theory-game-play-btn');
         const title = tr(nextGame.titleCa, nextGame.titleEs);
         const desc = tr(nextGame.descCa, nextGame.descEs);
-        if (iconEl) iconEl.textContent = nextGame.icon;
+        if (iconEl) iconEl.innerHTML = iconSvg(nextGame.iconName, 'w-5 h-5');
         if (titleEl) titleEl.textContent = title;
         if (descEl) descEl.textContent = desc;
-        if (playBtn) playBtn.innerHTML = `<span>🎮 ${tr('Jugar ara', 'Jugar ahora')}: ${esc(title)}</span>`;
+        if (playBtn) playBtn.innerHTML = `${iconSvg('gamepad', 'w-4 h-4')}<span>${tr('Jugar ara', 'Jugar ahora')}: ${esc(title)}</span>`;
     };
 
     window.launchRandomPostTheoryGame = function (btn, forcedGameId) {

@@ -405,13 +405,39 @@ module.exports = async function handler(req, res) {
     try {
         if (req.method !== 'POST') return res.status(200).json({ error: 'Mètode no permès.' });
 
-        const body = req.body || {};
+        let parsedBody = req.body;
+        if (typeof parsedBody === 'string') {
+            try { parsedBody = JSON.parse(parsedBody); } catch (_) { parsedBody = {}; }
+        }
+        const body = (parsedBody && typeof parsedBody === 'object') ? parsedBody : {};
         const action = body.action;
-        const pdfText = body.pdfText || "";
-        const chatHistory = body.chatHistory || [];
+        const pdfText = typeof body.pdfText === 'string' ? body.pdfText : String(body.pdfText || '');
+        const chatHistory = Array.isArray(body.chatHistory)
+            ? body.chatHistory
+            : (Array.isArray(body.messages) ? body.messages : []);
         const totalSessionsToGenerate = body.totalSessionsToGenerate || 5;
-        const studentContext = body.studentContext || "";
+        const studentContext = typeof body.studentContext === 'string' ? body.studentContext : String(body.studentContext || '');
         const tutorMode = body.tutorMode || "standard";
+
+        async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                return await fetch(url, { ...options, signal: controller.signal });
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        function withTimeoutPromise(promise, timeoutMs = 15000, label = 'Timeout') {
+            let timer;
+            return Promise.race([
+                promise,
+                new Promise((_, reject) => {
+                    timer = setTimeout(() => reject(new Error(`${label} (${timeoutMs}ms)`)), timeoutMs);
+                })
+            ]).finally(() => clearTimeout(timer));
+        }
 
         let userPreferredProvider = (body.ai_provider || body.aiProvider || req.headers['x-ai-provider'] || "").trim().toLowerCase();
         let userCustomKey = (body.ai_api_key || body.customApiKey || req.headers['x-ai-key'] || "").trim();
@@ -546,10 +572,19 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
             }
 
-            if (jsonMode) {
-                const hasJsonWord = messages.some(m => /json/i.test(m.content));
-                if (!hasJsonWord && messages.length > 0) {
-                    messages[messages.length - 1].content += " (Respond in valid JSON format)";
+            if (jsonMode && messages.length > 0) {
+                const lastMsg = messages[messages.length - 1];
+                const hasJsonWord = messages.some(m => {
+                    if (typeof m.content === 'string') return /json/i.test(m.content);
+                    if (Array.isArray(m.content)) return m.content.some(p => p && typeof p.text === 'string' && /json/i.test(p.text));
+                    return false;
+                });
+                if (!hasJsonWord) {
+                    if (typeof lastMsg.content === 'string') {
+                        lastMsg.content += " (Respond in valid JSON format)";
+                    } else if (Array.isArray(lastMsg.content)) {
+                        lastMsg.content.push({ type: 'text', text: "(Respond in valid JSON format)" });
+                    }
                 }
             }
 
@@ -562,14 +597,14 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 payload.response_format = { type: 'json_object' };
             }
 
-            const response = await fetch(endpoint, {
+            const response = await fetchWithTimeout(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify(payload)
-            });
+            }, 14000);
 
             if (!response.ok) {
                 const errText = await response.text();
@@ -623,11 +658,15 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                     config.tools = [{ googleSearch: {} }];
                 }
 
-                const response = await ai.models.generateContent({
-                    model: targetModel,
-                    contents: contents,
-                    config: config
-                });
+                const response = await withTimeoutPromise(
+                    ai.models.generateContent({
+                        model: targetModel,
+                        contents: contents,
+                        config: config
+                    }),
+                    16000,
+                    `Gemini SDK ${targetModel}`
+                );
 
                 textContent = response.text || '';
                 groundingMetadata = response.candidates?.[0]?.groundingMetadata || null;
@@ -636,7 +675,12 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                     groundingChunks = groundingMetadata.groundingChunks || [];
                 }
             } catch (sdkErr) {
-                console.warn(`[@google/genai SDK error per ${targetModel}]: ${sdkErr.message}. Provant via REST directament...`);
+                const sdkMsg = String(sdkErr?.message || sdkErr || '');
+                const isDeterministicApiError = /\b(400|401|403|404|429)\b|API_KEY_INVALID|PERMISSION_DENIED|NOT_FOUND|RESOURCE_EXHAUSTED|INVALID_ARGUMENT|Timeout/i.test(sdkMsg);
+                if (isDeterministicApiError) {
+                    throw new Error(`[${targetModel}] ${sdkMsg.substring(0, 300)}`);
+                }
+                console.warn(`[@google/genai SDK error per ${targetModel}]: ${sdkMsg}. Provant via REST directament...`);
 
                 const bodyData = {
                     contents: contents
@@ -650,11 +694,15 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                     bodyData.tools = [{ googleSearch: {} }];
                 }
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(bodyData)
-                });
+                const response = await fetchWithTimeout(
+                    `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(bodyData)
+                    },
+                    12000
+                );
 
                 if (!response.ok) {
                     const errText = await response.text();
@@ -802,7 +850,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 const lastUserText = userMsgs.length > 0 ? userMsgs[userMsgs.length - 1].content : 'Hola';
                 const sysSnippet = systemPrompt ? String(systemPrompt).substring(0, 600) + '\n\n' : '';
                 const getUrl = `https://text.pollinations.ai/${encodeURIComponent((sysSnippet + lastUserText).substring(0, 1800))}`;
-                const getRes = await fetch(getUrl);
+                const getRes = await fetchWithTimeout(getUrl, {}, 6000);
                 if (getRes.ok) {
                     const textReply = (await getRes.text())
                         .replace(/\n*---\s*\*\*Support Pollinations[\s\S]*$/i, '')
@@ -852,12 +900,13 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 }
             }
 
-            // 1. Si tenim clau de Gemini API (el motor oficial), utilitzar gemini-4-hydrogen i gemini-3.1-flash-lite
+            // 1. Si tenim clau de Gemini API (el motor oficial), utilitzar gemini-4-hydrogen, gemini-3.1-flash-lite i gemini-2.5-flash
             if (geminiApiKey && !quotaExceededKeys.has(geminiApiKey)) {
                 const primaryGemini = effectiveModel && userPreferredProvider === 'gemini' ? effectiveModel : 'gemini-4-hydrogen';
                 runnerList.push({ type: 'gemini', key: geminiApiKey, model: primaryGemini });
                 if (primaryGemini !== 'gemini-4-hydrogen') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-4-hydrogen' });
                 runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-3.1-flash-lite' });
+                if (primaryGemini !== 'gemini-2.5-flash') runnerList.push({ type: 'gemini', key: geminiApiKey, model: 'gemini-2.5-flash' });
             }
 
             // 2. Proveïdors personalitzats seleccionats per l'usuari
@@ -895,7 +944,11 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             runnerList.push({ type: 'pollinations', model: 'openai' });
 
             let lastError = null;
+            const execDeadline = Date.now() + 28000;
             for (let i = 0; i < runnerList.length; i++) {
+                if (i > 0 && Date.now() > execDeadline) {
+                    break;
+                }
                 const runner = runnerList[i];
                 try {
                     if (runner.type === 'gemini') {
@@ -958,7 +1011,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                         if (runner.key) quotaExceededKeys.add(runner.key);
                         quotaExceededKeys.add(runner.type);
                     } else {
-                        console.warn(`[Aliat IA Failover] Intent amb ${runner.type} (${runner.model}) ha fallat. Provant alternativa...`);
+                        console.warn(`[Aliat IA Failover] Intent amb ${runner.type} (${runner.model}) ha fallat: ${err.message}. Provant alternativa...`);
                     }
                     lastError = err;
                     await new Promise(r => setTimeout(r, 50));
@@ -972,21 +1025,41 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             let safeHistory = [];
             if (!Array.isArray(historyArray)) return [{ role: 'user', parts: [{ text: "Hola!" }] }];
 
-            for (let msg of historyArray) {
+            const windowed = historyArray.length > 24 ? historyArray.slice(-24) : historyArray;
+            let mediaKept = 0;
+            const mediaAllowSet = new Set();
+            for (let idx = windowed.length - 1; idx >= 0 && mediaKept < 2; idx--) {
+                const m = windowed[idx];
+                if (!m) continue;
+                const hasImg = Boolean(m.image) || (typeof m.content === 'string' && m.content.includes('data:image/'));
+                const hasAud = Boolean(m.audio);
+                if (hasImg || hasAud) {
+                    mediaAllowSet.add(idx);
+                    mediaKept++;
+                }
+            }
+
+            for (let idx = 0; idx < windowed.length; idx++) {
+                const msg = windowed[idx];
                 if (!msg) continue;
                 let role = (msg.role === 'assistant' || msg.role === 'model') ? 'model' : 'user';
                 let parts = [];
-                
-                if (typeof msg.content === 'string' && msg.content.trim()) {
-                    parts.push({ text: msg.content.trim() });
+                const allowMedia = mediaAllowSet.has(idx);
+
+                let textVal = typeof msg.content === 'string' ? msg.content.trim() : '';
+                if (textVal && textVal.includes('<img')) {
+                    textVal = textVal.replace(/<img[^>]*>/gi, '').replace(/<br\s*\/?>/gi, '\n').trim();
                 }
-                
+                if (textVal) {
+                    parts.push({ text: textVal.substring(0, 12000) });
+                }
+
                 let rawImg = msg.image;
                 if (!rawImg && typeof msg.content === 'string' && msg.content.includes('<img')) {
                     const match = msg.content.match(/src=["'](data:image\/[^;]+;base64,[^"']+)["']/i);
                     if (match && match[1]) rawImg = match[1];
                 }
-                if (rawImg && typeof rawImg === 'string' && rawImg.includes('base64,')) {
+                if (allowMedia && rawImg && typeof rawImg === 'string' && rawImg.includes('base64,')) {
                     const mimeType = rawImg.split(';')[0].split(':')[1] || 'image/png';
                     const base64Data = rawImg.split(',')[1];
                     if (base64Data) {
@@ -994,9 +1067,11 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                             inlineData: { mimeType: mimeType, data: base64Data }
                         });
                     }
+                } else if (rawImg && typeof rawImg === 'string') {
+                    parts.push({ text: `[Imatge adjuntada prèviament: ${msg.fileName || 'imatge'}]` });
                 }
 
-                if (msg.audio && typeof msg.audio === 'string' && msg.audio.includes('base64,')) {
+                if (allowMedia && msg.audio && typeof msg.audio === 'string' && msg.audio.includes('base64,')) {
                     const mimeType = msg.audio.split(';')[0].split(':')[1] || 'audio/webm';
                     const base64Data = msg.audio.split(',')[1];
                     if (base64Data) {
@@ -1348,11 +1423,11 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                 if (webSearchExplicitlyEnabled && process.env.TAVILY_API_KEY) {
                     tasks.push((async () => {
                         try {
-                            const searchReq = await fetch('https://api.tavily.com/search', {
+                            const searchReq = await fetchWithTimeout('https://api.tavily.com/search', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ api_key: process.env.TAVILY_API_KEY, query: lastText, search_depth: "basic", max_results: 3 })
-                            });
+                            }, 3200);
                             if (searchReq.ok) {
                                 const searchRes = await searchReq.json();
                                 if (searchRes.results && searchRes.results.length > 0) {
@@ -1368,7 +1443,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                     })());
                 }
 
-                const resolvedChunks = await Promise.all(tasks);
+                const resolvedChunks = await withTimeoutPromise(Promise.all(tasks), 4200, 'Web search tasks').catch(() => []);
                 searchContext = resolvedChunks.filter(Boolean).join('\n');
             }
 

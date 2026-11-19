@@ -185,6 +185,20 @@ app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Global Express JSON error middleware (prevents non-JSON error responses on /api/*)
+app.use((err, req, res, next) => {
+    console.error('[Server Error]', err?.message || err);
+    if (res.headersSent) return next(err);
+    if (req.path && req.path.startsWith('/api/')) {
+        const status = err?.status || err?.statusCode || 500;
+        const msg = err?.type === 'entity.too.large'
+            ? 'La petició o fitxer adjunt supera el límit permès.'
+            : (err?.message || 'Error intern del servidor.');
+        return res.status(status).json({ error: msg });
+    }
+    return res.status(err?.status || 500).send('Error intern del servidor.');
+});
+
 const server = app.listen(PORT, HOST, () => {
     console.log(`Aliat Intel·ligent server listening on http://${HOST}:${PORT}`);
 });

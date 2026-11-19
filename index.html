@@ -14996,6 +14996,114 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
         };
 
         // --- CLIENT DE GENERACIÓ MULTI-PROVEÏDOR IA AMB CONTINGÈNCIA ---
+        window.safeParseJsonResponse = async function(res) {
+            if (!res) return { error: "Sense resposta del servidor." };
+            const status = typeof res.status === 'number' ? res.status : 0;
+            let rawText = '';
+            try {
+                rawText = await res.text();
+            } catch (_) {
+                return { error: "Error llegint la resposta del servidor." };
+            }
+            const trimmed = String(rawText || '').trim();
+            if (trimmed) {
+                try {
+                    const parsed = JSON.parse(trimmed);
+                    if (parsed && typeof parsed === 'object') return parsed;
+                } catch (_) {}
+            }
+            if (status === 413 || /payload|entity too large|request entity/i.test(trimmed)) {
+                return { error: "El fitxer adjunt o l'historial és massa gran. Prova amb una imatge més lleugera o inicia una conversa nova." };
+            }
+            if (status === 504 || status === 502 || status === 503 || /an error occurred|gateway|timeout/i.test(trimmed)) {
+                return { error: "El servidor d'IA ha trigat massa o està saturat momentàniament. Torna-ho a provar ara." };
+            }
+            const cleanSnippet = trimmed.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 140);
+            return {
+                error: cleanSnippet
+                    ? `Resposta inesperada del servidor (${status || 'xarxa'}): ${cleanSnippet}`
+                    : `Error de connexió amb el servidor (${status || 'xarxa'}). Torna-ho a provar.`
+            };
+        };
+
+        window.compressChatImageDataUrl = function(dataUrl, maxDim = 1400, quality = 0.82) {
+            return new Promise((resolve) => {
+                if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/') || dataUrl.length < 360000) {
+                    resolve(dataUrl);
+                    return;
+                }
+                try {
+                    const img = new Image();
+                    img.onload = () => {
+                        try {
+                            let w = img.naturalWidth || img.width;
+                            let h = img.naturalHeight || img.height;
+                            if (!w || !h) { resolve(dataUrl); return; }
+                            if (w > maxDim || h > maxDim) {
+                                const ratio = Math.min(maxDim / w, maxDim / h);
+                                w = Math.max(1, Math.round(w * ratio));
+                                h = Math.max(1, Math.round(h * ratio));
+                            }
+                            const canvas = document.createElement('canvas');
+                            canvas.width = w;
+                            canvas.height = h;
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) { resolve(dataUrl); return; }
+                            ctx.drawImage(img, 0, 0, w, h);
+                            const out = canvas.toDataURL('image/jpeg', quality);
+                            resolve(out && out.length < dataUrl.length ? out : dataUrl);
+                        } catch (_) {
+                            resolve(dataUrl);
+                        }
+                    };
+                    img.onerror = () => resolve(dataUrl);
+                    img.src = dataUrl;
+                } catch (_) {
+                    resolve(dataUrl);
+                }
+            });
+        };
+
+        function compactGeneratePayload(rawPayload) {
+            const p = { ...(rawPayload || {}) };
+            if (typeof p.pdfText === 'string' && p.pdfText.length > 30000) {
+                p.pdfText = p.pdfText.substring(0, 30000);
+            }
+            const compactHistoryList = (list) => {
+                if (!Array.isArray(list)) return list;
+                const recent = list.length > 24 ? list.slice(-24) : list;
+                let keptMedia = 0;
+                const mediaAllowed = new Set();
+                for (let i = recent.length - 1; i >= 0 && keptMedia < 2; i--) {
+                    const item = recent[i];
+                    if (item && (item.image || item.audio)) {
+                        mediaAllowed.add(i);
+                        keptMedia++;
+                    }
+                }
+                return recent.map((item, idx) => {
+                    if (!item || typeof item !== 'object') return item;
+                    const copy = { ...item };
+                    if (typeof copy.content === 'string' && copy.content.length > 14000) {
+                        copy.content = copy.content.substring(0, 14000);
+                    }
+                    if (!mediaAllowed.has(idx)) {
+                        if (copy.image) {
+                            copy.content = `${copy.content || ''}\n[Imatge adjuntada prèviament: ${copy.fileName || 'imatge'}]`.trim();
+                            delete copy.image;
+                        }
+                        if (copy.audio) {
+                            delete copy.audio;
+                        }
+                    }
+                    return copy;
+                });
+            };
+            if (Array.isArray(p.chatHistory)) p.chatHistory = compactHistoryList(p.chatHistory);
+            if (Array.isArray(p.messages)) p.messages = compactHistoryList(p.messages);
+            return p;
+        }
+
         window.callGenerateApi = async function(bodyPayload) {
             const userAiProvider = localStorage.getItem('aliat_ai_provider') || '';
             const rawStoredKey = localStorage.getItem('aliat_ai_key') || '';
@@ -15010,8 +15118,9 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
             if (userAiModel) headers['x-ai-model'] = userAiModel;
             headers['x-app-lang'] = preferredLang;
 
+            const compacted = compactGeneratePayload(bodyPayload);
             const fullPayload = {
-                ...bodyPayload,
+                ...compacted,
                 lang: preferredLang,
                 ai_provider: userAiProvider,
                 ai_api_key: userAiKey,
@@ -15021,11 +15130,78 @@ IMPORTANTÍSSIM: Retorna un array JSON de 5 preguntes dins d'un sol bloc kahoot.
                 customModel: userAiModel
             };
 
-            return await fetch('/api/generate', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(fullPayload)
-            });
+            const serializedBody = JSON.stringify(fullPayload);
+            const maxAttempts = 2;
+            let lastResult = null;
+
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                const controller = new AbortController();
+                const timerId = setTimeout(() => controller.abort(), 55000);
+                try {
+                    const res = await fetch('/api/generate', {
+                        method: 'POST',
+                        headers: headers,
+                        body: serializedBody,
+                        signal: controller.signal
+                    });
+                    clearTimeout(timerId);
+
+                    let rawText = '';
+                    try { rawText = await res.text(); } catch (_) {}
+                    const trimmed = String(rawText || '').trim();
+                    let parsedJson = null;
+                    if (trimmed) {
+                        try { parsedJson = JSON.parse(trimmed); } catch (_) { parsedJson = null; }
+                    }
+
+                    const isTransientFailure = (!res.ok && (res.status >= 500 || res.status === 429 || res.status === 408)) || !parsedJson;
+                    if (isTransientFailure && attempt < maxAttempts) {
+                        await new Promise(r => setTimeout(r, 650));
+                        continue;
+                    }
+
+                    if (!parsedJson || typeof parsedJson !== 'object') {
+                        const fallbackParsed = await window.safeParseJsonResponse({
+                            status: res.status,
+                            text: async () => rawText
+                        });
+                        parsedJson = fallbackParsed;
+                    }
+
+                    lastResult = {
+                        ok: res.ok && !parsedJson.error,
+                        status: res.status,
+                        headers: res.headers,
+                        text: async () => rawText,
+                        json: async () => parsedJson
+                    };
+                    return lastResult;
+                } catch (err) {
+                    clearTimeout(timerId);
+                    if (attempt < maxAttempts) {
+                        await new Promise(r => setTimeout(r, 650));
+                        continue;
+                    }
+                    const isTimeout = err && (err.name === 'AbortError' || /abort|timeout/i.test(err.message || ''));
+                    const errMsg = isTimeout
+                        ? "La petició ha trigat massa. Comprova la connexió i torna-ho a provar."
+                        : "Error de connexió amb el servidor d'IA. Torna-ho a provar.";
+                    return {
+                        ok: false,
+                        status: 0,
+                        headers: new Headers(),
+                        text: async () => JSON.stringify({ error: errMsg }),
+                        json: async () => ({ error: errMsg })
+                    };
+                }
+            }
+            return lastResult || {
+                ok: false,
+                status: 500,
+                headers: new Headers(),
+                text: async () => '{"error":"No s\'ha pogut obtenir resposta."}',
+                json: async () => ({ error: "No s'ha pogut obtenir resposta." })
+            };
         };
 
         window.processVisionAnalysis = async function() {
@@ -22139,8 +22315,11 @@ ${parsedBody}
                 currentAttachmentExt = (file.name.split('.').pop() || 'PNG').toUpperCase();
                 
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    currentAttachmentBase64 = e.target.result;
+                reader.onload = async (e) => {
+                    const rawUrl = e.target.result;
+                    currentAttachmentBase64 = typeof window.compressChatImageDataUrl === 'function'
+                        ? await window.compressChatImageDataUrl(rawUrl)
+                        : rawUrl;
                     document.getElementById('preview-img').src = currentAttachmentBase64;
                     document.getElementById('attachment-preview').classList.remove('hidden');
                 };
@@ -22316,8 +22495,11 @@ ${parsedBody}
                     useGoogleSearch: window.isGoogleSearchActive === true
                 });
                 document.getElementById(loadingId)?.remove();
-                const data = await res.json();
-                if(data.error) throw new Error(data.error);
+                const data = typeof res.json === 'function' ? await res.json() : await window.safeParseJsonResponse(res);
+                if (!data || data.error) throw new Error(data?.error || "Resposta buida del servidor.");
+                if (typeof data.reply !== 'string' || !data.reply.trim()) {
+                    throw new Error("La IA ha retornat una resposta buida. Torna-ho a provar.");
+                }
                 appendMessage('ai', data.reply, data.searchQueries, data.sources);
                 chatHistory.push({ role: 'assistant', content: data.reply });
                 saveSession();
@@ -22328,11 +22510,15 @@ ${parsedBody}
                 // Missatge d'error amb botó de reintentar elegant
                 const box = document.getElementById('chat-messages');
                 const div = document.createElement('div');
+                const safeErrMsg = String(err?.message || 'Error desconegut')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
                 div.className = "flex justify-start gap-2 w-full mb-3 chat-msg-ai";
                 div.innerHTML = `
                 <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-md mt-1">!</div>
                 <div class="bg-white dark:bg-zinc-900 border border-red-200 dark:border-red-900/50 text-zinc-900 dark:text-zinc-100 px-4 py-4 rounded-2xl rounded-tl-sm max-w-[90%] shadow-md w-full">
-                    <p class="text-sm font-semibold text-red-600 dark:text-red-400 mb-3">No s'ha pogut completar la resposta: ${err.message}</p>
+                    <p class="text-sm font-semibold text-red-600 dark:text-red-400 mb-3">No s'ha pogut completar la resposta: ${safeErrMsg}</p>
                     <button onclick="retryAiResponse(this)" class="bg-zinc-900 dark:bg-zinc-800 hover:bg-zinc-800 dark:hover:bg-zinc-700 text-white font-bold py-2.5 px-4 rounded-xl transition text-xs flex items-center gap-2 border border-transparent dark:border-zinc-700 shadow-sm interactive-btn">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Reintentar darrer missatge
                     </button>
@@ -22398,8 +22584,11 @@ ${parsedBody}
                 if (item.type.indexOf('image') !== -1) {
                     const blob = item.getAsFile();
                     const reader = new FileReader();
-                    reader.onload = (event) => {
-                        currentAttachmentBase64 = event.target.result;
+                    reader.onload = async (event) => {
+                        const rawUrl = event.target.result;
+                        currentAttachmentBase64 = typeof window.compressChatImageDataUrl === 'function'
+                            ? await window.compressChatImageDataUrl(rawUrl)
+                            : rawUrl;
                         const previewImg = document.getElementById('preview-img');
                         const previewContainer = document.getElementById('attachment-preview');
                         if (previewImg && previewContainer) {

@@ -72,27 +72,14 @@ app.all('/api/analyze-multimodal', (req, res) => analyzeMultimodalHandler(req, r
 
 const fs = require('fs');
 
+const { buildPublicFirebaseConfig } = require('./api/firebase-config');
+
 // Explicit safe Firebase Web SDK config endpoint (public client identifiers only — never server secrets)
 app.get('/firebase-applet-config.json', (req, res) => {
     try {
-        const cfgPath = path.join(__dirname, 'firebase-applet-config.json');
-        if (!fs.existsSync(cfgPath)) {
+        const publicConfig = buildPublicFirebaseConfig();
+        if (!publicConfig.apiKey || !publicConfig.projectId) {
             return res.status(404).json({ error: 'Config not found' });
-        }
-        const raw = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
-        const publicConfig = {
-            projectId: raw.projectId || '',
-            appId: raw.appId || '',
-            apiKey: raw.apiKey || '',
-            authDomain: raw.authDomain || '',
-            storageBucket: raw.storageBucket || '',
-            messagingSenderId: raw.messagingSenderId || '',
-            measurementId: raw.measurementId || '',
-            oAuthClientId: raw.oAuthClientId || '',
-            recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY || raw.recaptchaSiteKey || ''
-        };
-        if (raw.firestoreDatabaseId) {
-            publicConfig.firestoreDatabaseId = raw.firestoreDatabaseId;
         }
         res.setHeader('Cache-Control', 'no-store');
         return res.json(publicConfig);

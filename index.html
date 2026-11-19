@@ -2964,20 +2964,25 @@
                         <span id="settings-workspace-email" class="truncate"></span>
                         <button type="button" onclick="window.disconnectGoogleWorkspace()" class="text-[11px] font-bold text-red-600 dark:text-red-400 hover:underline shrink-0 cursor-pointer">Desvincular</button>
                     </div>
-                    <button type="button" id="settings-workspace-connect-btn" onclick="window.connectGoogleWorkspace()" class="gsi-material-button">
-                        <div class="gsi-material-button-state"></div>
-                        <div class="gsi-material-button-content-wrapper">
-                            <div class="gsi-material-button-icon">
-                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="display: block;">
-                                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                                </svg>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <button type="button" id="settings-workspace-connect-btn" onclick="window.connectGoogleWorkspace()" class="gsi-material-button">
+                            <div class="gsi-material-button-state"></div>
+                            <div class="gsi-material-button-content-wrapper">
+                                <div class="gsi-material-button-icon">
+                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="display: block;">
+                                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                                    </svg>
+                                </div>
+                                <span id="settings-workspace-btn-label" class="gsi-material-button-contents">Connectar amb Google Workspace</span>
                             </div>
-                            <span id="settings-workspace-btn-label" class="gsi-material-button-contents">Connectar amb Google Workspace</span>
-                        </div>
-                    </button>
+                        </button>
+                        <button type="button" onclick="window.showVercelGoogleSetupGuide()" class="px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-bold text-zinc-700 dark:text-zinc-200 transition cursor-pointer shrink-0">
+                            Configurar domini / Vercel
+                        </button>
+                    </div>
                 </div>
 
                 <!-- SECCIÓ DE PROVEÏDORS D'IA -->
@@ -5776,39 +5781,53 @@
             }
 
             if (firebaseAuth && firebaseAuthExports) {
-                const { GoogleAuthProvider, signInWithPopup } = firebaseAuthExports;
-                const provider = new GoogleAuthProvider();
-                GOOGLE_WORKSPACE_SCOPES.forEach(scope => provider.addScope(scope));
-                provider.setCustomParameters({
-                    prompt: forceConsent ? 'consent select_account' : 'select_account'
-                });
+                try {
+                    const { GoogleAuthProvider, signInWithPopup } = firebaseAuthExports;
+                    const provider = new GoogleAuthProvider();
+                    GOOGLE_WORKSPACE_SCOPES.forEach(scope => provider.addScope(scope));
+                    provider.setCustomParameters({
+                        prompt: forceConsent ? 'consent select_account' : 'select_account'
+                    });
 
-                const result = await signInWithPopup(firebaseAuth, provider);
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                const user = result.user;
-                const firebaseIdToken = user && typeof user.getIdToken === 'function' ? await user.getIdToken() : null;
-                const oauthIdToken = credential && credential.idToken ? credential.idToken : null;
-                const accessToken = credential && credential.accessToken ? credential.accessToken : null;
+                    const result = await signInWithPopup(firebaseAuth, provider);
+                    const credential = GoogleAuthProvider.credentialFromResult(result);
+                    const user = result.user;
+                    const firebaseIdToken = user && typeof user.getIdToken === 'function' ? await user.getIdToken() : null;
+                    const oauthIdToken = credential && credential.idToken ? credential.idToken : null;
+                    const accessToken = credential && credential.accessToken ? credential.accessToken : null;
 
-                if (accessToken) {
-                    window.googleWorkspaceToken = accessToken;
-                    window._googleAuthViaFirebase = true;
+                    if (accessToken) {
+                        window.googleWorkspaceToken = accessToken;
+                        window._googleAuthViaFirebase = true;
+                    }
+                    if (user && user.email) {
+                        window.googleWorkspaceAccountEmail = user.email;
+                    }
+                    updateWorkspaceStatusUI();
+
+                    return {
+                        user,
+                        email: (user && user.email) || '',
+                        displayName: (user && user.displayName) || '',
+                        photoURL: (user && user.photoURL) || '',
+                        phoneNumber: (user && user.phoneNumber) || '',
+                        uid: (user && user.uid) || '',
+                        idToken: oauthIdToken || firebaseIdToken,
+                        accessToken
+                    };
+                } catch (fbErr) {
+                    const fbCode = String((fbErr && fbErr.code) || '');
+                    if (isGooglePopupClosedError(fbErr)) throw fbErr;
+                    const canFallbackToGis = (
+                        fbCode === 'auth/unauthorized-domain' ||
+                        fbCode === 'auth/operation-not-supported-in-this-environment' ||
+                        fbCode === 'auth/popup-blocked'
+                    ) && Boolean(ensureGisTokenClient());
+                    if (!canFallbackToGis) {
+                        throw fbErr;
+                    }
+                    console.warn('[Google OAuth] Firebase fallback -> GIS direct:', fbCode);
                 }
-                if (user && user.email) {
-                    window.googleWorkspaceAccountEmail = user.email;
-                }
-                updateWorkspaceStatusUI();
-
-                return {
-                    user,
-                    email: (user && user.email) || '',
-                    displayName: (user && user.displayName) || '',
-                    photoURL: (user && user.photoURL) || '',
-                    phoneNumber: (user && user.phoneNumber) || '',
-                    uid: (user && user.uid) || '',
-                    idToken: oauthIdToken || firebaseIdToken,
-                    accessToken
-                };
             }
 
             // Fallback strictly to genuine Google Identity Services OAuth (never manual email entry)
@@ -5850,13 +5869,152 @@
             `;
         }
 
+        function isGoogleDomainOrOriginError(err) {
+            if (!err) return false;
+            const code = String(err.code || '').toLowerCase();
+            const msg = String(err.message || '').toLowerCase();
+            return (
+                code.includes('unauthorized-domain') ||
+                msg.includes('unauthorized-domain') ||
+                msg.includes('origin_mismatch') ||
+                msg.includes('redirect_uri_mismatch') ||
+                msg.includes('idpiframe_initialization_failed') ||
+                msg.includes('access_denied') ||
+                msg.includes('invalid_client') ||
+                msg.includes('this domain is not authorized')
+            );
+        }
+
+        function copyDiagnosticValue(value, label) {
+            const text = String(value || '');
+            if (!text) return;
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(`${label} copiat al porta-retalls`, 'success');
+                }).catch(() => {});
+            } else {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showToast(`${label} copiat al porta-retalls`, 'success');
+                } catch (_) {}
+            }
+        }
+
+        window.showVercelGoogleSetupGuide = async function(err = null) {
+            try { await initFirebaseSDK(); } catch (_) {}
+            const currentHost = window.location.hostname || '';
+            const currentOrigin = window.location.origin || '';
+            const activeClientId = (firebaseConfigData && firebaseConfigData.oAuthClientId) ? firebaseConfigData.oAuthClientId : 'No configurat';
+            const fbProject = (firebaseConfigData && firebaseConfigData.projectId) ? firebaseConfigData.projectId : '';
+            const iconSvg = (k, cls) => typeof window.aliatSvg === 'function' ? window.aliatSvg(k, cls) : '';
+            const errText = err && err.message ? String(err.message) : '';
+
+            Swal.fire({
+                title: 'Configuració Google OAuth i Vercel',
+                html: `
+                    <div class="text-left space-y-3 py-1 text-xs text-zinc-700 dark:text-zinc-200 max-h-[68vh] overflow-y-auto pr-1">
+                        <div class="p-3 rounded-2xl bg-blue-50/90 dark:bg-blue-950/35 border border-blue-200/80 dark:border-blue-900/60 flex items-start gap-2.5">
+                            <span class="text-blue-600 dark:text-blue-400 shrink-0 mt-0.5">${iconSvg('lock', 'w-4 h-4')}</span>
+                            <div class="text-[11px] leading-relaxed">
+                                Perquè la vinculació amb Google i totes les apps de Workspace funcionin al teu domini de Vercel, autoritza aquests valors exactes a <strong>Firebase</strong> i <strong>Google Cloud Console</strong>.
+                            </div>
+                        </div>
+
+                        ${errText ? `<div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/50 text-[11px] font-mono text-amber-800 dark:text-amber-200 break-words">${escapeHtml(errText)}</div>` : ''}
+
+                        <div class="space-y-2">
+                            <div class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/80 dark:border-zinc-700/70 space-y-1">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">1. Domini Firebase (Authorized domains)</span>
+                                    <button type="button" data-copy-target="host" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-[10px] font-bold hover:bg-zinc-50 dark:hover:bg-zinc-600 cursor-pointer">
+                                        ${iconSvg('clipboard', 'w-3 h-3')} Copiar
+                                    </button>
+                                </div>
+                                <div class="font-mono text-[11px] text-zinc-900 dark:text-zinc-100 break-all">${escapeHtml(currentHost)}</div>
+                            </div>
+
+                            <div class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/80 dark:border-zinc-700/70 space-y-1">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">2. Origen JS OAuth (Google Cloud Console)</span>
+                                    <button type="button" data-copy-target="origin" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-[10px] font-bold hover:bg-zinc-50 dark:hover:bg-zinc-600 cursor-pointer">
+                                        ${iconSvg('clipboard', 'w-3 h-3')} Copiar
+                                    </button>
+                                </div>
+                                <div class="font-mono text-[11px] text-zinc-900 dark:text-zinc-100 break-all">${escapeHtml(currentOrigin)}</div>
+                            </div>
+
+                            <div class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/70 border border-zinc-200/80 dark:border-zinc-700/70 space-y-1">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">3. Client ID OAuth 2.0 actiu${fbProject ? ' · ' + escapeHtml(fbProject) : ''}</span>
+                                    <button type="button" data-copy-target="client" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-[10px] font-bold hover:bg-zinc-50 dark:hover:bg-zinc-600 cursor-pointer">
+                                        ${iconSvg('clipboard', 'w-3 h-3')} Copiar
+                                    </button>
+                                </div>
+                                <div class="font-mono text-[10px] text-zinc-800 dark:text-zinc-200 break-all">${escapeHtml(activeClientId)}</div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-1.5 text-[11px] text-zinc-600 dark:text-zinc-300">
+                            <div class="font-bold text-zinc-900 dark:text-zinc-100">Llista ràpida de revisió a Vercel i Cloud:</div>
+                            <div>• <strong>Firebase Authentication → Settings → Authorized domains:</strong> Afegeix el domini del pas 1.</div>
+                            <div>• <strong>Google Cloud → Credentials → OAuth Client:</strong> Afegeix la URL del pas 2 a Orígens JavaScript autoritzats.</div>
+                            <div>• <strong>OAuth Consent Screen:</strong> Afegeix el teu correu a Usuaris de prova o publica l'app, amb APIs Gmail, Drive, Docs, Slides, Sheets, Calendar i Classroom activades.</div>
+                            <div>• <strong>Variables d'entorn a Vercel:</strong> Configura <code class="font-mono">JWT_SECRET</code>, <code class="font-mono">GEMINI_API_KEY</code> i <code class="font-mono">TURSO_DATABASE_URL</code> + <code class="font-mono">TURSO_AUTH_TOKEN</code> (opcional <code class="font-mono">GOOGLE_OAUTH_CLIENT_ID</code>).</div>
+                        </div>
+
+                        <div class="pt-1">
+                            ${buildOfficialGoogleAuthButtonHtml('swal-guide-connect-google-btn', 'Provar connexió Google ara')}
+                        </div>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'Tancar',
+                customClass: { popup: 'rounded-3xl dark:bg-zinc-900 dark:text-white border dark:border-zinc-800 max-w-lg w-full' },
+                didOpen: () => {
+                    const popup = Swal.getPopup();
+                    if (popup) {
+                        popup.querySelectorAll('[data-copy-target]').forEach((btn) => {
+                            btn.addEventListener('click', () => {
+                                const target = btn.getAttribute('data-copy-target');
+                                if (target === 'host') copyDiagnosticValue(currentHost, 'Domini');
+                                else if (target === 'origin') copyDiagnosticValue(currentOrigin, 'Origen JS');
+                                else if (target === 'client') copyDiagnosticValue(activeClientId, 'Client ID');
+                            });
+                        });
+                    }
+                    const testBtn = document.getElementById('swal-guide-connect-google-btn');
+                    if (testBtn) {
+                        testBtn.addEventListener('click', () => {
+                            const p = window.connectGoogleWorkspace(null, true);
+                            Swal.close();
+                            Promise.resolve(p).catch(() => {});
+                        });
+                    }
+                }
+            });
+        };
+
         function showGoogleOAuthRetryModal(err, onRetrySync) {
             const errCode = (err && err.code) || '';
             const isPopupBlocked = errCode === 'auth/popup-blocked';
             const isClosed = isGooglePopupClosedError(err);
+            const isDomainErr = isGoogleDomainOrOriginError(err);
 
             if (isClosed) {
                 showToast("Has tancat la finestra d'autorització oficial de Google.", "info");
+                return;
+            }
+
+            if (isDomainErr) {
+                window.showVercelGoogleSetupGuide(err);
                 return;
             }
 
@@ -5871,8 +6029,11 @@
                     <div class="text-left space-y-3 py-1 text-xs text-zinc-600 dark:text-zinc-300">
                         <p class="leading-relaxed">${explanation}</p>
                         ${err && err.message && !isPopupBlocked ? `<div class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-[11px] font-mono text-zinc-600 dark:text-zinc-400 break-words">${escapeHtml(err.message)}</div>` : ''}
-                        <div class="pt-1">
+                        <div class="pt-1 flex flex-col gap-2">
                             ${buildOfficialGoogleAuthButtonHtml('swal-retry-google-oauth-btn', 'Connectar amb Google OAuth')}
+                            <button type="button" id="swal-open-vercel-guide-btn" class="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline text-left cursor-pointer">
+                                Estàs en Vercel? Veure guia de domini i credencials
+                            </button>
                         </div>
                     </div>
                 `,
@@ -5888,6 +6049,12 @@
                             const p = onRetrySync();
                             Swal.close();
                             Promise.resolve(p).catch(() => {});
+                        });
+                    }
+                    const guideBtn = document.getElementById('swal-open-vercel-guide-btn');
+                    if (guideBtn) {
+                        guideBtn.addEventListener('click', () => {
+                            window.showVercelGoogleSetupGuide(err);
                         });
                     }
                 }
@@ -6003,7 +6170,9 @@
                     accessToken: oauthData.accessToken
                 })
             });
-            const data = await res.json();
+            const data = typeof window.safeParseJsonResponse === 'function'
+                ? await window.safeParseJsonResponse(res)
+                : await res.json();
 
             if (res.ok && data.success) {
                 if (oauthData.accessToken) {

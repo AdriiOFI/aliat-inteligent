@@ -42,6 +42,14 @@
       "destination": "/api/maps?action=parse-commute"
     },
     {
+      "source": "/api/maps/places",
+      "destination": "/api/maps?action=places"
+    },
+    {
+      "source": "/firebase-applet-config.json",
+      "destination": "/api/firebase-config"
+    },
+    {
       "source": "/favicon.ico",
       "destination": "/public/favicon.ico"
     },

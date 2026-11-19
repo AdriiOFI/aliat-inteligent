@@ -52,9 +52,29 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
+    function isValidParkedVehicle(pv) {
+      return pv is map
+        && pv.keys().hasAll(['lat', 'lng', 'vehicleType', 'savedAt'])
+        && pv.keys().hasOnly(['lat', 'lng', 'address', 'floorSpot', 'notes', 'vehicleType', 'savedAt', 'expiresAt'])
+        && (pv.lat is float || pv.lat is int)
+        && pv.lat >= -90.0
+        && pv.lat <= 90.0
+        && (pv.lng is float || pv.lng is int)
+        && pv.lng >= -180.0
+        && pv.lng <= 180.0
+        && pv.vehicleType in ['cotxe', 'moto', 'bici']
+        && (!('address' in pv) || (pv.address is string && pv.address.size() <= 320))
+        && (!('floorSpot' in pv) || (pv.floorSpot is string && pv.floorSpot.size() <= 120))
+        && (!('notes' in pv) || (pv.notes is string && pv.notes.size() <= 240))
+        && (pv.savedAt is int || pv.savedAt is float)
+        && pv.savedAt >= 0
+        && pv.savedAt <= 9999999999999
+        && (!('expiresAt' in pv) || pv.expiresAt == null || ((pv.expiresAt is int || pv.expiresAt is float) && pv.expiresAt >= 0 && pv.expiresAt <= 9999999999999));
+    }
+
     function isValidUserSettings(data, userId) {
       return data.keys().hasAll(['ownerId', 'updatedAt'])
-        && data.keys().hasOnly(['ownerId', 'theme', 'aiProvider', 'aiModel', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'theme', 'aiProvider', 'aiModel', 'parkedVehicle', 'mapsPlacesJson', 'mapsParkingJson', 'updatedAt'])
         && data.ownerId is string
         && isValidId(data.ownerId)
         && data.ownerId == userId
@@ -62,6 +82,40 @@ service cloud.firestore {
         && (!('theme' in data) || (data.theme in ['light', 'dark']))
         && (!('aiProvider' in data) || (data.aiProvider is string && data.aiProvider.size() <= 64))
         && (!('aiModel' in data) || (data.aiModel is string && data.aiModel.size() <= 128))
+        && (!('parkedVehicle' in data) || data.parkedVehicle == null || isValidParkedVehicle(data.parkedVehicle))
+        && (!('mapsPlacesJson' in data) || (data.mapsPlacesJson is string && data.mapsPlacesJson.size() <= 32768))
+        && (!('mapsParkingJson' in data) || (data.mapsParkingJson is string && data.mapsParkingJson.size() <= 4096))
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSavedPlace(data, userId, placeId) {
+      return data.keys().hasAll(['id', 'ownerId', 'role', 'title', 'category', 'lat', 'lng', 'savedAt', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['id', 'ownerId', 'role', 'title', 'category', 'address', 'lat', 'lng', 'savedAt', 'createdAt', 'updatedAt'])
+        && data.id is string
+        && isValidId(data.id)
+        && data.id == placeId
+        && data.ownerId is string
+        && isValidId(data.ownerId)
+        && data.ownerId == userId
+        && data.ownerId == request.auth.uid
+        && data.role in ['home', 'school', 'work', 'favorite']
+        && data.title is string
+        && data.title.size() >= 1
+        && data.title.size() <= 160
+        && data.category is string
+        && data.category.size() >= 1
+        && data.category.size() <= 80
+        && (!('address' in data) || (data.address is string && data.address.size() <= 320))
+        && (data.lat is float || data.lat is int)
+        && data.lat >= -90.0
+        && data.lat <= 90.0
+        && (data.lng is float || data.lng is int)
+        && data.lng >= -180.0
+        && data.lng <= 180.0
+        && (data.savedAt is int || data.savedAt is float)
+        && data.savedAt >= 0
+        && data.savedAt <= 9999999999999
+        && data.createdAt is timestamp
         && data.updatedAt is timestamp;
     }
 
@@ -113,12 +167,50 @@ service cloud.firestore {
           && exists(/databases/$(database)/documents/users/$(userId))
           && incoming().ownerId == existing().ownerId
           && incoming().updatedAt == request.time
-          && incoming().diff(existing()).affectedKeys().hasOnly(['theme', 'aiProvider', 'aiModel', 'updatedAt']);
+          && incoming().diff(existing()).affectedKeys().hasOnly(['theme', 'aiProvider', 'aiModel', 'parkedVehicle', 'mapsPlacesJson', 'mapsParkingJson', 'updatedAt']);
 
         allow delete: if isVerifiedOwner(userId)
           && isValidId(userId)
           && isValidId(settingId)
           && exists(/databases/$(database)/documents/users/$(userId));
+      }
+
+      // Native saved locations subcollection (Casa, Institut, Work, Favorites)
+      match /savedPlaces/{placeId} {
+        allow get: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(placeId)
+          && exists(/databases/$(database)/documents/users/$(userId))
+          && existing().ownerId == request.auth.uid;
+
+        allow list: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && existing().ownerId == request.auth.uid;
+
+        allow create: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(placeId)
+          && isValidSavedPlace(incoming(), userId, placeId)
+          && exists(/databases/$(database)/documents/users/$(userId))
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time;
+
+        allow update: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(placeId)
+          && isValidSavedPlace(incoming(), userId, placeId)
+          && exists(/databases/$(database)/documents/users/$(userId))
+          && incoming().id == existing().id
+          && incoming().ownerId == existing().ownerId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['role', 'title', 'category', 'address', 'lat', 'lng', 'savedAt', 'updatedAt']);
+
+        allow delete: if isVerifiedOwner(userId)
+          && isValidId(userId)
+          && isValidId(placeId)
+          && exists(/databases/$(database)/documents/users/$(userId))
+          && existing().ownerId == request.auth.uid;
       }
     }
   }

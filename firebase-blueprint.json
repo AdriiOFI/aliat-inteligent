@@ -79,6 +79,31 @@
           "maxLength": 128,
           "description": "Preferred AI model identifier"
         },
+        "parkedVehicle": {
+          "type": "object",
+          "description": "Native parked vehicle location pin and notes stored on user preferences",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" },
+            "address": { "type": "string", "maxLength": 320 },
+            "floorSpot": { "type": "string", "maxLength": 120 },
+            "notes": { "type": "string", "maxLength": 240 },
+            "vehicleType": { "type": "string", "enum": ["cotxe", "moto", "bici"] },
+            "savedAt": { "type": "number" },
+            "expiresAt": { "type": "number" }
+          },
+          "required": ["lat", "lng", "vehicleType", "savedAt"]
+        },
+        "mapsPlacesJson": {
+          "type": "string",
+          "maxLength": 32768,
+          "description": "Deprecated legacy JSON field kept only for one-time migration into savedPlaces subcollection"
+        },
+        "mapsParkingJson": {
+          "type": "string",
+          "maxLength": 4096,
+          "description": "Deprecated legacy JSON field kept only for one-time migration into native parkedVehicle"
+        },
         "updatedAt": {
           "type": "string",
           "format": "date-time",
@@ -86,6 +111,76 @@
         }
       },
       "required": ["ownerId", "updatedAt"]
+    },
+    "SavedPlace": {
+      "title": "SavedPlace",
+      "description": "Owner-scoped saved everyday location (Casa, Institut, Work, Favorite) stored natively under the user profile",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Document ID matching the savedPlaces document key"
+        },
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Firebase Auth UID of the profile owner"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["home", "school", "work", "favorite"],
+          "description": "Semantic role of the saved location"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "description": "Human-readable place title (e.g. Casa, Institut)"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "Category label shown in the Saved Places UI"
+        },
+        "address": {
+          "type": "string",
+          "maxLength": 320,
+          "description": "Formatted street address or coordinates label"
+        },
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90,
+          "description": "Latitude coordinate"
+        },
+        "lng": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180,
+          "description": "Longitude coordinate"
+        },
+        "savedAt": {
+          "type": "number",
+          "description": "Epoch milliseconds timestamp of last user update"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when place was first created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when place was last updated"
+        }
+      },
+      "required": ["id", "ownerId", "role", "title", "category", "lat", "lng", "savedAt", "createdAt", "updatedAt"]
     }
   },
   "firestore": {
@@ -96,6 +191,10 @@
     "/users/{userId}/settings/{settingId}": {
       "schema": "UserSettings",
       "description": "User preferences subcollection under owner profile"
+    },
+    "/users/{userId}/savedPlaces/{placeId}": {
+      "schema": "SavedPlace",
+      "description": "Saved AliatMaps locations (Casa, Institut, favorites) persisted on the user profile"
     }
   }
 }

@@ -8,12 +8,13 @@
     const STORAGE_KEYS = {
         landing: 'aliat_onboarding_landing_v1',
         guest: 'aliat_onboarding_guest_v2',
-        auth: 'aliat_onboarding_auth_v2'
+        auth: 'aliat_onboarding_auth_v2',
+        maps: 'aliat_onboarding_maps_v1'
     };
 
     const state = {
         active: false,
-        flow: 'landing', // 'landing' | 'guest' | 'auth'
+        flow: 'landing', // 'landing' | 'guest' | 'auth' | 'maps'
         steps: [],
         index: -1, // -1 = pantalla inicial de benvinguda, 0..N-1 = passos
         openedMobileSidebar: false,
@@ -66,7 +67,12 @@
         return Boolean(app && !app.classList.contains('hidden'));
     }
 
-    function isAnyBlockingModalOpen() {
+    function isMapsModalOpen() {
+        const mapsModal = document.getElementById('daily-maps-modal');
+        return Boolean(mapsModal && !mapsModal.classList.contains('hidden'));
+    }
+
+    function isAnyBlockingModalOpen(requestedFlow = '') {
         const authView = document.getElementById('auth-view');
         if (authView && !authView.classList.contains('hidden')) return true;
         const cookieBanner = document.getElementById('aliat-cookie-banner');
@@ -74,6 +80,7 @@
         const cookieModal = document.getElementById('aliat-cookie-modal');
         if (cookieModal && !cookieModal.classList.contains('hidden')) return true;
         if (document.querySelector('.swal2-container')) return true;
+        if (requestedFlow !== 'maps' && isMapsModalOpen()) return true;
         return false;
     }
 
@@ -399,6 +406,137 @@
         return steps;
     }
 
+    function buildAliatMapsSteps(isEs) {
+        return [
+            {
+                selector: '#daily-maps-habitual-places-card',
+                onEnter: async () => {
+                    if (typeof window.switchDailyMapsTab === 'function') window.switchDailyMapsTab('transit');
+                },
+                actionLabel: isEs ? 'Casa e Instituto (Tu perfil)' : 'Casa i Institut (El teu perfil)',
+                title: isEs ? '1. Guarda Casa y tu Instituto para siempre' : '1. Desa Casa i el teu Institut per sempre',
+                desc: isEs
+                    ? 'Pulsa «Fixar Casa» o «Fixar Insti» para guardar tus ubicaciones habituales en tu perfil de Firebase Firestore (accesibles en cualquier dispositivo):'
+                    : 'Prem «Fixar Casa» o «Fixar Insti» per desar les teves ubicacions habituals al teu perfil de Firebase Firestore (accessibles des de qualsevol dispositiu):',
+                bullets: isEs
+                    ? [
+                        'Por búsqueda: escribe tu calle o centro educativo y pulsa «Cercar».',
+                        'Con GPS o clic en mapa: usa «Usar GPS actual» o «Marcar clicant al mapa» para señalar el punto exacto.',
+                        'Se guardan permanentemente en tu perfil para responder al instante en rutas e IA.'
+                    ]
+                    : [
+                        'Per cerca: escriu el teu carrer o centre educatiu i prem «Cercar».',
+                        'Amb GPS o clic al mapa: usa «Usar GPS actual» o «Marcar clicant al mapa» per assenyalar el punt exacte.',
+                        'Es desen permanentment al teu perfil per respondre a l’instant en rutes i IA.'
+                    ]
+            },
+            {
+                selector: '#daily-gmp-autocomplete-host',
+                onEnter: async () => {
+                    if (typeof window.switchDailyMapsTab === 'function') window.switchDailyMapsTab('transit');
+                },
+                actionLabel: isEs ? 'Buscador sobre el mapa' : 'Cercador sobre el mapa',
+                title: isEs ? '2. Busca direcciones y sitios al instante' : '2. Cerca adreces i llocs a l’instant',
+                desc: isEs
+                    ? 'Usa esta barra flotante con autocompletado de Google Places para localizar calles, estaciones, tiendas o puntos de interés:'
+                    : 'Fes servir aquesta barra flotant amb autocompletat de Google Places per localitzar carrers, estacions, botigues o punts d’interès:',
+                bullets: isEs
+                    ? [
+                        'Escribe el nombre o dirección y elige una sugerencia para centrar el mapa.',
+                        'En la tarjeta emergente podrás fijarlo como destino, guardarlo o trazar ruta.'
+                    ]
+                    : [
+                        'Escriu el nom o adreça i tria un suggeriment per centrar el mapa.',
+                        'A la fitxa emergent podràs fixar-lo com a destinació, desar-lo o traçar ruta.'
+                    ]
+            },
+            {
+                selector: '#daily-maps-search-section',
+                onEnter: async () => {
+                    if (typeof window.switchDailyMapsTab === 'function') window.switchDailyMapsTab('transit');
+                    if (typeof window.setTransitInputMode === 'function') window.setTransitInputMode('ai');
+                },
+                actionLabel: isEs ? 'Búsqueda IA y Horario Manual' : 'Cerca IA i Horari Manual',
+                title: isEs ? '3. Pregunta a la IA o busca horarios exactos' : '3. Pregunta a la IA o cerca horaris exactes',
+                desc: isEs
+                    ? 'Alterna entre «Pregunta amb IA» (consultas libres con horarios reales) u «Horari manual» (filtros exactos):'
+                    : 'Alterna entre «Pregunta amb IA» (consultes lliures amb horaris reals) o «Horari manual» (filtres exactes):',
+                bullets: isEs
+                    ? [
+                        'Con IA: escribe «¿A qué hora salgo de casa para llegar a las 9 al insti?» o «¿Qué hacer cerca?».',
+                        'Seguimiento: cuando ya haya una ruta, usa este mismo cuadro para preguntar dudas sobre ella.',
+                        'Manual: elige origen, destino, hora de salida/llegada y filtra Bus, Tren o Metro.'
+                    ]
+                    : [
+                        'Amb IA: escriu «A quina hora surto de casa per arribar a les 9 a l’insti?» o «Què fer a prop?».',
+                        'Seguiment: quan ja hi hagi una ruta, usa el mateix quadre per comentar-la.',
+                        'Manual: tria origen, destinació, hora de sortida/arribada i filtra Bus, Tren o Metro.'
+                    ]
+            },
+            {
+                selector: '#daily-gmp-map-canvas',
+                onEnter: async () => {
+                    if (typeof window.switchDailyMapsTab === 'function') window.switchDailyMapsTab('transit');
+                },
+                actionLabel: isEs ? 'Mapa interactivo' : 'Mapa interactiu',
+                title: isEs ? '4. Haz clic directo en el mapa' : '4. Fes clic directe al mapa',
+                desc: isEs
+                    ? 'Toca cualquier punto del mapa para interactuar directamente sin escribir direcciones largas:'
+                    : 'Toca qualsevol punt del mapa per interactuar directament sense escriure adreces llargues:',
+                bullets: isEs
+                    ? [
+                        'En modo «Marcar clicant al mapa», tu próximo toque fijará Casa o Instituto.',
+                        'Fuera de ese modo, tocar el mapa te permite consultar esa dirección, guardar el punto o ir hasta allí.'
+                    ]
+                    : [
+                        'En mode «Marcar clicant al mapa», el teu pròxim toc fixarà Casa o Institut.',
+                        'Fora d’aquest mode, tocar el mapa et permet consultar l’adreça, desar el punt o traçar ruta.'
+                    ]
+            },
+            {
+                selector: '#daily-maps-saved-form, [data-daily-maps-tab="saved"]',
+                onEnter: async () => {
+                    if (typeof window.switchDailyMapsTab === 'function') window.switchDailyMapsTab('saved');
+                },
+                onLeave: () => {
+                    if (typeof window.switchDailyMapsTab === 'function') window.switchDailyMapsTab('transit');
+                },
+                actionLabel: isEs ? 'Pestaña «Llocs» (Favoritos)' : 'Pestanya «Llocs» (Preferits)',
+                title: isEs ? '5. Gestiona todos tus lugares guardados' : '5. Gestiona tots els teus llocs desats',
+                desc: isEs
+                    ? 'En la pestaña «Llocs» puedes añadir trabajo, gimnasio, supermercados o puntos de encuentro sincronizados en tu perfil:'
+                    : 'A la pestanya «Llocs» pots afegir feina, gimnàs, supermercats o punts de trobada sincronitzats al teu perfil:',
+                bullets: isEs
+                    ? [
+                        'Añade cualquier lugar por dirección, marcador del mapa o GPS.',
+                        'Pulsa un lugar de tu lista para enfocarlo, trazar ruta en 1 clic o eliminarlo de Firestore.'
+                    ]
+                    : [
+                        'Afegeix qualsevol lloc per adreça, marcador al mapa o GPS.',
+                        'Prem un lloc de la llista per enfocar-lo, traçar ruta en 1 clic o eliminar-lo de Firestore.'
+                    ]
+            },
+            {
+                selector: '#daily-maps-tour-btn',
+                onEnter: async () => {
+                    if (typeof window.switchDailyMapsTab === 'function') window.switchDailyMapsTab('transit');
+                },
+                actionLabel: isEs ? 'Más pestañas y ayuda «?»' : 'Més pestanyes i ajuda «?»',
+                title: isEs ? '6. Explora «A prop», «Cotxe» y «Rutes»' : '6. Explora «A prop», «Cotxe» i «Rutes»',
+                desc: isEs
+                    ? 'Arriba tienes también «Cotxe» (dónde aparcaste), «A prop» (farmacias, supermercados, metro...) y «Rutes» (a pie, coche o bici).'
+                    : 'A dalt tens també «Cotxe» (on vas aparcar), «A prop» (farmàcies, supermercats, metro...) i «Rutes» (a peu, cotxe o bici).',
+                bullets: isEs
+                    ? [
+                        'Pulsa este botón «?» en cualquier momento si quieres volver a ver esta guía de AliatMaps.'
+                    ]
+                    : [
+                        'Prem aquest botó «?» en qualsevol moment si vols tornar a veure aquesta guia d’AliatMaps.'
+                    ]
+            }
+        ];
+    }
+
     function getCopy(isEs) {
         return {
             introBadge: isEs ? 'Guía interactiva · Paso a paso' : 'Guia interactiva · Pas a pas',
@@ -465,6 +603,13 @@
                         ? 'Nos meteremos dentro de los chats para mostrarte qué hace cada modo, los botones de arriba, el menú «⋮» y todas las carpetas del «+».'
                         : 'Ens ficarem dins dels xats per mostrar-te què fa cada mode, els botons de dalt, el menú «⋮» i totes les carpetes del «+».',
                     steps: buildInAppSteps(isEs, false, state.hasUserChatAtStart)
+                },
+                maps: {
+                    introTitle: isEs ? 'Domina AliatMaps en pocos clics' : 'Domina AliatMaps en pocs clics',
+                    introDesc: isEs
+                        ? 'Te enseñamos a guardar Casa, tu Instituto y tus sitios favoritos en tu perfil (Firestore) y a buscar rutas y ubicaciones paso a paso.'
+                        : 'T’ensenyem a desar Casa, el teu Institut i els teus llocs favorits al perfil (Firestore) i a cercar rutes i ubicacions pas a pas.',
+                    steps: buildAliatMapsSteps(isEs)
                 }
             }
         };
@@ -606,23 +751,24 @@
 
     function stopTour(markCompleted = true, skipRestore = false) {
         state.transitionToken += 1;
+        const prevFlow = state.flow;
         const prevStep = state.index >= 0 ? state.steps[state.index] : null;
         if (prevStep && typeof prevStep.onLeave === 'function') {
             try { prevStep.onLeave(); } catch (_) {}
         }
         const hooks = getTourHooks();
-        if (hooks) {
+        if (hooks && prevFlow !== 'maps') {
             try { hooks.closeAllMenus(); } catch (_) {}
         }
-        if (markCompleted && state.flow) {
-            markFlowDone(state.flow);
+        if (markCompleted && prevFlow) {
+            markFlowDone(prevFlow);
         }
         const snap = state.snapshot;
         state.snapshot = null;
         state.active = false;
         state.index = -1;
         cleanupDOM(false);
-        if (!skipRestore && snap && hooks && !hooks.hasUserChat()) {
+        if (!skipRestore && prevFlow !== 'maps' && snap && hooks && !hooks.hasUserChat()) {
             Promise.resolve(hooks.restoreSnapshot(snap)).catch(() => {});
         }
     }
@@ -1012,7 +1158,7 @@
         return forceFallback ? flowData.steps.slice() : [];
     }
 
-    window.__ALIAT_ONBOARDING_VERSION = 10;
+    window.__ALIAT_ONBOARDING_VERSION = 11;
     let _lastTourStartTs = 0;
 
     window.startAliatOnboarding = function (requestedFlow = 'auto', forceReplay = false) {
@@ -1021,17 +1167,18 @@
         _lastTourStartTs = now;
 
         const flow = (!requestedFlow || requestedFlow === 'auto') ? detectFlow() : requestedFlow;
+        if (flow === 'maps' && !isMapsModalOpen()) return;
         if (!forceReplay && isFlowDone(flow)) return;
-        if (!forceReplay && isAnyBlockingModalOpen()) return;
+        if (!forceReplay && isAnyBlockingModalOpen(flow)) return;
 
         // If mobile sidebar drawer was left open over the app while clicking ?, collapse it first so UI is unobstructed
-        if (window.innerWidth < 768) {
+        if (window.innerWidth < 768 && flow !== 'maps') {
             closeMobileSidebarNow();
         }
 
         const hooks = getTourHooks();
-        state.hasUserChatAtStart = Boolean(hooks && isChatViewCurrentlyOpen() && hooks.hasUserChat());
-        state.snapshot = (flow !== 'landing' && hooks && !state.hasUserChatAtStart) ? hooks.getSnapshot() : null;
+        state.hasUserChatAtStart = Boolean(hooks && flow !== 'maps' && isChatViewCurrentlyOpen() && hooks.hasUserChat());
+        state.snapshot = (flow !== 'landing' && flow !== 'maps' && hooks && !state.hasUserChatAtStart) ? hooks.getSnapshot() : null;
 
         const steps = buildStepsForFlow(flow, Boolean(forceReplay));
         if (!steps || steps.length === 0) return;
@@ -1042,6 +1189,20 @@
         state.index = -1;
         state.transitionToken += 1;
         renderTourUI();
+    };
+
+    window.startAliatMapsOnboarding = function (forceReplay = false) {
+        if (!isMapsModalOpen()) return;
+        if (state.active && state.flow !== 'maps') {
+            stopTour(false, true);
+        }
+        window.startAliatOnboarding('maps', Boolean(forceReplay));
+    };
+
+    window.stopAliatMapsOnboardingIfActive = function () {
+        if (state.active && state.flow === 'maps') {
+            stopTour(false, true);
+        }
     };
 
     window.stopAliatOnboarding = function (markDone = true) {
@@ -1066,7 +1227,7 @@
             if (window.location.search.includes('share=')) return;
             const flow = detectFlow();
             if (isFlowDone(flow)) return;
-            if (isAnyBlockingModalOpen()) {
+            if (isAnyBlockingModalOpen(flow)) {
                 return;
             }
             window.startAliatOnboarding(flow, false);

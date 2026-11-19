@@ -14,7 +14,6 @@
     const STORAGE_KEY_PARKING = 'aliat_daily_parked_vehicle_v1';
     const STORAGE_KEY_PLACES = 'aliat_daily_saved_places_v1';
     const STORAGE_KEY_OWNER = 'aliat_daily_maps_owner_v1';
-    const MAX_CACHE_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30-day ToS cache limit
     const DEFAULT_CENTER = { lat: 41.3874, lng: 2.1686 }; // Barcelona center fallback
 
     // --- Tier 1: Global Maps JavaScript API Quota & Auth Defense ---
@@ -85,6 +84,9 @@
     let selectedTravelMode = 'WALKING'; // 'WALKING' | 'DRIVING' | 'BICYCLING' | 'TRANSIT'
     let routeDestinationCoords = null;
     let routeDestinationLabel = '';
+    let trafficLayer = null;
+    let trafficEnabled = false;
+    let satelliteEnabled = false;
 
     // State for AliatMaps Public Transit & AI Assistant
     const transitState = {
@@ -108,6 +110,9 @@
         lang: 'ca',
         routes: [],
         selectedRouteIdx: 0,
+        selectedPhaseIdx: null,
+        expandedWalkPhases: {},
+        routeListFilter: 'ALL',
         verdictHtml: '',
         verdictPlainText: '',
         verdictStatus: 'ok',
@@ -119,6 +124,7 @@
         lastExploreContext: null,
         conversation: [],
         placesSyncedWithAccount: false,
+        placesSyncedWithFirestore: false,
         setPlaceRole: null,
         setPlaceCandidates: [],
         homeEditorOpen: false,
@@ -132,6 +138,10 @@
         inputMode: 'ai', // 'ai' | 'manual'
         manualFiltersOpen: true
     };
+
+    // Authoritative in-memory cache backed by Firebase Firestore user profile
+    let firestoreProfilePlaces = null;
+    let firestoreProfileParking = null;
 
     // Everyday nearby categories (Places API New)
     const NEARBY_CATEGORIES = [
@@ -150,99 +160,298 @@
 
     function getCurrentUserEmailSafe() {
         try {
-            return String(localStorage.getItem('aliat_user_email') || '').trim().toLowerCase();
+            const direct = String(localStorage.getItem('aliat_user_email') || '').trim().toLowerCase();
+            if (direct) return direct;
+            const rawUser = localStorage.getItem('aliat_user');
+            if (rawUser) {
+                const parsed = JSON.parse(rawUser);
+                if (parsed && parsed.email) return String(parsed.email).trim().toLowerCase();
+            }
+            if (window.authUser && window.authUser.email) {
+                return String(window.authUser.email).trim().toLowerCase();
+            }
+            if (window.googleWorkspaceAccountEmail) {
+                return String(window.googleWorkspaceAccountEmail).trim().toLowerCase();
+            }
+            return '';
         } catch (_) {
             return '';
         }
     }
 
+    function getUserPlacesBackupKey(email) {
+        const clean = String(email || '').trim().toLowerCase().replace(/[^a-z0-9@._-]/g, '');
+        return clean ? `aliat_daily_saved_places_u_${clean}` : '';
+    }
+
+    function getUserParkingBackupKey(email) {
+        const clean = String(email || '').trim().toLowerCase().replace(/[^a-z0-9@._-]/g, '');
+        return clean ? `aliat_daily_parked_u_${clean}` : '';
+    }
+
+    function getPlaceRoleKeyForMerge(p) {
+        if (!p) return '';
+        if (p.role === 'home' || p.role === 'school' || p.role === 'work') return `role:${p.role}`;
+        const txt = `${p.title || ''} ${p.category || ''}`;
+        if (/casa|llar|home/i.test(txt)) return 'role:home';
+        if (/insti|institut|instituto|uni|universit|escola|estud|cole/i.test(txt)) return 'role:school';
+        if (/feina|trabajo|oficina|work/i.test(txt)) return 'role:work';
+        return `id:${p.id || `${Number(p.lat).toFixed(4)},${Number(p.lng).toFixed(4)}`}`;
+    }
+
+    function isFirebaseProfileActive() {
+        return typeof window.hasFirebaseMapsProfile === 'function' && window.hasFirebaseMapsProfile();
+    }
+
+    function mergeSavedPlacesLists(...lists) {
+        const map = new Map();
+        for (const list of lists) {
+            if (!Array.isArray(list)) continue;
+            for (const item of list) {
+                if (!item || typeof item.lat !== 'number' || typeof item.lng !== 'number') continue;
+                const key = getPlaceRoleKeyForMerge(item);
+                const prev = map.get(key);
+                const prevTs = typeof prev?.savedAt === 'number' ? prev.savedAt : 0;
+                const curTs = typeof item.savedAt === 'number' ? item.savedAt : 0;
+                if (!prev || curTs >= prevTs) {
+                    map.set(key, item);
+                }
+            }
+        }
+        return Array.from(map.values())
+            .sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0))
+            .slice(0, 30);
+    }
+
     function schedulePushPlacesToServer() {
         if (suppressRemotePush) return;
-        const token = localStorage.getItem('aliat_token') || '';
-        if (!token) return;
         if (pushPlacesTimeoutId) clearTimeout(pushPlacesTimeoutId);
         pushPlacesTimeoutId = setTimeout(() => {
             pushPlacesTimeoutId = null;
             pushMapsPlacesToServerNow().catch(() => {});
-        }, 120);
+        }, 80);
     }
 
     async function pushMapsPlacesToServerNow() {
         try {
             const token = localStorage.getItem('aliat_token') || '';
-            if (!token) return false;
             const places = loadSavedEverydayPlaces();
             const parkedVehicle = loadParkedVehicleState();
-            const res = await fetch('/api/maps/places', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ places, parkedVehicle })
-            });
-            if (res.ok) {
+            let syncedAny = false;
+            let syncedFirestore = false;
+
+            if (typeof window.saveAliatMapsPlacesToFirestore === 'function' && isFirebaseProfileActive()) {
+                try {
+                    const fsOk = await window.saveAliatMapsPlacesToFirestore(places, parkedVehicle);
+                    if (fsOk) {
+                        syncedAny = true;
+                        syncedFirestore = true;
+                        firestoreProfilePlaces = places.slice();
+                        firestoreProfileParking = parkedVehicle ? { ...parkedVehicle } : null;
+                    }
+                } catch (_) {}
+            }
+
+            if (token) {
+                try {
+                    const res = await fetch('/api/maps/places', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ places, parkedVehicle })
+                    });
+                    if (res.ok) syncedAny = true;
+                } catch (_) {}
+            }
+
+            if (syncedAny) {
                 transitState.placesSyncedWithAccount = true;
+                transitState.placesSyncedWithFirestore = syncedFirestore;
                 const email = getCurrentUserEmailSafe();
-                if (email) localStorage.setItem(STORAGE_KEY_OWNER, email);
+                if (email && !syncedFirestore) localStorage.setItem(STORAGE_KEY_OWNER, email);
                 return true;
             }
         } catch (_) {}
         return false;
     }
 
+    window.onAliatFirebaseMapsSignOut = function () {
+        firestoreProfilePlaces = null;
+        firestoreProfileParking = null;
+        transitState.placesSyncedWithAccount = false;
+        transitState.placesSyncedWithFirestore = false;
+        if (mapInstance && mapClasses) {
+            renderSavedHomeAndSchoolMarkers();
+            renderParkingMarkerOnMap();
+        }
+        if (activeTab === 'transit') renderTransitTabContent();
+        else if (activeTab === 'saved') renderSavedPlacesTabContent();
+        else if (activeTab === 'parking') renderParkingTabContent();
+    };
+
     async function syncMapsPlacesFromServer() {
         try {
             const token = localStorage.getItem('aliat_token') || '';
-            if (!token) {
-                transitState.placesSyncedWithAccount = false;
-                return false;
-            }
             const currentEmail = getCurrentUserEmailSafe();
+            const fbActive = isFirebaseProfileActive();
+
+            // When signed in to Firebase Auth, Firebase Firestore is the authoritative user profile store.
+            // Only migrate temporary localStorage places once if the user added them right before signing in.
+            const [firestoreData, tursoData] = await Promise.all([
+                (async () => {
+                    if (typeof window.loadAliatMapsPlacesFromFirestore !== 'function') return null;
+                    try {
+                        return await window.loadAliatMapsPlacesFromFirestore();
+                    } catch (_) {
+                        return null;
+                    }
+                })(),
+                (async () => {
+                    if (!token) return null;
+                    try {
+                        const res = await fetch('/api/maps/places', {
+                            headers: { 'Authorization': `Bearer ${token}` },
+                            cache: 'no-store'
+                        });
+                        if (!res.ok) return null;
+                        const d = await res.json().catch(() => null);
+                        return (d && d.success) ? d : null;
+                    } catch (_) {
+                        return null;
+                    }
+                })()
+            ]);
+
+            if (firestoreData || fbActive) {
+                const fsPlaces = Array.isArray(firestoreData?.places) ? firestoreData.places : [];
+                const tursoPlaces = Array.isArray(tursoData?.places) ? tursoData.places : [];
+
+                // Check temporary unauthenticated localStorage places solely for one-time migration on sign-in
+                let tempPlaces = [];
+                let tempParking = null;
+                try {
+                    const rawTempPlaces = localStorage.getItem(STORAGE_KEY_PLACES);
+                    if (rawTempPlaces) {
+                        const parsed = JSON.parse(rawTempPlaces);
+                        if (Array.isArray(parsed)) {
+                            tempPlaces = parsed.filter(p => p && typeof p.lat === 'number' && typeof p.lng === 'number');
+                        }
+                    }
+                    const rawTempPark = localStorage.getItem(STORAGE_KEY_PARKING);
+                    if (rawTempPark) {
+                        const pk = JSON.parse(rawTempPark);
+                        if (pk && typeof pk.lat === 'number' && typeof pk.lng === 'number') tempParking = pk;
+                    }
+                } catch (_) {}
+
+                const mergedPlaces = mergeSavedPlacesLists(fsPlaces, tursoPlaces, tempPlaces);
+                const fsParking = firestoreData?.parkedVehicle || null;
+                const tursoParking = tursoData?.parkedVehicle || null;
+                const mergedParking = [fsParking, tursoParking, tempParking]
+                    .filter(p => p && typeof p.lat === 'number' && typeof p.lng === 'number')
+                    .sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0))[0] || null;
+
+                firestoreProfilePlaces = mergedPlaces;
+                firestoreProfileParking = mergedParking;
+                transitState.placesSyncedWithAccount = true;
+                transitState.placesSyncedWithFirestore = true;
+
+                // Replace & retire temporary localStorage once migrated into Firestore profile
+                try {
+                    localStorage.removeItem(STORAGE_KEY_PLACES);
+                    localStorage.removeItem(STORAGE_KEY_PARKING);
+                    localStorage.removeItem('aliat_daily_deleted_places_v1');
+                    if (currentEmail) {
+                        const bKey = getUserPlacesBackupKey(currentEmail);
+                        const bPkKey = getUserParkingBackupKey(currentEmail);
+                        if (bKey) localStorage.removeItem(bKey);
+                        if (bPkKey) localStorage.removeItem(bPkKey);
+                    }
+                } catch (_) {}
+
+                // Persist migrated entries to Firestore if temp or Turso had items missing from Firestore
+                if ((tempPlaces.length > 0 || tursoPlaces.length > fsPlaces.length || (mergedParking && !fsParking)) && typeof window.saveAliatMapsPlacesToFirestore === 'function') {
+                    window.saveAliatMapsPlacesToFirestore(mergedPlaces, mergedParking).catch(() => {});
+                }
+
+                if (mapInstance && mapClasses) {
+                    renderSavedHomeAndSchoolMarkers();
+                    renderParkingMarkerOnMap();
+                }
+                if (activeTab === 'transit') renderTransitTabContent();
+                else if (activeTab === 'saved') renderSavedPlacesTabContent();
+                else if (activeTab === 'parking') renderParkingTabContent();
+                return true;
+            }
+
+            // Fallback for non-Firebase accounts (legacy JWT or local guest session)
             const storedOwner = String(localStorage.getItem(STORAGE_KEY_OWNER) || '').trim().toLowerCase();
             if (currentEmail && storedOwner && storedOwner !== currentEmail) {
-                localStorage.removeItem(STORAGE_KEY_PLACES);
-                localStorage.removeItem(STORAGE_KEY_PARKING);
+                const backupPlacesKey = getUserPlacesBackupKey(currentEmail);
+                const backupParkKey = getUserParkingBackupKey(currentEmail);
+                const backupPlaces = backupPlacesKey ? localStorage.getItem(backupPlacesKey) : null;
+                const backupPark = backupParkKey ? localStorage.getItem(backupParkKey) : null;
+                if (backupPlaces) localStorage.setItem(STORAGE_KEY_PLACES, backupPlaces);
+                else localStorage.removeItem(STORAGE_KEY_PLACES);
+                if (backupPark) localStorage.setItem(STORAGE_KEY_PARKING, backupPark);
+                else localStorage.removeItem(STORAGE_KEY_PARKING);
+                localStorage.setItem(STORAGE_KEY_OWNER, currentEmail);
             }
 
-            const res = await fetch('/api/maps/places', {
-                headers: { 'Authorization': `Bearer ${token}` },
-                cache: 'no-store'
-            });
-            if (!res.ok) return false;
-            const data = await res.json().catch(() => null);
-            if (!data || !data.success) return false;
+            if (!token && !currentEmail) {
+                transitState.placesSyncedWithAccount = false;
+                transitState.placesSyncedWithFirestore = false;
+                return false;
+            }
 
-            const remotePlaces = Array.isArray(data.places) ? data.places : [];
-            const remoteParking = data.parkedVehicle || null;
+            const tursoPlaces = Array.isArray(tursoData?.places) ? tursoData.places : [];
             const localPlaces = loadSavedEverydayPlaces();
+            let tombstones = {};
+            try { tombstones = JSON.parse(localStorage.getItem('aliat_daily_deleted_places_v1') || '{}') || {}; } catch (_) {}
+            const filterDeleted = (arr) => arr.filter((item) => {
+                if (!item) return false;
+                const ts = typeof item.savedAt === 'number' ? item.savedAt : 0;
+                const rKey = getPlaceRoleKeyForMerge(item);
+                const delIdTs = tombstones[`id:${item.id}`] || 0;
+                const delRoleTs = tombstones[rKey] || 0;
+                return ts >= Math.max(delIdTs, delRoleTs);
+            });
+            const mergedPlaces = mergeSavedPlacesLists(filterDeleted(tursoPlaces), localPlaces);
+
+            const tursoParking = tursoData?.parkedVehicle || null;
             const localParking = loadParkedVehicleState();
+            const parkingCandidates = [tursoParking, localParking]
+                .filter(p => p && typeof p.lat === 'number' && typeof p.lng === 'number')
+                .sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+            const mergedParking = parkingCandidates[0] || null;
 
             suppressRemotePush = true;
             try {
-                if (remotePlaces.length > 0) {
-                    localStorage.setItem(STORAGE_KEY_PLACES, JSON.stringify(remotePlaces));
-                } else if (localPlaces.length > 0 && (!storedOwner || !currentEmail || storedOwner === currentEmail)) {
-                    // Initial upload of local places created before login/sync
-                    suppressRemotePush = false;
-                    await pushMapsPlacesToServerNow();
-                    suppressRemotePush = true;
-                } else {
-                    localStorage.removeItem(STORAGE_KEY_PLACES);
+                if (mergedPlaces.length > 0) {
+                    const serialized = JSON.stringify(mergedPlaces);
+                    localStorage.setItem(STORAGE_KEY_PLACES, serialized);
+                    const bKey = getUserPlacesBackupKey(currentEmail);
+                    if (bKey) localStorage.setItem(bKey, serialized);
                 }
 
-                if (remoteParking) {
-                    localStorage.setItem(STORAGE_KEY_PARKING, JSON.stringify(remoteParking));
-                } else if (localParking && (!storedOwner || !currentEmail || storedOwner === currentEmail)) {
-                    suppressRemotePush = false;
-                    await pushMapsPlacesToServerNow();
-                    suppressRemotePush = true;
-                } else {
-                    localStorage.removeItem(STORAGE_KEY_PARKING);
+                if (mergedParking) {
+                    const serializedPk = JSON.stringify(mergedParking);
+                    localStorage.setItem(STORAGE_KEY_PARKING, serializedPk);
+                    const bPkKey = getUserParkingBackupKey(currentEmail);
+                    if (bPkKey) localStorage.setItem(bPkKey, serializedPk);
                 }
 
                 if (currentEmail) localStorage.setItem(STORAGE_KEY_OWNER, currentEmail);
-                transitState.placesSyncedWithAccount = true;
+                transitState.placesSyncedWithAccount = Boolean(tursoData || (mergedPlaces.length > 0 && currentEmail));
+                transitState.placesSyncedWithFirestore = false;
+
+                if ((mergedPlaces.length > 0 && token && tursoPlaces.length < mergedPlaces.length) || (mergedParking && token && !tursoParking)) {
+                    suppressRemotePush = false;
+                    pushMapsPlacesToServerNow().catch(() => {});
+                    suppressRemotePush = true;
+                }
             } finally {
                 suppressRemotePush = false;
             }
@@ -263,14 +472,18 @@
 
     function loadParkedVehicleState() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY_PARKING);
+            if (isFirebaseProfileActive() && firestoreProfileParking !== null) {
+                return firestoreProfileParking;
+            }
+            let raw = localStorage.getItem(STORAGE_KEY_PARKING);
+            if (!raw) {
+                const email = getCurrentUserEmailSafe();
+                const bKey = getUserParkingBackupKey(email);
+                if (bKey) raw = localStorage.getItem(bKey);
+            }
             if (!raw) return null;
             const parsed = JSON.parse(raw);
             if (!parsed || typeof parsed.lat !== 'number' || typeof parsed.lng !== 'number') return null;
-            if (parsed.savedAt && Date.now() - parsed.savedAt > MAX_CACHE_AGE_MS) {
-                localStorage.removeItem(STORAGE_KEY_PARKING);
-                return null;
-            }
             return parsed;
         } catch (_) {
             return null;
@@ -279,29 +492,47 @@
 
     function saveParkedVehicleState(data) {
         try {
-            const email = getCurrentUserEmailSafe();
-            if (email) localStorage.setItem(STORAGE_KEY_OWNER, email);
-            if (!data) {
-                localStorage.removeItem(STORAGE_KEY_PARKING);
+            const payload = data ? { ...data, savedAt: data.savedAt || Date.now() } : null;
+            if (isFirebaseProfileActive()) {
+                firestoreProfileParking = payload;
                 schedulePushPlacesToServer();
                 return;
             }
-            localStorage.setItem(STORAGE_KEY_PARKING, JSON.stringify({
-                ...data,
-                savedAt: data.savedAt || Date.now()
-            }));
+            const email = getCurrentUserEmailSafe();
+            if (email) localStorage.setItem(STORAGE_KEY_OWNER, email);
+            const bKey = getUserParkingBackupKey(email);
+            if (!payload) {
+                localStorage.removeItem(STORAGE_KEY_PARKING);
+                if (bKey) localStorage.removeItem(bKey);
+                schedulePushPlacesToServer();
+                return;
+            }
+            const serialized = JSON.stringify(payload);
+            localStorage.setItem(STORAGE_KEY_PARKING, serialized);
+            if (bKey) localStorage.setItem(bKey, serialized);
             schedulePushPlacesToServer();
         } catch (_) {}
     }
 
     function loadSavedEverydayPlaces() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY_PLACES);
+            if (isFirebaseProfileActive() && Array.isArray(firestoreProfilePlaces)) {
+                return firestoreProfilePlaces.filter((item) => item && typeof item.lat === 'number' && typeof item.lng === 'number');
+            }
+            let raw = localStorage.getItem(STORAGE_KEY_PLACES);
+            if (!raw || raw === '[]') {
+                const email = getCurrentUserEmailSafe();
+                const bKey = getUserPlacesBackupKey(email);
+                const backupRaw = bKey ? localStorage.getItem(bKey) : null;
+                if (backupRaw && backupRaw !== '[]') {
+                    raw = backupRaw;
+                    localStorage.setItem(STORAGE_KEY_PLACES, backupRaw);
+                }
+            }
             if (!raw) return [];
             const arr = JSON.parse(raw);
             if (!Array.isArray(arr)) return [];
-            const now = Date.now();
-            return arr.filter((item) => item && typeof item.lat === 'number' && typeof item.lng === 'number' && (!item.savedAt || now - item.savedAt <= MAX_CACHE_AGE_MS));
+            return arr.filter((item) => item && typeof item.lat === 'number' && typeof item.lng === 'number');
         } catch (_) {
             return [];
         }
@@ -309,9 +540,18 @@
 
     function saveEverydayPlaces(list) {
         try {
+            const clean = Array.isArray(list) ? list : [];
+            if (isFirebaseProfileActive()) {
+                firestoreProfilePlaces = clean;
+                schedulePushPlacesToServer();
+                return;
+            }
             const email = getCurrentUserEmailSafe();
             if (email) localStorage.setItem(STORAGE_KEY_OWNER, email);
-            localStorage.setItem(STORAGE_KEY_PLACES, JSON.stringify(list || []));
+            const serialized = JSON.stringify(clean);
+            localStorage.setItem(STORAGE_KEY_PLACES, serialized);
+            const bKey = getUserPlacesBackupKey(email);
+            if (bKey) localStorage.setItem(bKey, serialized);
             schedulePushPlacesToServer();
         } catch (_) {}
     }
@@ -659,6 +899,109 @@
         }
     }
 
+    function updateFloatingMapControlButtons() {
+        const satBtn = document.getElementById('daily-map-sat-btn');
+        if (satBtn) {
+            satBtn.className = satelliteEnabled
+                ? 'h-9 px-2.5 rounded-xl bg-blue-600 text-white border border-blue-500 shadow-lg flex items-center justify-center gap-1.5 cursor-pointer transition text-[11px] font-extrabold'
+                : 'h-9 px-2.5 rounded-xl bg-white/95 dark:bg-zinc-900/95 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-700/90 shadow-lg flex items-center justify-center gap-1.5 cursor-pointer transition text-[11px] font-bold backdrop-blur-md';
+        }
+        const trafficBtn = document.getElementById('daily-map-traffic-btn');
+        if (trafficBtn) {
+            trafficBtn.className = trafficEnabled
+                ? 'h-9 px-2.5 rounded-xl bg-amber-500 text-white border border-amber-400 shadow-lg flex items-center justify-center gap-1.5 cursor-pointer transition text-[11px] font-extrabold'
+                : 'h-9 px-2.5 rounded-xl bg-white/95 dark:bg-zinc-900/95 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-100 border border-zinc-200/90 dark:border-zinc-700/90 shadow-lg flex items-center justify-center gap-1.5 cursor-pointer transition text-[11px] font-bold backdrop-blur-md';
+        }
+    }
+
+    window.centerDailyMapOnGps = async function () {
+        if (!mapInstance) await ensureMapInitialized();
+        const loc = await requestUserGeolocation(false);
+        if (loc && mapInstance) {
+            mapInstance.panTo(loc);
+            mapInstance.setZoom(16);
+        }
+    };
+
+    window.fitDailyMapView = async function () {
+        if (!mapInstance) await ensureMapInitialized();
+        if (!mapInstance || !window.google?.maps?.LatLngBounds) return;
+        const bounds = new window.google.maps.LatLngBounds();
+        let count = 0;
+        const pushPt = (lat, lng) => {
+            if (typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng)) {
+                bounds.extend({ lat, lng });
+                count++;
+            }
+        };
+
+        if (userLocation) pushPt(userLocation.lat, userLocation.lng);
+        const parked = loadParkedVehicleState();
+        if (parked) pushPt(parked.lat, parked.lng);
+        loadSavedEverydayPlaces().forEach((p) => {
+            if (p.role === 'home' || p.role === 'school' || p.id === 'home' || p.id === 'school') {
+                pushPt(p.lat, p.lng);
+            }
+        });
+        if (routeDestinationCoords) pushPt(routeDestinationCoords.lat, routeDestinationCoords.lng);
+        if (transitState.originCoords) pushPt(transitState.originCoords.lat, transitState.originCoords.lng);
+        if (transitState.destCoords) pushPt(transitState.destCoords.lat, transitState.destCoords.lng);
+
+        activePlaceMarkers.forEach((m) => {
+            try {
+                const pos = m?.position;
+                if (pos) {
+                    const lat = typeof pos.lat === 'function' ? pos.lat() : pos.lat;
+                    const lng = typeof pos.lng === 'function' ? pos.lng() : pos.lng;
+                    pushPt(lat, lng);
+                }
+            } catch (_) {}
+        });
+
+        activeRoutePolylines.forEach((pline) => {
+            try {
+                const path = pline?.getPath?.();
+                const arr = path ? path.getArray() : [];
+                arr.forEach((pt) => {
+                    bounds.extend(pt);
+                    count++;
+                });
+            } catch (_) {}
+        });
+
+        if (count === 0) {
+            window.centerDailyMapOnGps();
+            return;
+        }
+        if (count === 1) {
+            mapInstance.panTo(bounds.getCenter());
+            mapInstance.setZoom(16);
+            return;
+        }
+        mapInstance.fitBounds(bounds, 52);
+    };
+
+    window.toggleDailyMapSatellite = async function () {
+        if (!mapInstance) await ensureMapInitialized();
+        if (!mapInstance) return;
+        satelliteEnabled = !satelliteEnabled;
+        try {
+            mapInstance.setMapTypeId(satelliteEnabled ? 'hybrid' : 'roadmap');
+        } catch (_) {}
+        updateFloatingMapControlButtons();
+    };
+
+    window.toggleDailyMapTraffic = async function () {
+        if (!mapInstance) await ensureMapInitialized();
+        if (!mapInstance || !window.google?.maps?.TrafficLayer) return;
+        trafficEnabled = !trafficEnabled;
+        if (!trafficLayer) {
+            trafficLayer = new window.google.maps.TrafficLayer();
+        }
+        trafficLayer.setMap(trafficEnabled ? mapInstance : null);
+        updateFloatingMapControlButtons();
+    };
+
     function mountPlaceAutocompleteInputs() {
         if (!mapClasses || !mapClasses.PlaceAutocompleteElement) return;
         const searchHost = document.getElementById('daily-gmp-autocomplete-host');
@@ -708,17 +1051,21 @@
         const list = loadSavedEverydayPlaces();
         const isHome = role === 'home';
         const isSchool = role === 'school';
+        const isWork = role === 'work';
+        const normRole = isHome ? 'home' : (isSchool ? 'school' : (isWork ? 'work' : 'favorite'));
         const cat = isHome ? 'Casa' : (isSchool ? 'Institut / Universitat' : 'Feina / Estudis');
         const finalTitle = title || (isHome ? 'Casa' : (isSchool ? 'Institut / Universitat' : 'Feina'));
 
         const filtered = list.filter((p) => {
-            if (isHome) return !/casa|llar|home/i.test(`${p.title} ${p.category}`);
-            if (isSchool) return !/insti|institut|instituto|uni|universit|escola|estud|cole/i.test(`${p.title} ${p.category}`);
+            if (isHome) return p.role !== 'home' && !/casa|llar|home/i.test(`${p.title} ${p.category}`);
+            if (isSchool) return p.role !== 'school' && !/insti|institut|instituto|uni|universit|escola|estud|cole/i.test(`${p.title} ${p.category}`);
+            if (isWork) return p.role !== 'work' && !/feina|trabajo|oficina|work/i.test(`${p.title} ${p.category}`);
             return true;
         });
 
         const item = {
-            id: 'pl_' + Date.now(),
+            id: normRole === 'favorite' ? ('pl_' + Date.now()) : ('role_' + normRole),
+            role: normRole,
             title: finalTitle,
             category: cat,
             lat: Number(lat),
@@ -728,6 +1075,9 @@
         };
         filtered.unshift(item);
         saveEverydayPlaces(filtered.slice(0, 20));
+        if (typeof window.saveAliatMapsPlaceToFirestore === 'function' && isFirebaseProfileActive()) {
+            window.saveAliatMapsPlaceToFirestore(item).catch(() => {});
+        }
 
         if (isHome) {
             transitState.originMode = 'saved';
@@ -775,6 +1125,7 @@
         }
         if (activeTab === 'transit') renderTransitTabContent();
         else if (activeTab === 'saved') renderSavedPlacesTabContent();
+        pushMapsPlacesToServerNow().catch(() => {});
     };
 
     window.setTransitDestAndOpen = function (lat, lng, label) {
@@ -871,14 +1222,21 @@
         const btn = document.getElementById('daily-save-gps-parking-btn');
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = `${iconSvg('spinner', 'w-4 h-4 animate-spin')}<span>Obtenint GPS exacte...</span>`;
+            btn.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">${iconSvg('spinner', 'w-5 h-5 animate-spin')}</span>
+                    <div class="text-left">
+                        <div class="text-xs font-extrabold">Obtenint GPS exacte...</div>
+                        <div class="text-[10.5px] text-blue-100">Un moment...</div>
+                    </div>
+                </div>
+            `;
         }
         const loc = await requestUserGeolocation(false);
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = `${iconSvg('gps', 'w-4 h-4')}<span>Guardar on he aparcat ara (GPS)</span>`;
+        if (!loc) {
+            renderParkingTabContent();
+            return;
         }
-        if (!loc) return;
         await window.saveSpotAsParkedVehicle(loc.lat, loc.lng);
     };
 
@@ -896,7 +1254,9 @@
 
         const address = await reverseGeocodeCoords(lat, lng);
         const now = Date.now();
-        const expiresAt = (!isNaN(timerMins) && timerMins > 0) ? (now + timerMins * 60 * 1000) : (existing.expiresAt || null);
+        const hasNewTimer = !isNaN(timerMins) && timerMins > 0;
+        const expiresAt = hasNewTimer ? (now + timerMins * 60 * 1000) : (existing.expiresAt || null);
+        const timerDurationMins = hasNewTimer ? timerMins : (existing.timerDurationMins || null);
 
         const state = {
             lat,
@@ -906,7 +1266,8 @@
             notes,
             vehicleType,
             savedAt: now,
-            expiresAt
+            expiresAt,
+            timerDurationMins
         };
         saveParkedVehicleState(state);
 
@@ -941,8 +1302,10 @@
         const timerMins = timerInput ? parseInt(timerInput.value, 10) : 0;
         if (!isNaN(timerMins) && timerMins > 0) {
             parked.expiresAt = Date.now() + timerMins * 60 * 1000;
+            parked.timerDurationMins = timerMins;
         } else if (timerMins === 0) {
             parked.expiresAt = null;
+            parked.timerDurationMins = null;
         }
 
         saveParkedVehicleState(parked);
@@ -1248,25 +1611,31 @@
 
         const isHome = cat.includes('Casa');
         const isSchool = cat.includes('Institut');
-        if (isHome || isSchool) {
-            upsertSavedRolePlace(isHome ? 'home' : 'school', {
+        const isWork = cat.includes('Feina');
+        if (isHome || isSchool || isWork) {
+            upsertSavedRolePlace(isHome ? 'home' : (isSchool ? 'school' : 'work'), {
                 lat: coords.lat,
                 lng: coords.lng,
                 address: coords.address,
-                title: name || (isHome ? 'Casa' : 'Institut / Universitat')
+                title: name || (isHome ? 'Casa' : (isSchool ? 'Institut / Universitat' : 'Feina'))
             });
         } else {
             const list = loadSavedEverydayPlaces();
-            list.unshift({
+            const favItem = {
                 id: 'pl_' + Date.now(),
+                role: 'favorite',
                 title: name || cat,
                 category: cat,
                 lat: coords.lat,
                 lng: coords.lng,
                 address: coords.address || `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`,
                 savedAt: Date.now()
-            });
+            };
+            list.unshift(favItem);
             saveEverydayPlaces(list.slice(0, 20));
+            if (typeof window.saveAliatMapsPlaceToFirestore === 'function' && isFirebaseProfileActive()) {
+                window.saveAliatMapsPlaceToFirestore(favItem).catch(() => {});
+            }
         }
 
         window.pendingSavedPlaceCoords = null;
@@ -1274,14 +1643,37 @@
         if (addrInput) addrInput.value = '';
         renderSavedHomeAndSchoolMarkers();
         renderSavedPlacesTabContent();
+        pushMapsPlacesToServerNow().catch(() => {});
         if (typeof window.showToast === 'function') {
-            window.showToast('Lloc quotidià desat!', 'success');
+            window.showToast(
+                isFirebaseProfileActive()
+                    ? 'Ubicació desada al teu perfil de Firebase Firestore!'
+                    : 'Ubicació desada temporalment (inicia sessió per desar-la al núvol).',
+                'success'
+            );
         }
     };
 
     window.deleteSavedEverydayPlace = function (id) {
-        const next = loadSavedEverydayPlaces().filter((p) => p.id !== id);
+        const current = loadSavedEverydayPlaces();
+        const removed = current.find((p) => p.id === id);
+        if (removed && !isFirebaseProfileActive()) {
+            try {
+                const tomb = JSON.parse(localStorage.getItem('aliat_daily_deleted_places_v1') || '{}') || {};
+                const nowTs = Date.now();
+                if (removed.id) tomb[`id:${removed.id}`] = nowTs;
+                const rKey = getPlaceRoleKeyForMerge(removed);
+                if (rKey) tomb[rKey] = nowTs;
+                localStorage.setItem('aliat_daily_deleted_places_v1', JSON.stringify(tomb));
+            } catch (_) {}
+        }
+        const next = current.filter((p) => p.id !== id);
         saveEverydayPlaces(next);
+        if (removed && typeof window.deleteAliatMapsPlaceFromFirestore === 'function' && isFirebaseProfileActive()) {
+            const rHint = removed.role || (getPlaceRoleKeyForMerge(removed).startsWith('role:') ? getPlaceRoleKeyForMerge(removed).slice(5) : null);
+            window.deleteAliatMapsPlaceFromFirestore(removed.id, rHint).catch(() => {});
+        }
+        pushMapsPlacesToServerNow().catch(() => {});
         renderSavedHomeAndSchoolMarkers();
         renderSavedPlacesTabContent();
     };
@@ -1308,7 +1700,30 @@
         }
     };
 
-    // --- RENDER SIDEBAR TABS ---
+    // --- RENDER SIDEBAR TABS (GRAPHICAL & VISUAL) ---
+    window.selectParkingVehicleType = function (vType) {
+        const input = document.getElementById('daily-parking-vehicle-type');
+        if (input) input.value = vType;
+        document.querySelectorAll('[data-parking-vehicle-btn]').forEach((btn) => {
+            const active = btn.getAttribute('data-parking-vehicle-btn') === vType;
+            btn.className = active
+                ? 'p-2 rounded-xl border-2 border-blue-600 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-sky-300 flex flex-col items-center justify-center gap-1 cursor-pointer transition shadow-2xs'
+                : 'p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 hover:border-blue-400 flex flex-col items-center justify-center gap-1 cursor-pointer transition';
+        });
+    };
+
+    window.applyParkingTimerPreset = function (mins) {
+        const input = document.getElementById('daily-parking-timer-mins');
+        if (input) input.value = mins > 0 ? String(mins) : '0';
+        document.querySelectorAll('[data-parking-timer-preset]').forEach((btn) => {
+            const val = parseInt(btn.getAttribute('data-parking-timer-preset') || '0', 10);
+            const active = val === mins;
+            btn.className = active
+                ? 'py-1.5 px-2 rounded-xl bg-amber-500 text-white text-[11px] font-extrabold cursor-pointer transition shadow-2xs'
+                : 'py-1.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-zinc-700 dark:text-zinc-200 text-[11px] font-bold cursor-pointer transition border border-zinc-200/80 dark:border-zinc-700/80';
+        });
+    };
+
     function renderParkingTabContent() {
         const box = document.getElementById('daily-maps-tab-panel');
         if (!box || activeTab !== 'parking') return;
@@ -1319,101 +1734,155 @@
             parkingCountdownInterval = null;
         }
 
-        let timerBadgeHtml = '';
+        let timerGraphicHtml = '';
+        let hasActiveCountdown = false;
         if (parked && parked.expiresAt) {
             const diffMs = parked.expiresAt - Date.now();
             if (diffMs > 0) {
+                hasActiveCountdown = true;
                 const minsLeft = Math.ceil(diffMs / 60000);
-                timerBadgeHtml = `<span id="daily-parking-countdown-badge" class="px-2 py-0.5 rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10.5px] font-extrabold tabular-nums inline-flex items-center gap-1">${iconSvg('timer', 'w-3 h-3')}<span>Parquímetre: queden ${minsLeft} min</span></span>`;
+                const totalMins = Math.max(minsLeft, parked.timerDurationMins || 60);
+                const pct = Math.max(6, Math.min(100, Math.round((minsLeft / totalMins) * 100)));
+                timerGraphicHtml = `
+                    <div class="p-2.5 rounded-xl bg-amber-50/90 dark:bg-amber-950/35 border border-amber-200/80 dark:border-amber-800/60 space-y-1.5">
+                        <div class="flex items-center justify-between text-[11px] font-extrabold text-amber-800 dark:text-amber-300">
+                            <span class="inline-flex items-center gap-1.5">${iconSvg('timer', 'w-3.5 h-3.5')}<span>Parquímetre</span></span>
+                            <span id="daily-parking-countdown-badge" class="tabular-nums font-mono">${minsLeft} min</span>
+                        </div>
+                        <div class="w-full h-2 rounded-full bg-amber-200/70 dark:bg-amber-900/60 overflow-hidden">
+                            <div id="daily-parking-countdown-bar" class="h-full rounded-full bg-amber-500 transition-all duration-500" style="width:${pct}%"></div>
+                        </div>
+                    </div>
+                `;
             } else {
-                timerBadgeHtml = `<span class="px-2 py-0.5 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-[10.5px] font-extrabold inline-flex items-center gap-1">${iconSvg('warn', 'w-3 h-3')}<span>Temps de parquímetre esgotat!</span></span>`;
+                timerGraphicHtml = `
+                    <div class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/70 flex items-center justify-between text-[11px] font-extrabold text-rose-600 dark:text-rose-400">
+                        <span class="inline-flex items-center gap-1.5">${iconSvg('warn', 'w-3.5 h-3.5')}<span>Temps esgotat</span></span>
+                        <span>0 min</span>
+                    </div>
+                `;
             }
         }
 
+        const currentVType = parked?.vehicleType || 'cotxe';
+        const vehicleBtnClass = (v) => v === currentVType
+            ? 'p-2 rounded-xl border-2 border-blue-600 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-sky-300 flex flex-col items-center justify-center gap-1 cursor-pointer transition shadow-2xs'
+            : 'p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 hover:border-blue-400 flex flex-col items-center justify-center gap-1 cursor-pointer transition';
+
         box.innerHTML = `
             <div class="space-y-3">
-                <div class="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/60 space-y-2.5">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                            ${iconSvg('car', 'w-4 h-4 text-blue-600 dark:text-sky-400')}
-                            <span>On he deixat el cotxe / vehicle?</span>
-                        </span>
-                        ${timerBadgeHtml}
+                <button id="daily-save-gps-parking-btn" type="button" onclick="window.saveCurrentGpsAsParkedVehicle()" class="w-full p-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white transition cursor-pointer flex items-center justify-between gap-3 shadow-sm active:scale-[0.99]">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">${iconSvg('gps', 'w-5 h-5')}</span>
+                        <div class="text-left">
+                            <div class="text-xs font-extrabold">He aparcat aquí (GPS)</div>
+                            <div class="text-[10.5px] text-blue-100">O toca el mapa</div>
+                        </div>
                     </div>
-                    <p class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                        Guarda el punt exacte on has aparcat amb el GPS o fent clic a qualsevol carrer del mapa. Quan acabis les teves gestions, traça la ruta a peu fins al teu vehicle.
-                    </p>
-                    <button id="daily-save-gps-parking-btn" type="button" onclick="window.saveCurrentGpsAsParkedVehicle()" class="w-full py-2.5 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-xs">
-                        ${iconSvg('gps', 'w-4 h-4')}<span>Guardar on he aparcat ara (GPS)</span>
-                    </button>
-                </div>
+                    ${iconSvg('arrowRight', 'w-4 h-4 shrink-0')}
+                </button>
 
                 ${parked ? `
                 <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2.5 shadow-2xs">
                     <div class="flex items-start justify-between gap-2">
-                        <div class="space-y-0.5 min-w-0">
-                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">${iconSvg('check', 'w-3 h-3')}<span>Vehicle guardat al mapa</span></span>
-                            <div class="text-xs font-bold text-zinc-900 dark:text-white break-words">${esc(parked.address)}</div>
-                            <div class="text-[10.5px] text-zinc-400 tabular-nums">Guardat a les ${new Date(parked.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                        <div class="flex items-start gap-2.5 min-w-0">
+                            <span class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">${iconSvg(currentVType === 'moto' ? 'moto' : (currentVType === 'bici' ? 'bike' : 'car'), 'w-4 h-4')}</span>
+                            <div class="min-w-0">
+                                <div class="text-xs font-extrabold text-zinc-900 dark:text-white truncate">${esc(parked.address)}</div>
+                                <div class="text-[10.5px] text-zinc-500 dark:text-zinc-400 tabular-nums">${new Date(parked.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}${parked.floorSpot ? ` · ${esc(parked.floorSpot)}` : ''}</div>
+                            </div>
                         </div>
-                        <button type="button" onclick="window.focusDailyMapPoint(${parked.lat}, ${parked.lng})" class="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-[10.5px] font-bold shrink-0 cursor-pointer">
-                            Centrar
+                        <button type="button" onclick="window.focusDailyMapPoint(${parked.lat}, ${parked.lng})" class="px-2.5 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-[10.5px] font-bold shrink-0 cursor-pointer inline-flex items-center gap-1">
+                            ${iconSvg('target', 'w-3.5 h-3.5')}<span>Veure</span>
                         </button>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 pt-1">
-                        <button type="button" onclick="window.routeBackToParkedVehicle('WALKING')" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5">
-                            ${iconSvg('walk', 'w-3.5 h-3.5')}<span>Ruta a peu al cotxe</span>
+                    ${timerGraphicHtml}
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="window.routeBackToParkedVehicle('WALKING')" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5">
+                            ${iconSvg('walk', 'w-4 h-4')}<span>Tornar a peu</span>
                         </button>
-                        <button type="button" onclick="window.routeBackToParkedVehicle('DRIVING')" class="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-[11px] font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5">
-                            ${iconSvg('car', 'w-3.5 h-3.5')}<span>Ruta en vehicle</span>
+                        <button type="button" onclick="window.routeBackToParkedVehicle('DRIVING')" class="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-[11px] font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5">
+                            ${iconSvg('car', 'w-4 h-4')}<span>En vehicle</span>
                         </button>
                     </div>
                     <div class="flex items-center justify-between pt-1 border-t border-zinc-100 dark:border-zinc-800">
                         <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${parked.lat},${parked.lng}`)}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-blue-600 dark:text-sky-400 hover:underline inline-flex items-center gap-1">
-                            <span>Obrir ubicació a Google Maps</span>${iconSvg('external', 'w-3 h-3')}
+                            ${iconSvg('external', 'w-3 h-3')}<span>Google Maps</span>
                         </a>
-                        <button type="button" onclick="window.clearParkedVehicle()" class="text-[11px] font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">
-                            Esborrar aparcament
+                        <button type="button" onclick="window.clearParkedVehicle()" class="text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer inline-flex items-center gap-1">
+                            ${iconSvg('trash', 'w-3 h-3')}<span>Esborrar</span>
                         </button>
                     </div>
                 </div>
                 ` : `
-                <div class="p-3 rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/60 border border-dashed border-zinc-300 dark:border-zinc-800 text-center text-[11px] text-zinc-500 dark:text-zinc-400">
-                    Encara no has marcat cap aparcament. Prem el botó blau o fes clic directament sobre el mapa a la dreta.
+                <div class="p-4 rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/60 border border-dashed border-zinc-300 dark:border-zinc-800 flex flex-col items-center gap-1.5 text-center">
+                    <span class="w-9 h-9 rounded-xl bg-zinc-200/80 dark:bg-zinc-800 text-zinc-500 flex items-center justify-center">${iconSvg('parking', 'w-5 h-5')}</span>
+                    <span class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">Cap vehicle marcat · Toca el mapa</span>
                 </div>
                 `}
 
-                <!-- Detalls addicionals d'aparcament (Planta, Plaça, Parquímetre, Notes) -->
                 <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 space-y-2.5">
-                    <div class="text-xs font-extrabold text-zinc-900 dark:text-white">Detalls del pàrquing i parquímetre</div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Tipus de vehicle</label>
-                            <select id="daily-parking-vehicle-type" class="w-full px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs font-semibold text-zinc-800 dark:text-zinc-100">
-                                <option value="cotxe" ${(!parked || parked.vehicleType === 'cotxe') ? 'selected' : ''}>Cotxe</option>
-                                <option value="moto" ${(parked && parked.vehicleType === 'moto') ? 'selected' : ''}>Moto / Ciclomotor</option>
-                                <option value="bici" ${(parked && parked.vehicleType === 'bici') ? 'selected' : ''}>Bici / Patinet</option>
-                            </select>
+                    <input type="hidden" id="daily-parking-vehicle-type" value="${esc(currentVType)}">
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button type="button" data-parking-vehicle-btn="cotxe" onclick="window.selectParkingVehicleType('cotxe')" class="${vehicleBtnClass('cotxe')}">
+                            ${iconSvg('car', 'w-4 h-4')}<span class="text-[10.5px] font-extrabold">Cotxe</span>
+                        </button>
+                        <button type="button" data-parking-vehicle-btn="moto" onclick="window.selectParkingVehicleType('moto')" class="${vehicleBtnClass('moto')}">
+                            ${iconSvg('moto', 'w-4 h-4')}<span class="text-[10.5px] font-extrabold">Moto</span>
+                        </button>
+                        <button type="button" data-parking-vehicle-btn="bici" onclick="window.selectParkingVehicleType('bici')" class="${vehicleBtnClass('bici')}">
+                            ${iconSvg('bike', 'w-4 h-4')}<span class="text-[10.5px] font-extrabold">Bici</span>
+                        </button>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-extrabold uppercase text-zinc-400">Parquímetre</span>
+                            <input id="daily-parking-timer-mins" type="number" min="0" max="1440" placeholder="min" class="w-20 px-2 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100 tabular-nums text-right">
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Parquímetre (minuts)</label>
-                            <input id="daily-parking-timer-mins" type="number" min="0" max="1440" placeholder="Ex: 90 min" class="w-full px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100 tabular-nums">
+                        <div class="grid grid-cols-4 gap-1">
+                            <button type="button" data-parking-timer-preset="30" onclick="window.applyParkingTimerPreset(30)" class="py-1.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-zinc-700 dark:text-zinc-200 text-[11px] font-bold cursor-pointer border border-zinc-200/80 dark:border-zinc-700/80">30m</button>
+                            <button type="button" data-parking-timer-preset="60" onclick="window.applyParkingTimerPreset(60)" class="py-1.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-zinc-700 dark:text-zinc-200 text-[11px] font-bold cursor-pointer border border-zinc-200/80 dark:border-zinc-700/80">1h</button>
+                            <button type="button" data-parking-timer-preset="120" onclick="window.applyParkingTimerPreset(120)" class="py-1.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-zinc-700 dark:text-zinc-200 text-[11px] font-bold cursor-pointer border border-zinc-200/80 dark:border-zinc-700/80">2h</button>
+                            <button type="button" data-parking-timer-preset="0" onclick="window.applyParkingTimerPreset(0)" class="py-1.5 px-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-zinc-700 dark:text-zinc-200 text-[11px] font-bold cursor-pointer border border-zinc-200/80 dark:border-zinc-700/80">Lliure</button>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Planta, plaça o zona (Blava / Verda)</label>
-                        <input id="daily-parking-floor" type="text" value="${esc(parked?.floorSpot || '')}" placeholder="Ex: Planta -2 · Plaça 44 · Sector B" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
+
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <input id="daily-parking-floor" type="text" value="${esc(parked?.floorSpot || '')}" placeholder="Planta / Plaça" class="px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
+                        <input id="daily-parking-notes" type="text" value="${esc(parked?.notes || '')}" placeholder="Referència" class="px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Nota o referència visual</label>
-                        <input id="daily-parking-notes" type="text" value="${esc(parked?.notes || '')}" placeholder="Ex: Davant de la farmàcia / Sortida ascensor Nord" class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
-                    </div>
-                    <button type="button" onclick="window.updateParkedVehicleDetails()" class="w-full py-2 px-3 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-bold transition cursor-pointer">
-                        Guardar detalls de la plaça i avís
+                    <button type="button" onclick="window.updateParkedVehicleDetails()" class="w-full py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5">
+                        ${iconSvg('save', 'w-3.5 h-3.5')}<span>Guardar detalls</span>
                     </button>
                 </div>
             </div>
         `;
+
+        if (hasActiveCountdown && parked && parked.expiresAt) {
+            const expiresAtMs = parked.expiresAt;
+            const totalDurationMins = Math.max(1, parked.timerDurationMins || 60);
+            parkingCountdownInterval = setInterval(() => {
+                if (activeTab !== 'parking') {
+                    clearInterval(parkingCountdownInterval);
+                    parkingCountdownInterval = null;
+                    return;
+                }
+                const remMs = expiresAtMs - Date.now();
+                const badgeEl = document.getElementById('daily-parking-countdown-badge');
+                const barEl = document.getElementById('daily-parking-countdown-bar');
+                if (remMs <= 0) {
+                    clearInterval(parkingCountdownInterval);
+                    parkingCountdownInterval = null;
+                    renderParkingTabContent();
+                    return;
+                }
+                const minsNow = Math.ceil(remMs / 60000);
+                const pctNow = Math.max(6, Math.min(100, Math.round((minsNow / Math.max(minsNow, totalDurationMins)) * 100)));
+                if (badgeEl) badgeEl.textContent = `${minsNow} min`;
+                if (barEl) barEl.style.width = `${pctNow}%`;
+            }, 15000);
+        }
     }
 
     function renderNearbyTabContent() {
@@ -1421,67 +1890,92 @@
         if (!box || activeTab !== 'nearby') return;
 
         const catBtns = NEARBY_CATEGORIES.map((c) => `
-            <button type="button" onclick="window.searchEverydayNearbyCategory('${c.id}')" class="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-sky-400 transition flex items-center gap-2 text-left cursor-pointer shadow-2xs">
-                <span class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style="background-color:${c.color}1a;color:${c.color}">${iconSvg(c.iconName, 'w-4 h-4')}</span>
-                <span class="text-[11px] font-bold text-zinc-800 dark:text-zinc-100 truncate">${esc(c.label)}</span>
+            <button type="button" onclick="window.searchEverydayNearbyCategory('${c.id}')" class="p-2.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-sky-400 transition flex flex-col items-center justify-center gap-1.5 text-center cursor-pointer shadow-2xs active:scale-[0.97]">
+                <span class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style="background-color:${c.color}1a;color:${c.color}">${iconSvg(c.iconName, 'w-5 h-5')}</span>
+                <span class="text-[10.5px] font-extrabold text-zinc-800 dark:text-zinc-100 truncate w-full">${esc(c.label)}</span>
             </button>
         `).join('');
 
         box.innerHTML = `
             <div class="space-y-3">
-                <div class="space-y-1.5">
-                    <div class="text-xs font-extrabold text-zinc-900 dark:text-white">Serveis quotidians a prop teu</div>
-                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Prem qualsevol categoria per trobar establiments oberts i traçar la ruta al moment.</p>
-                    <div class="grid grid-cols-2 gap-1.5 pt-1">
-                        ${catBtns}
-                    </div>
+                <div class="grid grid-cols-4 sm:grid-cols-4 gap-1.5">
+                    ${catBtns}
                 </div>
 
                 <div class="flex items-center gap-1.5">
-                    <input id="daily-nearby-custom-query" type="text" onkeydown="if(event.key==='Enter'){event.preventDefault();window.searchEverydayByTextQuery();}" placeholder="Cerca lliure: ferreteria, correus, gimnàs..." class="flex-1 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs text-zinc-800 dark:text-zinc-100">
+                    <input id="daily-nearby-custom-query" type="text" onkeydown="if(event.key==='Enter'){event.preventDefault();window.searchEverydayByTextQuery();}" placeholder="Cercar lloc..." class="flex-1 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs text-zinc-800 dark:text-zinc-100">
                     <button type="button" onclick="window.searchEverydayByTextQuery()" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold cursor-pointer shrink-0 inline-flex items-center gap-1">
                         ${iconSvg('search', 'w-3.5 h-3.5')}<span>Cercar</span>
                     </button>
                 </div>
 
-                <div id="daily-nearby-results-list" class="space-y-2 pt-1">
-                    <div class="p-4 rounded-2xl bg-zinc-100/70 dark:bg-zinc-900/60 border border-zinc-200/70 dark:border-zinc-800 text-center text-xs text-zinc-500 dark:text-zinc-400">
-                        Selecciona una categoria (Farmàcies, Supermercats, Gasolineres, Caixers...) per veure els llocs més propers al mapa.
+                <div id="daily-nearby-results-list" class="space-y-2 pt-0.5">
+                    <div class="p-4 rounded-2xl bg-zinc-100/70 dark:bg-zinc-900/60 border border-zinc-200/70 dark:border-zinc-800 flex flex-col items-center gap-1.5 text-center">
+                        <span class="w-8 h-8 rounded-xl bg-zinc-200/80 dark:bg-zinc-800 text-zinc-500 flex items-center justify-center">${iconSvg('nearby', 'w-4 h-4')}</span>
+                        <span class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">Tria una icona a dalt</span>
                     </div>
                 </div>
             </div>
         `;
     }
 
+    window.applyCustomRoutePresetDest = async function (lat, lng, label) {
+        routeDestinationCoords = { lat: Number(lat), lng: Number(lng) };
+        routeDestinationLabel = String(label || 'Destinació');
+        const input = document.getElementById('daily-route-dest-input');
+        if (input) input.value = routeDestinationLabel;
+        await window.traceDailyRouteTo(routeDestinationCoords.lat, routeDestinationCoords.lng, routeDestinationLabel, selectedTravelMode);
+    };
+
     function renderRoutesTabContent() {
         const box = document.getElementById('daily-maps-tab-panel');
         if (!box || activeTab !== 'routes') return;
 
+        const saved = loadSavedEverydayPlaces();
+        const parked = loadParkedVehicleState();
+        const quickChips = [];
+        const homePlace = saved.find((p) => p.role === 'home' || p.id === 'home');
+        const schoolPlace = saved.find((p) => p.role === 'school' || p.id === 'school');
+        if (homePlace) quickChips.push({ label: homePlace.label || 'Casa', icon: 'home', lat: homePlace.lat, lng: homePlace.lng, cls: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300 border-blue-200 dark:border-blue-800' });
+        if (schoolPlace) quickChips.push({ label: schoolPlace.label || 'Insti', icon: 'school', lat: schoolPlace.lat, lng: schoolPlace.lng, cls: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800' });
+        if (parked) quickChips.push({ label: 'Cotxe', icon: 'car', lat: parked.lat, lng: parked.lng, cls: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' });
+        saved.filter((p) => p !== homePlace && p !== schoolPlace).slice(0, 2).forEach((p) => {
+            quickChips.push({ label: p.label || p.address || 'Lloc', icon: 'bookmark', lat: p.lat, lng: p.lng, cls: 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700' });
+        });
+
+        const quickChipsHtml = quickChips.length > 0 ? `
+            <div class="flex flex-wrap items-center gap-1.5">
+                ${quickChips.map((q) => `
+                    <button type="button" onclick="window.applyCustomRoutePresetDest(${q.lat}, ${q.lng}, '${esc(q.label).replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-xl border text-[11px] font-bold cursor-pointer inline-flex items-center gap-1 transition hover:opacity-90 ${q.cls}">
+                        ${iconSvg(q.icon, 'w-3.5 h-3.5')}<span class="truncate max-w-[110px]">${esc(q.label)}</span>
+                    </button>
+                `).join('')}
+            </div>
+        ` : '';
+
+        const modeBtnClass = (m) => `p-2.5 rounded-2xl border cursor-pointer transition flex flex-col items-center justify-center gap-1 ${selectedTravelMode === m ? 'bg-blue-600 text-white border-blue-600 shadow-xs' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800 hover:border-blue-400'}`;
+
         box.innerHTML = `
             <div class="space-y-3">
                 <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 space-y-3">
-                    <div class="space-y-1">
-                        <div class="text-xs font-extrabold text-zinc-900 dark:text-white">Calculadora de Trajectes i Encàrrecs</div>
-                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Calcula el temps i la distància des de la teva posició fins a qualsevol adreça o fes clic al mapa.</p>
+                    <div class="flex items-center gap-2 text-xs font-extrabold text-zinc-900 dark:text-white">
+                        <span class="w-7 h-7 rounded-xl bg-blue-600/10 text-blue-600 dark:text-sky-400 flex items-center justify-center">${iconSvg('compass', 'w-4 h-4')}</span>
+                        <span>Traçar ruta</span>
                     </div>
 
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Destinació (o fes clic al mapa)</label>
-                        <input id="daily-route-dest-input" type="text" value="${esc(routeDestinationLabel)}" placeholder="Escriu una adreça o usa el cercador superior..." class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
+                    ${quickChipsHtml}
+
+                    <input id="daily-route-dest-input" type="text" value="${esc(routeDestinationLabel)}" placeholder="Adreça o toca el mapa..." class="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
+
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button type="button" onclick="window.setDailyTravelModeAndCompute('WALKING')" class="${modeBtnClass('WALKING')}">${iconSvg('walk', 'w-5 h-5')}<span class="text-[10.5px] font-extrabold">A peu</span></button>
+                        <button type="button" onclick="window.setDailyTravelModeAndCompute('DRIVING')" class="${modeBtnClass('DRIVING')}">${iconSvg('car', 'w-5 h-5')}<span class="text-[10.5px] font-extrabold">Cotxe</span></button>
+                        <button type="button" onclick="window.setDailyTravelModeAndCompute('BICYCLING')" class="${modeBtnClass('BICYCLING')}">${iconSvg('bike', 'w-5 h-5')}<span class="text-[10.5px] font-extrabold">Bici</span></button>
+                        <button type="button" onclick="window.setDailyTravelModeAndCompute('TRANSIT')" class="${modeBtnClass('TRANSIT')}">${iconSvg('metro', 'w-5 h-5')}<span class="text-[10.5px] font-extrabold">Transit</span></button>
                     </div>
 
-                    <div>
-                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Mitjà de transport</label>
-                        <div class="grid grid-cols-2 gap-1.5">
-                            <button type="button" onclick="window.setDailyTravelModeAndCompute('WALKING')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition inline-flex items-center justify-center gap-1.5 ${selectedTravelMode === 'WALKING' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('walk', 'w-3.5 h-3.5')}<span>A peu</span></button>
-                            <button type="button" onclick="window.setDailyTravelModeAndCompute('DRIVING')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition inline-flex items-center justify-center gap-1.5 ${selectedTravelMode === 'DRIVING' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('car', 'w-3.5 h-3.5')}<span>En cotxe</span></button>
-                            <button type="button" onclick="window.setDailyTravelModeAndCompute('BICYCLING')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition inline-flex items-center justify-center gap-1.5 ${selectedTravelMode === 'BICYCLING' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('bike', 'w-3.5 h-3.5')}<span>Bici / Patinet</span></button>
-                            <button type="button" onclick="window.setDailyTravelModeAndCompute('TRANSIT')" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition inline-flex items-center justify-center gap-1.5 ${selectedTravelMode === 'TRANSIT' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('metro', 'w-3.5 h-3.5')}<span>Transport públic</span></button>
-                        </div>
-                    </div>
-
-                    <button type="button" onclick="window.computeCustomDailyRoute()" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold transition cursor-pointer">
-                        Calcular ruta ara
+                    <button type="button" onclick="window.computeCustomDailyRoute()" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5">
+                        ${iconSvg('arrowRight', 'w-4 h-4')}<span>Calcular</span>
                     </button>
                 </div>
             </div>
@@ -1539,6 +2033,26 @@
         return 'pin';
     }
 
+    const SAVED_CAT_PRESETS = [
+        { val: 'Casa', label: 'Casa', icon: 'home', tint: '#10b981' },
+        { val: 'Institut / Universitat', label: 'Insti', icon: 'school', tint: '#6366f1' },
+        { val: 'Feina / Estudis', label: 'Feina', icon: 'work', tint: '#2563eb' },
+        { val: 'Gimnàs / Esport', label: 'Gimnàs', icon: 'gym', tint: '#f59e0b' },
+        { val: 'Supermercat habitual', label: 'Súper', icon: 'cart', tint: '#ec4899' },
+        { val: 'Punt de trobada', label: 'Trobar', icon: 'pin', tint: '#14b8a6' }
+    ];
+
+    window.selectSavedPlaceCat = function (val) {
+        const input = document.getElementById('daily-saved-place-cat');
+        if (input) input.value = val;
+        document.querySelectorAll('[data-saved-cat-btn]').forEach((btn) => {
+            const active = btn.getAttribute('data-saved-cat-btn') === val;
+            btn.className = active
+                ? 'p-2 rounded-xl border-2 border-blue-600 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300 flex flex-col items-center gap-1 cursor-pointer transition'
+                : 'p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 hover:border-blue-400 flex flex-col items-center gap-1 cursor-pointer transition';
+        });
+    };
+
     function renderSavedPlacesTabContent() {
         const box = document.getElementById('daily-maps-tab-panel');
         if (!box || activeTab !== 'saved') return;
@@ -1547,7 +2061,7 @@
         const itemsHtml = list.length
             ? list.map((item) => `
                 <div class="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 flex items-center justify-between gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 flex items-center justify-center shrink-0">
+                    <div class="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 flex items-center justify-center shrink-0">
                         ${iconSvg(getPlaceRoleIconName(`${item.title} ${item.category}`), 'w-4 h-4')}
                     </div>
                     <div class="min-w-0 flex-1 cursor-pointer" onclick="window.focusDailyMapPoint(${item.lat}, ${item.lng})">
@@ -1555,43 +2069,49 @@
                         <div class="text-[10.5px] text-zinc-500 dark:text-zinc-400 truncate">${esc(item.address)}</div>
                     </div>
                     <div class="flex items-center gap-1 shrink-0">
-                        <button type="button" onclick="window.traceDailyRouteTo(${item.lat}, ${item.lng}, '${esc(item.title)}')" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10.5px] font-bold cursor-pointer">Ruta</button>
-                        <button type="button" onclick="window.deleteSavedEverydayPlace('${esc(item.id)}')" class="p-1 text-zinc-400 hover:text-rose-500 cursor-pointer" title="Eliminar">${iconSvg('close', 'w-3.5 h-3.5')}</button>
+                        <button type="button" onclick="window.traceDailyRouteTo(${item.lat}, ${item.lng}, '${esc(item.title)}')" class="p-2 rounded-lg bg-blue-600 text-white cursor-pointer" title="Ruta">${iconSvg('arrowRight', 'w-3.5 h-3.5')}</button>
+                        <button type="button" onclick="window.deleteSavedEverydayPlace('${esc(item.id)}')" class="p-1.5 text-zinc-400 hover:text-rose-500 cursor-pointer" title="Eliminar">${iconSvg('trash', 'w-3.5 h-3.5')}</button>
                     </div>
                 </div>
             `).join('')
-            : `<div class="p-4 rounded-2xl bg-zinc-100/70 dark:bg-zinc-900/60 border border-dashed border-zinc-300 dark:border-zinc-800 text-center text-xs text-zinc-500 dark:text-zinc-400">Encara no tens llocs quotidians guardats (Casa, Feina, Gimnàs...). Fes clic al mapa o usa el teu GPS per desar-ne un.</div>`;
+            : `<div class="p-4 rounded-2xl bg-zinc-100/70 dark:bg-zinc-900/60 border border-dashed border-zinc-300 dark:border-zinc-800 flex flex-col items-center gap-1.5 text-center">${iconSvg('bookmark', 'w-5 h-5 text-zinc-400')}<span class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">Cap lloc guardat</span></div>`;
+
+        const catTiles = SAVED_CAT_PRESETS.map((c, idx) => `
+            <button type="button" data-saved-cat-btn="${esc(c.val)}" onclick="window.selectSavedPlaceCat('${esc(c.val)}')" class="${idx === 0 ? 'p-2 rounded-xl border-2 border-blue-600 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-sky-300' : 'p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 hover:border-blue-400'} flex flex-col items-center gap-1 cursor-pointer transition">
+                ${iconSvg(c.icon, 'w-4 h-4')}
+                <span class="text-[10px] font-extrabold truncate w-full text-center">${esc(c.label)}</span>
+            </button>
+        `).join('');
 
         box.innerHTML = `
             <div class="space-y-3">
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 space-y-2.5">
-                    <div class="text-xs font-extrabold text-zinc-900 dark:text-white">Desar un lloc quotidià freqüent</div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <select id="daily-saved-place-cat" class="px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs font-semibold text-zinc-800 dark:text-zinc-100">
-                            <option value="Casa">Casa</option>
-                            <option value="Institut / Universitat">Institut / Universitat</option>
-                            <option value="Feina / Estudis">Feina / Estudis</option>
-                            <option value="Gimnàs / Esport">Gimnàs / Esport</option>
-                            <option value="Supermercat habitual">Supermercat habitual</option>
-                            <option value="Punt de trobada">Punt de trobada</option>
-                        </select>
-                        <input id="daily-saved-place-name" type="text" placeholder="Nom (ex: Casa meva / Institut)" class="px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
+                <div id="daily-maps-saved-form" class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 space-y-2.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-extrabold text-zinc-900 dark:text-white inline-flex items-center gap-1.5">${iconSvg('pin', 'w-3.5 h-3.5 text-blue-600')}<span>Nou lloc freqüent</span></span>
+                        ${isFirebaseProfileActive()
+                            ? `<span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">${iconSvg('cloud', 'w-3 h-3')}<span>Firestore</span></span>`
+                            : `<span class="text-[10px] font-bold text-zinc-400">Temporal</span>`}
                     </div>
-                    <input id="daily-saved-place-addr" type="text" placeholder="Escriu l'adreça o ciutat (ex: Carrer Major 15, Sabadell)..." class="w-full px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
-                    <div class="flex flex-wrap gap-1.5">
-                        <button type="button" onclick="window.startMapPickMode(document.getElementById('daily-saved-place-cat')?.value?.includes('Institut') ? 'school' : 'home')" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer inline-flex items-center gap-1.5">${iconSvg('map', 'w-3.5 h-3.5')}<span>Marcar al mapa</span></button>
-                        <button type="button" onclick="window.setHomeFromCurrentGps()" class="px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-[11px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer inline-flex items-center gap-1.5">${iconSvg('gps', 'w-3.5 h-3.5')}<span>Posició actual com a Casa</span></button>
+                    <input type="hidden" id="daily-saved-place-cat" value="Casa">
+                    <div class="grid grid-cols-3 gap-1.5">
+                        ${catTiles}
                     </div>
-                    <div id="daily-saved-coords-hint" class="text-[10.5px] text-zinc-500 dark:text-zinc-400">
-                        Escriu l'adreça a dalt, fes clic al mapa o usa el teu GPS. Si deses "Casa" i "Institut", AliatMaps calcularà busos i trens i plans a prop de casa!
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <input id="daily-saved-place-name" type="text" placeholder="Nom..." class="px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
+                        <input id="daily-saved-place-addr" type="text" placeholder="Adreça o ciutat..." class="px-2.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
                     </div>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <button type="button" onclick="window.startMapPickMode(document.getElementById('daily-saved-place-cat')?.value?.includes('Institut') ? 'school' : 'home')" class="py-2 px-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer inline-flex items-center justify-center gap-1.5">${iconSvg('map', 'w-3.5 h-3.5')}<span>Mapa</span></button>
+                        <button type="button" onclick="window.setHomeFromCurrentGps()" class="py-2 px-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-[11px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer inline-flex items-center justify-center gap-1.5">${iconSvg('gps', 'w-3.5 h-3.5')}<span>GPS = Casa</span></button>
+                    </div>
+                    <div id="daily-saved-coords-hint" class="text-[10px] font-semibold text-zinc-400 text-center">Toca la categoria i desa</div>
                     <button type="button" onclick="window.addSavedEverydayPlace()" class="w-full py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5">
-                        ${iconSvg('plus', 'w-3.5 h-3.5')}<span>Guardar lloc quotidià</span>
+                        ${iconSvg('save', 'w-3.5 h-3.5')}<span>Guardar lloc</span>
                     </button>
                 </div>
 
-                <div class="space-y-2">
-                    <div class="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 px-1">Els meus llocs guardats</div>
+                <div class="space-y-1.5">
+                    <div class="text-[10.5px] font-extrabold uppercase tracking-wider text-zinc-400 px-1">Guardats (${list.length})</div>
                     ${itemsHtml}
                 </div>
             </div>
@@ -1602,13 +2122,13 @@
     function findSavedPlaceByRole(role) {
         const list = loadSavedEverydayPlaces();
         if (role === 'home') {
-            return list.find((p) => /casa|llar|home/i.test(`${p.title} ${p.category}`)) || null;
+            return list.find((p) => p.role === 'home' || /casa|llar|home/i.test(`${p.title} ${p.category}`)) || null;
         }
         if (role === 'school') {
-            return list.find((p) => /insti|institut|instituto|uni|universit|escola|estud|cole/i.test(`${p.title} ${p.category}`)) || null;
+            return list.find((p) => p.role === 'school' || /insti|institut|instituto|uni|universit|escola|estud|cole/i.test(`${p.title} ${p.category}`)) || null;
         }
         if (role === 'work') {
-            return list.find((p) => /feina|trabajo|oficina|work/i.test(`${p.title} ${p.category}`)) || null;
+            return list.find((p) => p.role === 'work' || /feina|trabajo|oficina|work/i.test(`${p.title} ${p.category}`)) || null;
         }
         return null;
     }
@@ -1664,6 +2184,120 @@
         return 'Tren';
     }
 
+    function isMapsUiEs() {
+        return (transitState.lang || window.currentAppLang) === 'es';
+    }
+
+    function approxStepDistanceMeters(s) {
+        if (typeof s?.distanceMeters === 'number' && s.distanceMeters > 0) return s.distanceMeters;
+        const txt = String(s?.distanceText || '').trim().toLowerCase().replace(',', '.');
+        const mKm = txt.match(/([\d.]+)\s*km/);
+        if (mKm) return Math.round(parseFloat(mKm[1]) * 1000);
+        const mM = txt.match(/([\d.]+)\s*m/);
+        if (mM) return Math.round(parseFloat(mM[1]));
+        return 0;
+    }
+
+    function formatMetersCompact(meters) {
+        const m = Math.round(Number(meters) || 0);
+        if (m <= 0) return '';
+        if (m >= 1000) return `${(m / 1000).toFixed(1).replace('.', ',')} km`;
+        return `${m} m`;
+    }
+
+    function formatTransitBadgeCode(step) {
+        const kind = vehicleTextLabel(step?.vehicleType);
+        const rawShort = String(step?.lineShort || '').trim();
+        const rawName = String(step?.lineName || '').trim();
+        const codeMatch = rawShort.match(/\b([A-Z]?\d{1,4}[A-Z]?|R\d{1,2}[A-Z]?|S\d{1,2}|L\d{1,2}|T\d{1,2}|E\d{1,2}(?:\.\d+)?|N\d{1,3}|H\d{1,2}|V\d{1,2}|D\d{1,2})\b/i)
+            || rawName.match(/\b(R\d{1,2}[A-Z]?|S\d{1,2}|L\d{1,2}|T\d{1,2}|E\d{1,2}(?:\.\d+)?)\b/);
+
+        let shortCode = rawShort;
+        let extraLineTitle = (rawName && rawName !== rawShort) ? rawName : '';
+        if (shortCode.length > 12) {
+            extraLineTitle = shortCode;
+            shortCode = codeMatch ? codeMatch[1].toUpperCase() : '';
+        }
+
+        const pillLabel = shortCode ? `${kind} ${shortCode}` : kind;
+        return { kind, shortCode, pillLabel, extraLineTitle };
+    }
+
+    function groupRouteStepsForDisplay(steps) {
+        const list = Array.isArray(steps) ? steps : [];
+        const phases = [];
+        let walkBucket = [];
+
+        const flushWalk = (nextTransitStep) => {
+            if (walkBucket.length === 0) return;
+            const totalSec = walkBucket.reduce((acc, st) => acc + (st.durationSec || 0), 0);
+            const totalMeters = walkBucket.reduce((acc, st) => acc + approxStepDistanceMeters(st), 0);
+            const mins = Math.max(1, Math.round(totalSec / 60));
+            const subSteps = walkBucket.filter((st) => st.instruction || approxStepDistanceMeters(st) > 15);
+            const isEs = isMapsUiEs();
+            const targetStopName = nextTransitStep?.departureStopName
+                ? (isEs ? `hasta ${nextTransitStep.departureStopName}` : `fins a ${nextTransitStep.departureStopName}`)
+                : (isEs ? 'hasta tu destino' : 'fins a la destinació');
+
+            phases.push({
+                phaseIdx: phases.length,
+                type: 'walk',
+                durationSec: totalSec,
+                durationText: `${mins} min`,
+                distanceMeters: totalMeters,
+                distanceText: formatMetersCompact(totalMeters),
+                targetStopName,
+                subSteps,
+                polylineSteps: walkBucket.slice()
+            });
+            walkBucket = [];
+        };
+
+        for (let i = 0; i < list.length; i++) {
+            const st = list[i];
+            if (!st.isTransit) {
+                walkBucket.push(st);
+            } else {
+                flushWalk(st);
+                const badge = formatTransitBadgeCode(st);
+                const mins = Math.max(1, Math.round((st.durationSec || 60) / 60));
+                phases.push({
+                    phaseIdx: phases.length,
+                    type: 'transit',
+                    step: st,
+                    badge,
+                    durationSec: st.durationSec || 0,
+                    durationText: st.durationText || `${mins} min`,
+                    polylineSteps: [st]
+                });
+            }
+        }
+        flushWalk(null);
+        return phases;
+    }
+
+    function enrichNormalizedRoute(routeObj) {
+        const steps = Array.isArray(routeObj.steps) ? routeObj.steps : [];
+        const phases = groupRouteStepsForDisplay(steps);
+        const transitPhases = phases.filter((p) => p.type === 'transit');
+        const walkSec = phases.filter((p) => p.type === 'walk').reduce((acc, p) => acc + (p.durationSec || 0), 0);
+        const walkMin = walkSec > 0 ? Math.max(1, Math.round(walkSec / 60)) : 0;
+        const hasBus = transitPhases.some((p) => /BUS|TROLLEY/i.test(p.step.vehicleType));
+        const hasRail = transitPhases.some((p) => /RAIL|TRAIN|SUBWAY|METRO|TRAM/i.test(p.step.vehicleType));
+        const signature = `${routeObj.departureTimeText}|${routeObj.arrivalTimeText}|${transitPhases.map((p) => `${p.badge.pillLabel}@${p.step.departureStopName}`).join('+')}`;
+
+        return {
+            ...routeObj,
+            phases,
+            transitPhases,
+            walkMin,
+            transfers: Math.max(0, transitPhases.length - 1),
+            hasBus,
+            hasRail,
+            signature
+        };
+    }
+
     function normalizeRestTransitRoute(rawRoute, idx, baseQueryTimeMs, isArrivalQuery) {
         const durationSec = parseDurationSec(rawRoute.duration);
         const leg = rawRoute.legs?.[0] || {};
@@ -1679,6 +2313,8 @@
             const vType = line?.vehicle?.type || (isTransit ? 'BUS' : 'WALK');
             const depMs = stopDetails.departureTime ? new Date(stopDetails.departureTime).getTime() : null;
             const arrMs = stopDetails.arrivalTime ? new Date(stopDetails.arrivalTime).getTime() : null;
+            const startLL = s.startLocation?.latLng ? { lat: s.startLocation.latLng.latitude, lng: s.startLocation.latLng.longitude } : null;
+            const endLL = s.endLocation?.latLng ? { lat: s.endLocation.latLng.latitude, lng: s.endLocation.latLng.longitude } : null;
 
             return {
                 isTransit,
@@ -1687,7 +2323,7 @@
                 vehicleLabel: line?.vehicle?.name?.text || vType,
                 lineShort: line?.nameShort || line?.name || (isTransit ? 'Línia' : ''),
                 lineName: line?.name || line?.nameShort || '',
-                lineColor: line?.color || (String(vType).includes('BUS') ? '#2563eb' : '#7c3aed'),
+                lineColor: line?.color || (String(vType).includes('BUS') ? '#2563eb' : (String(vType).includes('SUBWAY') || String(vType).includes('METRO') ? '#dc2626' : '#0284c7')),
                 lineTextColor: line?.textColor || '#ffffff',
                 headsign: td?.headsign || '',
                 departureStopName: depStop?.name || '',
@@ -1697,17 +2333,20 @@
                 arrivalTimeMs: arrMs,
                 arrivalTimeText: td?.localizedValues?.arrivalTime?.time?.text || (arrMs ? formatTimeHHMM(arrMs) : ''),
                 stopCount: td?.stopCount || 0,
+                distanceMeters: Number(s.distanceMeters) || 0,
                 durationSec: parseDurationSec(s.staticDuration),
                 durationText: s.localizedValues?.staticDuration?.text || '',
                 distanceText: s.localizedValues?.distance?.text || '',
                 instruction: s.navigationInstruction?.instructions || '',
                 encodedPolyline: s.polyline?.encodedPolyline || '',
+                startLatLng: startLL,
+                endLatLng: endLL,
                 departureStopLatLng: depStop?.location?.latLng
                     ? { lat: depStop.location.latLng.latitude, lng: depStop.location.latLng.longitude }
-                    : null,
+                    : startLL,
                 arrivalStopLatLng: arrStop?.location?.latLng
                     ? { lat: arrStop.location.latLng.latitude, lng: arrStop.location.latLng.longitude }
-                    : null
+                    : endLL
             };
         });
 
@@ -1734,7 +2373,7 @@
             routeDepartureMs = baseQueryTimeMs - durationSec * 1000;
         }
 
-        return {
+        return enrichNormalizedRoute({
             index: idx,
             durationSec,
             durationText: rawRoute.localizedValues?.duration?.text || `${Math.max(1, Math.round(durationSec / 60))} min`,
@@ -1747,7 +2386,7 @@
             encodedPolyline: rawRoute.polyline?.encodedPolyline || '',
             viewport: rawRoute.viewport || null,
             rawSdkRoute: null
-        };
+        });
     }
 
     function normalizeSdkTransitRoute(sdkRoute, idx, baseQueryTimeMs, isArrivalQuery) {
@@ -1763,6 +2402,10 @@
             const arrTimeVal = stopDetails.arrivalTime ? new Date(stopDetails.arrivalTime).getTime() : null;
             const line = td?.transitLine || {};
             const vType = line?.vehicle?.type || (isTransit ? 'BUS' : 'WALK');
+            const pathArr = Array.isArray(s.path) ? s.path : null;
+            const firstPathLL = pathArr?.[0] ? { lat: typeof pathArr[0].lat === 'function' ? pathArr[0].lat() : pathArr[0].lat, lng: typeof pathArr[0].lng === 'function' ? pathArr[0].lng() : pathArr[0].lng } : null;
+            const lastPathItem = pathArr?.[pathArr.length - 1];
+            const lastPathLL = lastPathItem ? { lat: typeof lastPathItem.lat === 'function' ? lastPathItem.lat() : lastPathItem.lat, lng: typeof lastPathItem.lng === 'function' ? lastPathItem.lng() : lastPathItem.lng } : null;
 
             return {
                 isTransit,
@@ -1771,7 +2414,7 @@
                 vehicleLabel: line?.vehicle?.name || vType,
                 lineShort: line?.nameShort || line?.name || (isTransit ? 'Transport' : ''),
                 lineName: line?.name || line?.nameShort || '',
-                lineColor: line?.color || (String(vType).includes('BUS') ? '#2563eb' : '#7c3aed'),
+                lineColor: line?.color || (String(vType).includes('BUS') ? '#2563eb' : (String(vType).includes('SUBWAY') || String(vType).includes('METRO') ? '#dc2626' : '#0284c7')),
                 lineTextColor: line?.textColor || '#ffffff',
                 headsign: td?.headsign || '',
                 departureStopName: stopDetails.departureStop?.name || '',
@@ -1781,17 +2424,20 @@
                 arrivalTimeMs: arrTimeVal,
                 arrivalTimeText: td?.localizedValues?.arrivalTime || (arrTimeVal ? formatTimeHHMM(arrTimeVal) : ''),
                 stopCount: td?.stopCount || 0,
+                distanceMeters: Number(s.distanceMeters) || 0,
                 durationSec: s.staticDurationMillis ? Math.round(s.staticDurationMillis / 1000) : 0,
                 durationText: s.localizedValues?.staticDuration || '',
                 distanceText: s.localizedValues?.distance || '',
                 instruction: s.instructions || '',
-                path: Array.isArray(s.path) ? s.path : null,
+                path: pathArr,
+                startLatLng: firstPathLL,
+                endLatLng: lastPathLL,
                 departureStopLatLng: stopDetails.departureStop?.location
                     ? { lat: stopDetails.departureStop.location.lat(), lng: stopDetails.departureStop.location.lng() }
-                    : null,
+                    : firstPathLL,
                 arrivalStopLatLng: stopDetails.arrivalStop?.location
                     ? { lat: stopDetails.arrivalStop.location.lat(), lng: stopDetails.arrivalStop.location.lng() }
-                    : null
+                    : lastPathLL
             };
         });
 
@@ -1815,7 +2461,7 @@
             routeDepartureMs = baseQueryTimeMs - durationSec * 1000;
         }
 
-        return {
+        return enrichNormalizedRoute({
             index: idx,
             durationSec,
             durationText: sdkRoute.localizedValues?.duration || `${Math.max(1, Math.round(durationSec / 60))} min`,
@@ -1827,7 +2473,7 @@
             steps,
             viewport: sdkRoute.viewport || null,
             rawSdkRoute: sdkRoute
-        };
+        });
     }
 
     async function fetchTransitRoutesSmart({ origin, destination, departureTime, arrivalTime, allowedTravelModes, languageCode }) {
@@ -1854,7 +2500,7 @@
             }
             if (res.ok) {
                 const data = await res.json();
-                if (Array.isArray(data.routes) && data.routes.length > 0) {
+                if (Array.isArray(data.routes)) {
                     return data.routes.map((r, i) => normalizeRestTransitRoute(r, i, queryTimeMs, isArrivalQuery));
                 }
             }
@@ -1872,6 +2518,9 @@
                 computeAlternativeRoutes: true,
                 fields: ['path', 'legs', 'distanceMeters', 'durationMillis', 'localizedValues', 'viewport']
             };
+            if (Array.isArray(allowedTravelModes) && allowedTravelModes.length > 0) {
+                sdkReq.transitPreferences = { allowedTravelModes };
+            }
             if (arrivalTime && !departureTime) sdkReq.arrivalTime = new Date(arrivalTime);
             else if (departureTime) sdkReq.departureTime = new Date(departureTime);
 
@@ -2063,12 +2712,7 @@
         } else if (preset === 'home') {
             const saved = findSavedPlaceByRole('home');
             if (!saved) {
-                transitState.homeEditorOpen = true;
-                renderTransitTabContent();
-                setTimeout(() => {
-                    const inp = document.getElementById('daily-home-quick-search');
-                    if (inp) inp.focus();
-                }, 40);
+                window.openPlaceRoleEditor('home');
                 return;
             }
             transitState.originMode = 'saved';
@@ -2083,10 +2727,12 @@
         const role = preset === 'school' ? 'school' : (preset === 'work' ? 'work' : 'home');
         const saved = findSavedPlaceByRole(role);
         if (!saved) {
-            if (role === 'school') {
-                window.startMapPickMode('school');
-            } else if (typeof window.showToast === 'function') {
-                window.showToast(`Escriu la destinació o fes clic al mapa!`, 'info');
+            if (role === 'school' || role === 'home') {
+                window.openPlaceRoleEditor(role);
+                return;
+            }
+            if (typeof window.showToast === 'function') {
+                window.showToast('Escriu la destinació o fes clic al mapa!', 'info');
             }
             const inp = document.getElementById('daily-transit-dest-input');
             if (inp) inp.focus();
@@ -2158,12 +2804,7 @@
         }
 
         if (!resolved || typeof resolved.lat !== 'number') {
-            if (isHome) {
-                transitState.homeEditorOpen = true;
-                renderTransitTabContent();
-            } else {
-                window.startMapPickMode('school');
-            }
+            window.openPlaceRoleEditor(isHome ? 'home' : 'school');
             return;
         }
 
@@ -2173,9 +2814,10 @@
             address: resolved.label,
             title: isHome ? 'Casa' : (rawText || 'Institut / Universitat')
         });
+        pushMapsPlacesToServerNow().catch(() => {});
 
         if (typeof window.showToast === 'function') {
-            window.showToast(`${isHome ? 'Casa' : 'Institut'} desat correctament!`, 'success');
+            window.showToast(`${isHome ? 'Casa' : 'Institut'} desat per sempre!`, 'success');
         }
         renderTransitTabContent();
     };
@@ -2268,70 +2910,220 @@
         };
     }
 
-    window.drawTransitRouteOnMap = async function (routeIndex) {
+    function decodeStepLatLngPath(step) {
+        if (!step) return [];
+        if (Array.isArray(step.path) && step.path.length > 0) {
+            return step.path.map((pt) => ({
+                lat: typeof pt.lat === 'function' ? pt.lat() : pt.lat,
+                lng: typeof pt.lng === 'function' ? pt.lng() : pt.lng
+            }));
+        }
+        if (step.encodedPolyline && mapClasses?.encoding?.decodePath) {
+            try {
+                const decoded = mapClasses.encoding.decodePath(step.encodedPolyline);
+                if (Array.isArray(decoded) && decoded.length > 0) return decoded;
+            } catch (_) {}
+        }
+        const pts = [];
+        if (step.departureStopLatLng) pts.push(step.departureStopLatLng);
+        else if (step.startLatLng) pts.push(step.startLatLng);
+        if (step.arrivalStopLatLng) pts.push(step.arrivalStopLatLng);
+        else if (step.endLatLng) pts.push(step.endLatLng);
+        return pts;
+    }
+
+    function openPhaseInfoWindowOnMap(route, phase, anchorLatLng) {
+        if (!mapInstance || !mapClasses || !anchorLatLng) return;
+        if (!sharedInfoWindow) sharedInfoWindow = new mapClasses.InfoWindow();
+        const isEs = isMapsUiEs();
+
+        if (phase.type === 'walk') {
+            const firstInst = phase.subSteps?.[0]?.instruction ? `<div class="text-[11px] text-zinc-600">${esc(phase.subSteps[0].instruction)}</div>` : '';
+            sharedInfoWindow.setContent(`
+                <div class="p-1.5 text-xs text-zinc-900 space-y-1 max-w-[235px]">
+                    <div class="font-extrabold text-slate-800 flex items-center gap-1.5">${iconSvg('walk', 'w-3.5 h-3.5')}<span>${isEs ? 'Tramo a pie' : 'Tram a peu'} · ${esc(phase.durationText)}${phase.distanceText ? ` (${esc(phase.distanceText)})` : ''}</span></div>
+                    <div class="text-[11px] font-semibold text-zinc-700">${esc(phase.targetStopName)}</div>
+                    ${firstInst}
+                </div>
+            `);
+        } else {
+            const st = phase.step;
+            sharedInfoWindow.setContent(`
+                <div class="p-1.5 text-xs text-zinc-900 space-y-1 max-w-[245px]">
+                    <div class="font-extrabold flex items-center gap-1.5">
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-black" style="background-color:${esc(st.lineColor || '#2563eb')};color:${esc(st.lineTextColor || '#ffffff')}">${esc(phase.badge.pillLabel)}</span>
+                        ${st.headsign ? `<span class="text-[11px] text-zinc-600 truncate">→ ${esc(st.headsign)}</span>` : ''}
+                    </div>
+                    <div class="text-[11px]">${isEs ? 'Sube' : 'Puja'}: <strong>${esc(st.departureStopName)}</strong> (${esc(st.departureTimeText)})</div>
+                    <div class="text-[11px] text-zinc-700">${isEs ? 'Baja' : 'Baixa'}: <strong>${esc(st.arrivalStopName)}</strong> (${esc(st.arrivalTimeText)})${st.stopCount ? ` · ${st.stopCount} ${isEs ? 'paradas' : 'parades'}` : ''}</div>
+                </div>
+            `);
+        }
+        sharedInfoWindow.setPosition(anchorLatLng);
+        sharedInfoWindow.open({ map: mapInstance });
+    }
+
+    window.focusTransitPhaseOnMap = async function (routeIndex, phaseIdx) {
+        const nextPhase = (transitState.selectedRouteIdx === routeIndex && transitState.selectedPhaseIdx === phaseIdx)
+            ? null
+            : phaseIdx;
+        await window.drawTransitRouteOnMap(routeIndex, nextPhase);
+    };
+
+    window.toggleWalkSubSteps = function (ev, routeIdx, phaseIdx) {
+        if (ev) {
+            ev.stopPropagation();
+            ev.preventDefault();
+        }
+        const key = `${routeIdx}_${phaseIdx}`;
+        transitState.expandedWalkPhases[key] = !transitState.expandedWalkPhases[key];
+        renderTransitResultsOnly();
+    };
+
+    window.setTransitRouteListFilter = async function (filterKind) {
+        transitState.routeListFilter = ['BUS', 'RAIL'].includes(filterKind) ? filterKind : 'ALL';
+        const visible = getFilteredTransitRoutes();
+        if (visible.length > 0 && !visible.some((r) => r.index === transitState.selectedRouteIdx)) {
+            await window.drawTransitRouteOnMap(visible[0].index, null);
+        } else {
+            renderTransitResultsOnly();
+        }
+    };
+
+    window.drawTransitRouteOnMap = async function (routeIndex, focusPhaseIdx = null) {
         const route = transitState.routes[routeIndex];
         if (!route || !mapInstance || !mapClasses) return;
 
         transitState.selectedRouteIdx = routeIndex;
+        transitState.selectedPhaseIdx = (typeof focusPhaseIdx === 'number') ? focusPhaseIdx : null;
         clearActiveRouteGraphics();
+        if (sharedInfoWindow) {
+            try { sharedInfoWindow.close(); } catch (_) {}
+        }
 
-        const bounds = new mapClasses.LatLngBounds();
+        const phases = route.phases || groupRouteStepsForDisplay(route.steps);
+        const fullBounds = new mapClasses.LatLngBounds();
+        const focusBounds = new mapClasses.LatLngBounds();
+        let hasFullPts = false;
+        let hasFocusPts = false;
+        let allRoutePts = [];
+        let focusedPhaseObj = null;
+        let focusedMidPoint = null;
 
-        if (route.rawSdkRoute && typeof route.rawSdkRoute.createPolylines === 'function') {
-            const polylines = route.rawSdkRoute.createPolylines();
-            polylines.forEach((p) => {
-                p.setMap(mapInstance);
-                activeRoutePolylines.push(p);
-            });
-            if (route.viewport) mapInstance.fitBounds(route.viewport, 48);
-        } else {
-            let hasAnyPath = false;
-            route.steps.forEach((step) => {
-                let path = step.path || null;
-                if (!path && step.encodedPolyline && mapClasses.encoding?.decodePath) {
-                    try {
-                        path = mapClasses.encoding.decodePath(step.encodedPolyline);
-                    } catch (_) {}
-                }
-                if (Array.isArray(path) && path.length > 0 && window.google?.maps?.Polyline) {
-                    hasAnyPath = true;
-                    path.forEach((pt) => bounds.extend(pt));
-                    const isWalk = !step.isTransit;
-                    const pline = new window.google.maps.Polyline({
+        phases.forEach((phase) => {
+            const isSelectedPhase = transitState.selectedPhaseIdx === null || transitState.selectedPhaseIdx === phase.phaseIdx;
+            const isExplicitFocus = transitState.selectedPhaseIdx === phase.phaseIdx;
+            if (isExplicitFocus) focusedPhaseObj = phase;
+
+            const phasePts = [];
+            (phase.polylineSteps || []).forEach((step) => {
+                const path = decodeStepLatLngPath(step);
+                if (!Array.isArray(path) || path.length === 0 || !window.google?.maps?.Polyline) return;
+
+                hasFullPts = true;
+                path.forEach((pt) => {
+                    fullBounds.extend(pt);
+                    allRoutePts.push(pt);
+                    phasePts.push(pt);
+                    if (isExplicitFocus) {
+                        focusBounds.extend(pt);
+                        hasFocusPts = true;
+                    }
+                });
+
+                const isWalk = phase.type === 'walk';
+                const lineColor = isWalk ? (isSelectedPhase ? '#334155' : '#94a3b8') : (phase.step?.lineColor || '#2563eb');
+
+                if (isExplicitFocus) {
+                    const halo = new window.google.maps.Polyline({
                         path,
                         map: mapInstance,
                         geodesic: true,
-                        strokeColor: isWalk ? '#64748b' : (step.lineColor || '#2563eb'),
-                        strokeOpacity: isWalk ? 0.7 : 0.92,
-                        strokeWeight: isWalk ? 4 : 6,
-                        icons: isWalk ? [{
-                            icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3 },
-                            offset: '0',
-                            repeat: '12px'
-                        }] : undefined
+                        strokeColor: '#ffffff',
+                        strokeOpacity: 0.92,
+                        strokeWeight: isWalk ? 8 : 11,
+                        zIndex: 8
                     });
-                    activeRoutePolylines.push(pline);
+                    activeRoutePolylines.push(halo);
                 }
+
+                const pline = new window.google.maps.Polyline({
+                    path,
+                    map: mapInstance,
+                    geodesic: true,
+                    clickable: true,
+                    strokeColor: lineColor,
+                    strokeOpacity: isWalk ? (isSelectedPhase ? 0.0 : 0.0) : (isSelectedPhase ? 0.96 : 0.28),
+                    strokeWeight: isWalk ? (isSelectedPhase ? 4 : 3) : (isExplicitFocus ? 7 : (isSelectedPhase ? 6 : 4)),
+                    zIndex: isExplicitFocus ? 10 : (isSelectedPhase ? 5 : 2),
+                    icons: isWalk ? [{
+                        icon: {
+                            path: window.google.maps.SymbolPath.CIRCLE,
+                            fillColor: isExplicitFocus ? '#2563eb' : (isSelectedPhase ? '#334155' : '#94a3b8'),
+                            fillOpacity: isSelectedPhase ? 0.95 : 0.35,
+                            strokeColor: '#ffffff',
+                            strokeWeight: 1,
+                            scale: isExplicitFocus ? 3.8 : 2.8
+                        },
+                        offset: '0',
+                        repeat: '11px'
+                    }] : undefined
+                });
+                pline.addListener('click', () => {
+                    window.focusTransitPhaseOnMap(routeIndex, phase.phaseIdx);
+                });
+                activeRoutePolylines.push(pline);
             });
 
-            if (route.viewport?.low && route.viewport?.high) {
-                bounds.extend({ lat: route.viewport.low.latitude, lng: route.viewport.low.longitude });
-                bounds.extend({ lat: route.viewport.high.latitude, lng: route.viewport.high.longitude });
-                mapInstance.fitBounds(bounds, 48);
-            } else if (hasAnyPath) {
-                mapInstance.fitBounds(bounds, 48);
+            if (isExplicitFocus && phasePts.length > 0) {
+                focusedMidPoint = phase.type === 'transit' && phase.step?.departureStopLatLng
+                    ? phase.step.departureStopLatLng
+                    : phasePts[Math.floor(phasePts.length / 2)];
             }
+        });
+
+        // Origin & Destination markers
+        const firstCoord = allRoutePts[0] || route.steps?.[0]?.departureStopLatLng || route.steps?.[0]?.startLatLng || null;
+        const lastCoord = allRoutePts[allRoutePts.length - 1] || route.steps?.[route.steps.length - 1]?.arrivalStopLatLng || route.steps?.[route.steps.length - 1]?.endLatLng || null;
+
+        if (firstCoord) {
+            const originPin = document.createElement('div');
+            originPin.className = 'px-2 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-black shadow-md border-2 border-white flex items-center gap-1';
+            originPin.innerHTML = `${iconSvg('pin', 'w-3 h-3 shrink-0')}<span>${esc(route.departureTimeText)}</span>`;
+            const mOrigin = new mapClasses.AdvancedMarkerElement({
+                map: mapInstance,
+                position: firstCoord,
+                title: `Sortida (${route.departureTimeText})`,
+                content: originPin
+            });
+            activeRouteMarkers.push(mOrigin);
         }
 
-        // Drop informative transit stop markers
-        route.steps.forEach((step) => {
-            if (!step.isTransit) return;
+        if (lastCoord) {
+            const destPin = document.createElement('div');
+            destPin.className = 'px-2 py-1 rounded-full bg-zinc-900 text-white text-[10px] font-black shadow-md border-2 border-white flex items-center gap-1';
+            destPin.innerHTML = `${iconSvg('target', 'w-3 h-3 shrink-0')}<span>${esc(route.arrivalTimeText)}</span>`;
+            const mDest = new mapClasses.AdvancedMarkerElement({
+                map: mapInstance,
+                position: lastCoord,
+                title: `Arribada (${route.arrivalTimeText})`,
+                content: destPin
+            });
+            activeRouteMarkers.push(mDest);
+        }
+
+        // Boarding & Alighting transit stop markers
+        phases.forEach((phase) => {
+            if (phase.type !== 'transit') return;
+            const step = phase.step;
+            const isActivePhase = transitState.selectedPhaseIdx === null || transitState.selectedPhaseIdx === phase.phaseIdx;
+
             if (step.departureStopLatLng) {
                 const badge = document.createElement('div');
-                badge.className = 'px-2 py-1 rounded-xl text-[10px] font-extrabold shadow-md border-2 border-white flex items-center gap-1 cursor-pointer';
+                badge.className = `px-2 py-1 rounded-xl text-[10px] font-extrabold shadow-md border-2 border-white flex items-center gap-1 cursor-pointer transition ${isActivePhase ? 'opacity-100' : 'opacity-50'}`;
                 badge.style.backgroundColor = step.lineColor || '#2563eb';
                 badge.style.color = step.lineTextColor || '#ffffff';
-                badge.innerHTML = `${vehicleSvg(step.vehicleType, 'w-3 h-3 shrink-0')}<span>${esc(step.lineShort)} · ${esc(step.departureTimeText)}</span>`;
+                badge.innerHTML = `${vehicleSvg(step.vehicleType, 'w-3 h-3 shrink-0')}<span>${esc(phase.badge.shortCode || phase.badge.kind)} · ${esc(step.departureTimeText)}</span>`;
                 const m = new mapClasses.AdvancedMarkerElement({
                     map: mapInstance,
                     position: step.departureStopLatLng,
@@ -2339,38 +3131,68 @@
                     content: badge
                 });
                 m.addListener('click', () => {
-                    if (!sharedInfoWindow) sharedInfoWindow = new mapClasses.InfoWindow();
-                    sharedInfoWindow.setContent(`
-                        <div class="p-1.5 text-xs text-zinc-900 space-y-0.5 max-w-[230px]">
-                            <div class="font-extrabold flex items-center gap-1.5">${vehicleSvg(step.vehicleType, 'w-3.5 h-3.5')}<span>${esc(step.lineShort)} ${step.headsign ? `→ ${esc(step.headsign)}` : ''}</span></div>
-                            <div class="text-[11px]">Parada pujada: <strong>${esc(step.departureStopName)}</strong> (${esc(step.departureTimeText)})</div>
-                            <div class="text-[11px] text-zinc-600">Parada baixada: ${esc(step.arrivalStopName)} (${esc(step.arrivalTimeText)}) · ${step.stopCount} parades</div>
-                        </div>
-                    `);
-                    sharedInfoWindow.open({ anchor: m, map: mapInstance });
+                    window.focusTransitPhaseOnMap(routeIndex, phase.phaseIdx);
                 });
                 activeRouteMarkers.push(m);
             }
+
+            if (step.arrivalStopLatLng) {
+                const arrPin = document.createElement('div');
+                arrPin.className = `px-2 py-0.5 rounded-lg bg-white text-zinc-900 text-[9.5px] font-extrabold shadow-md border-2 flex items-center gap-1 cursor-pointer ${isActivePhase ? 'opacity-100' : 'opacity-45'}`;
+                arrPin.style.borderColor = step.lineColor || '#2563eb';
+                arrPin.innerHTML = `<span class="w-2 h-2 rounded-full shrink-0" style="background:${esc(step.lineColor || '#2563eb')}"></span><span>${esc(step.arrivalTimeText)}</span>`;
+                const mArr = new mapClasses.AdvancedMarkerElement({
+                    map: mapInstance,
+                    position: step.arrivalStopLatLng,
+                    title: `${isMapsUiEs() ? 'Bajar en' : 'Baixar a'} ${step.arrivalStopName} (${step.arrivalTimeText})`,
+                    content: arrPin
+                });
+                mArr.addListener('click', () => {
+                    openPhaseInfoWindowOnMap(route, phase, step.arrivalStopLatLng);
+                });
+                activeRouteMarkers.push(mArr);
+            }
         });
+
+        if (transitState.selectedPhaseIdx !== null && hasFocusPts) {
+            mapInstance.fitBounds(focusBounds, 72);
+            if (window.google?.maps?.event) {
+                window.google.maps.event.addListenerOnce(mapInstance, 'idle', () => {
+                    if (mapInstance.getZoom() > 17) mapInstance.setZoom(17);
+                });
+            }
+            if (focusedPhaseObj && focusedMidPoint) {
+                openPhaseInfoWindowOnMap(route, focusedPhaseObj, focusedMidPoint);
+            }
+        } else if (route.viewport?.low && route.viewport?.high && !hasFullPts) {
+            fullBounds.extend({ lat: route.viewport.low.latitude, lng: route.viewport.low.longitude });
+            fullBounds.extend({ lat: route.viewport.high.latitude, lng: route.viewport.high.longitude });
+            mapInstance.fitBounds(fullBounds, 54);
+        } else if (hasFullPts) {
+            mapInstance.fitBounds(fullBounds, 54);
+        }
 
         renderTransitResultsOnly();
     };
 
     window.sendTransitResultToChat = function () {
-        if (!transitState.verdictPlainText) return;
-        const chatInput = document.getElementById('chat-input');
         const sel = transitState.routes[transitState.selectedRouteIdx];
+        if (!transitState.verdictPlainText && !sel) return;
+        const chatInput = document.getElementById('chat-input');
         let extra = '';
         if (sel) {
             const stepsSummary = sel.steps.map((s) => s.isTransit
                 ? `${vehicleTextLabel(s.vehicleType)} ${s.lineShort} (${s.departureStopName} ${s.departureTimeText} -> ${s.arrivalStopName} ${s.arrivalTimeText})`
                 : `A peu ${s.durationText || ''}`
             ).join(' | ');
-            extra = `\nDetall del trajecte: ${stepsSummary}`;
+            extra = `Opcio ${sel.departureTimeText} -> ${sel.arrivalTimeText} (${sel.durationText})\nDetall del trajecte: ${stepsSummary}`;
         }
+        const baseHeader = transitState.verdictPlainText
+            ? `${transitState.verdictPlainText}\n${extra}`
+            : extra;
         window.closeDailyMapsModal();
         if (chatInput) {
-            chatInput.value = `${transitState.verdictPlainText}${extra}\nAjuda'm a organitzar-me l'alarma o recordatori per sortir puntual!`;
+            chatInput.value = `${baseHeader}\nAjuda'm a organitzar-me l'alarma o recordatori per sortir puntual!`;
             chatInput.focus();
             if (typeof window.autoResizeChatInput === 'function') window.autoResizeChatInput(chatInput);
         }
@@ -2497,9 +3319,21 @@
         renderTransitResultsOnly();
     };
 
+    function getCurrentClockHHMM() {
+        const d = new Date();
+        return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    }
+
     window.askAliatMapsTransit = async function (forceDirectTransit = false) {
         const qInput = document.getElementById('daily-transit-question-input');
         const question = forceDirectTransit ? '' : (qInput ? qInput.value.trim() : '');
+        if (!forceDirectTransit && !question) {
+            if (typeof window.showToast === 'function') {
+                window.showToast('Escriu una pregunta o canvia a "Horari manual" per cercar directament.', 'info');
+            }
+            if (qInput) qInput.focus();
+            return;
+        }
         if (!forceDirectTransit) transitState.question = question;
         transitState.needsPlaceSetup = null;
         transitState.setPlaceCandidates = [];
@@ -2511,10 +3345,16 @@
         const timeInput = document.getElementById('daily-transit-time-input');
         const daySelect = document.getElementById('daily-transit-day-select');
 
-        let originValText = originInput ? originInput.value.trim() : transitState.originAddress;
-        let destValText = destInput ? destInput.value.trim() : transitState.destAddress;
-        if (timeInput && timeInput.value) transitState.timeStr = timeInput.value;
-        if (daySelect) transitState.dayOffset = parseInt(daySelect.value, 10) === 1 ? 1 : 0;
+        let originValText = forceDirectTransit
+            ? (originInput ? originInput.value.trim() : transitState.originAddress)
+            : '';
+        let destValText = forceDirectTransit
+            ? (destInput ? destInput.value.trim() : transitState.destAddress)
+            : '';
+        if (forceDirectTransit) {
+            if (timeInput && timeInput.value) transitState.timeStr = timeInput.value;
+            if (daySelect) transitState.dayOffset = parseInt(daySelect.value, 10) === 1 ? 1 : 0;
+        }
 
         let parsedMeta = null;
         if (question && !forceDirectTransit) {
@@ -2543,7 +3383,7 @@
                 }
                 if (askRes.ok) {
                     const askJson = await askRes.json();
-                    if (askJson.intent === 'followup') {
+                    if (askJson.intent === 'followup' || askJson.intent === 'chat') {
                         transitState.loading = false;
                         transitState.conversation = [
                             ...(transitState.conversation || []),
@@ -2562,13 +3402,14 @@
                         transitState.setPlaceRole = role;
                         transitState.question = '';
                         if (cands.length === 1) {
-                            await window.setPlaceRoleFromCoords(role, cands[0].lat, cands[0].lng, role === 'home' ? 'Casa' : 'Institut / Universitat', cands[0].formattedAddress || cands[0].displayName);
+                            const roleTitle = role === 'home' ? 'Casa' : (role === 'work' ? 'Feina' : (cands[0].displayName || 'Institut / Universitat'));
+                            await window.setPlaceRoleFromCoords(role, cands[0].lat, cands[0].lng, roleTitle, cands[0].formattedAddress || cands[0].displayName);
                             return;
                         }
                         transitState.setPlaceCandidates = cands;
                         transitState.routes = [];
                         transitState.verdictHtml = cands.length === 0
-                            ? `<div class="flex items-start gap-2">${iconSvg('warn', 'w-4 h-4 text-amber-600 shrink-0 mt-0.5')}<span>No s'ha trobat l'adreça "${esc(askJson.query || question)}". Prova d'escriure el carrer i ciutat o prem "Marcar al mapa" a la targeta de Casa.</span></div>`
+                            ? `<div class="flex items-start gap-2">${iconSvg('warn', 'w-4 h-4 text-amber-600 shrink-0 mt-0.5')}<span>No s'ha trobat l'adreça "${esc(askJson.query || question)}". Prova d'escriure el carrer i ciutat o prem "Fixar Casa / Fixar Insti" a dalt.</span></div>`
                             : '';
                         renderTransitTabContent();
                         return;
@@ -2606,35 +3447,50 @@
         transitState.lastExploreContext = null;
         transitState.aiMode = 'transit';
 
-        // Apply parsed natural-language constraints onto structured inputs
+        // Apply parsed natural-language constraints cleanly without reusing stale coords/hours from older AI turns
         if (parsedMeta) {
             transitState.lang = parsedMeta.language || transitState.lang;
             transitState.dayOffset = parsedMeta.dayOffset === 1 ? 1 : 0;
             transitState.autoShiftedToTomorrow = Boolean(parsedMeta.autoShiftedToTomorrow);
             transitState.arrivalSlightlyBefore = Boolean(parsedMeta.arrivalSlightlyBefore);
 
+            transitState.modeFilter = 'ALL';
             if (Array.isArray(parsedMeta.allowedModes) && parsedMeta.allowedModes.length > 0) {
                 if (parsedMeta.allowedModes.includes('BUS') && parsedMeta.allowedModes.length === 1) transitState.modeFilter = 'BUS';
-                else if (parsedMeta.allowedModes.includes('RAIL')) transitState.modeFilter = 'RAIL';
+                else if (parsedMeta.allowedModes.includes('RAIL') || parsedMeta.allowedModes.includes('TRAIN')) transitState.modeFilter = 'RAIL';
                 else if (parsedMeta.allowedModes.includes('SUBWAY')) transitState.modeFilter = 'SUBWAY';
-                else transitState.modeFilter = 'ALL';
             }
 
             if (typeof parsedMeta.departureHour === 'number') {
                 transitState.timeMode = 'departure';
                 transitState.timeStr = `${pad2(parsedMeta.departureHour)}:${pad2(parsedMeta.departureMinute || 0)}`;
-            }
-            if (typeof parsedMeta.arrivalHour === 'number') {
+            } else if (typeof parsedMeta.arrivalHour === 'number') {
                 transitState.deadlineTimeStr = `${pad2(parsedMeta.arrivalHour)}:${pad2(parsedMeta.arrivalMinute || 0)}`;
-                if (typeof parsedMeta.departureHour !== 'number') {
-                    transitState.timeMode = 'arrival';
-                    transitState.timeStr = transitState.deadlineTimeStr;
-                }
-            } else if (typeof parsedMeta.departureHour === 'number') {
+                transitState.timeMode = 'arrival';
+                transitState.timeStr = transitState.deadlineTimeStr;
+            } else {
+                transitState.timeMode = 'departure';
+                transitState.timeStr = getCurrentClockHHMM();
+                transitState.deadlineTimeStr = '';
+            }
+            if (typeof parsedMeta.arrivalHour === 'number' && typeof parsedMeta.departureHour === 'number') {
+                transitState.deadlineTimeStr = `${pad2(parsedMeta.arrivalHour)}:${pad2(parsedMeta.arrivalMinute || 0)}`;
+            } else if (typeof parsedMeta.arrivalHour !== 'number') {
                 transitState.deadlineTimeStr = '';
             }
 
-            // Resolve Origin from saved places or hint
+            // Reset stale origin/dest coords before resolving this AI request
+            transitState.originCoords = null;
+            transitState.originAddress = '';
+            transitState.originMode = 'current';
+            transitState.originLabel = 'Ubicació actual (GPS)';
+
+            transitState.destCoords = null;
+            transitState.destAddress = '';
+            transitState.destMode = 'custom';
+            transitState.destLabel = '';
+
+            // Resolve Origin from saved places, hint, or current GPS
             if (parsedMeta.matchedOriginPlaceId) {
                 const sp = loadSavedEverydayPlaces().find((x) => x.id === parsedMeta.matchedOriginPlaceId);
                 if (sp) {
@@ -2644,11 +3500,31 @@
                     transitState.originLabel = sp.title;
                     originValText = sp.address || sp.title;
                 }
-            } else if (parsedMeta.originType === 'saved_home' && !originValText) {
-                transitState.needsPlaceSetup = { missingHome: true, missingSchool: false };
-            } else if (parsedMeta.originHint && !originValText) {
+            } else if (parsedMeta.originType === 'saved_home') {
+                const sp = findSavedPlaceByRole('home');
+                if (sp) {
+                    transitState.originMode = 'saved';
+                    transitState.originCoords = { lat: sp.lat, lng: sp.lng };
+                    transitState.originAddress = sp.address || sp.title;
+                    transitState.originLabel = sp.title;
+                    originValText = sp.address || sp.title;
+                } else {
+                    transitState.needsPlaceSetup = { missingHome: true, missingSchool: false };
+                }
+            } else if (parsedMeta.originType === 'saved_school') {
+                const sp = findSavedPlaceByRole('school');
+                if (sp) {
+                    transitState.originMode = 'saved';
+                    transitState.originCoords = { lat: sp.lat, lng: sp.lng };
+                    transitState.originAddress = sp.address || sp.title;
+                    transitState.originLabel = sp.title;
+                    originValText = sp.address || sp.title;
+                } else {
+                    transitState.needsPlaceSetup = { missingHome: false, missingSchool: true };
+                }
+            } else if (parsedMeta.originHint && parsedMeta.originType === 'custom') {
                 originValText = parsedMeta.originHint;
-                transitState.originCoords = null;
+                transitState.originMode = 'custom';
                 transitState.originLabel = parsedMeta.originHint;
             }
 
@@ -2662,14 +3538,37 @@
                     transitState.destLabel = sp.title;
                     destValText = sp.address || sp.title;
                 }
-            } else if (parsedMeta.destinationType === 'saved_school' && !destValText) {
-                transitState.needsPlaceSetup = {
-                    ...(transitState.needsPlaceSetup || {}),
-                    missingSchool: true
-                };
-            } else if (parsedMeta.destinationHint && !destValText) {
+            } else if (parsedMeta.destinationType === 'saved_school') {
+                const sp = findSavedPlaceByRole('school');
+                if (sp) {
+                    transitState.destMode = 'saved';
+                    transitState.destCoords = { lat: sp.lat, lng: sp.lng };
+                    transitState.destAddress = sp.address || sp.title;
+                    transitState.destLabel = sp.title;
+                    destValText = sp.address || sp.title;
+                } else {
+                    transitState.needsPlaceSetup = {
+                        ...(transitState.needsPlaceSetup || {}),
+                        missingSchool: true
+                    };
+                }
+            } else if (parsedMeta.destinationType === 'saved_home') {
+                const sp = findSavedPlaceByRole('home');
+                if (sp) {
+                    transitState.destMode = 'saved';
+                    transitState.destCoords = { lat: sp.lat, lng: sp.lng };
+                    transitState.destAddress = sp.address || sp.title;
+                    transitState.destLabel = sp.title;
+                    destValText = sp.address || sp.title;
+                } else {
+                    transitState.needsPlaceSetup = {
+                        ...(transitState.needsPlaceSetup || {}),
+                        missingHome: true
+                    };
+                }
+            } else if (parsedMeta.destinationHint) {
                 destValText = parsedMeta.destinationHint;
-                transitState.destCoords = null;
+                transitState.destMode = 'custom';
                 transitState.destLabel = parsedMeta.destinationHint;
             }
         }
@@ -2758,14 +3657,42 @@
 
         const lang = parsedMeta?.language || (window.currentAppLang === 'es' ? 'es' : 'ca');
 
-        let routes = await fetchTransitRoutesSmart({
-            origin: originWp,
-            destination: destWp,
-            departureTime: transitState.timeMode === 'departure' ? targetDate.toISOString() : undefined,
-            arrivalTime: transitState.timeMode === 'arrival' ? targetDate.toISOString() : undefined,
-            allowedTravelModes: allowedModes,
-            languageCode: lang
-        });
+        const [primaryRoutes, busOnlyRoutes] = await Promise.all([
+            fetchTransitRoutesSmart({
+                origin: originWp,
+                destination: destWp,
+                departureTime: transitState.timeMode === 'departure' ? targetDate.toISOString() : undefined,
+                arrivalTime: transitState.timeMode === 'arrival' ? targetDate.toISOString() : undefined,
+                allowedTravelModes: allowedModes,
+                languageCode: lang
+            }),
+            (!allowedModes)
+                ? fetchTransitRoutesSmart({
+                    origin: originWp,
+                    destination: destWp,
+                    departureTime: transitState.timeMode === 'departure' ? targetDate.toISOString() : undefined,
+                    arrivalTime: transitState.timeMode === 'arrival' ? targetDate.toISOString() : undefined,
+                    allowedTravelModes: ['BUS'],
+                    languageCode: lang
+                }).catch(() => [])
+                : Promise.resolve([])
+        ]);
+
+        const mergeUniqueTransitRoutes = (...groups) => {
+            const seen = new Set();
+            const merged = [];
+            groups.forEach((grp) => {
+                (Array.isArray(grp) ? grp : []).forEach((r) => {
+                    const sig = r.signature || `${r.departureTimeText}|${r.arrivalTimeText}|${r.durationSec}`;
+                    if (seen.has(sig)) return;
+                    seen.add(sig);
+                    merged.push({ ...r, index: merged.length });
+                });
+            });
+            return merged.slice(0, 6);
+        };
+
+        let routes = mergeUniqueTransitRoutes(primaryRoutes, busOnlyRoutes);
 
         if ((!routes || routes.length === 0) && allowedModes) {
             routes = await fetchTransitRoutesSmart({
@@ -2787,12 +3714,18 @@
                 languageCode: lang
             });
             if (earlierRoutes.length > 0) {
-                routes = [...earlierRoutes.map((r, i) => ({ ...r, index: i, recommendedEarlier: true })), ...routes.map((r, i) => ({ ...r, index: i + earlierRoutes.length }))];
+                routes = mergeUniqueTransitRoutes(
+                    earlierRoutes.map((r) => ({ ...r, recommendedEarlier: true })),
+                    routes
+                );
             }
         }
 
         transitState.loading = false;
         transitState.routes = routes;
+        transitState.selectedPhaseIdx = null;
+        transitState.expandedWalkPhases = {};
+        transitState.routeListFilter = 'ALL';
         const verdict = buildCommuteVerdict(routes, {
             deadlineMs,
             requestedDepMs: transitState.timeMode === 'departure' ? targetDate.getTime() : null,
@@ -2819,7 +3752,7 @@
 
         renderTransitTabContent();
         if (routes.length > 0) {
-            await window.drawTransitRouteOnMap(transitState.selectedRouteIdx);
+            await window.drawTransitRouteOnMap(transitState.selectedRouteIdx, null);
         }
     };
 
@@ -2832,10 +3765,11 @@
     function renderFollowupThreadHtml() {
         const followups = (transitState.conversation || []).filter((m) => m && m.isFollowup);
         if (followups.length === 0) return '';
+        const hasRoutes = Array.isArray(transitState.routes) && transitState.routes.length > 0;
         return `
             <div class="p-3 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/30 border border-indigo-200/90 dark:border-indigo-800/70 space-y-2">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 inline-flex items-center gap-1.5">${iconSvg('chat', 'w-3.5 h-3.5')}<span>Comentaris sobre aquesta ruta</span></span>
+                    <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 inline-flex items-center gap-1.5">${iconSvg('chat', 'w-3.5 h-3.5')}<span>${hasRoutes ? 'Comentaris sobre aquesta ruta' : 'Resposta d\'AliatMaps IA'}</span></span>
                     <button type="button" onclick="window.clearAliatMapsFollowupChat()" class="text-[10px] font-bold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 cursor-pointer">Netejar</button>
                 </div>
                 <div class="space-y-1.5">
@@ -2943,13 +3877,24 @@
         }
 
         if (!transitState.verdictHtml && (!transitState.routes || transitState.routes.length === 0)) {
+            const followupHtml = renderFollowupThreadHtml();
+            if (followupHtml) {
+                resBox.innerHTML = `${transitState.loading ? loadingBannerHtml : ''}${followupHtml}`;
+                return;
+            }
             resBox.innerHTML = `
-                <div class="p-3.5 rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-400 space-y-2">
-                    <div class="font-extrabold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">${iconSvg('lightbulb', 'w-3.5 h-3.5 text-blue-600')}<span>Com fer servir AliatMaps en 3 passos</span></div>
-                    <div class="space-y-1.5">
-                        <div class="flex items-start gap-2"><span class="w-4 h-4 rounded-md bg-emerald-600/15 text-emerald-700 dark:text-emerald-300 text-[10px] font-black inline-flex items-center justify-center shrink-0 mt-0.5">1</span><span>Desa <strong>Casa</strong> i <strong>Insti</strong> a dalt (es guarden al teu compte).</span></div>
-                        <div class="flex items-start gap-2"><span class="w-4 h-4 rounded-md bg-blue-600/15 text-blue-700 dark:text-sky-300 text-[10px] font-black inline-flex items-center justify-center shrink-0 mt-0.5">2</span><span>Escriu la pregunta com parles o tria <strong>Origen i Destinació</strong>.</span></div>
-                        <div class="flex items-start gap-2"><span class="w-4 h-4 rounded-md bg-indigo-600/15 text-indigo-700 dark:text-indigo-300 text-[10px] font-black inline-flex items-center justify-center shrink-0 mt-0.5">3</span><span>Quan surti la ruta, pregunta dubtes de seguiment (on baixar, transbords o temps a peu).</span></div>
+                <div class="grid grid-cols-3 gap-1.5">
+                    <div class="p-2.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 flex flex-col items-center text-center gap-1">
+                        <span class="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center">${iconSvg('home', 'w-3.5 h-3.5')}</span>
+                        <span class="text-[10.5px] font-extrabold text-zinc-900 dark:text-white">1. Casa / Insti</span>
+                    </div>
+                    <div class="p-2.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/60 flex flex-col items-center text-center gap-1">
+                        <span class="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center">${iconSvg('spark', 'w-3.5 h-3.5')}</span>
+                        <span class="text-[10.5px] font-extrabold text-zinc-900 dark:text-white">2. Tria o IA</span>
+                    </div>
+                    <div class="p-2.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/80 dark:border-indigo-800/60 flex flex-col items-center text-center gap-1">
+                        <span class="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center">${iconSvg('map', 'w-3.5 h-3.5')}</span>
+                        <span class="text-[10.5px] font-extrabold text-zinc-900 dark:text-white">3. Veure mapa</span>
                     </div>
                 </div>
             `;
@@ -2963,82 +3908,233 @@
                 : 'bg-emerald-50/90 dark:bg-emerald-950/35 border-emerald-200 dark:border-emerald-800/80 text-emerald-950 dark:text-emerald-100');
 
         const verdictCardHtml = transitState.verdictHtml ? `
-            <div class="p-3.5 rounded-2xl border ${statusClasses} space-y-2 shadow-2xs">
-                <div class="text-xs leading-relaxed">${transitState.verdictHtml}</div>
+            <div class="p-3 rounded-2xl border ${statusClasses} space-y-2 shadow-2xs">
+                <div class="text-xs">${transitState.verdictHtml}</div>
                 ${transitState.verdictPlainText ? `
-                <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-black/10 dark:border-white/10">
-                    <span class="text-[10px] font-bold opacity-75">Dades oficials Google Maps Transit</span>
+                <div class="flex items-center justify-end pt-1">
                     <button type="button" onclick="window.sendTransitResultToChat()" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-[10.5px] font-extrabold cursor-pointer inline-flex items-center gap-1">
-                        ${iconSvg('chat', 'w-3 h-3')}<span>Enviar al xat</span>
+                        ${iconSvg('chat', 'w-3 h-3')}<span>Al xat</span>
                     </button>
                 </div>` : ''}
             </div>
         ` : '';
 
-        const routesHtml = (transitState.routes || []).map((route, idx) => {
+        const allRoutes = transitState.routes || [];
+        const getFilteredRoutesLocal = () => {
+            if (transitState.routeListFilter === 'BUS') return allRoutes.filter((r) => r.hasBus);
+            if (transitState.routeListFilter === 'RAIL') return allRoutes.filter((r) => r.hasRail);
+            return allRoutes;
+        };
+        const visibleRoutes = getFilteredRoutesLocal();
+        const busCount = allRoutes.filter((r) => r.hasBus).length;
+        const railCount = allRoutes.filter((r) => r.hasRail).length;
+        const isEs = isMapsUiEs();
+
+        const routeFilterBarHtml = allRoutes.length > 1 ? `
+            <div class="flex items-center justify-between gap-2 px-0.5 pt-0.5">
+                <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                    ${isEs ? 'Opciones' : 'Opcions'} (${visibleRoutes.length})
+                </span>
+                ${(busCount > 0 || railCount > 0) ? `
+                <div class="flex items-center gap-1">
+                    <button type="button" onclick="window.setTransitRouteListFilter('ALL')" class="px-2 py-1 rounded-lg text-[10px] font-bold cursor-pointer border ${transitState.routeListFilter === 'ALL' ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-zinc-900 dark:border-white' : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'}">${isEs ? 'Todo' : 'Tot'} (${allRoutes.length})</button>
+                    ${busCount > 0 ? `<button type="button" onclick="window.setTransitRouteListFilter('BUS')" class="px-2 py-1 rounded-lg text-[10px] font-bold cursor-pointer border inline-flex items-center gap-1 ${transitState.routeListFilter === 'BUS' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'}">${iconSvg('bus', 'w-3 h-3')}<span>${busCount}</span></button>` : ''}
+                    ${railCount > 0 ? `<button type="button" onclick="window.setTransitRouteListFilter('RAIL')" class="px-2 py-1 rounded-lg text-[10px] font-bold cursor-pointer border inline-flex items-center gap-1 ${transitState.routeListFilter === 'RAIL' ? 'bg-sky-600 text-white border-sky-600' : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'}">${iconSvg('train', 'w-3 h-3')}<span>${railCount}</span></button>` : ''}
+                </div>` : ''}
+            </div>
+        ` : '';
+
+        const routesHtml = visibleRoutes.map((route) => {
+            const idx = route.index;
             const isSelected = idx === transitState.selectedRouteIdx;
-            const badgesHtml = route.steps.map((s) => {
-                if (!s.isTransit) {
-                    return `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[10px] font-bold">${iconSvg('walk', 'w-3 h-3')}<span>${esc(s.durationText || `${Math.max(1, Math.round(s.durationSec / 60))}m`)}</span></span>`;
+            const phases = route.phases || groupRouteStepsForDisplay(route.steps);
+            const totalPhaseSec = Math.max(1, phases.reduce((acc, p) => acc + Math.max(30, p.durationSec || 60), 0));
+
+            // Proportional visual journey bar (color segments for walk vs transit)
+            const segmentBarHtml = `
+                <div class="flex h-2 w-full rounded-full overflow-hidden gap-0.5 bg-zinc-100 dark:bg-zinc-800">
+                    ${phases.map((p) => {
+                        const wPct = Math.max(8, Math.round((Math.max(30, p.durationSec || 60) / totalPhaseSec) * 100));
+                        const bg = p.type === 'walk' ? '' : `background-color:${esc(p.step.lineColor || '#2563eb')}`;
+                        const cls = p.type === 'walk' ? 'bg-zinc-300 dark:bg-zinc-700' : '';
+                        return `<div class="h-full rounded-full ${cls}" style="width:${wPct}%;${bg}"></div>`;
+                    }).join('')}
+                </div>
+            `;
+
+            // Clean grouped icons/tags: ONE per walk block and ONE compact per transit line
+            const badgesHtml = phases.map((p) => {
+                if (p.type === 'walk') {
+                    return `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[10.5px] font-bold">${iconSvg('walk', 'w-3 h-3')}<span>${esc(p.durationText)}</span></span>`;
                 }
-                return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10.5px] font-black shadow-2xs" style="background-color:${esc(s.lineColor || '#2563eb')};color:${esc(s.lineTextColor || '#ffffff')}">${vehicleSvg(s.vehicleType, 'w-3 h-3')}<span>${esc(s.lineShort)}</span></span>`;
+                return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10.5px] font-black shadow-2xs" style="background-color:${esc(p.step.lineColor || '#2563eb')};color:${esc(p.step.lineTextColor || '#ffffff')}">${vehicleSvg(p.step.vehicleType, 'w-3 h-3')}<span>${esc(p.badge.pillLabel)}</span></span>`;
             }).join('<span class="text-zinc-400 text-[10px] mx-0.5">›</span>');
 
-            const stepsDetailHtml = isSelected ? `
-                <div class="mt-2.5 pt-2.5 border-t border-zinc-200/80 dark:border-zinc-800 space-y-2">
-                    ${route.steps.map((s) => {
-                        if (!s.isTransit) {
+            const firstTransit = route.transitPhases?.[0];
+            const quickMetaLine = firstTransit
+                ? `${firstTransit.step.departureStopName ? `${esc(firstTransit.step.departureStopName)} (${esc(firstTransit.step.departureTimeText)}) · ` : ''}${route.walkMin > 0 ? `${route.walkMin}m peu · ` : ''}${route.transfers === 0 ? (isEs ? 'Directo' : 'Directe') : `${route.transfers} ${route.transfers === 1 ? 'transb.' : 'transb.'}`}`
+                : `${route.walkMin > 0 ? `${route.walkMin}m peu` : ''}`;
+
+            const gmapsOriginParam = transitState.originCoords
+                ? `${transitState.originCoords.lat},${transitState.originCoords.lng}`
+                : (userLocation ? `${userLocation.lat},${userLocation.lng}` : (transitState.originAddress || ''));
+            const gmapsDestParam = transitState.destCoords
+                ? `${transitState.destCoords.lat},${transitState.destCoords.lng}`
+                : (transitState.destAddress || transitState.destLabel || '');
+            const gmapsTransitUrl = gmapsDestParam
+                ? `https://www.google.com/maps/dir/?api=1&${gmapsOriginParam ? `origin=${encodeURIComponent(gmapsOriginParam)}&` : ''}destination=${encodeURIComponent(gmapsDestParam)}&travelmode=transit`
+                : '';
+
+            const timelineHtml = isSelected ? `
+                <div class="mt-3 pt-3 border-t border-zinc-200/80 dark:border-zinc-800 space-y-2.5" onclick="event.stopPropagation()">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-[10.5px] font-extrabold text-zinc-500 dark:text-zinc-400 inline-flex items-center gap-1">
+                            ${iconSvg('map', 'w-3.5 h-3.5 text-blue-600 dark:text-sky-400')}
+                            <span>${isEs ? 'Clica cualquier tramo' : 'Clica qualsevol tram'}</span>
+                        </span>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            ${transitState.selectedPhaseIdx !== null
+                                ? `<button type="button" onclick="window.drawTransitRouteOnMap(${idx}, null)" class="px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-sky-950/60 text-blue-700 dark:text-sky-300 text-[10px] font-extrabold cursor-pointer border border-blue-200 dark:border-sky-800">${isEs ? 'Ver ruta' : 'Veure ruta'}</button>`
+                                : ''}
+                            <button type="button" onclick="window.sendTransitResultToChat()" class="px-2 py-0.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-[10px] font-extrabold cursor-pointer inline-flex items-center gap-1">
+                                ${iconSvg('chat', 'w-3 h-3')}<span>${isEs ? 'Al chat' : 'Al xat'}</span>
+                            </button>
+                            ${gmapsTransitUrl ? `
+                            <a href="${gmapsTransitUrl}" target="_blank" rel="noopener noreferrer" class="px-2 py-0.5 rounded-lg bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-blue-600 dark:text-sky-400 border border-zinc-200 dark:border-zinc-700 text-[10px] font-extrabold inline-flex items-center gap-1">
+                                ${iconSvg('external', 'w-3 h-3')}<span>Maps</span>
+                            </a>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        ${phases.map((p, pIdx) => {
+                            const isFocused = transitState.selectedPhaseIdx === p.phaseIdx;
+                            const isLastPhase = pIdx === phases.length - 1;
+
+                            if (p.type === 'walk') {
+                                const expandKey = `${idx}_${p.phaseIdx}`;
+                                const isExpanded = Boolean(transitState.expandedWalkPhases[expandKey]);
+                                const subCount = (p.subSteps || []).length;
+                                return `
+                                    <div onclick="window.focusTransitPhaseOnMap(${idx}, ${p.phaseIdx})" class="group relative p-2.5 rounded-xl border transition cursor-pointer ${isFocused ? 'bg-blue-50/80 dark:bg-sky-950/35 border-blue-500 ring-2 ring-blue-500/20' : 'bg-zinc-50/90 dark:bg-zinc-950/80 border-zinc-200/80 dark:border-zinc-800 hover:border-blue-400'}">
+                                        <div class="flex items-start gap-2.5">
+                                            <div class="flex flex-col items-center shrink-0 pt-0.5">
+                                                <span class="w-6 h-6 rounded-full ${isFocused ? 'bg-blue-600 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200'} flex items-center justify-center">${iconSvg('walk', 'w-3.5 h-3.5')}</span>
+                                                ${!isLastPhase ? `<span class="w-0.5 h-3 border-l-2 border-dotted border-zinc-300 dark:border-zinc-700 mt-1"></span>` : ''}
+                                            </div>
+                                            <div class="min-w-0 flex-1 space-y-1">
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <div class="text-xs font-extrabold text-zinc-900 dark:text-white">
+                                                        ${isEs ? 'Camina' : 'Camina'} ${esc(p.durationText)} ${p.distanceText ? `<span class="font-semibold text-zinc-500 dark:text-zinc-400">(${esc(p.distanceText)})</span>` : ''}
+                                                    </div>
+                                                    <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${isFocused ? 'bg-blue-600 text-white' : 'bg-zinc-200/70 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 group-hover:bg-blue-100 group-hover:text-blue-700'}">
+                                                        ${isFocused ? (isEs ? 'En el mapa' : 'Al mapa') : (isEs ? 'Ver recorrido' : 'Veure tram')}
+                                                    </span>
+                                                </div>
+                                                <div class="text-[11px] text-zinc-600 dark:text-zinc-300 font-medium">${esc(p.targetStopName)}</div>
+                                                ${subCount > 0 ? `
+                                                    <button type="button" onclick="window.toggleWalkSubSteps(event, ${idx}, ${p.phaseIdx})" class="text-[10.5px] font-bold text-blue-600 dark:text-sky-400 hover:underline cursor-pointer inline-flex items-center gap-1 pt-0.5">
+                                                        <span>${isExpanded ? (isEs ? 'Ocultar indicaciones' : 'Amagar indicacions') : (isEs ? `Ver ${subCount} indicaciones paso a paso` : `Veure ${subCount} indicacions pas a pas`)}</span>
+                                                    </button>
+                                                    ${isExpanded ? `
+                                                        <div class="mt-1.5 pl-2.5 border-l-2 border-zinc-200 dark:border-zinc-700 space-y-1">
+                                                            ${p.subSteps.map((sub) => {
+                                                                const subDur = sub.durationText || (sub.durationSec ? `${Math.max(1, Math.round(sub.durationSec / 60))} min` : '1 min');
+                                                                const subDist = sub.distanceText || formatMetersCompact(approxStepDistanceMeters(sub));
+                                                                return `
+                                                                <div class="text-[10.5px] text-zinc-600 dark:text-zinc-400 leading-snug">
+                                                                    <span class="font-bold text-zinc-800 dark:text-zinc-200">${esc(subDur)}</span>
+                                                                    ${subDist ? `(${esc(subDist)})` : ''}
+                                                                    ${sub.instruction ? `· ${esc(sub.instruction)}` : ''}
+                                                                </div>
+                                                            `;
+                                                            }).join('')}
+                                                        </div>
+                                                    ` : ''}
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+
+                            const st = p.step;
                             return `
-                                <div class="flex items-start gap-2 text-[11px] text-zinc-600 dark:text-zinc-400">
-                                    <span class="shrink-0 mt-0.5 text-zinc-500">${iconSvg('walk', 'w-3.5 h-3.5')}</span>
-                                    <div class="min-w-0 flex-1">
-                                        <span class="font-bold text-zinc-800 dark:text-zinc-200">Camina ${esc(s.durationText || '')}</span>
-                                        ${s.distanceText ? `<span>(${esc(s.distanceText)})</span>` : ''}
-                                        ${s.instruction ? `<span class="block text-[10px] text-zinc-500">${esc(s.instruction)}</span>` : ''}
+                                <div onclick="window.focusTransitPhaseOnMap(${idx}, ${p.phaseIdx})" class="group relative p-3 rounded-xl border transition cursor-pointer ${isFocused ? 'bg-blue-50/85 dark:bg-sky-950/40 border-blue-500 ring-2 ring-blue-500/25' : 'bg-white dark:bg-zinc-950 border-zinc-200/90 dark:border-zinc-800 hover:border-blue-400'}">
+                                    <div class="flex items-start gap-2.5">
+                                        <div class="flex flex-col items-center shrink-0 pt-0.5">
+                                            <span class="w-6 h-6 rounded-lg flex items-center justify-center shadow-2xs" style="background-color:${esc(st.lineColor || '#2563eb')};color:${esc(st.lineTextColor || '#ffffff')}">${vehicleSvg(st.vehicleType, 'w-3.5 h-3.5')}</span>
+                                        </div>
+                                        <div class="min-w-0 flex-1 space-y-1.5">
+                                            <div class="flex flex-wrap items-center justify-between gap-1.5">
+                                                <div class="flex flex-wrap items-center gap-1.5 min-w-0">
+                                                    <span class="px-2 py-0.5 rounded-md text-[11px] font-black shadow-2xs" style="background-color:${esc(st.lineColor || '#2563eb')};color:${esc(st.lineTextColor || '#ffffff')}">${esc(p.badge.pillLabel)}</span>
+                                                    ${st.headsign ? `<span class="text-[11px] font-bold text-zinc-700 dark:text-zinc-200 truncate">→ ${esc(st.headsign)}</span>` : ''}
+                                                </div>
+                                                <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${isFocused ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 group-hover:bg-blue-100 group-hover:text-blue-700'}">
+                                                    ${isFocused ? (isEs ? 'En el mapa' : 'Al mapa') : (isEs ? 'Ver recorrido' : 'Veure per on passa')}
+                                                </span>
+                                            </div>
+                                            ${p.badge.extraLineTitle ? `<div class="text-[10.5px] font-semibold text-zinc-500 dark:text-zinc-400">${esc(p.badge.extraLineTitle)}</div>` : ''}
+
+                                            <div class="relative pl-3 space-y-1.5 pt-0.5 before:content-[''] before:absolute before:left-[3px] before:top-2 before:bottom-2 before:w-0.5 before:bg-zinc-300 dark:before:bg-zinc-700">
+                                                <div class="relative flex items-baseline justify-between gap-2 text-[11.5px] tabular-nums">
+                                                    <span class="flex items-center gap-1.5 min-w-0">
+                                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900 -ml-[13px] shrink-0"></span>
+                                                        <span class="text-zinc-900 dark:text-white font-extrabold shrink-0">${esc(st.departureTimeText)}</span>
+                                                        <span class="text-zinc-700 dark:text-zinc-200 font-semibold truncate">${isEs ? 'Sube en' : 'Puja a'} <strong>${esc(st.departureStopName)}</strong></span>
+                                                    </span>
+                                                </div>
+                                                <div class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 pl-1">
+                                                    ${st.stopCount ? `${st.stopCount} ${isEs ? 'paradas' : 'parades'} · ` : ''}${esc(p.durationText)}
+                                                </div>
+                                                <div class="relative flex items-baseline justify-between gap-2 text-[11.5px] tabular-nums">
+                                                    <span class="flex items-center gap-1.5 min-w-0">
+                                                        <span class="w-2.5 h-2.5 rounded-full border-2 border-white dark:border-zinc-900 -ml-[13px] shrink-0" style="background-color:${esc(st.lineColor || '#2563eb')}"></span>
+                                                        <span class="text-zinc-900 dark:text-white font-extrabold shrink-0">${esc(st.arrivalTimeText)}</span>
+                                                        <span class="text-zinc-700 dark:text-zinc-200 font-semibold truncate">${isEs ? 'Baja en' : 'Baixa a'} <strong>${esc(st.arrivalStopName)}</strong></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             `;
-                        }
-                        return `
-                            <div class="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
-                                <div class="flex items-center justify-between gap-2">
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10.5px] font-black" style="background-color:${esc(s.lineColor || '#2563eb')};color:${esc(s.lineTextColor || '#ffffff')}">
-                                        ${vehicleSvg(s.vehicleType, 'w-3 h-3')}<span>${esc(s.lineShort)}</span>
-                                    </span>
-                                    <span class="text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 tabular-nums">${s.stopCount ? `${s.stopCount} parades · ` : ''}${esc(s.durationText || '')}</span>
-                                </div>
-                                ${s.headsign ? `<div class="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400">Direcció: ${esc(s.headsign)}</div>` : ''}
-                                <div class="text-[11px] text-zinc-800 dark:text-zinc-200 space-y-1 tabular-nums pt-0.5">
-                                    <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span><span><strong>${esc(s.departureTimeText)}</strong> · Puja a <strong>${esc(s.departureStopName)}</strong></span></div>
-                                    <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-600 shrink-0"></span><span><strong>${esc(s.arrivalTimeText)}</strong> · Baixa a <strong>${esc(s.arrivalStopName)}</strong></span></div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                    <div class="text-[10px] text-zinc-400 pt-0.5 flex items-center gap-1">${iconSvg('warn', 'w-3 h-3 text-amber-500')}<span>Els trams a peu són orientatius.</span></div>
+                        }).join('')}
+                    </div>
                 </div>
             ` : '';
 
             return `
-                <div onclick="window.drawTransitRouteOnMap(${idx})" class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border ${isSelected ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-zinc-200/90 dark:border-zinc-800 hover:border-blue-400'} transition cursor-pointer space-y-1.5 shadow-2xs">
+                <div onclick="window.drawTransitRouteOnMap(${idx}, null)" class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border ${isSelected ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-zinc-200/90 dark:border-zinc-800 hover:border-blue-400'} transition cursor-pointer space-y-2 shadow-2xs">
                     <div class="flex items-center justify-between gap-2">
                         <div class="text-xs sm:text-sm font-black text-zinc-900 dark:text-white tabular-nums inline-flex items-center gap-1.5">
                             <span>${esc(route.departureTimeText)}</span>
                             ${iconSvg('arrowRight', 'w-3.5 h-3.5 text-zinc-400')}
                             <span>${esc(route.arrivalTimeText)}</span>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            ${route.recommendedEarlier ? `<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[9.5px] font-extrabold">Recomanada</span>` : ''}
-                            <span class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-[10.5px] font-extrabold tabular-nums">${esc(route.durationText)}</span>
+                        <div class="flex items-center gap-2 text-[10.5px] font-extrabold tabular-nums">
+                            ${route.recommendedEarlier ? `<span class="text-emerald-600 dark:text-emerald-400">${isEs ? 'Óptima' : 'Òptima'}</span>` : ''}
+                            ${isSelected ? `<span class="text-blue-600 dark:text-sky-400">${isEs ? 'Activa' : 'Activa'}</span>` : ''}
+                            <span class="px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">${esc(route.durationText)}</span>
                         </div>
                     </div>
-                    <div class="flex flex-wrap items-center gap-1 pt-0.5">${badgesHtml}</div>
-                    ${stepsDetailHtml}
+                    ${segmentBarHtml}
+                    <div class="flex flex-wrap items-center gap-1">${badgesHtml}</div>
+                    ${quickMetaLine ? `<div class="text-[10.5px] text-zinc-500 dark:text-zinc-400 truncate">${quickMetaLine}</div>` : ''}
+                    ${timelineHtml}
                 </div>
             `;
         }).join('');
 
-        resBox.innerHTML = `${transitState.loading ? loadingBannerHtml : ''}${verdictCardHtml}${renderFollowupThreadHtml()}<div class="space-y-2">${routesHtml}</div>`;
+        resBox.innerHTML = `${transitState.loading ? loadingBannerHtml : ''}${verdictCardHtml}${renderFollowupThreadHtml()}<div class="space-y-2">${routeFilterBarHtml}${routesHtml}</div>`;
+    }
+
+    function getFilteredTransitRoutes() {
+        const all = transitState.routes || [];
+        if (transitState.routeListFilter === 'BUS') return all.filter((r) => r.hasBus);
+        if (transitState.routeListFilter === 'RAIL') return all.filter((r) => r.hasRail);
+        return all;
     }
 
     window.updateTransitOriginInput = function (val) {
@@ -3108,9 +4204,11 @@
         const homeSaved = findSavedPlaceByRole('home');
         const schoolSaved = findSavedPlaceByRole('school');
         const workSaved = findSavedPlaceByRole('work');
-        const syncBadgeHtml = transitState.placesSyncedWithAccount
-            ? `<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-1">${iconSvg('cloud', 'w-3 h-3')}<span>Compte</span></span>`
-            : '';
+        const syncBadgeHtml = isFirebaseProfileActive() || transitState.placesSyncedWithFirestore
+            ? `<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-1">${iconSvg('cloud', 'w-3 h-3')}<span>Perfil Firestore</span></span>`
+            : (transitState.placesSyncedWithAccount
+                ? `<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-1">${iconSvg('cloud', 'w-3 h-3')}<span>Compte</span></span>`
+                : `<span class="px-1.5 py-0.5 rounded-md bg-zinc-200/70 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[9.5px] font-bold">Temporal</span>`);
 
         const editingRole = transitState.placeEditorRole;
         const isEditingSchool = editingRole === 'school';
@@ -3154,42 +4252,57 @@
             : "Ex: 'Puc sortir de casa a les 8 en bus i arribar abans de les 9 a l'insti?'";
 
         const aiCardHtml = `
-            <div class="p-3.5 rounded-2xl ${hasFollowupTarget ? 'bg-indigo-50/75 dark:bg-indigo-950/30 border-indigo-200/90 dark:border-indigo-800/70' : 'bg-blue-50/80 dark:bg-blue-950/35 border-blue-200/90 dark:border-blue-800/70'} border space-y-2.5">
+            <div id="daily-maps-ai-card" class="p-3.5 rounded-2xl ${hasFollowupTarget ? 'bg-indigo-50/75 dark:bg-indigo-950/30 border-indigo-200/90 dark:border-indigo-800/70' : 'bg-blue-50/80 dark:bg-blue-950/35 border-blue-200/90 dark:border-blue-800/70'} border space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-xs font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                        ${iconSvg(hasFollowupTarget ? 'chat' : 'spark', `w-3.5 h-3.5 ${hasFollowupTarget ? 'text-indigo-600 dark:text-indigo-400' : 'text-blue-600 dark:text-sky-400'}`)}
-                        <span>${hasFollowupTarget ? 'Comenta sobre aquesta ruta' : 'Pregunta el que necessitis'}</span>
+                        ${iconSvg(hasFollowupTarget ? 'chat' : 'spark', `w-4 h-4 ${hasFollowupTarget ? 'text-indigo-600 dark:text-indigo-400' : 'text-blue-600 dark:text-sky-400'}`)}
+                        <span>${hasFollowupTarget ? 'Dubtes de la ruta' : 'Pregunta ràpida'}</span>
                     </span>
                     ${hasFollowupTarget
-                        ? `<button type="button" onclick="window.resetAliatTransitSession()" class="text-[10.5px] font-bold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 cursor-pointer inline-flex items-center gap-1">${iconSvg('refresh', 'w-3 h-3')}<span>Nova consulta</span></button>`
-                        : `<span class="text-[10px] font-bold text-blue-700 dark:text-sky-300">IA + Horaris reals</span>`
+                        ? `<button type="button" onclick="window.resetAliatTransitSession()" class="text-[10.5px] font-bold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 cursor-pointer inline-flex items-center gap-1">${iconSvg('refresh', 'w-3 h-3')}<span>Nova</span></button>`
+                        : `<span class="text-[10px] font-bold text-blue-700 dark:text-sky-300">IA · Directe</span>`
                     }
                 </div>
-                <textarea id="daily-transit-question-input" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();window.askAliatMapsTransit();}" placeholder="${esc(promptPlaceholder)}" class="w-full px-3 py-2 rounded-xl border border-zinc-200/90 dark:border-zinc-700/80 bg-white dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500">${esc(transitState.question)}</textarea>
-                <div class="flex flex-wrap items-center justify-between gap-1.5">
-                    <div class="flex flex-wrap items-center gap-1">
-                        ${hasFollowupTarget ? `
-                            <button type="button" onclick="window.askTransitFollowupChip('On he de baixar exactament?')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-indigo-200/80 dark:border-zinc-700 text-[10px] font-bold text-indigo-700 dark:text-indigo-300 cursor-pointer hover:bg-indigo-50">On baixo?</button>
-                            <button type="button" onclick="window.askTransitFollowupChip('Quant es camina en total?')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-indigo-200/80 dark:border-zinc-700 text-[10px] font-bold text-indigo-700 dark:text-indigo-300 cursor-pointer hover:bg-indigo-50">Quant es camina?</button>
-                        ` : `
-                            <button type="button" onclick="window.runTransitExamplePrompt('school')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-blue-200/80 dark:border-zinc-700 text-[10px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer hover:bg-blue-100/60 inline-flex items-center gap-1">${iconSvg('bus', 'w-3 h-3')}<span>8h &lt; 9h</span></button>
-                            <button type="button" onclick="window.runTransitExamplePrompt('train')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-blue-200/80 dark:border-zinc-700 text-[10px] font-bold text-blue-700 dark:text-sky-300 cursor-pointer hover:bg-blue-100/60 inline-flex items-center gap-1">${iconSvg('train', 'w-3 h-3')}<span>Proper bus/tren</span></button>
-                            <button type="button" onclick="window.runTransitExamplePrompt('explore')" class="px-2 py-1 rounded-lg bg-white/90 dark:bg-zinc-900 border border-teal-300/80 dark:border-teal-800 text-[10px] font-bold text-teal-700 dark:text-teal-300 cursor-pointer hover:bg-teal-50 inline-flex items-center gap-1">${iconSvg('compass', 'w-3 h-3')}<span>Què fer a prop</span></button>
-                        `}
-                    </div>
-                    <button type="button" onclick="window.askAliatMapsTransit()" class="px-3.5 py-2 rounded-xl ${hasFollowupTarget ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-blue-600 hover:bg-blue-500'} text-white text-xs font-extrabold transition cursor-pointer shrink-0 shadow-2xs inline-flex items-center gap-1.5">
-                        ${iconSvg(hasFollowupTarget ? 'chat' : 'spark', 'w-3.5 h-3.5')}<span>${hasFollowupTarget ? 'Preguntar' : 'Consultar IA'}</span>
+                ${hasFollowupTarget ? `
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" onclick="window.askTransitFollowupChip('On he de baixar exactament?')" class="p-2 rounded-xl bg-white/90 dark:bg-zinc-900 border border-indigo-200/80 dark:border-zinc-700 text-[11px] font-extrabold text-indigo-700 dark:text-indigo-300 cursor-pointer hover:border-indigo-400 flex items-center gap-1.5">${iconSvg('pin', 'w-3.5 h-3.5')}<span>On baixo?</span></button>
+                    <button type="button" onclick="window.askTransitFollowupChip('Quant es camina en total?')" class="p-2 rounded-xl bg-white/90 dark:bg-zinc-900 border border-indigo-200/80 dark:border-zinc-700 text-[11px] font-extrabold text-indigo-700 dark:text-indigo-300 cursor-pointer hover:border-indigo-400 flex items-center gap-1.5">${iconSvg('walk', 'w-3.5 h-3.5')}<span>Temps a peu</span></button>
+                </div>
+                ` : `
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" onclick="window.runTransitExamplePrompt('school')" class="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-blue-200/80 dark:border-zinc-700 hover:border-blue-500 cursor-pointer flex items-center gap-2 text-left transition">
+                        <span class="w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">${iconSvg('school', 'w-4 h-4')}</span>
+                        <span class="text-[11px] font-extrabold text-zinc-900 dark:text-white leading-tight">Cap a l'Insti</span>
+                    </button>
+                    <button type="button" onclick="window.runTransitExamplePrompt('train')" class="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-blue-200/80 dark:border-zinc-700 hover:border-blue-500 cursor-pointer flex items-center gap-2 text-left transition">
+                        <span class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center shrink-0">${iconSvg('train', 'w-4 h-4')}</span>
+                        <span class="text-[11px] font-extrabold text-zinc-900 dark:text-white leading-tight">Proper ara</span>
+                    </button>
+                    <button type="button" onclick="window.runTransitExamplePrompt('home')" class="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-blue-200/80 dark:border-zinc-700 hover:border-blue-500 cursor-pointer flex items-center gap-2 text-left transition">
+                        <span class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">${iconSvg('home', 'w-4 h-4')}</span>
+                        <span class="text-[11px] font-extrabold text-zinc-900 dark:text-white leading-tight">Cap a Casa</span>
+                    </button>
+                    <button type="button" onclick="window.runTransitExamplePrompt('explore')" class="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-teal-200/80 dark:border-teal-800/70 hover:border-teal-500 cursor-pointer flex items-center gap-2 text-left transition">
+                        <span class="w-7 h-7 rounded-lg bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">${iconSvg('compass', 'w-4 h-4')}</span>
+                        <span class="text-[11px] font-extrabold text-zinc-900 dark:text-white leading-tight">Què fer a prop</span>
+                    </button>
+                </div>
+                `}
+                <div class="flex items-center gap-1.5">
+                    <input id="daily-transit-question-input" type="text" value="${esc(transitState.question)}" onkeydown="if(event.key==='Enter'){event.preventDefault();window.askAliatMapsTransit();}" placeholder="${esc(promptPlaceholder)}" class="flex-1 px-3 py-2 rounded-xl border border-zinc-200/90 dark:border-zinc-700/80 bg-white dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="button" onclick="window.askAliatMapsTransit()" class="p-2.5 px-3.5 rounded-xl ${hasFollowupTarget ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-blue-600 hover:bg-blue-500'} text-white text-xs font-extrabold transition cursor-pointer shrink-0 shadow-2xs inline-flex items-center gap-1.5">
+                        ${iconSvg(hasFollowupTarget ? 'chat' : 'spark', 'w-3.5 h-3.5')}<span>${hasFollowupTarget ? 'Enviar' : 'Cercar'}</span>
                     </button>
                 </div>
             </div>
         `;
 
         const manualCardHtml = `
-            <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 space-y-2.5">
+            <div id="daily-maps-manual-card" class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <span class="text-xs font-extrabold text-zinc-900 dark:text-white flex items-center gap-1.5">
                         ${iconSvg('clock', 'w-3.5 h-3.5 text-blue-600 dark:text-sky-400')}
-                        <span>Cerca d'horari Origen i Destinació</span>
+                        <span>Origen i Destí</span>
                     </span>
                     <button type="button" onclick="window.swapAliatTransitPoints()" title="Intercanviar origen i destinació" class="px-2 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer inline-flex items-center gap-1">
                         ${iconSvg('swap', 'w-3 h-3')}<span>Invertir</span>
@@ -3199,41 +4312,38 @@
                 <div class="space-y-2">
                     <div>
                         <div class="flex items-center justify-between gap-1 mb-1">
-                            <label class="text-[10px] font-extrabold uppercase text-zinc-400">Sortida (Origen)</label>
+                            <label class="text-[10px] font-extrabold uppercase text-zinc-400">Sortida</label>
                             <div class="flex items-center gap-1">
-                                <button type="button" onclick="window.applyTransitPresetOrigin('current')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer inline-flex items-center gap-1 ${transitState.originMode === 'current' ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}">${iconSvg('gps', 'w-3 h-3')}<span>Ara</span></button>
+                                <button type="button" onclick="window.applyTransitPresetOrigin('current')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer inline-flex items-center gap-1 ${transitState.originMode === 'current' ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}">${iconSvg('gps', 'w-3 h-3')}<span>GPS</span></button>
                                 <button type="button" onclick="window.applyTransitPresetOrigin('home')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer inline-flex items-center gap-1 ${transitState.originMode === 'saved' ? 'bg-blue-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'}">${iconSvg('home', 'w-3 h-3')}<span>Casa</span></button>
                             </div>
                         </div>
-                        <input id="daily-transit-origin-input" type="text" value="${esc(transitState.originAddress)}" oninput="window.updateTransitOriginInput(this.value)" onchange="window.updateTransitOriginInput(this.value)" placeholder="GPS actual o escriu carrer/estació d'origen..." class="w-full px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
+                        <input id="daily-transit-origin-input" type="text" value="${esc(transitState.originAddress)}" oninput="window.updateTransitOriginInput(this.value)" onchange="window.updateTransitOriginInput(this.value)" placeholder="GPS o adreça de sortida..." class="w-full px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
                     </div>
 
                     <div>
                         <div class="flex items-center justify-between gap-1 mb-1">
-                            <label class="text-[10px] font-extrabold uppercase text-zinc-400">Destinació (o clic al mapa)</label>
+                            <label class="text-[10px] font-extrabold uppercase text-zinc-400">Destí</label>
                             <div class="flex items-center gap-1">
                                 <button type="button" onclick="window.applyTransitPresetDest('school')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer inline-flex items-center gap-1 ${transitState.destMode === 'saved' && schoolSaved && transitState.destAddress === (schoolSaved.address || schoolSaved.title) ? 'bg-indigo-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300'}">${iconSvg('school', 'w-3 h-3')}<span>Insti</span></button>
                                 ${workSaved ? `<button type="button" onclick="window.applyTransitPresetDest('work')" class="px-2 py-0.5 rounded-md text-[10px] font-bold cursor-pointer bg-zinc-100 hover:bg-blue-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 inline-flex items-center gap-1">${iconSvg('work', 'w-3 h-3')}<span>Feina</span></button>` : ''}
                             </div>
                         </div>
-                        <input id="daily-transit-dest-input" type="text" value="${esc(transitState.destAddress)}" oninput="window.updateTransitDestInput(this.value)" onchange="window.updateTransitDestInput(this.value)" placeholder="Escriu parada, estació, institut o adreça..." class="w-full px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
+                        <input id="daily-transit-dest-input" type="text" value="${esc(transitState.destAddress)}" oninput="window.updateTransitDestInput(this.value)" onchange="window.updateTransitDestInput(this.value)" placeholder="Parada, estació o adreça..." class="w-full px-2.5 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-100">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-12 gap-1.5 items-end pt-1">
+                <div class="grid grid-cols-12 gap-1.5 items-end">
                     <div class="col-span-5">
-                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Quan</label>
                         <select onchange="window.setTransitTimeMode(this.value)" class="w-full px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100">
-                            <option value="departure" ${transitState.timeMode === 'departure' ? 'selected' : ''}>Sortir a les</option>
-                            <option value="arrival" ${transitState.timeMode === 'arrival' ? 'selected' : ''}>Arribar abans de</option>
+                            <option value="departure" ${transitState.timeMode === 'departure' ? 'selected' : ''}>Sortir a</option>
+                            <option value="arrival" ${transitState.timeMode === 'arrival' ? 'selected' : ''}>Arribar a</option>
                         </select>
                     </div>
                     <div class="col-span-4">
-                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Hora</label>
                         <input id="daily-transit-time-input" type="time" value="${esc(transitState.timeStr)}" onchange="window.updateTransitTimeInput(this.value)" class="w-full px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100 tabular-nums">
                     </div>
                     <div class="col-span-3">
-                        <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Dia</label>
                         <select id="daily-transit-day-select" onchange="window.updateTransitDayOffset(this.value)" class="w-full px-2 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-[11px] font-bold text-zinc-800 dark:text-zinc-100">
                             <option value="0" ${transitState.dayOffset === 0 ? 'selected' : ''}>Avui</option>
                             <option value="1" ${transitState.dayOffset === 1 ? 'selected' : ''}>Demà</option>
@@ -3241,15 +4351,15 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-4 gap-1">
-                    <button type="button" onclick="window.setTransitModeFilter('ALL')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer ${transitState.modeFilter === 'ALL' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">Tot</button>
-                    <button type="button" onclick="window.setTransitModeFilter('BUS')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer inline-flex items-center justify-center gap-1 ${transitState.modeFilter === 'BUS' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('bus', 'w-3 h-3')}<span>Bus</span></button>
-                    <button type="button" onclick="window.setTransitModeFilter('RAIL')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer inline-flex items-center justify-center gap-1 ${transitState.modeFilter === 'RAIL' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('train', 'w-3 h-3')}<span>Tren</span></button>
-                    <button type="button" onclick="window.setTransitModeFilter('SUBWAY')" class="py-1.5 rounded-xl text-[10.5px] font-bold border cursor-pointer inline-flex items-center justify-center gap-1 ${transitState.modeFilter === 'SUBWAY' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('metro', 'w-3 h-3')}<span>Metro</span></button>
+                <div class="grid grid-cols-4 gap-1.5">
+                    <button type="button" onclick="window.setTransitModeFilter('ALL')" class="py-2 rounded-xl text-[10.5px] font-extrabold border cursor-pointer flex flex-col items-center gap-0.5 ${transitState.modeFilter === 'ALL' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('transit', 'w-4 h-4')}<span>Tot</span></button>
+                    <button type="button" onclick="window.setTransitModeFilter('BUS')" class="py-2 rounded-xl text-[10.5px] font-extrabold border cursor-pointer flex flex-col items-center gap-0.5 ${transitState.modeFilter === 'BUS' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('bus', 'w-4 h-4')}<span>Bus</span></button>
+                    <button type="button" onclick="window.setTransitModeFilter('RAIL')" class="py-2 rounded-xl text-[10.5px] font-extrabold border cursor-pointer flex flex-col items-center gap-0.5 ${transitState.modeFilter === 'RAIL' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('train', 'w-4 h-4')}<span>Tren</span></button>
+                    <button type="button" onclick="window.setTransitModeFilter('SUBWAY')" class="py-2 rounded-xl text-[10.5px] font-extrabold border cursor-pointer flex flex-col items-center gap-0.5 ${transitState.modeFilter === 'SUBWAY' ? 'bg-blue-600 text-white border-blue-600' : 'bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800'}">${iconSvg('metro', 'w-4 h-4')}<span>Metro</span></button>
                 </div>
 
                 <button type="button" onclick="window.askAliatMapsTransit(true)" class="w-full py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5 shadow-2xs">
-                    ${iconSvg('search', 'w-3.5 h-3.5')}<span>Cercar horaris de bus i tren</span>
+                    ${iconSvg('search', 'w-3.5 h-3.5')}<span>Cercar horaris</span>
                 </button>
             </div>
         `;
@@ -3257,30 +4367,30 @@
         box.innerHTML = `
             <div class="space-y-3">
                 <!-- Llocs habituals (Casa & Insti) -->
-                <div class="space-y-2">
+                <div id="daily-maps-habitual-places-card" class="space-y-2">
                     <div class="flex items-center justify-between px-0.5">
-                        <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Els teus llocs habituals</span>
+                        <span class="text-[10.5px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Llocs fixos</span>
                         ${syncBadgeHtml}
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <button type="button" onclick="window.openPlaceRoleEditor('home')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer flex items-center gap-2 min-w-0 ${editingRole === 'home' ? 'ring-2 ring-emerald-500/40 border-emerald-500' : (homeSaved ? 'bg-emerald-50/70 dark:bg-emerald-950/25 border-emerald-200/80 dark:border-emerald-800/70' : 'bg-white dark:bg-zinc-900 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-emerald-400')}">
-                            <span class="w-7 h-7 rounded-xl ${homeSaved ? 'bg-emerald-600 text-white' : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'} flex items-center justify-center shrink-0">${iconSvg('home', 'w-3.5 h-3.5')}</span>
+                            <span class="w-8 h-8 rounded-xl ${homeSaved ? 'bg-emerald-600 text-white' : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'} flex items-center justify-center shrink-0">${iconSvg('home', 'w-4 h-4')}</span>
                             <div class="min-w-0 flex-1">
-                                <div class="text-[10.5px] font-extrabold text-zinc-900 dark:text-white flex items-center justify-between gap-1">
-                                    <span>${homeSaved ? 'Casa' : 'Fixar Casa'}</span>
+                                <div class="text-[11px] font-extrabold text-zinc-900 dark:text-white flex items-center justify-between gap-1">
+                                    <span>${homeSaved ? 'Casa' : '+ Casa'}</span>
                                     ${homeSaved ? iconSvg('edit', 'w-2.5 h-2.5 text-zinc-400 shrink-0') : ''}
                                 </div>
-                                <div class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">${homeSaved ? esc(homeSaved.address || homeSaved.title) : 'GPS, carrer o mapa'}</div>
+                                <div class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">${homeSaved ? esc(homeSaved.address || homeSaved.title) : 'Fixar'}</div>
                             </div>
                         </button>
                         <button type="button" onclick="window.openPlaceRoleEditor('school')" class="p-2.5 rounded-2xl border text-left transition cursor-pointer flex items-center gap-2 min-w-0 ${editingRole === 'school' ? 'ring-2 ring-indigo-500/40 border-indigo-500' : (schoolSaved ? 'bg-indigo-50/70 dark:bg-indigo-950/25 border-indigo-200/80 dark:border-indigo-800/70' : 'bg-white dark:bg-zinc-900 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-indigo-400')}">
-                            <span class="w-7 h-7 rounded-xl ${schoolSaved ? 'bg-indigo-600 text-white' : 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'} flex items-center justify-center shrink-0">${iconSvg('school', 'w-3.5 h-3.5')}</span>
+                            <span class="w-8 h-8 rounded-xl ${schoolSaved ? 'bg-indigo-600 text-white' : 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'} flex items-center justify-center shrink-0">${iconSvg('school', 'w-4 h-4')}</span>
                             <div class="min-w-0 flex-1">
-                                <div class="text-[10.5px] font-extrabold text-zinc-900 dark:text-white flex items-center justify-between gap-1">
-                                    <span>${schoolSaved ? 'Insti' : 'Fixar Insti'}</span>
+                                <div class="text-[11px] font-extrabold text-zinc-900 dark:text-white flex items-center justify-between gap-1">
+                                    <span>${schoolSaved ? 'Insti' : '+ Insti'}</span>
                                     ${schoolSaved ? iconSvg('edit', 'w-2.5 h-2.5 text-zinc-400 shrink-0') : ''}
                                 </div>
-                                <div class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">${schoolSaved ? esc(schoolSaved.address || schoolSaved.title) : 'Centre o feina'}</div>
+                                <div class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">${schoolSaved ? esc(schoolSaved.address || schoolSaved.title) : 'Fixar'}</div>
                             </div>
                         </button>
                     </div>
@@ -3288,16 +4398,18 @@
                 </div>
 
                 <!-- Selector clar entre Preguntar amb IA o Cercar horari manual -->
-                <div class="grid grid-cols-2 gap-1 p-1 rounded-2xl bg-zinc-200/60 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
-                    <button type="button" onclick="window.setTransitInputMode('ai')" class="py-1.5 px-2.5 rounded-xl text-[11px] font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5 ${transitState.inputMode !== 'manual' ? 'bg-white dark:bg-zinc-800 text-blue-700 dark:text-sky-300 shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'}">
-                        ${iconSvg('spark', 'w-3.5 h-3.5')}<span>Pregunta amb IA</span>
-                    </button>
-                    <button type="button" onclick="window.setTransitInputMode('manual')" class="py-1.5 px-2.5 rounded-xl text-[11px] font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5 ${transitState.inputMode === 'manual' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'}">
-                        ${iconSvg('clock', 'w-3.5 h-3.5')}<span>Horari manual</span>
-                    </button>
-                </div>
+                <div id="daily-maps-search-section" class="space-y-3">
+                    <div id="daily-maps-mode-toggle" class="grid grid-cols-2 gap-1 p-1 rounded-2xl bg-zinc-200/60 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
+                        <button type="button" onclick="window.setTransitInputMode('ai')" class="py-1.5 px-2.5 rounded-xl text-[11px] font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5 ${transitState.inputMode !== 'manual' ? 'bg-white dark:bg-zinc-800 text-blue-700 dark:text-sky-300 shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'}">
+                            ${iconSvg('spark', 'w-3.5 h-3.5')}<span>Amb IA</span>
+                        </button>
+                        <button type="button" onclick="window.setTransitInputMode('manual')" class="py-1.5 px-2.5 rounded-xl text-[11px] font-extrabold transition cursor-pointer inline-flex items-center justify-center gap-1.5 ${transitState.inputMode === 'manual' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-2xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'}">
+                            ${iconSvg('clock', 'w-3.5 h-3.5')}<span>Manual</span>
+                        </button>
+                    </div>
 
-                ${transitState.inputMode === 'manual' ? manualCardHtml : aiCardHtml}
+                    ${transitState.inputMode === 'manual' ? manualCardHtml : aiCardHtml}
+                </div>
 
                 <!-- Resultats immediats a sota sense haver de fer scroll -->
                 <div id="daily-transit-results-box" class="space-y-2"></div>
@@ -3308,6 +4420,10 @@
 
     window.switchDailyMapsTab = function (tab) {
         activeTab = tab || 'transit';
+        if (activeTab !== 'parking' && parkingCountdownInterval) {
+            clearInterval(parkingCountdownInterval);
+            parkingCountdownInterval = null;
+        }
         document.querySelectorAll('[data-daily-maps-tab]').forEach((btn) => {
             const isAct = btn.getAttribute('data-daily-maps-tab') === activeTab;
             btn.className = isAct
@@ -3333,10 +4449,29 @@
         window.switchDailyMapsTab(initialTab);
         syncMapsPlacesFromServer().catch(() => {});
         await ensureMapInitialized();
+        updateFloatingMapControlButtons();
+        requestAnimationFrame(() => {
+            try { window.dispatchEvent(new Event('resize')); } catch (_) {}
+        });
+        if (typeof window.startAliatMapsOnboarding === 'function') {
+            setTimeout(() => {
+                const m = document.getElementById('daily-maps-modal');
+                if (m && !m.classList.contains('hidden')) {
+                    window.startAliatMapsOnboarding(false);
+                }
+            }, 380);
+        }
     };
     window.openAliatMapsModal = window.openDailyMapsModal;
 
     window.closeDailyMapsModal = function () {
+        if (parkingCountdownInterval) {
+            clearInterval(parkingCountdownInterval);
+            parkingCountdownInterval = null;
+        }
+        if (typeof window.stopAliatMapsOnboardingIfActive === 'function') {
+            window.stopAliatMapsOnboardingIfActive();
+        }
         const modal = document.getElementById('daily-maps-modal');
         if (!modal) return;
         modal.classList.add('hidden');

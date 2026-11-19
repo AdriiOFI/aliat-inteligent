@@ -559,7 +559,7 @@
                                 <span class="text-zinc-300 dark:text-zinc-700">·</span>
                                 <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Ratxa: <strong id="study-lab-streak-val" class="font-mono tabular-nums text-emerald-600 dark:text-emerald-400">0</strong></span>
                             </div>
-                            <p id="study-lab-modal-sub" class="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate">Aprèn de veritat posant a prova els teus apunts amb mecàniques d'examen interactives</p>
+                            <p id="study-lab-modal-sub" class="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate">Pràctica interactiva amb els teus apunts</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
@@ -574,44 +574,44 @@
                 </div>
 
                 <!-- Barra de Tema i Selector dels 6 Jocs -->
-                <div class="px-4 sm:px-6 py-3 bg-white dark:bg-zinc-950 border-b border-zinc-200/80 dark:border-zinc-800/80 space-y-3 shrink-0">
+                <div class="px-4 sm:px-6 py-3 bg-white dark:bg-zinc-950 border-b border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5 shrink-0">
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                         <div class="flex-1 flex items-center gap-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-1.5">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-blue-600 dark:text-sky-400 shrink-0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                            <span class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 whitespace-nowrap shrink-0" id="study-lab-topic-label">Tema actiu:</span>
-                            <input id="study-lab-topic-input" type="text" class="w-full bg-transparent text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 outline-none" placeholder="Ex: Fotosíntesi, Derivades, La Segona Guerra Mundial, Dret Constitucional...">
+                            <span class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 whitespace-nowrap shrink-0" id="study-lab-topic-label">Tema:</span>
+                            <input id="study-lab-topic-input" type="text" class="w-full bg-transparent text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 outline-none" placeholder="Fotosíntesi, Derivades, Història...">
                         </div>
                         <button type="button" onclick="regenerateCurrentStudyGameWithAI()" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 shrink-0 shadow-xs active:scale-95 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                            <span id="study-lab-regen-btn-text">Generar Joc amb IA sobre aquest tema</span>
+                            <span id="study-lab-regen-btn-text">Generar amb IA</span>
                         </button>
                     </div>
 
                     <!-- Pestanyes dels 6 Jocs -->
-                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar" id="study-lab-game-tabs">
-                        <button type="button" data-game-tab="memory_pairs" onclick="selectStudyLabGame('memory_pairs')" class="study-lab-tab-btn px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5" id="study-lab-game-tabs">
+                        <button type="button" data-game-tab="memory_pairs" onclick="selectStudyLabGame('memory_pairs')" class="study-lab-tab-btn px-2.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
-                            <span>01. Parelles de Conceptes</span>
+                            <span>Parelles</span>
                         </button>
-                        <button type="button" data-game-tab="cloze_builder" onclick="selectStudyLabGame('cloze_builder')" class="study-lab-tab-btn px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <button type="button" data-game-tab="cloze_builder" onclick="selectStudyLabGame('cloze_builder')" class="study-lab-tab-btn px-2.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                            <span>02. Constructor de Fórmules i Frases</span>
+                            <span>Fórmules</span>
                         </button>
-                        <button type="button" data-game-tab="sequence_order" onclick="selectStudyLabGame('sequence_order')" class="study-lab-tab-btn px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <button type="button" data-game-tab="sequence_order" onclick="selectStudyLabGame('sequence_order')" class="study-lab-tab-btn px-2.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
-                            <span>03. Ordenació de Seqüència</span>
+                            <span>Seqüència</span>
                         </button>
-                        <button type="button" data-game-tab="error_hunter" onclick="selectStudyLabGame('error_hunter')" class="study-lab-tab-btn px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <button type="button" data-game-tab="error_hunter" onclick="selectStudyLabGame('error_hunter')" class="study-lab-tab-btn px-2.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="12"/><line x1="11" y1="15" x2="11.01" y2="15"/></svg>
-                            <span>04. Caçador de Trampes d'Examen</span>
+                            <span>Trampes</span>
                         </button>
-                        <button type="button" data-game-tab="speed_tf" onclick="selectStudyLabGame('speed_tf')" class="study-lab-tab-btn px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <button type="button" data-game-tab="speed_tf" onclick="selectStudyLabGame('speed_tf')" class="study-lab-tab-btn px-2.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                            <span>05. Sprint Veritat / Fals</span>
+                            <span>Cert/Fals</span>
                         </button>
-                        <button type="button" data-game-tab="exam_simulator" onclick="selectStudyLabGame('exam_simulator')" class="study-lab-tab-btn px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                        <button type="button" data-game-tab="exam_simulator" onclick="selectStudyLabGame('exam_simulator')" class="study-lab-tab-btn px-2.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                            <span>06. Simulacre Kahoot & Anki 3D</span>
+                            <span>Simulacre</span>
                         </button>
                     </div>
                 </div>
@@ -1821,148 +1821,204 @@
         modal.className = 'fixed inset-0 z-[9996] hidden items-center justify-center bg-black/80 backdrop-blur-md p-1.5 sm:p-3 md:p-5 overflow-hidden';
         modal.innerHTML = `
             <div id="aliat-notebook-shell" class="relative w-full max-w-[1440px] h-[95dvh] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in">
-                <!-- Capçalera superior AliatNotebook -->
+                <!-- Capçalera visual AliatNotebook -->
                 <div class="px-4 sm:px-6 py-3 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
                     <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-9 h-9 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                            ${iconSvg('notebook', 'w-5 h-5')}
                         </div>
                         <div class="min-w-0">
                             <div class="flex items-center gap-2">
-                                <input id="nb-title-input" type="text" onchange="updateNotebookTitle(this.value)" class="bg-transparent text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100 outline-none border-b border-transparent focus:border-indigo-500 truncate max-w-[200px] sm:max-w-md" value="Quadern d'Estudi">
-                                <span class="text-xs font-extrabold text-indigo-600 dark:text-indigo-400">· AliatNotebook</span>
+                                <input id="nb-title-input" type="text" onchange="updateNotebookTitle(this.value)" class="bg-transparent text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100 outline-none border-b border-transparent focus:border-indigo-500 truncate max-w-[190px] sm:max-w-md" value="Quadern d'Estudi">
+                                <span class="hidden sm:inline-flex items-center gap-1 text-xs font-extrabold text-indigo-600 dark:text-indigo-400">· AliatNotebook</span>
                             </div>
-                            <p class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">${tr('Quadern intel·ligent amb citacions clicables [Font X], 8 Generadors en 1 Clic, Pòdcast IA a 2 veus i Notes', 'Cuaderno inteligente con citas clicables [Font X], 8 Generadores en 1 Clic, Pódcast IA a 2 voces y Notas')}</p>
+                            <div class="flex items-center gap-2.5 text-[10.5px] font-semibold text-zinc-500 dark:text-zinc-400">
+                                <span class="inline-flex items-center gap-1">${iconSvg('book', 'w-3 h-3 text-indigo-500')}<span>${tr('Fonts', 'Fuentes')}</span></span>
+                                <span>·</span>
+                                <span class="inline-flex items-center gap-1">${iconSvg('spark', 'w-3 h-3 text-blue-500')}<span>${tr('8 Eines', '8 Herramientas')}</span></span>
+                                <span>·</span>
+                                <span class="inline-flex items-center gap-1">${iconSvg('mic', 'w-3 h-3 text-emerald-500')}<span>${tr('Pòdcast', 'Pódcast')}</span></span>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2 shrink-0">
-                        <button type="button" id="nb-guide-btn" onclick="openAliatNotebookGuide()" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/70 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap" title="${tr('Veure guia pas a pas d\'AliatNotebook', 'Ver guía paso a paso de AliatNotebook')}">
-                            <span class="w-4 h-4 rounded-full bg-amber-500/20 flex items-center justify-center text-[11px] font-black">?</span>
-                            <span>${tr('Com funciona', 'Cómo funciona')}</span>
+                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
+                        <button type="button" id="nb-guide-btn" onclick="openAliatNotebookGuide()" class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/70 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap active:scale-95" title="${tr('Veure guia visual pas a pas', 'Ver guía visual paso a paso')}">
+                            ${iconSvg('lightbulb', 'w-3.5 h-3.5')}
+                            <span>${tr('Com funciona?', '¿Cómo funciona?')}</span>
                         </button>
-                        <button type="button" onclick="openStudyGamesHubModal(null, notebookState.title)" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/70 text-blue-700 dark:text-sky-300 border border-blue-200 dark:border-blue-800 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="15" cy="11" r="1"/><circle cx="17" cy="13" r="1"/></svg>
-                            <span class="hidden sm:inline">${tr('Jugar amb aquest Quadern', 'Jugar con este Cuaderno')}</span>
-                            <span class="sm:hidden">${tr('Jocs', 'Juegos')}</span>
+                        <button type="button" onclick="openStudyGamesHubModal(null, notebookState.title)" class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/70 text-blue-700 dark:text-sky-300 border border-blue-200 dark:border-blue-800 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap active:scale-95">
+                            ${iconSvg('gamepad', 'w-3.5 h-3.5')}
+                            <span>${tr('Jocs', 'Juegos')}</span>
                         </button>
-                        <button type="button" onclick="exportNotebookToWord()" class="px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            <span class="hidden sm:inline">Exportar (.doc)</span>
-                            <span class="sm:hidden">.doc</span>
+                        <button type="button" onclick="exportNotebookToWord()" class="px-3 py-1.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap active:scale-95" title="${tr('Descarregar tot en Word (.doc)', 'Descargar todo en Word (.doc)')}">
+                            ${iconSvg('download', 'w-3.5 h-3.5')}
+                            <span>.doc</span>
                         </button>
                         <button type="button" onclick="closeAliatNotebookModal()" class="p-2 rounded-xl bg-zinc-200/70 hover:bg-zinc-300/80 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 transition cursor-pointer" aria-label="Tancar">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            ${iconSvg('close', 'w-4 h-4')}
                         </button>
                     </div>
                 </div>
 
-                <!-- Barra d'estat i selector de vista ràpida (3 columnes o focus per secció) -->
+                <!-- Barra de flux visual en 3 passos (1. Posa fonts -> 2. Crea i pregunta -> 3. Escolta i desa) -->
                 <div class="px-4 sm:px-6 py-2 bg-white dark:bg-zinc-950 border-b border-zinc-200/80 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 shrink-0">
                     <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar">
-                        <button type="button" data-nb-view-btn="all" onclick="setNotebookWorkspaceView('all')" class="nb-view-tab-btn px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-[11px] font-bold cursor-pointer transition whitespace-nowrap">${tr('Vista Completa (3 panells)', 'Vista Completa (3 paneles)')}</button>
-                        <button type="button" data-nb-view-btn="sources" onclick="setNotebookWorkspaceView('sources')" class="nb-view-tab-btn px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap">1. ${tr('Fonts', 'Fuentes')}</button>
-                        <button type="button" data-nb-view-btn="studio" onclick="setNotebookWorkspaceView('studio')" class="nb-view-tab-btn px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap">2. ${tr('Generador i Xat', 'Generador y Chat')}</button>
-                        <button type="button" data-nb-view-btn="notes" onclick="setNotebookWorkspaceView('notes')" class="nb-view-tab-btn px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap">3. ${tr('Pòdcast i Notes', 'Pódcast y Notas')}</button>
+                        <button type="button" data-nb-view-btn="all" onclick="setNotebookWorkspaceView('all')" class="nb-view-tab-btn px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-[11px] font-bold cursor-pointer transition whitespace-nowrap inline-flex items-center gap-1.5">
+                            ${iconSvg('layers', 'w-3.5 h-3.5')}
+                            <span>${tr('Tot a la vista', 'Todo a la vista')}</span>
+                        </button>
+                        <button type="button" data-nb-view-btn="sources" onclick="setNotebookWorkspaceView('sources')" class="nb-view-tab-btn px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap inline-flex items-center gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 text-[10px] font-black inline-flex items-center justify-center">1</span>
+                            ${iconSvg('folder', 'w-3.5 h-3.5')}
+                            <span>${tr('Fonts', 'Fuentes')}</span>
+                        </button>
+                        <button type="button" data-nb-view-btn="studio" onclick="setNotebookWorkspaceView('studio')" class="nb-view-tab-btn px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap inline-flex items-center gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-blue-500/15 text-blue-600 dark:text-sky-400 text-[10px] font-black inline-flex items-center justify-center">2</span>
+                            ${iconSvg('spark', 'w-3.5 h-3.5')}
+                            <span>${tr('Crear i Preguntar', 'Crear y Preguntar')}</span>
+                        </button>
+                        <button type="button" data-nb-view-btn="notes" onclick="setNotebookWorkspaceView('notes')" class="nb-view-tab-btn px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap inline-flex items-center gap-1.5">
+                            <span class="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-black inline-flex items-center justify-center">3</span>
+                            ${iconSvg('mic', 'w-3.5 h-3.5')}
+                            <span>${tr('Àudio i Notes', 'Audio y Notas')}</span>
+                        </button>
                     </div>
-                    <div id="nb-workspace-stats-pill" class="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 hidden sm:block"></div>
+                    <div id="nb-workspace-stats-pill" class="hidden sm:flex items-center gap-3 text-[11px] font-bold text-zinc-600 dark:text-zinc-400"></div>
                 </div>
 
                 <!-- Cos de 3 columnes d'AliatNotebook -->
                 <div id="nb-main-grid" class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-zinc-200 dark:divide-zinc-800 overflow-y-auto lg:overflow-hidden">
-                    <!-- COLUMNA 1 (3 cols): FONTS DEL QUADERN (SOURCES) -->
+                    <!-- COLUMNA 1 (3 cols): PAS 1 — FONTS DEL QUADERN -->
                     <div id="nb-col-sources" data-nb-guide="sources" class="lg:col-span-3 flex flex-col min-h-0 bg-zinc-50/50 dark:bg-zinc-950/60 p-4 space-y-3 overflow-y-auto custom-scrollbar transition-all">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">${tr('Fonts del Quadern', 'Fuentes del Cuaderno')}</span>
-                            <div class="flex items-center gap-2">
-                                <button type="button" onclick="toggleAllNotebookSources()" class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">${tr('Totes', 'Todas')}</button>
-                                <span id="nb-sources-count-label" class="text-[11px] font-mono text-zinc-500">1 activa</span>
+                            <div class="flex items-center gap-2 min-w-0">
+                                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white text-[11px] font-black flex items-center justify-center shrink-0">1</span>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 truncate">${tr('El teu material', 'Tu material')}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button type="button" onclick="toggleAllNotebookSources()" class="px-2 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:border-indigo-400 cursor-pointer inline-flex items-center gap-1" title="${tr('Activar o desactivar totes les fonts', 'Activar o desactivar todas las fuentes')}">
+                                    ${iconSvg('checkCircle', 'w-3 h-3')}
+                                    <span>${tr('Totes', 'Todas')}</span>
+                                </button>
+                                <span id="nb-sources-count-label" class="text-[11px] font-bold text-zinc-500">1</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-1.5">
-                            <button type="button" onclick="promptAddNotebookTextSource()" class="py-2 px-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition cursor-pointer flex items-center justify-center gap-1 active:scale-95">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                <span>${tr('Afegir Font', 'Añadir Fuente')}</span>
+
+                        <!-- 3 botons gràfics per afegir fonts -->
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button type="button" onclick="promptAddNotebookTextSource()" class="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition cursor-pointer flex flex-col items-center justify-center gap-1 text-center active:scale-95 shadow-2xs">
+                                <span class="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">${iconSvg('plus', 'w-4 h-4')}</span>
+                                <span class="text-[10.5px] font-extrabold leading-tight">${tr('Afegir', 'Añadir')}</span>
                             </button>
-                            <button type="button" onclick="importCurrentChatIntoNotebook()" class="py-2 px-2.5 rounded-xl bg-white hover:bg-zinc-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 text-[11px] font-bold transition cursor-pointer flex items-center justify-center gap-1 active:scale-95">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                                <span>${tr('Importar Xat', 'Importar Chat')}</span>
+                            <button type="button" onclick="importCurrentChatIntoNotebook()" class="p-2 rounded-xl bg-white hover:bg-blue-50/70 dark:bg-zinc-900 dark:hover:bg-blue-950/40 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 hover:border-blue-400 transition cursor-pointer flex flex-col items-center justify-center gap-1 text-center active:scale-95">
+                                <span class="w-7 h-7 rounded-lg bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center">${iconSvg('chat', 'w-4 h-4')}</span>
+                                <span class="text-[10.5px] font-extrabold leading-tight">${tr('Del Xat', 'Del Chat')}</span>
+                            </button>
+                            <button type="button" onclick="syncStudyPdfIntoNotebook(true)" class="p-2 rounded-xl bg-white hover:bg-emerald-50/70 dark:bg-zinc-900 dark:hover:bg-emerald-950/40 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-400 transition cursor-pointer flex flex-col items-center justify-center gap-1 text-center active:scale-95">
+                                <span class="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">${iconSvg('doc', 'w-4 h-4')}</span>
+                                <span class="text-[10.5px] font-extrabold leading-tight">PDFs</span>
                             </button>
                         </div>
-                        <button type="button" onclick="syncStudyPdfIntoNotebook(true)" class="w-full py-1.5 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800/70 text-emerald-700 dark:text-emerald-300 text-[10.5px] font-bold transition cursor-pointer flex items-center justify-center gap-1.5">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            <span>${tr('Sincronitzar PDFs i Sessions del Pla', 'Sincronizar PDFs y Sesiones del Plan')}</span>
-                        </button>
+
                         <div id="nb-sources-list" class="space-y-2 flex-1 overflow-y-auto pr-0.5 custom-scrollbar"></div>
                     </div>
 
-                    <!-- COLUMNA 2 (5 cols): ARTEFACTES EN 1 CLIC I XAT AMB CITACIONS -->
+                    <!-- COLUMNA 2 (5 cols): PAS 2 — EINES VISUALS EN 1 TOC I XAT -->
                     <div id="nb-col-studio" class="lg:col-span-5 flex flex-col min-h-0 bg-white dark:bg-zinc-950 p-4 space-y-3 overflow-y-auto custom-scrollbar">
                         <div data-nb-guide="artifacts" class="rounded-2xl transition-all">
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">${tr('Generador d\'Estudi (8 Documents en 1 Clic amb Citacions)', 'Generador de Estudio (8 Documentos en 1 Clic con Citas)')}</span>
-                                <span class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">${tr('Es desa a Notes →', 'Se guarda en Notas →')}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-6 h-6 rounded-lg bg-blue-600 text-white text-[11px] font-black flex items-center justify-center shrink-0">2</span>
+                                    <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">${tr('Tria què vols crear (1 toc)', 'Elige qué quieres crear (1 toque)')}</span>
+                                </div>
+                                <span class="inline-flex items-center gap-1 text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
+                                    ${iconSvg('arrowRight', 'w-3 h-3')}
+                                    <span>Notes</span>
+                                </span>
                             </div>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                                <button type="button" data-nb-artifact="study_guide" onclick="generateNotebookArtifact('study_guide', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
-                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Guia d\'Estudi', 'Guía de Estudio')}</div>
-                                    <div class="text-[10px] text-zinc-500 truncate">${tr('Temari + Preguntes', 'Temario + Preguntas')}</div>
+                                <button type="button" data-nb-artifact="study_guide" onclick="generateNotebookArtifact('study_guide', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/80 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 flex flex-col items-center justify-center gap-1 text-center transition cursor-pointer active:scale-95">
+                                    <span class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">${iconSvg('book', 'w-5 h-5')}</span>
+                                    <span class="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 truncate w-full">${tr('Guia', 'Guía')}</span>
+                                    <span class="text-[9.5px] font-medium text-zinc-500 dark:text-zinc-400 truncate w-full">${tr('Tema sencer', 'Tema entero')}</span>
                                 </button>
-                                <button type="button" data-nb-artifact="briefing_doc" onclick="generateNotebookArtifact('briefing_doc', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
-                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">Briefing Doc</div>
-                                    <div class="text-[10px] text-zinc-500 truncate">${tr('Síntesi executiva', 'Síntesis ejecutiva')}</div>
+                                <button type="button" data-nb-artifact="briefing_doc" onclick="generateNotebookArtifact('briefing_doc', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-blue-50/80 dark:bg-zinc-900 dark:hover:bg-blue-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-blue-400 flex flex-col items-center justify-center gap-1 text-center transition cursor-pointer active:scale-95">
+                                    <span class="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center">${iconSvg('doc', 'w-5 h-5')}</span>
+                                    <span class="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 truncate w-full">${tr('Resum', 'Resumen')}</span>
+                                    <span class="text-[9.5px] font-medium text-zinc-500 dark:text-zinc-400 truncate w-full">${tr('Idees clau', 'Ideas clave')}</span>
                                 </button>
-                                <button type="button" data-nb-artifact="faq" onclick="generateNotebookArtifact('faq', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
-                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">FAQ d'Examen</div>
-                                    <div class="text-[10px] text-zinc-500 truncate">${tr('Preguntes clau', 'Preguntas clave')}</div>
+                                <button type="button" data-nb-artifact="faq" onclick="generateNotebookArtifact('faq', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-emerald-50/80 dark:bg-zinc-900 dark:hover:bg-emerald-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-400 flex flex-col items-center justify-center gap-1 text-center transition cursor-pointer active:scale-95">
+                                    <span class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">${iconSvg('lightbulb', 'w-5 h-5')}</span>
+                                    <span class="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 truncate w-full">${tr('Preguntes', 'Preguntas')}</span>
+                                    <span class="text-[9.5px] font-medium text-zinc-500 dark:text-zinc-400 truncate w-full">${tr('Dubtes clau', 'Dudas clave')}</span>
                                 </button>
-                                <button type="button" data-nb-artifact="timeline" onclick="generateNotebookArtifact('timeline', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
-                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Línia Temporal', 'Línea Temporal')}</div>
-                                    <div class="text-[10px] text-zinc-500 truncate">${tr('Seqüència i fases', 'Secuencia y fases')}</div>
+                                <button type="button" data-nb-artifact="timeline" onclick="generateNotebookArtifact('timeline', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-amber-50/80 dark:bg-zinc-900 dark:hover:bg-amber-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-amber-400 flex flex-col items-center justify-center gap-1 text-center transition cursor-pointer active:scale-95">
+                                    <span class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center">${iconSvg('clock', 'w-5 h-5')}</span>
+                                    <span class="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 truncate w-full">${tr('Passos', 'Pasos')}</span>
+                                    <span class="text-[9.5px] font-medium text-zinc-500 dark:text-zinc-400 truncate w-full">${tr('Ordre i dates', 'Orden y fechas')}</span>
                                 </button>
-                                <button type="button" data-nb-artifact="glossary" onclick="generateNotebookArtifact('glossary', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
-                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Glossari Clau', 'Glosario Clave')}</div>
-                                    <div class="text-[10px] text-zinc-500 truncate">${tr('Definicions exactes', 'Definiciones exactas')}</div>
+                                <button type="button" data-nb-artifact="glossary" onclick="generateNotebookArtifact('glossary', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-cyan-50/80 dark:bg-zinc-900 dark:hover:bg-cyan-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-cyan-400 flex flex-col items-center justify-center gap-1 text-center transition cursor-pointer active:scale-95">
+                                    <span class="w-9 h-9 rounded-xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center">${iconSvg('bookmark', 'w-5 h-5')}</span>
+                                    <span class="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 truncate w-full">${tr('Paraules', 'Palabras')}</span>
+                                    <span class="text-[9.5px] font-medium text-zinc-500 dark:text-zinc-400 truncate w-full">${tr('Glossari', 'Glosario')}</span>
                                 </button>
-                                <button type="button" data-nb-artifact="exam_traps" onclick="generateNotebookArtifact('exam_traps', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
-                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Trampes Examen', 'Trampas Examen')}</div>
-                                    <div class="text-[10px] text-zinc-500 truncate">${tr('Errors habituals', 'Errores habituales')}</div>
+                                <button type="button" data-nb-artifact="exam_traps" onclick="generateNotebookArtifact('exam_traps', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-rose-50/80 dark:bg-zinc-900 dark:hover:bg-rose-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-rose-400 flex flex-col items-center justify-center gap-1 text-center transition cursor-pointer active:scale-95">
+                                    <span class="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center">${iconSvg('warn', 'w-5 h-5')}</span>
+                                    <span class="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 truncate w-full">${tr('Trampes', 'Trampas')}</span>
+                                    <span class="text-[9.5px] font-medium text-zinc-500 dark:text-zinc-400 truncate w-full">${tr('Errors típics', 'Errores típicos')}</span>
                                 </button>
-                                <button type="button" data-nb-artifact="flashcards_deck" onclick="generateNotebookArtifact('flashcards_deck', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
-                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Targetes Q&A', 'Tarjetas Q&A')}</div>
-                                    <div class="text-[10px] text-zinc-500 truncate">${tr(' Bateria memòria', 'Batería memoria')}</div>
+                                <button type="button" data-nb-artifact="flashcards_deck" onclick="generateNotebookArtifact('flashcards_deck', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-purple-50/80 dark:bg-zinc-900 dark:hover:bg-purple-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-purple-400 flex flex-col items-center justify-center gap-1 text-center transition cursor-pointer active:scale-95">
+                                    <span class="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center">${iconSvg('layers', 'w-5 h-5')}</span>
+                                    <span class="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 truncate w-full">${tr('Targetes', 'Tarjetas')}</span>
+                                    <span class="text-[9.5px] font-medium text-zinc-500 dark:text-zinc-400 truncate w-full">${tr('Per repassar', 'Para repasar')}</span>
                                 </button>
-                                <button type="button" data-nb-artifact="mock_exam" onclick="generateNotebookArtifact('mock_exam', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-900 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 text-left transition cursor-pointer active:scale-95">
-                                    <div class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100">${tr('Simulacre Examen', 'Simulacro Examen')}</div>
-                                    <div class="text-[10px] text-zinc-500 truncate">${tr('Amb solucionari', 'Con solucionario')}</div>
+                                <button type="button" data-nb-artifact="mock_exam" onclick="generateNotebookArtifact('mock_exam', this)" class="nb-artifact-btn p-2.5 rounded-xl bg-zinc-50 hover:bg-teal-50/80 dark:bg-zinc-900 dark:hover:bg-teal-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-teal-400 flex flex-col items-center justify-center gap-1 text-center transition cursor-pointer active:scale-95">
+                                    <span class="w-9 h-9 rounded-xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center">${iconSvg('checkCircle', 'w-5 h-5')}</span>
+                                    <span class="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 truncate w-full">${tr('Examen', 'Examen')}</span>
+                                    <span class="text-[9.5px] font-medium text-zinc-500 dark:text-zinc-400 truncate w-full">${tr("Posa't a prova", 'Ponte a prueba')}</span>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Xat fonamentat en les fonts -->
-                        <div data-nb-guide="chat" class="flex-1 min-h-[240px] flex flex-col border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden bg-zinc-50/40 dark:bg-zinc-900/40 transition-all">
-                            <div class="px-3.5 py-2 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[11px] font-bold text-zinc-600 dark:text-zinc-300">
-                                <span>${tr('Xat d\'Investigació amb Citacions Clicables [Font X]', 'Chat de Investigación con Citas Clicables [Font X]')}</span>
-                                <button type="button" onclick="clearNotebookChat()" class="text-[10px] text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer">${tr('Netejar', 'Limpiar')}</button>
+                        <!-- Xat visual fonamentat en les fonts -->
+                        <div data-nb-guide="chat" class="flex-1 min-h-[230px] flex flex-col border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden bg-zinc-50/40 dark:bg-zinc-900/40 transition-all">
+                            <div class="px-3.5 py-2 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[11px] font-bold text-zinc-700 dark:text-zinc-300 bg-white/70 dark:bg-zinc-900/70">
+                                <span class="inline-flex items-center gap-1.5">
+                                    ${iconSvg('chat', 'w-3.5 h-3.5 text-indigo-500')}
+                                    <span>${tr('Pregunta sobre les teves fonts', 'Pregunta sobre tus fuentes')}</span>
+                                </span>
+                                <button type="button" onclick="clearNotebookChat()" class="inline-flex items-center gap-1 text-[10px] text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer" title="${tr('Netejar conversa', 'Limpiar conversación')}">
+                                    ${iconSvg('broom', 'w-3 h-3')}
+                                    <span>${tr('Netejar', 'Limpiar')}</span>
+                                </button>
                             </div>
                             <div id="nb-grounded-chat-box" class="flex-1 p-3.5 space-y-3 overflow-y-auto custom-scrollbar text-xs"></div>
                             <form onsubmit="submitNotebookGroundedQuestion(event)" class="p-2 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center gap-2">
-                                <input id="nb-grounded-chat-input" type="text" class="flex-1 bg-transparent px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 outline-none" placeholder="${tr('Pregunta sobre les fonts actives (ex: resumeix les idees clau amb citacions)...', 'Pregunta sobre las fuentes activas (ej: resume las ideas clave con citas)...')}">
-                                <button type="submit" id="nb-chat-submit-btn" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold cursor-pointer shrink-0 active:scale-95">${tr('Preguntar', 'Preguntar')}</button>
+                                <input id="nb-grounded-chat-input" type="text" class="flex-1 bg-transparent px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 outline-none" placeholder="${tr('Escriu un dubte (ex: explica-m\'ho fàcil)...', 'Escribe una duda (ej: explícamelo fácil)...')}">
+                                <button type="submit" id="nb-chat-submit-btn" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold cursor-pointer shrink-0 active:scale-95 inline-flex items-center gap-1.5">
+                                    <span>${tr('Enviar', 'Enviar')}</span>
+                                    ${iconSvg('arrowRight', 'w-3 h-3')}
+                                </button>
                             </form>
                         </div>
                     </div>
 
-                    <!-- COLUMNA 3 (4 cols): AUDIO OVERVIEW PODCAST A 2 VEUS + TAULER DE NOTES -->
+                    <!-- COLUMNA 3 (4 cols): PAS 3 — PÒDCAST VISUAL + QUADERN DE NOTES -->
                     <div data-nb-guide="audio-notes" id="nb-right-column" class="lg:col-span-4 flex flex-col min-h-0 bg-zinc-50/50 dark:bg-zinc-950/60 p-4 space-y-4 overflow-y-auto custom-scrollbar transition-all">
-                        <!-- Audio Overview (Deep Dive Podcast) -->
-                        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3 shadow-2xs">
+                        <!-- Audio Overview Studio -->
+                        <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3 shadow-2xs">
                             <div class="flex items-center justify-between gap-2">
-                                <div>
-                                    <div class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">Audio Overview · Deep Dive Podcast</div>
-                                    <div class="text-[10px] text-zinc-500 dark:text-zinc-400">${tr('Conversa a 2 veus (Marc i Laia) sobre els teus apunts', 'Conversación a 2 voces (Marc y Laia) sobre tus apuntes')}</div>
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white text-[11px] font-black flex items-center justify-center shrink-0">3</span>
+                                    <div class="min-w-0">
+                                        <div class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 truncate">${tr('Pòdcast a 2 veus', 'Pódcast a 2 voces')}</div>
+                                    </div>
                                 </div>
-                                <button type="button" id="nb-audio-generate-btn" onclick="generateNotebookAudioOverview()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition cursor-pointer shrink-0 active:scale-95">
-                                    ${tr('Generar Pòdcast IA', 'Generar Pódcast IA')}
+                                <button type="button" id="nb-audio-generate-btn" onclick="generateNotebookAudioOverview()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold transition cursor-pointer shrink-0 active:scale-95 inline-flex items-center gap-1.5">
+                                    ${iconSvg('mic', 'w-3.5 h-3.5')}
+                                    <span>${tr('Crear Àudio', 'Crear Audio')}</span>
                                 </button>
                             </div>
                             <div id="nb-audio-overview-box" class="space-y-2.5"></div>
@@ -1972,12 +2028,19 @@
                         <div class="flex-1 flex flex-col min-h-[200px] space-y-2">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                                    <span>${tr('Notes i Documents del Quadern', 'Notas y Documentos del Cuaderno')}</span>
+                                    ${iconSvg('notebook', 'w-3.5 h-3.5 text-indigo-500')}
+                                    <span>${tr('Les teves Notes', 'Tus Notas')}</span>
                                     <span id="nb-notes-count-badge" class="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">0</span>
                                 </span>
-                                <button type="button" onclick="addCustomNoteToNotebook()" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">+ ${tr('Nova Nota', 'Nueva Nota')}</button>
+                                <button type="button" onclick="addCustomNoteToNotebook()" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer inline-flex items-center gap-1">
+                                    ${iconSvg('plus', 'w-3 h-3')}
+                                    <span>${tr('Nova Nota', 'Nueva Nota')}</span>
+                                </button>
                             </div>
-                            <input id="nb-notes-search-input" type="text" oninput="filterNotebookNotes(this.value)" placeholder="${tr('Cercar a les notes i documents...', 'Buscar en las notas y documentos...')}" class="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-800 dark:text-zinc-200 outline-none focus:border-indigo-500">
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">${iconSvg('search', 'w-3.5 h-3.5')}</span>
+                                <input id="nb-notes-search-input" type="text" oninput="filterNotebookNotes(this.value)" placeholder="${tr('Cerca una nota...', 'Busca una nota...')}" class="w-full pl-8 pr-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-800 dark:text-zinc-200 outline-none focus:border-indigo-500">
+                            </div>
                             <div id="nb-saved-notes-list" class="space-y-2.5 flex-1 overflow-y-auto pr-0.5 custom-scrollbar"></div>
                         </div>
                     </div>
@@ -2003,7 +2066,13 @@
         const active = sources.filter(s => s.checked !== false);
         const totalWords = active.reduce((acc, s) => acc + String(s.content || '').trim().split(/\s+/).filter(Boolean).length, 0);
         const notesCount = (notebookState.notes || []).length;
-        pill.textContent = `${active.length}/${sources.length} ${tr('fonts actives', 'fuentes activas')} · ${totalWords} ${tr('paraules', 'palabras')} · ${notesCount} ${tr('notes', 'notas')}`;
+        pill.innerHTML = `
+            <span class="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400">${iconSvg('book', 'w-3.5 h-3.5')}<span>${active.length}/${sources.length}</span></span>
+            <span class="text-zinc-300 dark:text-zinc-700">|</span>
+            <span class="inline-flex items-center gap-1">${iconSvg('doc', 'w-3.5 h-3.5')}<span>${totalWords} ${tr('par.', 'pal.')}</span></span>
+            <span class="text-zinc-300 dark:text-zinc-700">|</span>
+            <span class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">${iconSvg('notebook', 'w-3.5 h-3.5')}<span>${notesCount}</span></span>
+        `;
     }
 
     window.setNotebookWorkspaceView = function (viewMode) {
@@ -2039,8 +2108,8 @@
             shell.querySelectorAll('.nb-view-tab-btn').forEach(btn => {
                 const isAct = btn.getAttribute('data-nb-view-btn') === viewMode;
                 btn.className = isAct
-                    ? 'nb-view-tab-btn px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-[11px] font-bold cursor-pointer transition whitespace-nowrap'
-                    : 'nb-view-tab-btn px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap';
+                    ? 'nb-view-tab-btn px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-[11px] font-bold cursor-pointer transition whitespace-nowrap inline-flex items-center gap-1.5'
+                    : 'nb-view-tab-btn px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-[11px] font-bold cursor-pointer transition whitespace-nowrap inline-flex items-center gap-1.5';
             });
         }
     };
@@ -2182,6 +2251,14 @@
         return checked.length > 0 ? checked : (notebookState.sources || []);
     }
 
+    function getSourceVisualMeta(src) {
+        const t = String(src?.type || '').toLowerCase();
+        if (t.includes('pdf')) return { icon: 'doc', box: 'bg-rose-500/15 text-rose-600 dark:text-rose-400' };
+        if (t.includes('xat') || t.includes('chat')) return { icon: 'chat', box: 'bg-blue-500/15 text-blue-600 dark:text-sky-400' };
+        if (t.includes('pla') || t.includes('cal')) return { icon: 'calendar', box: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' };
+        return { icon: 'book', box: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400' };
+    }
+
     function renderNotebookSourcesList() {
         const listEl = document.getElementById('nb-sources-list');
         const countEl = document.getElementById('nb-sources-count-label');
@@ -2189,27 +2266,47 @@
 
         const sources = notebookState.sources || [];
         const activeCount = sources.filter(s => s.checked !== false).length;
-        if (countEl) countEl.textContent = `${activeCount}/${sources.length} ${tr('actives', 'activas')}`;
+        if (countEl) countEl.textContent = `${activeCount}/${sources.length}`;
 
-        listEl.innerHTML = sources.map((src, idx) => `
-            <div onclick="viewNotebookSource(${idx})" class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border ${src.checked !== false ? 'border-indigo-400/80 dark:border-indigo-600/80' : 'border-zinc-200 dark:border-zinc-800 opacity-65'} space-y-1.5 transition hover:border-indigo-500 cursor-pointer">
-                <div class="flex items-start justify-between gap-2">
-                    <label class="flex items-start gap-2 cursor-pointer min-w-0 flex-1" onclick="event.stopPropagation()">
-                        <input type="checkbox" ${src.checked !== false ? 'checked' : ''} onchange="toggleNotebookSourceChecked(${idx})" class="mt-0.5 rounded accent-indigo-600 cursor-pointer">
-                        <div class="min-w-0">
-                            <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">[Font ${idx + 1}] ${esc(src.title)}</div>
-                            <div class="text-[10px] text-zinc-500">${esc(src.type || 'Document')} · ${String(src.content || '').length} ${tr('caràct.', 'caract.')}</div>
+        const maxLen = Math.max(400, ...sources.map(s => String(s.content || '').length));
+
+        listEl.innerHTML = sources.map((src, idx) => {
+            const isChecked = src.checked !== false;
+            const meta = getSourceVisualMeta(src);
+            const charLen = String(src.content || '').length;
+            const pct = Math.max(12, Math.min(100, Math.round((charLen / maxLen) * 100)));
+            return `
+                <div onclick="viewNotebookSource(${idx})" class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border ${isChecked ? 'border-indigo-400/80 dark:border-indigo-600/80 shadow-2xs' : 'border-zinc-200 dark:border-zinc-800 opacity-60'} space-y-2 transition hover:border-indigo-500 cursor-pointer">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                            <span class="w-8 h-8 rounded-xl ${meta.box} flex items-center justify-center shrink-0">${iconSvg(meta.icon, 'w-4 h-4')}</span>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] font-black text-indigo-600 dark:text-indigo-400 shrink-0">#${idx + 1}</span>
+                                    <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 truncate">${esc(src.title)}</span>
+                                </div>
+                                <div class="mt-1 flex items-center gap-2">
+                                    <div class="flex-1 h-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                                        <div class="h-full rounded-full ${isChecked ? 'bg-indigo-500' : 'bg-zinc-400'}" style="width:${pct}%"></div>
+                                    </div>
+                                    <span class="text-[9.5px] font-semibold text-zinc-400 shrink-0">${esc(src.type || 'Doc')}</span>
+                                </div>
+                            </div>
                         </div>
-                    </label>
-                    ${sources.length > 1 ? `
-                        <button type="button" onclick="event.stopPropagation(); removeNotebookSource(${idx});" class="text-zinc-400 hover:text-rose-500 p-1 cursor-pointer" title="${tr('Eliminar font', 'Eliminar fuente')}">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        </button>
-                    ` : ''}
+                        <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">
+                            <button type="button" onclick="toggleNotebookSourceChecked(${idx})" class="w-7 h-7 rounded-lg flex items-center justify-center transition cursor-pointer ${isChecked ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 hover:text-zinc-700'}" title="${isChecked ? tr('Activa (toca per desactivar)', 'Activa (toca para desactivar)') : tr('Inactiva (toca per activar)', 'Inactiva (toca para activar)')}">
+                                ${isChecked ? iconSvg('check', 'w-3.5 h-3.5') : iconSvg('eye', 'w-3.5 h-3.5')}
+                            </button>
+                            ${sources.length > 1 ? `
+                                <button type="button" onclick="removeNotebookSource(${idx})" class="w-7 h-7 rounded-lg bg-zinc-100 hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-rose-950/60 text-zinc-400 hover:text-rose-500 flex items-center justify-center cursor-pointer transition" title="${tr('Eliminar font', 'Eliminar fuente')}">
+                                    ${iconSvg('trash', 'w-3.5 h-3.5')}
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
                 </div>
-                <p class="text-[11px] text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-snug">${esc(String(src.content || '').substring(0, 160))}</p>
-            </div>
-        `).join('');
+            `;
+        }).join('');
         updateNotebookWorkspaceStats();
     }
 
@@ -2371,19 +2468,44 @@
 
         if (!Array.isArray(notebookState.chatMessages) || notebookState.chatMessages.length === 0) {
             const topic = notebookState.title || resolveCurrentStudyTopic();
-            const suggestions = [
-                tr(`Quins són els 5 conceptes més importants de [Font 1] per a l'examen?`, `¿Cuáles son los 5 conceptos más importantes de [Font 1] para el examen?`),
-                tr(`Fes una taula comparativa dels punts clau de ${topic}`, `Haz una tabla comparativa de los puntos clave de ${topic}`),
-                tr(`Quines preguntes trampa poden sortir sobre aquestes fonts?`, `¿Qué preguntas trampa pueden salir sobre estas fuentes?`)
+            const quickPrompts = [
+                {
+                    icon: 'lightbulb',
+                    color: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+                    label: tr('5 idees clau', '5 ideas clave'),
+                    q: tr(`Quins són els 5 conceptes més importants de [Font 1] per a l'examen?`, `¿Cuáles son los 5 conceptos más importantes de [Font 1] para el examen?`)
+                },
+                {
+                    icon: 'layers',
+                    color: 'bg-blue-500/15 text-blue-600 dark:text-sky-400',
+                    label: tr('Taula visual', 'Tabla visual'),
+                    q: tr(`Fes una taula comparativa dels punts clau de ${topic}`, `Haz una tabla comparativa de los puntos clave de ${topic}`)
+                },
+                {
+                    icon: 'warn',
+                    color: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+                    label: tr('Preguntes trampa', 'Preguntas trampa'),
+                    q: tr(`Quines preguntes trampa poden sortir sobre aquestes fonts?`, `¿Qué preguntas trampa pueden salir sobre estas fuentes?`)
+                }
             ];
             box.innerHTML = `
-                <div class="p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-2.5">
-                    <div class="font-bold text-zinc-900 dark:text-zinc-100">${tr('Pregunta qualsevol dubte sobre les teves fonts actives', 'Pregunta cualquier duda sobre tus fuentes activas')}</div>
-                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400">${tr('Cada resposta inclou citacions clicables [Font 1] i es pot desar com a nota del quadern.', 'Cada respuesta incluye citas clicables [Font 1] y puede guardarse como nota del cuaderno.')}</p>
-                    <div class="flex flex-wrap gap-1.5 pt-1">
-                        ${suggestions.map(q => `
-                            <button type="button" onclick="askNotebookSuggestedQuestion('${esc(q).replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold text-left transition cursor-pointer">
-                                → ${esc(q)}
+                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 space-y-3 text-center">
+                    <div class="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400">
+                        <span class="w-8 h-8 rounded-xl bg-indigo-500/15 flex items-center justify-center">${iconSvg('book', 'w-4 h-4')}</span>
+                        ${iconSvg('arrowRight', 'w-3.5 h-3.5 text-zinc-400')}
+                        <span class="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-600 dark:text-sky-400 flex items-center justify-center">${iconSvg('spark', 'w-4 h-4')}</span>
+                        ${iconSvg('arrowRight', 'w-3.5 h-3.5 text-zinc-400')}
+                        <span class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">${iconSvg('checkCircle', 'w-4 h-4')}</span>
+                    </div>
+                    <div>
+                        <div class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100">${tr('Pregunta qualsevol dubte!', '¡Pregunta cualquier duda!')}</div>
+                        <div class="text-[10.5px] text-zinc-500 dark:text-zinc-400">${tr('Tria un botó o escriu a sota', 'Elige un botón o escribe abajo')}</div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        ${quickPrompts.map(item => `
+                            <button type="button" onclick="askNotebookSuggestedQuestion('${esc(item.q).replace(/'/g, "\\'")}')" class="p-2 rounded-xl bg-zinc-50 hover:bg-indigo-50/70 dark:bg-zinc-950 dark:hover:bg-indigo-950/40 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-400 flex flex-col items-center justify-center gap-1.5 text-center transition cursor-pointer active:scale-95">
+                                <span class="w-7 h-7 rounded-lg ${item.color} flex items-center justify-center">${iconSvg(item.icon, 'w-4 h-4')}</span>
+                                <span class="text-[10.5px] font-extrabold text-zinc-800 dark:text-zinc-200 leading-tight">${esc(item.label)}</span>
                             </button>
                         `).join('')}
                     </div>
@@ -2394,22 +2516,35 @@
 
         box.innerHTML = notebookState.chatMessages.map((m, idx) => {
             if (m.role === 'user') {
-                return `<div class="flex justify-end"><div class="px-3.5 py-2 rounded-2xl bg-indigo-600 text-white font-semibold max-w-[85%]">${esc(m.content)}</div></div>`;
+                return `
+                    <div class="flex items-end justify-end gap-1.5">
+                        <div class="px-3.5 py-2 rounded-2xl rounded-br-sm bg-indigo-600 text-white font-semibold max-w-[82%]">${esc(m.content)}</div>
+                        <span class="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 flex items-center justify-center shrink-0">${iconSvg('user', 'w-3.5 h-3.5')}</span>
+                    </div>
+                `;
             }
             const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(m.content || '') : esc(m.content || ''));
             const formatted = decorateCitationBadges(rawHtml);
             return `
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
+                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">${iconSvg('spark', 'w-3.5 h-3.5')}</span>
+                        <span class="text-[10.5px] font-extrabold text-zinc-500 dark:text-zinc-400">${tr('Resposta verificada', 'Respuesta verificada')}</span>
+                    </div>
                     <div class="prose prose-xs dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 leading-relaxed">${formatted}</div>
                     <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
                         <div class="flex flex-wrap items-center gap-1">${(m.citations || ['Font 1']).map(c => decorateCitationBadges(`[${esc(c)}]`)).join(' ')}</div>
-                        <button type="button" onclick="saveChatAnswerToNotebookNotes(${idx})" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer">+ ${tr('Desar a Notes', 'Guardar en Notas')}</button>
+                        <button type="button" onclick="saveChatAnswerToNotebookNotes(${idx})" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-[10.5px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer inline-flex items-center gap-1">
+                            ${iconSvg('bookmark', 'w-3 h-3')}
+                            <span>${tr('Desar a Notes', 'Guardar en Notas')}</span>
+                        </button>
                     </div>
                     ${Array.isArray(m.followUps) && m.followUps.length > 0 ? `
                         <div class="flex flex-wrap gap-1 pt-1">
                             ${m.followUps.slice(0, 2).map(fq => `
-                                <button type="button" onclick="askNotebookSuggestedQuestion('${esc(fq).replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-lg bg-zinc-100 hover:bg-indigo-50 dark:bg-zinc-800 dark:hover:bg-indigo-950/60 text-zinc-700 dark:text-zinc-300 text-[10px] font-medium cursor-pointer text-left">
-                                    ↳ ${esc(fq)}
+                                <button type="button" onclick="askNotebookSuggestedQuestion('${esc(fq).replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-indigo-50 dark:bg-zinc-800 dark:hover:bg-indigo-950/60 text-zinc-700 dark:text-zinc-300 text-[10px] font-semibold cursor-pointer text-left inline-flex items-center gap-1">
+                                    ${iconSvg('arrowRight', 'w-3 h-3 text-indigo-500 shrink-0')}
+                                    <span>${esc(fq)}</span>
                                 </button>
                             `).join('')}
                         </div>
@@ -2495,7 +2630,7 @@
             notebookBusy.chat = false;
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.textContent = tr('Preguntar', 'Preguntar');
+                submitBtn.innerHTML = `<span>${tr('Enviar', 'Enviar')}</span>${iconSvg('arrowRight', 'w-3 h-3')}`;
             }
         }
     };
@@ -2564,18 +2699,20 @@
                 content: result.content,
                 isNew: true
             });
-            notebookState.chatHistory.push({
+            if (!Array.isArray(notebookState.chatMessages)) notebookState.chatMessages = [];
+            notebookState.chatMessages.push({
                 role: 'assistant',
-                text: `### ${result.title}\n\n${result.content}`
+                content: `### ${result.title}\n\n${result.content}`,
+                citations: ['Font 1']
             });
             saveNotebookState();
             renderNotebookSavedNotes();
-            renderNotebookChatMessages();
+            renderNotebookGroundedChat();
             updateNotebookWorkspaceStats();
 
             if (notesList) notesList.scrollTop = 0;
             if (typeof showToast === 'function') {
-                showToast(tr('Document generat al panell central i desat a Notes!', '¡Documento generado en el panel central y guardado en Notas!'), 'success');
+                showToast(tr('Document creat i desat a Les teves Notes!', '¡Documento creado y guardado en Tus Notas!'), 'success');
             }
         } finally {
             notebookBusy.artifact = false;
@@ -2595,9 +2732,20 @@
 
         const ov = notebookState.audioOverview;
         if (!ov || !Array.isArray(ov.dialogue) || ov.dialogue.length === 0) {
+            const bars = [14, 24, 18, 30, 22, 28, 16, 26, 20, 14];
             box.innerHTML = `
-                <div class="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    ${tr('Prem "Generar Pòdcast IA" perquè en Marc i la Laia sintetitzin totes les teves fonts actives en una conversa d\'àudio interactiva (amb opció d\'interrompre i preguntar en viu).', 'Pulsa "Generar Pódcast IA" para que Marc y Laia sinteticen todas tus fuentes activas en una conversación de audio interactiva (con opción de interrumpir y preguntar en vivo).')}
+                <div class="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs" title="Marc">M</div>
+                        <div class="flex items-center gap-0.5 h-8" aria-hidden="true">
+                            ${bars.map(h => `<span class="w-1 rounded-full bg-indigo-400/70 dark:bg-indigo-500/70" style="height:${h}px"></span>`).join('')}
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shadow-2xs" title="Laia">L</div>
+                    </div>
+                    <div class="min-w-0 flex-1 text-right sm:text-left">
+                        <div class="text-[11px] font-extrabold text-zinc-900 dark:text-zinc-100 truncate">Marc & Laia</div>
+                        <div class="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">${tr('Resum parlat en 1 toc', 'Resumen hablado en 1 toque')}</div>
+                    </div>
                 </div>
             `;
             return;
@@ -2607,46 +2755,64 @@
         const currentTurn = ov.dialogue[turnIdx] || ov.dialogue[0];
         const rateLabel = (Number(notebookState.audioRate) || 1.0).toFixed(2).replace(/\.00$/, '') + 'x';
         const progressPct = Math.round(((turnIdx + 1) / Math.max(1, ov.dialogue.length)) * 100);
+        const isLaia = currentTurn.speaker === 'Laia';
+        const waveHeights = [10, 18, 24, 14, 22, 26, 16, 20, 12];
 
         box.innerHTML = `
             <div class="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-xs font-bold text-indigo-950 dark:text-indigo-200 truncate">${esc(ov.title || 'Deep Dive Audio')}</span>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <button type="button" onclick="savePodcastTranscriptToNotes()" class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer" title="${tr('Desar tot el guió com a Nota', 'Guardar todo el guion como Nota')}">+ ${tr('Desar a Notes', 'Guardar en Notas')}</button>
-                        <span class="text-[10px] font-mono text-indigo-600 dark:text-indigo-400">${tr('Torn', 'Turno')} ${turnIdx + 1}/${ov.dialogue.length}</span>
+                    <span class="text-xs font-extrabold text-indigo-950 dark:text-indigo-200 truncate">${esc(ov.title || 'Deep Dive Audio')}</span>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="savePodcastTranscriptToNotes()" class="px-2 py-0.5 rounded-md bg-white/80 dark:bg-zinc-900 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-white cursor-pointer inline-flex items-center gap-1" title="${tr('Desar guió a Notes', 'Guardar guion en Notas')}">
+                            ${iconSvg('bookmark', 'w-3 h-3')}
+                            <span>${tr('Desar', 'Guardar')}</span>
+                        </button>
+                        <span class="text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400">${turnIdx + 1}/${ov.dialogue.length}</span>
                     </div>
                 </div>
 
-                <div class="w-full h-1.5 rounded-full bg-indigo-200/70 dark:bg-indigo-950 overflow-hidden">
-                    <div class="h-full bg-indigo-600 dark:bg-indigo-400 transition-all duration-300" style="width: ${progressPct}%"></div>
+                <!-- Avatars + Ona sonora + Barra de progrés -->
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 transition ${!isLaia ? 'bg-blue-600 text-white ring-2 ring-blue-300 dark:ring-blue-500 scale-105' : 'bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 opacity-60'}">M</div>
+                    <div class="flex-1 space-y-1.5">
+                        <div class="flex items-center justify-center gap-1 h-5" aria-hidden="true">
+                            ${waveHeights.map((h, wi) => `<span class="w-1 rounded-full transition-all ${notebookState.audioPlaying ? (wi % 2 === 0 ? 'bg-indigo-600 dark:bg-indigo-400' : 'bg-emerald-500') : 'bg-indigo-300 dark:bg-indigo-700'}" style="height:${notebookState.audioPlaying ? h : Math.round(h * 0.6)}px"></span>`).join('')}
+                        </div>
+                        <div class="w-full h-1.5 rounded-full bg-indigo-200/70 dark:bg-indigo-950 overflow-hidden">
+                            <div class="h-full bg-indigo-600 dark:bg-indigo-400 transition-all duration-300" style="width: ${progressPct}%"></div>
+                        </div>
+                    </div>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 transition ${isLaia ? 'bg-emerald-600 text-white ring-2 ring-emerald-300 dark:ring-emerald-500 scale-105' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 opacity-60'}">L</div>
                 </div>
 
-                <!-- Transcripció activa del locutor -->
+                <!-- Bafarada activa del locutor -->
                 <div class="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-indigo-200/60 dark:border-zinc-800 text-xs space-y-1">
                     <div class="flex items-center justify-between">
-                        <span class="font-extrabold ${currentTurn.speaker === 'Laia' ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-sky-400'}">${esc(currentTurn.speaker)}</span>
-                        <span class="text-[10px] text-zinc-400">${currentTurn.speaker === 'Laia' ? tr('Especialista Pedagògica', 'Especialista Pedagógica') : tr('Presentador Analític', 'Presentador Analítico')}</span>
+                        <span class="font-extrabold ${isLaia ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-sky-400'}">${esc(currentTurn.speaker)}</span>
+                        <span class="text-[10px] font-semibold text-zinc-400">${isLaia ? tr('Guia', 'Guía') : tr('Analista', 'Analista')}</span>
                     </div>
                     <p class="text-zinc-800 dark:text-zinc-200 leading-relaxed">${esc(currentTurn.text)}</p>
                 </div>
 
-                <!-- Controls de reproducció a 2 veus -->
+                <!-- Controls gràfics de reproducció -->
                 <div class="flex flex-wrap items-center justify-between gap-1.5 pt-1">
                     <div class="flex items-center gap-1">
-                        <button type="button" onclick="togglePlayNotebookPodcast()" class="px-2.5 py-1.5 rounded-xl ${notebookState.audioPlaying ? 'bg-rose-600 hover:bg-rose-500' : 'bg-indigo-600 hover:bg-indigo-500'} text-white text-[11px] font-bold cursor-pointer transition flex items-center gap-1 active:scale-95">
-                            <span>${notebookState.audioPlaying ? tr('Pausar', 'Pausar') : tr('Escoltar', 'Escuchar')}</span>
+                        <button type="button" onclick="stepNotebookPodcastTurn(-1)" class="w-8 h-8 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 flex items-center justify-center cursor-pointer hover:border-indigo-400" title="${tr('Anterior', 'Anterior')}">${iconSvg('arrowLeft', 'w-3.5 h-3.5')}</button>
+                        <button type="button" onclick="togglePlayNotebookPodcast()" class="px-3 h-8 rounded-xl ${notebookState.audioPlaying ? 'bg-rose-600 hover:bg-rose-500' : 'bg-indigo-600 hover:bg-indigo-500'} text-white text-[11px] font-bold cursor-pointer transition inline-flex items-center gap-1.5 active:scale-95">
+                            ${notebookState.audioPlaying ? iconSvg('pause', 'w-3.5 h-3.5') : iconSvg('play', 'w-3.5 h-3.5')}
+                            <span>${notebookState.audioPlaying ? tr('Pausa', 'Pausa') : tr('Escoltar', 'Escuchar')}</span>
                         </button>
-                        <button type="button" onclick="stepNotebookPodcastTurn(-1)" class="p-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs cursor-pointer" title="${tr('Anterior', 'Anterior')}">←</button>
-                        <button type="button" onclick="stepNotebookPodcastTurn(1)" class="p-1.5 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs cursor-pointer" title="${tr('Següent', 'Siguiente')}">→</button>
-                        <button type="button" onclick="cycleNotebookAudioRate()" class="px-2 py-1 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer" title="${tr('Velocitat de lectura', 'Velocidad de lectura')}">${rateLabel}</button>
+                        <button type="button" onclick="stepNotebookPodcastTurn(1)" class="w-8 h-8 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 flex items-center justify-center cursor-pointer hover:border-indigo-400" title="${tr('Següent', 'Siguiente')}">${iconSvg('arrowRight', 'w-3.5 h-3.5')}</button>
+                        <button type="button" onclick="cycleNotebookAudioRate()" class="px-2 h-8 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px] font-mono font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer" title="${tr('Velocitat', 'Velocidad')}">${rateLabel}</button>
                     </div>
                     <div class="flex items-center gap-1">
-                        <button type="button" onclick="toggleNotebookPodcastScript()" class="px-2 py-1.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer">
-                            ${notebookState.showFullScript ? tr('Ocultar Guió', 'Ocultar Guion') : tr('Guió', 'Guion')}
+                        <button type="button" onclick="toggleNotebookPodcastScript()" class="px-2.5 h-8 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10.5px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer inline-flex items-center gap-1" title="${tr('Veure guió complet', 'Ver guion completo')}">
+                            ${iconSvg('doc', 'w-3.5 h-3.5')}
+                            <span>${notebookState.showFullScript ? tr('Ocultar', 'Ocultar') : tr('Guió', 'Guion')}</span>
                         </button>
-                        <button type="button" onclick="interruptNotebookPodcastToAsk()" class="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10.5px] font-bold cursor-pointer transition active:scale-95" title="${tr('Interrompre i preguntar als locutors', 'Interrumpir y preguntar a los locutores')}">
-                            ${tr('Preguntar en viu', 'Preguntar en vivo')}
+                        <button type="button" onclick="interruptNotebookPodcastToAsk()" class="px-2.5 h-8 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[10.5px] font-bold cursor-pointer transition active:scale-95 inline-flex items-center gap-1" title="${tr('Interrompre i preguntar en directe', 'Interrumpir y preguntar en directo')}">
+                            ${iconSvg('mic', 'w-3.5 h-3.5')}
+                            <span>${tr('En viu', 'En vivo')}</span>
                         </button>
                     </div>
                 </div>
@@ -2753,7 +2919,7 @@
             notebookBusy.audio = false;
             if (genBtn) {
                 genBtn.disabled = false;
-                genBtn.textContent = tr('Generar Pòdcast IA', 'Generar Pódcast IA');
+                genBtn.innerHTML = `${iconSvg('mic', 'w-3.5 h-3.5')}<span>${tr('Crear Àudio', 'Crear Audio')}</span>`;
             }
         }
     };
@@ -2898,6 +3064,20 @@
         renderNotebookSavedNotes();
     };
 
+    function getNoteCategoryVisual(title) {
+        const t = String(title || '').toLowerCase();
+        if (t.includes('guia') || t.includes('guía')) return { icon: 'book', box: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400', bar: 'bg-indigo-500' };
+        if (t.includes('brief') || t.includes('resum')) return { icon: 'doc', box: 'bg-blue-500/15 text-blue-600 dark:text-sky-400', bar: 'bg-blue-500' };
+        if (t.includes('faq') || t.includes('pregunt')) return { icon: 'lightbulb', box: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400', bar: 'bg-emerald-500' };
+        if (t.includes('temporal') || t.includes('crono') || t.includes('passos')) return { icon: 'clock', box: 'bg-amber-500/15 text-amber-600 dark:text-amber-400', bar: 'bg-amber-500' };
+        if (t.includes('glossar') || t.includes('glosar')) return { icon: 'bookmark', box: 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400', bar: 'bg-cyan-500' };
+        if (t.includes('tramp')) return { icon: 'warn', box: 'bg-rose-500/15 text-rose-600 dark:text-rose-400', bar: 'bg-rose-500' };
+        if (t.includes('target') || t.includes('tarjet')) return { icon: 'layers', box: 'bg-purple-500/15 text-purple-600 dark:text-purple-400', bar: 'bg-purple-500' };
+        if (t.includes('simulacr') || t.includes('examen')) return { icon: 'checkCircle', box: 'bg-teal-500/15 text-teal-600 dark:text-teal-400', bar: 'bg-teal-500' };
+        if (t.includes('pòdcast') || t.includes('pódcast') || t.includes('audio')) return { icon: 'mic', box: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400', bar: 'bg-indigo-500' };
+        return { icon: 'notebook', box: 'bg-zinc-500/15 text-zinc-600 dark:text-zinc-400', bar: 'bg-zinc-400' };
+    }
+
     function renderNotebookSavedNotes() {
         const listEl = document.getElementById('nb-saved-notes-list');
         const countBadge = document.getElementById('nb-notes-count-badge');
@@ -2909,8 +3089,15 @@
 
         if (notes.length === 0) {
             listEl.innerHTML = `
-                <div class="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-[11px] text-zinc-500 dark:text-zinc-400">
-                    ${tr('Encara no has desat cap nota. Clica qualsevol dels 8 botons del Generador d\'Estudi (Guia, Briefing, FAQ, Glossari, Targetes, Simulacre...) per crear documents al teu quadern.', 'Aún no has guardado ninguna nota. Haz clic en cualquiera de los 8 botones del Generador de Estudio (Guía, Briefing, FAQ, Glosario, Tarjetas, Simulacro...) para crear documentos en tu cuaderno.')}
+                <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-dashed border-zinc-300 dark:border-zinc-700 text-center space-y-2">
+                    <div class="w-10 h-10 mx-auto rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                        ${iconSvg('notebook', 'w-5 h-5')}
+                    </div>
+                    <div class="text-xs font-extrabold text-zinc-800 dark:text-zinc-200">${tr('Encara no tens notes', 'Aún no tienes notas')}</div>
+                    <div class="text-[10.5px] text-zinc-500 dark:text-zinc-400 inline-flex items-center gap-1 justify-center">
+                        ${iconSvg('arrowLeft', 'w-3 h-3 text-indigo-500')}
+                        <span>${tr('Toca qualsevol icona del centre', 'Toca cualquier icono del centro')}</span>
+                    </div>
                 </div>
             `;
             return;
@@ -2925,7 +3112,7 @@
             });
 
         if (filtered.length === 0) {
-            listEl.innerHTML = `<div class="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-500">${tr('Cap nota coincideix amb la cerca.', 'Ninguna nota coincide con la búsqueda.')}</div>`;
+            listEl.innerHTML = `<div class="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-500 text-center">${tr('Cap nota coincideix.', 'Ninguna nota coincide.')}</div>`;
             return;
         }
 
@@ -2934,23 +3121,55 @@
             const rendered = decorateCitationBadges(rawHtml);
             const highlightCls = n.isNew ? 'ring-2 ring-indigo-500 border-indigo-400 dark:border-indigo-500' : 'border-zinc-200 dark:border-zinc-800';
             if (n.isNew) delete n.isNew;
+            const vis = getNoteCategoryVisual(n.title);
             return `
-                <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border ${highlightCls} space-y-2 transition-all">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 truncate flex-1">${esc(n.title)}</span>
-                        <div class="flex items-center gap-1 shrink-0">
-                            <button type="button" onclick="viewNotebookNoteFull(${idx})" class="px-2 py-0.5 rounded-lg bg-zinc-100 hover:bg-indigo-100 dark:bg-zinc-800 dark:hover:bg-indigo-950/70 text-[10px] font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer" title="${tr('Ampliar document', 'Ampliar documento')}">${tr('Obrir', 'Abrir')}</button>
-                            <button type="button" onclick="editNotebookSavedNote(${idx})" class="px-2 py-0.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer" title="${tr('Editar nota', 'Editar nota')}">${tr('Editar', 'Editar')}</button>
-                            <button type="button" onclick="sendNotebookNoteToChat(${idx})" class="px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/70 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer" title="${tr('Enviar al xat d\'estudi', 'Enviar al chat de estudio')}">${tr('Al Xat', 'Al Chat')}</button>
-                            <button type="button" onclick="copyNotebookNote(${idx})" class="px-2 py-0.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer" title="${tr('Copiar text', 'Copiar texto')}">${tr('Copiar', 'Copiar')}</button>
-                            <button type="button" onclick="deleteNotebookSavedNote(${idx})" class="text-zinc-400 hover:text-rose-500 p-1 cursor-pointer inline-flex items-center justify-center" title="${tr('Eliminar', 'Eliminar')}">${iconSvg('close', 'w-3.5 h-3.5')}</button>
+                <div class="rounded-2xl bg-white dark:bg-zinc-900 border ${highlightCls} overflow-hidden transition-all shadow-2xs">
+                    <div class="h-1 w-full ${vis.bar}"></div>
+                    <div class="p-3 space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <span class="w-7 h-7 rounded-lg ${vis.box} flex items-center justify-center shrink-0">${iconSvg(vis.icon, 'w-3.5 h-3.5')}</span>
+                                <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 truncate">${esc(n.title)}</span>
+                            </div>
+                            <button type="button" onclick="deleteNotebookSavedNote(${idx})" class="text-zinc-400 hover:text-rose-500 p-1 cursor-pointer inline-flex items-center justify-center shrink-0" title="${tr('Eliminar', 'Eliminar')}">${iconSvg('trash', 'w-3.5 h-3.5')}</button>
+                        </div>
+                        <div class="prose prose-xs dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 max-h-40 overflow-y-auto custom-scrollbar text-[11.5px] leading-relaxed">${rendered}</div>
+                        <div class="grid grid-cols-4 gap-1 pt-1.5 border-t border-zinc-100 dark:border-zinc-800">
+                            <button type="button" onclick="viewNotebookNoteFull(${idx})" class="py-1.5 px-1 rounded-lg bg-zinc-50 hover:bg-indigo-50 dark:bg-zinc-800/80 dark:hover:bg-indigo-950/60 text-[10px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer inline-flex items-center justify-center gap-1" title="${tr('Ampliar document', 'Ampliar documento')}">
+                                ${iconSvg('eye', 'w-3 h-3')}
+                                <span>${tr('Obrir', 'Abrir')}</span>
+                            </button>
+                            <button type="button" onclick="editNotebookSavedNote(${idx})" class="py-1.5 px-1 rounded-lg bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer inline-flex items-center justify-center gap-1" title="${tr('Editar nota', 'Editar nota')}">
+                                ${iconSvg('edit', 'w-3 h-3')}
+                                <span>${tr('Editar', 'Editar')}</span>
+                            </button>
+                            <button type="button" onclick="sendNotebookNoteToChat(${idx})" class="py-1.5 px-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/70 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer inline-flex items-center justify-center gap-1" title="${tr('Enviar al xat d\'estudi', 'Enviar al chat de estudio')}">
+                                ${iconSvg('chat', 'w-3 h-3')}
+                                <span>${tr('Xat', 'Chat')}</span>
+                            </button>
+                            <button type="button" onclick="copyNotebookNote(${idx})" class="py-1.5 px-1 rounded-lg bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 text-[10px] font-bold text-zinc-700 dark:text-zinc-200 cursor-pointer inline-flex items-center justify-center gap-1" title="${tr('Copiar text', 'Copiar texto')}">
+                                ${iconSvg('clipboard', 'w-3 h-3')}
+                                <span>${tr('Copiar', 'Copiar')}</span>
+                            </button>
                         </div>
                     </div>
-                    <div class="prose prose-xs dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300 max-h-44 overflow-y-auto custom-scrollbar text-[11.5px] leading-relaxed">${rendered}</div>
                 </div>
             `;
         }).join('');
     }
+
+    window.speakNotebookNoteText = function (idx) {
+        const n = notebookState.notes[idx];
+        if (!n || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') return;
+        try {
+            window.speechSynthesis.cancel();
+            const cleanText = String(`${n.title}. ${n.content || ''}`).replace(/[#*`_\[\]]+/g, '').replace(/\s+/g, ' ').trim().substring(0, 1500);
+            const utter = new SpeechSynthesisUtterance(cleanText);
+            utter.lang = isEsLang() ? 'es-ES' : 'ca-ES';
+            window.speechSynthesis.speak(utter);
+            if (typeof showToast === 'function') showToast(tr('Llegint nota en veu alta...', 'Leyendo nota en voz alta...'), 'info');
+        } catch (_) {}
+    };
 
     window.viewNotebookNoteFull = function (idx) {
         const n = notebookState.notes[idx];
@@ -2961,7 +3180,19 @@
             title: n.title,
             maxWidthClass: 'max-w-2xl',
             confirmLabel: tr('Copiar Contingut', 'Copiar Contenido'),
-            bodyHtml: `<div class="prose prose-sm dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 leading-relaxed">${rendered}</div>`,
+            bodyHtml: `
+                <div class="flex flex-wrap items-center justify-end gap-2 pb-2 border-b border-zinc-100 dark:border-zinc-800">
+                    <button type="button" onclick="speakNotebookNoteText(${idx})" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold cursor-pointer inline-flex items-center gap-1.5">
+                        ${iconSvg('volume', 'w-3.5 h-3.5')}
+                        <span>${tr('Escoltar en veu alta', 'Escuchar en voz alta')}</span>
+                    </button>
+                    <button type="button" onclick="closeNotebookInlineDialog(); sendNotebookNoteToChat(${idx})" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold cursor-pointer inline-flex items-center gap-1.5">
+                        ${iconSvg('chat', 'w-3.5 h-3.5')}
+                        <span>${tr('Enviar al Xat', 'Enviar al Chat')}</span>
+                    </button>
+                </div>
+                <div class="prose prose-sm dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 leading-relaxed">${rendered}</div>
+            `,
             onConfirm: () => {
                 window.copyNotebookNote(idx);
                 closeNotebookInlineDialog();
@@ -3094,43 +3325,71 @@
         return [
             {
                 targetSelector: '[data-nb-guide="sources"]',
-                badge: tr('Pas 1 de 4 · Fonts', 'Paso 1 de 4 · Fuentes'),
-                title: tr('1. Carrega i filtra les teves Fonts', '1. Carga y filtra tus Fuentes'),
+                badge: tr('Pas 1 de 4', 'Paso 1 de 4'),
+                icon: 'folder',
+                color: 'bg-indigo-600 text-white',
+                diagram: [
+                    { icon: 'doc', label: 'PDF' },
+                    { icon: 'plus', label: tr('Text', 'Texto') },
+                    { icon: 'chat', label: tr('Xat', 'Chat') }
+                ],
+                title: tr('1. Posa-hi els teus apunts', '1. Pon tus apuntes'),
                 desc: tr(
-                    'A l\'esquerra tens les fonts del quadern ([Font 1], [Font 2]...). Pots afegir apunts de text, carregar fitxers (.txt, .md o PDF), importar el xat actual o marcar/desmarcar les caselles per decidir quines fonts fa servir la IA.',
-                    'A la izquierda tienes las fuentes del cuaderno ([Font 1], [Font 2]...). Puedes añadir apuntes de texto, cargar archivos (.txt, .md o PDF), importar el chat actual o marcar/desmarcar las casillas para elegir qué fuentes usa la IA.'
+                    'A l\'esquerra hi ha el material. Afegeix un PDF, enganxa text o porta el xat actual, i marca quines fonts vols usar.',
+                    'A la izquierda está tu material. Añade un PDF, pega texto o trae el chat actual, y marca qué fuentes quieres usar.'
                 ),
-                tip: tr('Consell: fes clic sobre qualsevol targeta de font per llegir-la sencera o editar-ne el contingut.', 'Consejo: haz clic sobre cualquier tarjeta de fuente para leerla entera o editar su contenido.')
+                tip: tr('Toca qualsevol targeta per llegir-la o editar-la.', 'Toca cualquier tarjeta para leerla o editarla.')
             },
             {
                 targetSelector: '[data-nb-guide="artifacts"]',
-                badge: tr('Pas 2 de 4 · Generador 1-Clic', 'Paso 2 de 4 · Generador 1-Clic'),
-                title: tr('2. Genera Documents d\'Estudi en 1 Clic', '2. Genera Documentos de Estudio en 1 Clic'),
+                badge: tr('Pas 2 de 4', 'Paso 2 de 4'),
+                icon: 'spark',
+                color: 'bg-blue-600 text-white',
+                diagram: [
+                    { icon: 'book', label: tr('Guia', 'Guía') },
+                    { icon: 'layers', label: tr('Targetes', 'Tarjetas') },
+                    { icon: 'checkCircle', label: tr('Examen', 'Examen') }
+                ],
+                title: tr('2. Crea materials en 1 toc', '2. Crea materiales en 1 toque'),
                 desc: tr(
-                    'Prem qualsevol dels 6 botons (Guia d\'Estudi, Briefing Doc, FAQ d\'Examen, Línia Temporal, Glossari o Trampes d\'Examen) i AliatNotebook sintetitzarà totes les fonts actives amb citacions [Font X].',
-                    'Pulsa cualquiera de los 6 botones (Guía de Estudio, Briefing Doc, FAQ de Examen, Línea Temporal, Glosario o Trampas de Examen) y AliatNotebook sintetizará todas las fuentes activas con citas [Font X].'
+                    'Prem qualsevol de les 8 icones (Guia, Resum, Preguntes, Targetes, Simulacre...). La nota apareix feta al moment.',
+                    'Pulsa cualquiera de los 8 iconos (Guía, Resumen, Preguntas, Tarjetas, Simulacro...). La nota aparece hecha al instante.'
                 ),
-                tip: tr('Els documents generats apareixen automàticament a la columna dreta («Notes i Documents»), llestos per obrir, copiar o exportar a Word.', 'Los documentos generados aparecen automáticamente en la columna derecha («Notas y Documentos»), listos para abrir, copiar o exportar a Word.')
+                tip: tr('Tots els documents es desen a "Les teves Notes" a la dreta.', 'Todos los documentos se guardan en "Tus Notas" a la derecha.')
             },
             {
                 targetSelector: '[data-nb-guide="chat"]',
-                badge: tr('Pas 3 de 4 · Xat Verificat', 'Paso 3 de 4 · Chat Verificado'),
-                title: tr('3. Xat d\'Investigació amb Citacions [Font X]', '3. Chat de Investigación con Citas [Font X]'),
+                badge: tr('Pas 3 de 4', 'Paso 3 de 4'),
+                icon: 'chat',
+                color: 'bg-cyan-600 text-white',
+                diagram: [
+                    { icon: 'lightbulb', label: tr('Dubte', 'Duda') },
+                    { icon: 'spark', label: 'IA' },
+                    { icon: 'bookmark', label: 'Notes' }
+                ],
+                title: tr('3. Pregunta i desa la resposta', '3. Pregunta y guarda la respuesta'),
                 desc: tr(
-                    'Escriu dubtes concrets o fes clic als suggeriments ràpids. Cada resposta cita exactament d\'on ha tret la dada i té un botó «+ Desar a Notes» per guardar-la al quadern.',
-                    'Escribe dudas concretas o haz clic en las sugerencias rápidas. Cada respuesta cita exactamente de dónde sacó el dato y tiene un botón «+ Guardar en Notas» para fijarla.'
+                    'Escriu un dubte o toca un botó ràpid. Veus d\'on surt cada dada i pots desar la resposta a Notes en 1 clic.',
+                    'Escribe una duda o toca un botón rápido. Ves de dónde sale cada dato y puedes guardar la respuesta en Notas en 1 clic.'
                 ),
-                tip: tr('Ideal per comparar temes o preparar possibles preguntes de desenvolupament.', 'Ideal para comparar temas o preparar posibles preguntas de desarrollo.')
+                tip: tr('Fes clic a [Font 1] per anar directe al punt original.', 'Haz clic en [Font 1] para ir directo al punto original.')
             },
             {
                 targetSelector: '[data-nb-guide="audio-notes"]',
-                badge: tr('Pas 4 de 4 · Pòdcast, Notes i Exportació', 'Paso 4 de 4 · Pódcast, Notas y Exportación'),
-                title: tr('4. Audio Overview (Marc i Laia), Notes i Exportació', '4. Audio Overview (Marc y Laia), Notas y Exportación'),
+                badge: tr('Pas 4 de 4', 'Paso 4 de 4'),
+                icon: 'mic',
+                color: 'bg-emerald-600 text-white',
+                diagram: [
+                    { icon: 'play', label: tr('Àudio', 'Audio') },
+                    { icon: 'mic', label: tr('En viu', 'En vivo') },
+                    { icon: 'download', label: '.doc' }
+                ],
+                title: tr('4. Escolta el Pòdcast i exporta', '4. Escucha el Pódcast y exporta'),
                 desc: tr(
-                    'Genera un Pòdcast a 2 veus sobre les teves fonts, regula la velocitat (1x / 1.25x / 1.5x), desplega el guió o prem «Preguntar en viu» per interrompre i resoldre un dubte en directe. A sota queden totes les teves Notes i a dalt pots passar a Jocs o exportar a Word (.doc).',
-                    'Genera un Pódcast a 2 voces sobre tus fuentes, regula la velocidad (1x / 1.25x / 1.5x), despliega el guion o pulsa «Preguntar en vivo» para interrumpir y resolver una duda en directo. Debajo quedan todas tus Notas y arriba puedes ir a Juegos o exportar a Word (.doc).'
+                    'En Marc i la Laia t\'expliquen el tema parlant! Pots aturar-los i fer-los preguntes en viu, o baixar-ho tot en Word.',
+                    '¡Marc y Laia te explican el tema hablando! Puedes pausarlos y hacerles preguntas en vivo, o bajarlo todo en Word.'
                 ),
-                tip: tr('Tot el quadern es desa automàticament perquè no perdis la feina en canviar de pantalla.', 'Todo el cuaderno se guarda automáticamente para que no pierdas tu trabajo al cambiar de pantalla.')
+                tip: tr('Tot queda desat automàticament al teu quadern.', 'Todo queda guardado automáticamente en tu cuaderno.')
             }
         ];
     }
@@ -3180,20 +3439,36 @@
         overlay.classList.remove('hidden', 'pointer-events-none');
         overlay.classList.add('pointer-events-auto', 'bg-black/45', 'flex', 'items-end', 'sm:items-center', 'justify-center', 'p-3', 'sm:p-5');
 
+        const diagramHtml = Array.isArray(step.diagram) ? `
+            <div class="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800">
+                ${step.diagram.map((d, di) => `
+                    <div class="flex flex-col items-center justify-center gap-1 text-center relative">
+                        <span class="w-8 h-8 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-2xs">${iconSvg(d.icon, 'w-4 h-4')}</span>
+                        <span class="text-[10px] font-extrabold text-zinc-700 dark:text-zinc-300">${esc(d.label)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        ` : '';
+
         overlay.innerHTML = `
             <div class="w-full max-w-md bg-white dark:bg-zinc-900 border-2 border-amber-400/90 rounded-2xl shadow-2xl p-4 sm:p-5 space-y-3 pointer-events-auto">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold">${esc(step.badge)}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-xl ${step.color || 'bg-amber-500 text-white'} flex items-center justify-center">${iconSvg(step.icon || 'lightbulb', 'w-4 h-4')}</span>
+                        <span class="text-xs font-black text-amber-700 dark:text-amber-300">${esc(step.badge)}</span>
+                    </div>
                     <button type="button" onclick="closeAliatNotebookGuide()" class="text-xs font-bold text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer inline-flex items-center gap-1"><span>${tr('Tancar', 'Cerrar')}</span>${iconSvg('close', 'w-3.5 h-3.5')}</button>
                 </div>
                 <h4 class="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100">${esc(step.title)}</h4>
+                ${diagramHtml}
                 <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">${esc(step.desc)}</p>
-                <div class="p-2.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/70 text-[11px] text-indigo-800 dark:text-indigo-200 font-medium">
-                    ${esc(step.tip)}
+                <div class="p-2.5 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/70 text-[11px] text-indigo-800 dark:text-indigo-200 font-semibold flex items-center gap-2">
+                    <span class="shrink-0 text-amber-500">${iconSvg('lightbulb', 'w-4 h-4')}</span>
+                    <span>${esc(step.tip)}</span>
                 </div>
                 <div class="flex items-center justify-between gap-2 pt-1">
                     <div class="flex items-center gap-1">
-                        ${steps.map((_, i) => `<span class="w-2 h-2 rounded-full ${i === nbGuideStepIdx ? 'bg-amber-500 w-4' : 'bg-zinc-300 dark:bg-zinc-700'} transition-all"></span>`).join('')}
+                        ${steps.map((_, i) => `<span class="h-2 rounded-full ${i === nbGuideStepIdx ? 'bg-amber-500 w-5' : 'bg-zinc-300 dark:bg-zinc-700 w-2'} transition-all"></span>`).join('')}
                     </div>
                     <div class="flex items-center gap-1.5">
                         ${nbGuideStepIdx > 0 ? `<button type="button" onclick="stepAliatNotebookGuide(-1)" class="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-bold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer inline-flex items-center gap-1">${iconSvg('arrowLeft', 'w-3 h-3')}<span>${tr('Anterior', 'Anterior')}</span></button>` : ''}

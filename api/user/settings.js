@@ -22,37 +22,80 @@ module.exports = async function handler(req, res) {
         const client = getDbClient();
 
         if (req.method === 'POST') {
-            const { name, theme, lang, ai_provider, ai_api_key, ai_model, clear_ai_api_key } = req.body || {};
+            const {
+                name,
+                theme,
+                lang,
+                ai_provider,
+                ai_api_key,
+                ai_model,
+                clear_ai_api_key,
+                education_level,
+                education_subcourse,
+                course_onboarded,
+                only_course_update
+            } = req.body || {};
+
+            const VALID_LEVELS = new Set(['primaria', 'eso', 'fp', 'batxillerat', 'universitat', 'altres']);
+            const normalizedEduLevel = VALID_LEVELS.has(String(education_level || '').toLowerCase())
+                ? String(education_level).toLowerCase()
+                : '';
+            const normalizedSubcourse = String(education_subcourse || '').trim().slice(0, 80);
+            const normalizedOnboarded = (course_onboarded === true || course_onboarded === 1 || normalizedEduLevel !== '') ? 1 : 0;
+
+            if (only_course_update === true) {
+                await client.execute({
+                    sql: 'UPDATE users SET education_level = ?, education_subcourse = ?, course_onboarded = ? WHERE id = ?',
+                    args: [normalizedEduLevel, normalizedSubcourse, normalizedOnboarded, user.id]
+                });
+                return res.status(200).json({
+                    success: true,
+                    education_level: normalizedEduLevel,
+                    education_subcourse: normalizedSubcourse,
+                    course_onboarded: Boolean(normalizedOnboarded)
+                });
+            }
+
             const normalizedLang = lang === 'es' ? 'es' : 'ca';
+
+            let existingRow = null;
+            try {
+                const existingRes = await client.execute({
+                    sql: 'SELECT ai_api_key, education_level, education_subcourse, course_onboarded FROM users WHERE id = ?',
+                    args: [user.id]
+                });
+                existingRow = (existingRes.rows && existingRes.rows[0]) || null;
+            } catch (_) {
+                existingRow = null;
+            }
 
             let resolvedApiKey = String(ai_api_key || '').trim();
             if (clear_ai_api_key === true) {
                 resolvedApiKey = '';
             } else if (!resolvedApiKey || resolvedApiKey.includes('••••')) {
-                // Keep existing stored key intact if client did not submit a new plaintext key
-                try {
-                    const existingRes = await client.execute({
-                        sql: 'SELECT ai_api_key FROM users WHERE id = ?',
-                        args: [user.id]
-                    });
-                    resolvedApiKey = (existingRes.rows && existingRes.rows[0] && existingRes.rows[0].ai_api_key)
-                        ? String(existingRes.rows[0].ai_api_key).trim()
-                        : '';
-                } catch (_) {
-                    resolvedApiKey = '';
-                }
+                resolvedApiKey = existingRow && existingRow.ai_api_key
+                    ? String(existingRow.ai_api_key).trim()
+                    : '';
             }
+
+            const finalEduLevel = normalizedEduLevel || String((existingRow && existingRow.education_level) || '');
+            const finalSubcourse = (education_subcourse !== undefined)
+                ? normalizedSubcourse
+                : String((existingRow && existingRow.education_subcourse) || '');
+            const finalOnboarded = (course_onboarded !== undefined || normalizedEduLevel !== '')
+                ? normalizedOnboarded
+                : (existingRow && existingRow.course_onboarded ? 1 : 0);
 
             try {
                 await client.execute({
-                    sql: 'UPDATE users SET name = ?, theme = ?, lang = ?, ai_provider = ?, ai_api_key = ?, ai_model = ? WHERE id = ?',
-                    args: [name || '', theme || 'light', normalizedLang, ai_provider || '', resolvedApiKey, ai_model || '', user.id]
+                    sql: 'UPDATE users SET name = ?, theme = ?, lang = ?, ai_provider = ?, ai_api_key = ?, ai_model = ?, education_level = ?, education_subcourse = ?, course_onboarded = ? WHERE id = ?',
+                    args: [name || '', theme || 'light', normalizedLang, ai_provider || '', resolvedApiKey, ai_model || '', finalEduLevel, finalSubcourse, finalOnboarded, user.id]
                 });
             } catch (updateErr) {
                 try {
                     await client.execute({
-                        sql: 'UPDATE users SET name = ?, theme = ?, ai_provider = ?, ai_api_key = ?, ai_model = ? WHERE id = ?',
-                        args: [name || '', theme || 'light', ai_provider || '', resolvedApiKey, ai_model || '', user.id]
+                        sql: 'UPDATE users SET name = ?, theme = ?, lang = ?, ai_provider = ?, ai_api_key = ?, ai_model = ? WHERE id = ?',
+                        args: [name || '', theme || 'light', normalizedLang, ai_provider || '', resolvedApiKey, ai_model || '', user.id]
                     });
                 } catch (_) {
                     await client.execute({
@@ -64,6 +107,9 @@ module.exports = async function handler(req, res) {
             return res.status(200).json({
                 success: true,
                 lang: normalizedLang,
+                education_level: finalEduLevel,
+                education_subcourse: finalSubcourse,
+                course_onboarded: Boolean(finalOnboarded),
                 has_ai_api_key: Boolean(resolvedApiKey),
                 ai_api_key_masked: maskApiKey(resolvedApiKey)
             });
@@ -71,13 +117,13 @@ module.exports = async function handler(req, res) {
             let result;
             try {
                 result = await client.execute({
-                    sql: 'SELECT name, theme, lang, ai_provider, ai_api_key, ai_model FROM users WHERE id = ?',
+                    sql: 'SELECT name, theme, lang, ai_provider, ai_api_key, ai_model, education_level, education_subcourse, course_onboarded FROM users WHERE id = ?',
                     args: [user.id]
                 });
             } catch (selectErr) {
                 try {
                     result = await client.execute({
-                        sql: 'SELECT name, theme, ai_provider, ai_api_key, ai_model FROM users WHERE id = ?',
+                        sql: 'SELECT name, theme, lang, ai_provider, ai_api_key, ai_model FROM users WHERE id = ?',
                         args: [user.id]
                     });
                 } catch (_) {
@@ -98,7 +144,10 @@ module.exports = async function handler(req, res) {
                     ai_provider: u.ai_provider || '',
                     has_ai_api_key: Boolean(rawKey),
                     ai_api_key_masked: maskApiKey(rawKey),
-                    ai_model: u.ai_model || ''
+                    ai_model: u.ai_model || '',
+                    education_level: u.education_level || '',
+                    education_subcourse: u.education_subcourse || '',
+                    course_onboarded: Boolean(Number(u.course_onboarded) === 1 || u.course_onboarded === true || (u.education_level && String(u.education_level).trim() !== ''))
                 });
             }
             return res.status(200).json({
@@ -109,7 +158,10 @@ module.exports = async function handler(req, res) {
                 ai_provider: '',
                 has_ai_api_key: false,
                 ai_api_key_masked: '',
-                ai_model: ''
+                ai_model: '',
+                education_level: '',
+                education_subcourse: '',
+                course_onboarded: false
             });
         }
     } catch (error) {

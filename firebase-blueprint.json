@@ -104,6 +104,20 @@
           "maxLength": 4096,
           "description": "Deprecated legacy JSON field kept only for one-time migration into native parkedVehicle"
         },
+        "educationLevel": {
+          "type": "string",
+          "enum": ["primaria", "eso", "fp", "batxillerat", "universitat", "altres"],
+          "description": "Selected academic stage for UI and AI adaptation"
+        },
+        "educationSubcourse": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Optional specific year or specialty (e.g. 2n ESO, Grau Mitjà)"
+        },
+        "courseOnboarded": {
+          "type": "boolean",
+          "description": "Whether the one-time course onboarding prompt has been completed"
+        },
         "updatedAt": {
           "type": "string",
           "format": "date-time",

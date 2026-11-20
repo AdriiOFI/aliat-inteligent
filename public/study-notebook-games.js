@@ -137,6 +137,9 @@
         const streakEl = document.getElementById('study-lab-streak-val');
         if (xpEl) xpEl.textContent = `${state.xp} XP`;
         if (streakEl) streakEl.textContent = `${state.streak}`;
+        if (typeof window.refreshStudyGuidedCoachBar === 'function') {
+            window.refreshStudyGuidedCoachBar();
+        }
         return state;
     }
 
@@ -722,10 +725,13 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 }));
+            const eduProf = typeof window.getEducationProfile === 'function' ? window.getEducationProfile() : {};
             const res = await caller({
                 action: 'generate_study_game',
                 gameType,
                 topic,
+                educationLevel: eduProf.educationLevel || '',
+                educationSubcourse: eduProf.educationSubcourse || '',
                 context: resolveCurrentStudyContext()
             });
             const data = await res.json();
@@ -1567,22 +1573,26 @@
             }
         }
 
+        const latestTopic = resolveCurrentStudyTopic();
+        const latestCtx = resolveCurrentStudyContext();
         if (notebookState.sources.length === 0) {
-            const topic = resolveCurrentStudyTopic();
-            const ctx = resolveCurrentStudyContext();
-            notebookState.title = topic;
+            notebookState.title = latestTopic;
             notebookState.sources.push({
                 id: 'src_default_1',
-                title: tr(`Apunts Base: ${topic}`, `Apuntes Base: ${topic}`),
+                title: tr(`Apunts Base: ${latestTopic}`, `Apuntes Base: ${latestTopic}`),
                 type: tr('Apunts', 'Apuntes'),
                 checked: true,
-                content: ctx && ctx.length > 30
-                    ? ctx
+                content: latestCtx && latestCtx.length > 30
+                    ? latestCtx
                     : tr(
-                        `Document de referència acadèmica sobre ${topic}.\n1. Definició i fonaments teòrics centrals.\n2. Relacions causals, fórmules i metodologia de resolució pas a pas.\n3. Casos pràctics i preguntes freqüents d'examen (PAU / Universitat).\n4. Errors habituals a evitar: omissió d'unitats, confusió entre causa i efecte i falta de justificació.`,
-                        `Documento de referencia académica sobre ${topic}.\n1. Definición y fundamentos teóricos centrales.\n2. Relaciones causales, fórmulas y metodología de resolución paso a paso.\n3. Casos prácticos y preguntas frecuentes de examen (PAU / Universidad).\n4. Errores habituales a evitar: omisión de unidades, confusión entre causa y efecto y falta de justificación.`
+                        `Document de referència acadèmica sobre ${latestTopic}.\n1. Definició i fonaments teòrics centrals.\n2. Relacions causals, fórmules i metodologia de resolució pas a pas.\n3. Casos pràctics i preguntes freqüents d'examen (PAU / Universitat).\n4. Errors habituals a evitar: omissió d'unitats, confusió entre causa i efecte i falta de justificació.`,
+                        `Documento de referencia académica sobre ${latestTopic}.\n1. Definición y fundamentos teóricos centrales.\n2. Relaciones causales, fórmulas y metodología de resolución paso a paso.\n3. Casos prácticos y preguntas frecuentes de examen (PAU / Universidad).\n4. Errores habituales a evitar: omisión de unidades, confusión entre causa y efecto y falta de justificación.`
                     )
             });
+        } else if (notebookState.sources.length === 1 && notebookState.sources[0].id === 'src_default_1' && latestCtx && latestCtx.length > 40) {
+            notebookState.title = latestTopic;
+            notebookState.sources[0].title = tr(`Apunts Base: ${latestTopic}`, `Apuntes Base: ${latestTopic}`);
+            notebookState.sources[0].content = latestCtx;
         }
     }
 
@@ -1610,7 +1620,7 @@
         } catch (_) {}
     }
 
-    async function callNotebookBackend(payload, timeoutMs = 14000) {
+    async function callNotebookBackend(payload, timeoutMs = 26000) {
         const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
         const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
         try {
@@ -1626,9 +1636,12 @@
             if (userAiKey) headers['x-ai-key'] = userAiKey;
             if (userAiModel) headers['x-ai-model'] = userAiModel;
 
+            const eduProf = typeof window.getEducationProfile === 'function' ? window.getEducationProfile() : {};
             const bodyPayload = {
                 ...payload,
                 lang: preferredLang,
+                educationLevel: eduProf.educationLevel || '',
+                educationSubcourse: eduProf.educationSubcourse || '',
                 ai_provider: userAiProvider,
                 ai_api_key: userAiKey,
                 ai_model: userAiModel
@@ -1641,7 +1654,9 @@
                 signal: controller ? controller.signal : undefined
             });
             if (!res || !res.ok) return null;
-            const json = await res.json();
+            const json = typeof window.safeParseJsonResponse === 'function'
+                ? await window.safeParseJsonResponse(res)
+                : await res.json();
             if (!json || json.error) return null;
             return json;
         } catch (err) {
@@ -1652,33 +1667,40 @@
         }
     }
 
-    function extractLocalNotebookPoints(sources, maxPerSource = 4) {
+    function extractLocalNotebookPoints(sources, maxPerSource = 10) {
         const pts = [];
+        const seen = new Set();
         (sources || []).forEach((s, idx) => {
             const tag = `Font ${idx + 1}`;
             const title = String(s?.title || (`Document ${idx + 1}`)).trim();
-            const rawLines = String(s?.content || '')
-                .split(/\n+/)
+            const rawChunks = String(s?.content || '')
+                .split(/\n+|(?<=[.!?])\s+/)
                 .map(l => l.replace(/^[-*•\d.)\s#]+/, '').trim())
                 .filter(l => l.length >= 12);
-            const picked = rawLines.slice(0, maxPerSource);
+            const picked = rawChunks.slice(0, maxPerSource);
             if (picked.length === 0 && s?.content) {
                 picked.push(String(s.content).trim().substring(0, 220));
             }
             picked.forEach(txt => {
-                pts.push({ tag, title, text: txt.substring(0, 260) });
+                const norm = txt.toLowerCase().slice(0, 60);
+                if (!seen.has(norm)) {
+                    seen.add(norm);
+                    pts.push({ tag, title, text: txt.substring(0, 260) });
+                }
             });
         });
         return pts;
     }
 
-    function synthesizeLocalArtifact(artifactType, notebookTitle, sources) {
+    function synthesizeLocalArtifact(artifactType, notebookTitle, sources, generationIndex = 1) {
         const es = isEsLang();
         const titleTopic = notebookTitle || tr("Quadern d'Estudi", "Cuaderno de Estudio");
-        const pts = extractLocalNotebookPoints(sources, 4);
+        const pts = extractLocalNotebookPoints(sources, 10);
+        const rotateOffset = pts.length > 0 ? ((Math.max(1, generationIndex) - 1) * 2) % pts.length : 0;
+        const rotatedPts = pts.length > 0 ? pts.slice(rotateOffset).concat(pts.slice(0, rotateOffset)) : [];
         const tagsList = (sources || []).map((_, i) => `[Font ${i + 1}]`).join(', ') || '[Font 1]';
-        const pointsMd = pts.length > 0
-            ? pts.map(p => `- **${p.title}**: ${p.text} [${p.tag}]`).join('\n')
+        const pointsMd = rotatedPts.length > 0
+            ? rotatedPts.slice(0, 5).map(p => `- **${p.title}**: ${p.text} [${p.tag}]`).join('\n')
             : `- **${titleTopic}**: ${tr('Idees centrals extretes del material actiu del quadern.', 'Ideas centrales extraídas del material activo del cuaderno.')} [Font 1]`;
 
         const labels = {
@@ -1696,40 +1718,57 @@
         let content = '';
         if (artifactType === 'briefing_doc') {
             content = es
-                ? `### Briefing Ejecutivo · ${titleTopic}\n\n**Fuentes analizadas:** ${tagsList}\n\n#### 1. Puntos esenciales de las fuentes\n${pointsMd}\n\n#### 2. Conclusiones operativas\n- Prioriza la comprensión causal de **${titleTopic}** antes de memorizar detalles aislados [${pts[0]?.tag || 'Font 1'}].\n- Conecta cada apartado práctico con los criterios de evaluación.`
-                : `### Briefing Executiu · ${titleTopic}\n\n**Fonts analitzades:** ${tagsList}\n\n#### 1. Punts essencials de les fonts\n${pointsMd}\n\n#### 2. Conclusions operatives\n- Prioritza la comprensió causal de **${titleTopic}** abans de memoritzar detalls aïllats [${pts[0]?.tag || 'Font 1'}].\n- Connecta cada apartat pràctic amb els criteris d'avaluació.`;
+                ? `### Briefing Ejecutivo · ${titleTopic}\n\n**Fuentes analizadas:** ${tagsList}\n\n#### 1. Puntos esenciales de las fuentes\n${pointsMd}\n\n#### 2. Conclusiones operativas\n- Prioriza la comprensión causal de **${titleTopic}** antes de memorizar detalles aislados [${rotatedPts[0]?.tag || 'Font 1'}].\n- Conecta cada apartado práctico con los criterios de evaluación.`
+                : `### Briefing Executiu · ${titleTopic}\n\n**Fonts analitzades:** ${tagsList}\n\n#### 1. Punts essencials de les fonts\n${pointsMd}\n\n#### 2. Conclusions operatives\n- Prioritza la comprensió causal de **${titleTopic}** abans de memoritzar detalls aïllats [${rotatedPts[0]?.tag || 'Font 1'}].\n- Connecta cada apartat pràctic amb els criteris d'avaluació.`;
         } else if (artifactType === 'faq') {
-            const p0 = pts[0] || { tag: 'Font 1', text: titleTopic };
-            const p1 = pts[1] || p0;
-            content = es
-                ? `### Preguntas Clave de Examen (FAQ) · ${titleTopic}\n\n**1. ¿Cuál es la base fundamental de ${titleTopic}?**\n${p0.text} [${p0.tag}].\n\n**2. ¿Qué relaciones o procedimientos destacan las fuentes?**\n${p1.text} [${p1.tag}].\n\n**3. Puntos que suelen preguntarse:**\n${pointsMd}\n\n**4. ¿Cómo responder con nota alta?**\nDefine el concepto clave, cita el mecanismo o fórmula aplicable y concluye con un ejemplo breve [${p0.tag}].`
-                : `### Preguntes Clau d'Examen (FAQ) · ${titleTopic}\n\n**1. Quina és la base fonamental de ${titleTopic}?**\n${p0.text} [${p0.tag}].\n\n**2. Quines relacions o procediments destaquen les fonts?**\n${p1.text} [${p1.tag}].\n\n**3. Punts que solen sortir a examen:**\n${pointsMd}\n\n**4. Com respondre amb nota alta?**\nDefineix el concepte clau, cita el mecanisme o fórmula aplicable i conclou amb un exemple breu [${p0.tag}].`;
+            const qPool = rotatedPts.length > 0 ? rotatedPts.slice(0, 4) : [{ tag: 'Font 1', title: titleTopic, text: titleTopic }];
+            const faqItems = qPool.map((p, idx) => {
+                if (es) {
+                    const qs = [
+                        `¿Por qué es fundamental este concepto en ${p.title}?`,
+                        `¿Cómo explicarías y aplicarías este apartado de ${p.title}?`,
+                        `¿Qué relación o condición clave conviene vigilar en ${p.title}?`,
+                        `¿Cómo responderías si en examen preguntan por ${p.title}?`
+                    ];
+                    return `**${idx + 1}. ${qs[(idx + generationIndex) % qs.length]}**\n- **Respuesta:** ${p.text} [${p.tag}]`;
+                }
+                const qsCa = [
+                    `Per què és fonamental aquest concepte a ${p.title}?`,
+                    `Com explicaries i aplicaries aquest apartat de ${p.title}?`,
+                    `Quina relació o condició clau convé vigilar a ${p.title}?`,
+                    `Com respondries si a l'examen pregunten per ${p.title}?`
+                ];
+                return `**${idx + 1}. ${qsCa[(idx + generationIndex) % qsCa.length]}**\n- **Resposta:** ${p.text} [${p.tag}]`;
+            }).join('\n\n');
+            content = `### ${label} · ${titleTopic}\n\n${faqItems}`;
         } else if (artifactType === 'timeline') {
-            const steps = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', text: titleTopic }])
+            const steps = (rotatedPts.length > 0 ? rotatedPts.slice(0, 6) : [{ tag: 'Font 1', title: titleTopic, text: titleTopic }])
                 .map((p, i) => `${i + 1}. **${tr('Fase', 'Fase')} ${i + 1} (${p.title}):** ${p.text} [${p.tag}]`)
                 .join('\n');
             content = `### ${label} · ${titleTopic}\n\n${steps}`;
         } else if (artifactType === 'glossary') {
-            const rows = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', title: titleTopic, text: tr('Definició principal del tema', 'Definición principal del tema') }])
+            const rows = (rotatedPts.length > 0 ? rotatedPts.slice(0, 6) : [{ tag: 'Font 1', title: titleTopic, text: tr('Definició principal del tema', 'Definición principal del tema') }])
                 .map((p, i) => `| ${tr('Concepte', 'Concepto')} ${i + 1} | ${p.text.replace(/\|/g, '/')} | [${p.tag}] |`)
                 .join('\n');
             content = es
                 ? `### Glosario Clave · ${titleTopic}\n\n| Concepto / Bloque | Síntesis de las fuentes | Cita |\n| :--- | :--- | :---: |\n${rows}`
                 : `### Glossari Clau · ${titleTopic}\n\n| Concepte / Bloc | Síntesi de les fonts | Citació |\n| :--- | :--- | :---: |\n${rows}`;
         } else if (artifactType === 'exam_traps') {
+            const t0 = rotatedPts[0] || { tag: 'Font 1', title: titleTopic, text: titleTopic };
+            const t1 = rotatedPts[1] || t0;
             content = es
-                ? `### Trampas de Examen y Errores Frecuentes · ${titleTopic}\n\n#### Aspectos críticos a vigilar\n${pointsMd}\n\n#### Errores habituales que restan puntos\n1. **Confundir causa y efecto** al explicar los procesos de [${pts[0]?.tag || 'Font 1'}].\n2. **Omitir justificación o unidades** en problemas y respuestas desarrolladas.\n3. **Checklist pre-entrega:**\n   - [ ] He respondido exactamente a lo que pide el enunciado.\n   - [ ] He revisado excepciones y definiciones exactas (${tagsList}).`
-                : `### Trampes d'Examen i Errors Freqüents · ${titleTopic}\n\n#### Aspectes crítics a vigilar\n${pointsMd}\n\n#### Errors habituals que resten punts\n1. **Confondre causa i efecte** en explicar els processos de [${pts[0]?.tag || 'Font 1'}].\n2. **Ometre justificació o unitats** en problemes i respostes desenvolupades.\n3. **Checklist pre-lliurament:**\n   - [ ] He respost exactament el que demana l'enunciat.\n   - [ ] He revisat excepcions i definicions exactes (${tagsList}).`;
+                ? `### Trampas de Examen y Errores Frecuentes · ${titleTopic}\n\n1. **Confundir causa y efecto** en *${t0.title}*: verifica siempre qué indica la fuente (${t0.text}) [${t0.tag}].\n2. **Omitir justificación o unidades** al responder sobre *${t1.title}* [${t1.tag}].\n3. **Checklist pre-entrega:**\n   - [ ] He respondido exactamente a lo que pide el enunciado.\n   - [ ] He revisado excepciones y definiciones exactas (${tagsList}).`
+                : `### Trampes d'Examen i Errors Freqüents · ${titleTopic}\n\n1. **Confondre causa i efecte** a *${t0.title}*: verifica sempre què indica la font (${t0.text}) [${t0.tag}].\n2. **Ometre justificació o unitats** en respondre sobre *${t1.title}* [${t1.tag}].\n3. **Checklist pre-lliurament:**\n   - [ ] He respost exactament el que demana l'enunciat.\n   - [ ] He revisat excepcions i definicions exactes (${tagsList}).`;
         } else if (artifactType === 'flashcards_deck') {
-            const cards = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', title: titleTopic, text: titleTopic }])
+            const cards = (rotatedPts.length > 0 ? rotatedPts.slice(0, 6) : [{ tag: 'Font 1', title: titleTopic, text: titleTopic }])
                 .map((p, i) => es
-                    ? `**Tarjeta #${i + 1} · ${p.title}**\n- **Pregunta:** ¿Qué punto clave recoge esta fuente sobre ${p.title}?\n- **Respuesta:** ${p.text} [${p.tag}]`
-                    : `**Targeta #${i + 1} · ${p.title}**\n- **Pregunta:** Quin punt clau recull aquesta font sobre ${p.title}?\n- **Resposta:** ${p.text} [${p.tag}]`)
+                    ? `**Tarjeta #${i + 1} · ${p.title}**\n- **Anverso:** ¿Qué punto clave recoge esta fuente sobre ${p.title}?\n- **Reverso:** ${p.text} [${p.tag}]`
+                    : `**Targeta #${i + 1} · ${p.title}**\n- **Anvers:** Quin punt clau recull aquesta font sobre ${p.title}?\n- **Revers:** ${p.text} [${p.tag}]`)
                 .join('\n\n');
             content = `### ${label} · ${titleTopic}\n\n${cards}`;
         } else if (artifactType === 'mock_exam') {
-            const p0 = pts[0] || { tag: 'Font 1', title: titleTopic, text: titleTopic };
-            const p1 = pts[1] || p0;
+            const p0 = rotatedPts[0] || { tag: 'Font 1', title: titleTopic, text: titleTopic };
+            const p1 = rotatedPts[1] || p0;
             content = es
                 ? `### ${label} · ${titleTopic}\n\n#### Parte 1: Preguntas de Examen\n1. **Desarrolla y justifica el principio central expuesto en ${p0.title} [${p0.tag}].**\n2. **Analiza la relación práctica e implicaciones descritas en ${p1.title} [${p1.tag}].**\n\n#### Parte 2: Pauta de Corrección y Solucionario\n- **Pregunta 1 (5 pts):** Debe incluir: ${p0.text} [${p0.tag}].\n- **Pregunta 2 (5 pts):** Debe justificar: ${p1.text} [${p1.tag}].`
                 : `### ${label} · ${titleTopic}\n\n#### Part 1: Preguntes d'Examen\n1. **Desenvolupa i justifica el principi central exposat a ${p0.title} [${p0.tag}].**\n2. **Analitza la relació pràctica i implicacions descrites a ${p1.title} [${p1.tag}].**\n\n#### Part 2: Pauta de Correcció i Solucionari\n- **Pregunta 1 (5 pts):** Ha d'incloure: ${p0.text} [${p0.tag}].\n- **Pregunta 2 (5 pts):** Ha de justificar: ${p1.text} [${p1.tag}].`;
@@ -1739,13 +1778,13 @@
                 : `### Guia d'Estudi · ${titleTopic}\n\n#### Idees clau de les fonts actives (${tagsList})\n${pointsMd}\n\n#### Ruta d'estudi recomanada\n1. Llegeix i subratlla les definicions centrals de ${tagsList}.\n2. Fes 2 preguntes concretes al **Xat amb Citacions** per aclarir dubtes.\n3. Repassa amb l'**Audio Overview (Marc i Laia)** o el **Laboratori de 6 Jocs**.`;
         }
 
-        return { title: `${label} · ${titleTopic}`, content };
+        return { title: `${label} · ${titleTopic}${generationIndex > 1 ? ` (#${generationIndex})` : ''}`, content };
     }
 
     function synthesizeLocalAudioOverview(notebookTitle, sources) {
         const es = isEsLang();
         const titleTopic = notebookTitle || tr("Quadern d'Estudi", "Cuaderno de Estudio");
-        const pts = extractLocalNotebookPoints(sources, 3);
+        const pts = extractLocalNotebookPoints(sources, 5);
         const s1 = sources[0]?.title || titleTopic;
         const p1 = pts[0]?.text || titleTopic;
         const p2 = pts[1]?.text || p1;
@@ -1778,17 +1817,41 @@
         };
     }
 
-    function synthesizeLocalGroundedAnswer(question, notebookTitle, sources) {
+    function synthesizeLocalGroundedAnswer(question, notebookTitle, sources, prevMessages = []) {
         const es = isEsLang();
-        const pts = extractLocalNotebookPoints(sources, 5);
+        const pts = extractLocalNotebookPoints(sources, 10);
+        const prevTxt = (Array.isArray(prevMessages) ? prevMessages : [])
+            .filter(m => m && m.role === 'assistant')
+            .map(m => String(m.content || '').toLowerCase())
+            .join('\n');
         const words = String(question || '').toLowerCase().split(/\s+/).filter(w => w.length > 3);
-        const ranked = [...pts].sort((a, b) => {
+        const freshPts = pts.filter(p => !prevTxt.includes(p.text.toLowerCase().slice(0, 45)));
+        const pool = freshPts.length >= 2 ? freshPts : pts;
+        const ranked = [...pool].sort((a, b) => {
             const score = (txt) => words.reduce((acc, w) => acc + (txt.toLowerCase().includes(w) ? 1 : 0), 0);
             return score(b.text) - score(a.text);
         }).slice(0, 4);
 
         const citations = Array.from(new Set(ranked.map(r => r.tag)));
         if (citations.length === 0) citations.push('Font 1');
+
+        const isAskingQuestions = /pregunt|quiz|test|examen|qüestion/i.test(String(question || ''));
+        if (isAskingQuestions) {
+            const qList = (ranked.length > 0 ? ranked : [{ tag: 'Font 1', title: notebookTitle, text: notebookTitle }])
+                .map((r, i) => es
+                    ? `**${i + 1}. ¿Cómo explicarías o aplicarías este aspecto de ${r.title}?**\n- *Clave:* ${r.text} [${r.tag}]`
+                    : `**${i + 1}. Com explicaries o aplicaries aquest aspecte de ${r.title}?**\n- *Clau:* ${r.text} [${r.tag}]`)
+                .join('\n\n');
+            return {
+                answer: es
+                    ? `### Preguntas nuevas de repaso · ${notebookTitle}\n\n${qList}`
+                    : `### Preguntes noves de repàs · ${notebookTitle}\n\n${qList}`,
+                citations,
+                followUps: es
+                    ? [`Dame 3 preguntas tipo test diferentes de [${citations[0]}]`, `Ponme un caso práctico nuevo sobre ${notebookTitle}`]
+                    : [`Dona'm 3 preguntes tipus test diferents de [${citations[0]}]`, `Posa'm un cas pràctic nou sobre ${notebookTitle}`]
+            };
+        }
 
         const linesMd = ranked.length > 0
             ? ranked.map(r => `- **${r.title}**: ${r.text} [${r.tag}]`).join('\n')
@@ -2523,7 +2586,8 @@
                     </div>
                 `;
             }
-            const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(m.content || '') : esc(m.content || ''));
+            const cleanContent = String(m.content || '').replace(/(?:`|\*\*|__|\*)?\[BOT(?:O|Ó|ON|ÓN)[_\s\\-]*[A-ZÀ-ÿ0-9_\\-]+\](?:`|\*\*|__|\*)?/gi, '');
+            const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(cleanContent) : esc(cleanContent));
             const formatted = decorateCitationBadges(rawHtml);
             return `
                 <div class="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2.5">
@@ -2598,12 +2662,17 @@
         }
 
         const activeSources = getCheckedNotebookSources();
+        const historyPayload = (notebookState.chatMessages || [])
+            .slice(0, -1)
+            .slice(-8)
+            .map(m => ({ role: m.role, content: String(m.content || '').slice(0, 1800) }));
         try {
             const data = await callNotebookBackend({
                 action: 'notebook_studio',
                 subAction: 'chat',
                 notebookTitle: notebookState.title,
                 sources: activeSources,
+                chatHistory: historyPayload,
                 question: q
             });
 
@@ -2616,7 +2685,7 @@
                     followUps: Array.isArray(data.followUps) ? data.followUps : []
                 });
             } else {
-                const localAns = synthesizeLocalGroundedAnswer(q, notebookState.title, activeSources);
+                const localAns = synthesizeLocalGroundedAnswer(q, notebookState.title, activeSources, historyPayload);
                 notebookState.chatMessages.push({
                     role: 'assistant',
                     content: localAns.answer,
@@ -2678,19 +2747,38 @@
         }
 
         try {
+            const existingOutputs = [
+                ...(notebookState.notes || []).slice(0, 4).map(n => ({
+                    title: n.title || '',
+                    snippet: String(n.content || '').replace(/\s+/g, ' ').trim().slice(0, 320)
+                })),
+                ...(notebookState.chatMessages || []).filter(m => m && m.role === 'assistant').slice(-2).map((m, i) => ({
+                    title: `Chat #${i + 1}`,
+                    snippet: String(m.content || '').replace(/\s+/g, ' ').trim().slice(0, 320)
+                }))
+            ];
+            const generationIndex = (notebookState.notes || []).length + 1;
+
             const data = await callNotebookBackend({
                 action: 'notebook_studio',
                 subAction: 'artifact',
                 artifactType,
                 notebookTitle: notebookState.title,
-                sources: activeSources
+                sources: activeSources,
+                existingOutputs,
+                generationIndex
             });
 
             document.getElementById('nb-artifact-loader-card')?.remove();
 
             const result = (data && data.content && String(data.content).trim().length > 15)
                 ? { title: data.title || tr('Document d\'AliatNotebook', 'Documento de AliatNotebook'), content: data.content }
-                : synthesizeLocalArtifact(artifactType, notebookState.title, activeSources);
+                : synthesizeLocalArtifact(artifactType, notebookState.title, activeSources, generationIndex);
+
+            const extractedCitations = Array.from(new Set(
+                (String(result.content || '').match(/\[Font\s+\d+\]/gi) || []).map(tag => tag.replace(/[\[\]]/g, ''))
+            ));
+            const finalCitations = extractedCitations.length > 0 ? extractedCitations : ['Font 1'];
 
             const newNoteId = 'art_' + Date.now();
             notebookState.notes.unshift({
@@ -2703,7 +2791,7 @@
             notebookState.chatMessages.push({
                 role: 'assistant',
                 content: `### ${result.title}\n\n${result.content}`,
-                citations: ['Font 1']
+                citations: finalCitations
             });
             saveNotebookState();
             renderNotebookSavedNotes();
@@ -3117,7 +3205,8 @@
         }
 
         listEl.innerHTML = filtered.map(({ n, idx }) => {
-            const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(n.content || '') : esc(n.content || ''));
+            const cleanNote = String(n.content || '').replace(/(?:`|\*\*|__|\*)?\[BOT(?:O|Ó|ON|ÓN)[_\s\\-]*[A-ZÀ-ÿ0-9_\\-]+\](?:`|\*\*|__|\*)?/gi, '');
+            const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(cleanNote) : esc(cleanNote));
             const rendered = decorateCitationBadges(rawHtml);
             const highlightCls = n.isNew ? 'ring-2 ring-indigo-500 border-indigo-400 dark:border-indigo-500' : 'border-zinc-200 dark:border-zinc-800';
             if (n.isNew) delete n.isNew;
@@ -3174,7 +3263,8 @@
     window.viewNotebookNoteFull = function (idx) {
         const n = notebookState.notes[idx];
         if (!n) return;
-        const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(n.content || '') : esc(n.content || ''));
+        const cleanNote = String(n.content || '').replace(/(?:`|\*\*|__|\*)?\[BOT(?:O|Ó|ON|ÓN)[_\s\\-]*[A-ZÀ-ÿ0-9_\\-]+\](?:`|\*\*|__|\*)?/gi, '');
+        const rawHtml = sanitizeHtmlFragment((typeof marked !== 'undefined' && marked.parse) ? marked.parse(cleanNote) : esc(cleanNote));
         const rendered = decorateCitationBadges(rawHtml);
         openNotebookInlineDialog({
             title: n.title,
@@ -3552,17 +3642,22 @@
         document.getElementById('chat-form')?.classList.remove('hidden');
         document.getElementById('chat-toolbar-bottom')?.classList.remove('hidden');
         document.getElementById('global-menu-btn')?.classList.add('hidden');
+        if (typeof window.setGuidedStudyStage === 'function') {
+            window.setGuidedStudyStage('understand');
+        }
         if (typeof window.updateHeaderButtonsVisibility === 'function') {
             window.updateHeaderButtonsVisibility();
         }
         const safeNum = Number(sessionNum) || 1;
         const safeTopic = String(sessionTopic || tr('Conceptes clau del temari', 'Conceptos clave del temario')).trim();
+        const activeCtx = (typeof window.getActiveStudySessionContext === 'function') ? window.getActiveStudySessionContext() : null;
+        const styleNote = activeCtx && activeCtx.learningStyle ? activeCtx.learningStyle : 'Pas a pas des de zero';
         const promptText = tr(
-            `Estudiem a fons la Sessió ${safeNum}: "${safeTopic}". Explica'm els conceptes clau de manera estructurada per a examen, posa un exemple resolt pas a pas i acaba amb [BOTON_FLASHCARDS].`,
-            `Estudiemos a fondo la Sesión ${safeNum}: "${safeTopic}". Explícame los conceptos clave de forma estructurada para examen, pon un ejemplo resuelto paso a paso y termina con [BOTON_FLASHCARDS].`
+            `Estudiem la Sessió ${safeNum}: "${safeTopic}". Adapta l'explicació al meu estil ("${styleNote}") amb: 1) idea clau en paraules fàcils, 2) explicació pas a pas per entendre-ho de veritat, 3) un exemple pràctic clar, 4) error típic d'examen i 5) resum de 3 punts.`,
+            `Estudiemos la Sesión ${safeNum}: "${safeTopic}". Adapta la explicación a mi estilo ("${styleNote}") con: 1) idea clave en palabras fáciles, 2) explicación paso a paso para entenderlo de verdad, 3) un ejemplo práctico claro, 4) error típico de examen y 5) resumen de 3 puntos.`
         );
         if (typeof appendMessage === 'function' && typeof triggerAiResponse === 'function') {
-            appendMessage('user', tr(`Iniciar Sessió ${safeNum}: ${safeTopic}`, `Iniciar Sesión ${safeNum}: ${safeTopic}`));
+            appendMessage('user', tr(`Començar Sessió ${safeNum}: ${safeTopic}`, `Empezar Sesión ${safeNum}: ${safeTopic}`));
             if (typeof chatHistory !== 'undefined' && Array.isArray(chatHistory)) {
                 chatHistory.push({ role: 'user', content: promptText });
             }
@@ -3626,9 +3721,27 @@
     window.POST_THEORY_GAMES = POST_THEORY_GAMES;
 
     let _lastPickedRandomGameId = '';
-    window.pickRandomPostTheoryGame = function (excludeId) {
-        const blocked = excludeId || _lastPickedRandomGameId;
-        const pool = POST_THEORY_GAMES.filter(g => g.id !== blocked);
+    window.pickRandomPostTheoryGame = function (excludeId, preferredId) {
+        const blocked = excludeId || '';
+        if (preferredId && preferredId !== blocked) {
+            const matched = POST_THEORY_GAMES.find(g => g.id === preferredId);
+            if (matched) {
+                _lastPickedRandomGameId = matched.id;
+                return matched;
+            }
+        }
+        if (!excludeId && typeof window.getActiveStudySessionContext === 'function') {
+            const ctx = window.getActiveStudySessionContext();
+            const recId = ctx && ctx.session && ctx.session.joc_recomanat;
+            if (recId && recId !== _lastPickedRandomGameId) {
+                const matched = POST_THEORY_GAMES.find(g => g.id === recId);
+                if (matched) {
+                    _lastPickedRandomGameId = matched.id;
+                    return matched;
+                }
+            }
+        }
+        const pool = POST_THEORY_GAMES.filter(g => g.id !== (blocked || _lastPickedRandomGameId));
         const list = pool.length > 0 ? pool : POST_THEORY_GAMES;
         const chosen = list[Math.floor(Math.random() * list.length)] || POST_THEORY_GAMES[0];
         _lastPickedRandomGameId = chosen.id;
@@ -3636,33 +3749,45 @@
     };
 
     window.buildRandomPostTheoryGameWidgetHtml = function (phaseLabel) {
-        const g = window.pickRandomPostTheoryGame();
+        const ctx = (typeof window.getActiveStudySessionContext === 'function') ? window.getActiveStudySessionContext() : null;
+        const recGameId = ctx && ctx.session ? ctx.session.joc_recomanat : '';
+        const g = window.pickRandomPostTheoryGame('', recGameId);
         const title = tr(g.titleCa, g.titleEs);
         const desc = tr(g.descCa, g.descEs);
-        const badge = phaseLabel || tr('Repàs Actiu Post-Teoria', 'Repaso Activo Post-Teoría');
+        const badge = phaseLabel || tr('Següent pas guiat', 'Siguiente paso guiado');
+        const breakMins = (ctx && ctx.breakMins) ? ctx.breakMins : 10;
+        const styleText = (ctx && ctx.learningStyle) ? ctx.learningStyle : '';
+        const reasonLine = styleText
+            ? tr(`Suggerit per al teu estil (${styleText}): reforça el que acabes de llegir abans del descans.`, `Sugerido para tu estilo (${styleText}): refuerza lo que acabas de leer antes del descanso.`)
+            : desc;
         return `
-            <div class="post-theory-random-game-card my-3.5 p-3.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/35 border border-indigo-200/90 dark:border-indigo-800/80 shadow-xs space-y-2.5" data-random-game-id="${g.id}">
+            <div class="post-theory-random-game-card my-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 shadow-xs space-y-3" data-random-game-id="${g.id}">
                 <div class="flex items-center justify-between gap-2 flex-wrap">
-                    <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-indigo-700 dark:text-indigo-300 bg-indigo-100/90 dark:bg-indigo-900/70 px-2.5 py-0.5 rounded-full">
-                        <span class="inline-flex items-center gap-1">${iconSvg('gamepad', 'w-3 h-3')}<span>${tr('Joc Aleatori Post-Teoria', 'Juego Aleatorio Post-Teoría')}</span></span>
-                        <span>·</span>
-                        <span>${esc(badge)}</span>
-                    </span>
-                    <button type="button" onclick="rerollPostTheoryGameCard(this)" class="text-[10.5px] font-extrabold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer flex items-center gap-1">
-                        ${iconSvg('shuffle', 'w-3 h-3')}<span>${tr('Altre joc aleatori', 'Otro juego aleatorio')}</span>
+                    <div class="inline-flex items-center gap-1.5 text-[11px] font-bold text-indigo-700 dark:text-indigo-300">
+                        ${iconSvg('gamepad', 'w-3.5 h-3.5')}
+                        <span>${tr('Següent pas recomanat', 'Siguiente paso recomendado')}</span>
+                        <span aria-hidden="true">·</span>
+                        <span class="text-zinc-500 dark:text-zinc-400 font-medium">${esc(badge)}</span>
+                    </div>
+                    <button type="button" onclick="rerollPostTheoryGameCard(this)" class="text-[11px] font-semibold text-blue-600 dark:text-sky-400 hover:underline cursor-pointer inline-flex items-center gap-1">
+                        ${iconSvg('shuffle', 'w-3 h-3')}<span>${tr('Canviar joc', 'Cambiar juego')}</span>
                     </button>
                 </div>
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-start gap-2.5 min-w-0">
-                        <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-2xs post-theory-game-icon">${iconSvg(g.iconName, 'w-5 h-5')}</div>
+                        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-2xs post-theory-game-icon">${iconSvg(g.iconName, 'w-5 h-5')}</div>
                         <div class="min-w-0">
-                            <div class="text-xs sm:text-sm font-black text-zinc-900 dark:text-white post-theory-game-title">${esc(title)}</div>
-                            <div class="text-[11px] text-zinc-600 dark:text-zinc-400 leading-snug post-theory-game-desc">${esc(desc)}</div>
+                            <div class="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white post-theory-game-title">${esc(title)}</div>
+                            <div class="text-[11.5px] text-zinc-600 dark:text-zinc-400 leading-snug post-theory-game-desc">${esc(reasonLine)}</div>
                         </div>
                     </div>
-                    <button type="button" onclick="launchRandomPostTheoryGame(this)" class="post-theory-game-play-btn px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold transition cursor-pointer shrink-0 shadow-xs active:scale-95 flex items-center justify-center gap-1.5">
+                    <button type="button" onclick="launchRandomPostTheoryGame(this)" class="post-theory-game-play-btn px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition cursor-pointer shrink-0 shadow-xs active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
                         ${iconSvg('gamepad', 'w-4 h-4')}<span>${tr('Jugar ara', 'Jugar ahora')}: ${esc(title)}</span>
                     </button>
+                </div>
+                <div class="pt-2.5 border-t border-zinc-200/80 dark:border-zinc-800 flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="if(typeof triggerSimplerExplanation==='function') triggerSimplerExplanation();" class="px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:border-blue-400 text-zinc-700 dark:text-zinc-200 text-[11px] font-semibold transition cursor-pointer">${tr("No m'ha quedat clar, explica-m'ho fàcil", 'No me quedó claro, explícamelo fácil')}</button>
+                    <button type="button" onclick="if(typeof startStudyBreakNow==='function') startStudyBreakNow();" class="px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:border-emerald-500 text-zinc-700 dark:text-zinc-200 text-[11px] font-semibold transition cursor-pointer tabular-nums">${tr(`Fer descans de ${breakMins} min`, `Hacer descanso de ${breakMins} min`)}</button>
                 </div>
             </div>
         `;

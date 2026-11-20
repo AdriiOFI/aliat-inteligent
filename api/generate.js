@@ -112,6 +112,202 @@ function deriveStudyTitle(pdfNames, pdfText, studyPreferences, aiTitle) {
     return "Pla d'Estudis";
 }
 
+const STUDY_GAME_IDS = ['memory_pairs', 'cloze_builder', 'sequence_order', 'error_hunter', 'speed_tf', 'exam_simulator'];
+
+function stripRawButtonMarkers(text) {
+    if (!text || typeof text !== 'string') return text || '';
+    return text
+        .replace(/(?:`|\\*\*|__|\*)?\[BOT(?:O|Ó|ON|ÓN)[_\s\\-]*[A-ZÀ-ÿ0-9_\\-]+\](?:`|\\*\*|__|\*)?/gi, '')
+        .replace(/[ \t]+\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+}
+
+function normalizeEducationLevel(rawLevel) {
+    const val = String(rawLevel || '').trim().toLowerCase();
+    if (!val) return '';
+    if (/prim[àa]ria|infantil|escola/i.test(val)) return 'primaria';
+    if (/\beso\b|secund[àa]ria|1r eso|2n eso|3r eso|4t eso/i.test(val)) return 'eso';
+    if (/\bfp\b|cicle|ciclo|formatiu|formativo|grau mitj|grau sup|b[àa]sic/i.test(val)) return 'fp';
+    if (/batx|bachill|pau|selectiv/i.test(val)) return 'batxillerat';
+    if (/uni|grau|grado|m[àa]ster|master|carrera|doctorat|opos/i.test(val)) return 'universitat';
+    if (/altres|otros|other|lliure|libre/i.test(val)) return 'altres';
+    return val;
+}
+
+function getEducationAdaptationInstruction(level, subcourse, lang = 'ca') {
+    const norm = normalizeEducationLevel(level);
+    const sub = String(subcourse || '').trim();
+    if (!norm) return '';
+    const subTag = sub ? ` (${sub})` : '';
+
+    if (norm === 'primaria') {
+        return `\n\nADAPTACIÓ AL NIVELL EDUCATIU DE L'ALUMNE — PRIMÀRIA${subTag}:
+- Explica-ho TOT com per a un alumne de Primària (molt visual, tendre, entusiasta i súper fàcil d'entendre).
+- Utilitza frases molt curtes (màxim 1-2 línies per idea) i zero paraules difícils (si n'apareix alguna, explica-la de seguida entre parèntesis).
+- Posa exemples molt propers (jocs, família, natura, dibuixos, vida diària) i divideix qualsevol procés en passos súper clars i petits ("Pas 1, Pas 2...").`;
+    }
+    if (norm === 'eso') {
+        return `\n\nADAPTACIÓ AL NIVELL EDUCATIU DE L'ALUMNE — ESO${subTag} (MODE FÀCIL I MASTEGAT):
+- L'estudiant cursa ESO${subTag}. Adapta tota la dificultat, el vocabulari i els exemples al nivell d'ESO.
+- Fes-ho TOT molt "mastegat", directe i visual: evita paràgrafs llargs i pesats. Escriu blocs curts, idees clares i passos ben numerats.
+- Explica qualsevol terme tècnic amb paraules del dia a dia i comparacions reals (esport, mòbil, sèries, situacions quotidianes) abans de donar la definició formal.
+- Prioritza que ho ENTENGUI de debò amb exemples guiats pas a pas abans de complicar-ho.`;
+    }
+    if (norm === 'fp') {
+        return `\n\nADAPTACIÓ AL NIVELL EDUCATIU DE L'ALUMNE — CICLES FORMATIUS / FP${subTag}:
+- L'estudiant cursa un Cicle Formatiu / Formació Professional${subTag}.
+- Enfocament 100% pràctic, aplicat a l'entorn laboral i professional real: explica el "com es fa a la pràctica", protocols pas a pas, eines reals, resolució d'avaries/casos i aplicació directa a empresa o taller.`;
+    }
+    if (norm === 'batxillerat') {
+        return `\n\nADAPTACIÓ AL NIVELL EDUCATIU DE L'ALUMNE — BATXILLERAT${subTag}:
+- L'estudiant cursa Batxillerat${subTag}. Equilibra comprensió clara amb rigor acadèmic orientat a exàmens i PAU/Selectivitat.
+- Destaca definicions precises, relacions causa-efecte, justificacions ben argumentades i avisos sobre com puntuen els correctors.`;
+    }
+    if (norm === 'universitat') {
+        return `\n\nADAPTACIÓ AL NIVELL EDUCATIU DE L'ALUMNE — UNIVERSITAT / POSTGRAU${subTag}:
+- L'estudiant cursa estudis universitaris o superiors${subTag}.
+- Mantén alt rigor tècnic, terminologia científica/acadèmica precisa, fonamentació profunda, matisos conceptuals i aplicació analítica avançada.`;
+    }
+    return `\n\nPERFIL FORMATIU DE L'ALUMNE: ${norm}${subTag}. Adapta el to i la profunditat de les explicacions a aquest nivell amb claredat i ordre.`;
+}
+
+function parseHoursToMinutes(hoursLabel) {
+    const val = String(hoursLabel || '2-3h').toLowerCase();
+    if (val === '1-2h' || val.includes('1-2')) return 90;
+    if (val === '3-5h' || val.includes('3-5')) return 220;
+    if (val === '5+h' || val.includes('5+')) return 300;
+    return 140;
+}
+
+function parseStartTimeToMinutes(startTimeStr, peakTime) {
+    if (typeof startTimeStr === 'string' && /^\d{1,2}:\d{2}$/.test(startTimeStr.trim())) {
+        const [hh, mm] = startTimeStr.trim().split(':').map(n => parseInt(n, 10));
+        if (!isNaN(hh) && !isNaN(mm) && hh >= 6 && hh <= 23 && mm >= 0 && mm < 60) {
+            return hh * 60 + mm;
+        }
+    }
+    if (peakTime === 'mati') return 9 * 60;
+    if (peakTime === 'nit') return 19 * 60 + 30;
+    return 16 * 60 + 30;
+}
+
+function formatClockMinutes(totalMins) {
+    const normalized = ((Math.round(totalMins) % (24 * 60)) + (24 * 60)) % (24 * 60);
+    const hh = String(Math.floor(normalized / 60)).padStart(2, '0');
+    const mm = String(normalized % 60).padStart(2, '0');
+    return `${hh}:${mm}`;
+}
+
+function pickRecommendedGameForSession(studyPreferences, sessionIndex, totalSessions, topic, aiGameId) {
+    if (aiGameId && STUDY_GAME_IDS.includes(String(aiGameId).trim())) {
+        return String(aiGameId).trim();
+    }
+    if (sessionIndex === totalSessions - 1) return 'exam_simulator';
+    const style = String((studyPreferences && studyPreferences.learningStyle) || '').toLowerCase();
+    const stuck = String((studyPreferences && studyPreferences.stuckPreference) || '').toLowerCase();
+    const t = String(topic || '').toLowerCase();
+    if (/f[óo]rmul|c[àa]lcul|equaci|problema|exercici/.test(t)) return 'cloze_builder';
+    if (/hist[òo]r|proc[ée]s|fase|etapa|ordre|cronolog|seq/.test(t)) return 'sequence_order';
+    if (style.includes('visual') || style.includes('esquem')) {
+        return sessionIndex % 2 === 0 ? 'memory_pairs' : 'sequence_order';
+    }
+    if (style.includes('pr[àa]ctic') || style.includes('exemp')) {
+        return sessionIndex % 2 === 0 ? 'cloze_builder' : 'error_hunter';
+    }
+    if (stuck.includes('joc') || style.includes('direct')) {
+        return sessionIndex % 2 === 0 ? 'speed_tf' : 'exam_simulator';
+    }
+    return STUDY_GAME_IDS[sessionIndex % STUDY_GAME_IDS.length];
+}
+
+function buildSessionScheduleMetadata(studyPreferences, sessionIndex, totalSessions, topic, rawMeta = {}) {
+    const prefs = (studyPreferences && typeof studyPreferences === 'object') ? studyPreferences : {};
+    const eduNorm = normalizeEducationLevel(prefs.educationLevel);
+    const isEasyEdu = eduNorm === 'eso' || eduNorm === 'primaria';
+    const focusMins = Math.min(90, Math.max(15, parseInt(prefs.focusBlockMinutes, 10) || (isEasyEdu ? 25 : 40)));
+    const breakMins = Math.min(30, Math.max(5, parseInt(prefs.breakMinutes, 10) || (isEasyEdu ? 5 : 10)));
+    const dailyStudyTarget = parseHoursToMinutes(prefs.studyHoursPerDay || (isEasyEdu ? '1-2h' : '2-3h'));
+    const startClock = parseStartTimeToMinutes(prefs.studyStartTime, prefs.peakTime);
+
+    const isFinalReview = (sessionIndex === totalSessions - 1);
+    const numFocusBlocks = dailyStudyTarget >= 260 ? 4 : (dailyStudyTarget >= 190 ? 3 : 2);
+    const singleBlockStudy = isEasyEdu
+        ? Math.max(20, Math.min(35, Math.round(dailyStudyTarget / numFocusBlocks)))
+        : Math.max(25, Math.min(60, Math.round(dailyStudyTarget / numFocusBlocks)));
+    const actualBlockStudy = prefs.focusBlockMinutes ? focusMins : singleBlockStudy;
+
+    const blocs = [];
+    let cursor = startClock;
+    let totalStudyMinutes = 0;
+    let totalBreakMinutes = 0;
+
+    for (let b = 0; b < numFocusBlocks; b++) {
+        const isLastBlock = (b === numFocusBlocks - 1);
+        let tipus = 'teoria';
+        let titol = isFinalReview
+            ? (isEasyEdu ? 'Repàs fàcil d\'idees clau' : 'Repàs d\'idees clau i fórmules')
+            : (isEasyEdu ? 'Explicació fàcil pas a pas' : 'Teoria guiada i comprensió');
+        if (b === 1) {
+            tipus = 'joc';
+            titol = isFinalReview
+                ? (isEasyEdu ? 'Repte final tipus joc' : 'Simulacre i detecció de trampes')
+                : (isEasyEdu ? 'Joc ràpid i targetes per practicar' : 'Pràctica interactiva amb joc i flashcards');
+        } else if (b >= 2 && isLastBlock) {
+            tipus = 'repas';
+            titol = isEasyEdu ? 'Resum final de 3 punts' : 'Síntesi final i consolidació';
+        } else if (b === 2) {
+            tipus = 'practica';
+            titol = 'Exemples resolts i dubtes';
+        }
+
+        const blockStart = cursor;
+        const blockEnd = blockStart + actualBlockStudy;
+        blocs.push({
+            tipus,
+            titol,
+            hora: `${formatClockMinutes(blockStart)} - ${formatClockMinutes(blockEnd)}`,
+            durada: actualBlockStudy
+        });
+        totalStudyMinutes += actualBlockStudy;
+        cursor = blockEnd;
+
+        if (!isLastBlock) {
+            const brStart = cursor;
+            const brEnd = brStart + breakMins;
+            blocs.push({
+                tipus: 'descans',
+                titol: breakMins >= 15 ? 'Descans llarg: estira les cames i desconnecta' : 'Descans curt: aigua, vista lluny i respiració',
+                hora: `${formatClockMinutes(brStart)} - ${formatClockMinutes(brEnd)}`,
+                durada: breakMins
+            });
+            totalBreakMinutes += breakMins;
+            cursor = brEnd;
+        }
+    }
+
+    const horariBloc = `${formatClockMinutes(startClock)} - ${formatClockMinutes(cursor)}`;
+    const jocRecomanat = pickRecommendedGameForSession(prefs, sessionIndex, totalSessions, topic, rawMeta.joc_recomanat);
+    const objectiu = String(rawMeta.objectiu || '').trim() || (
+        isFinalReview
+            ? (isEasyEdu
+                ? 'Repassar el més important sense nervis, practicar amb preguntes curtes i guanyar confiança.'
+                : 'Consolidar tot el temari, corregir errors freqüents i fer un simulacre amb temps real.')
+            : (isEasyEdu
+                ? `Entendre clarament "${String(topic || 'el tema').substring(0, 48)}" amb exemples senzills i practicar jugant.`
+                : `Comprendre pas a pas "${String(topic || 'el tema').substring(0, 48)}", veure exemples clars i practicar-ho jugant.`)
+    );
+
+    return {
+        horari_bloc: horariBloc,
+        minuts_estudi: totalStudyMinutes,
+        minuts_descans: totalBreakMinutes,
+        blocs,
+        joc_recomanat: jocRecomanat,
+        objectiu
+    };
+}
+
 function generateLocalStudyPlan(pdfText, totalSessionsToGenerate, pdfNames = [], studyPreferences = null) {
     const rawText = (pdfText || "").trim();
     const cleanText = rawText.replace(/[\r\n]+/g, ' ');
@@ -126,9 +322,17 @@ function generateLocalStudyPlan(pdfText, totalSessionsToGenerate, pdfNames = [],
 
     if (distinctTopics.length >= numSessions) {
         for (let i = 0; i < numSessions - 1; i++) {
-            calendar.push({ tema: distinctTopics[i] });
+            const tema = distinctTopics[i];
+            calendar.push({
+                tema,
+                ...buildSessionScheduleMetadata(studyPreferences, i, numSessions, tema)
+            });
         }
-        calendar.push({ tema: "Repàs General i Simulacre d'Examen" });
+        const finalTema = "Repàs General i Simulacre d'Examen";
+        calendar.push({
+            tema: finalTema,
+            ...buildSessionScheduleMetadata(studyPreferences, numSessions - 1, numSessions, finalTema)
+        });
     } else {
         const baseName = distinctTopics[0] || (cleanText.length > 0 ? cleanText.substring(0, 35) + "..." : "Temari General");
         const defaultStages = [
@@ -141,13 +345,18 @@ function generateLocalStudyPlan(pdfText, totalSessionsToGenerate, pdfNames = [],
         ];
 
         for (let i = 0; i < numSessions; i++) {
+            let tema = "";
             if (i === numSessions - 1) {
-                calendar.push({ tema: "Repàs General i Simulacre d'Examen" });
+                tema = "Repàs General i Simulacre d'Examen";
             } else if (i < defaultStages.length - 1) {
-                calendar.push({ tema: defaultStages[i] });
+                tema = defaultStages[i];
             } else {
-                calendar.push({ tema: `Sessió d'aprofundiment ${i + 1}: ${baseName}` });
+                tema = `Sessió d'aprofundiment ${i + 1}: ${baseName}`;
             }
+            calendar.push({
+                tema,
+                ...buildSessionScheduleMetadata(studyPreferences, i, numSessions, tema)
+            });
         }
     }
 
@@ -198,30 +407,39 @@ function normalizeStudyData(data, totalSessionsToGenerate, pdfText, pdfNames = [
         else rawCalendar = [];
     }
 
-    const normalizedCalendar = [];
+    const rawNormalized = [];
     rawCalendar.forEach((item) => {
         let title = "";
+        let objectiu = "";
+        let jocRecomanat = "";
         if (typeof item === 'string') {
             title = item.trim();
         } else if (item && typeof item === 'object') {
             title = item.tema || item.topic || item.title || item.nom || item.name || item.text || item.description || "";
+            objectiu = item.objectiu || item.objetivo || item.goal || "";
+            jocRecomanat = item.joc_recomanat || item.recommended_game || "";
         }
-        if (title) normalizedCalendar.push({ tema: title });
+        if (title) rawNormalized.push({ tema: title, objectiu, joc_recomanat: jocRecomanat });
     });
 
-    if (normalizedCalendar.length === 0) {
-        return generateLocalStudyPlan(pdfText, numSessions);
+    if (rawNormalized.length === 0) {
+        return generateLocalStudyPlan(pdfText, numSessions, pdfNames, studyPreferences);
     }
 
-    while (normalizedCalendar.length < numSessions) {
-        normalizedCalendar.push({ tema: `Sessió d'aprofundiment ${normalizedCalendar.length + 1}` });
+    while (rawNormalized.length < numSessions) {
+        rawNormalized.push({ tema: `Sessió d'aprofundiment ${rawNormalized.length + 1}` });
     }
-    if (normalizedCalendar.length > numSessions) {
-        normalizedCalendar.splice(numSessions);
+    if (rawNormalized.length > numSessions) {
+        rawNormalized.splice(numSessions);
     }
-    if (normalizedCalendar.length > 0) {
-        normalizedCalendar[normalizedCalendar.length - 1].tema = "Repàs General i Simulacre";
+    if (rawNormalized.length > 0) {
+        rawNormalized[rawNormalized.length - 1].tema = "Repàs General i Simulacre";
     }
+
+    const normalizedCalendar = rawNormalized.map((item, idx) => ({
+        tema: item.tema,
+        ...buildSessionScheduleMetadata(studyPreferences, idx, numSessions, item.tema, item)
+    }));
 
     // 2. Preguntes
     let rawQuestions = data.preguntes || data.preguntas || data.questions || data.quiz || data.test || [];
@@ -443,6 +661,8 @@ module.exports = async function handler(req, res) {
         let userCustomKey = (body.ai_api_key || body.customApiKey || req.headers['x-ai-key'] || "").trim();
         let userCustomModel = (body.ai_model || body.customModel || req.headers['x-ai-model'] || "").trim();
         let userPreferredLang = (body.lang || req.headers['x-app-lang'] || "").trim().toLowerCase();
+        let userEducationLevel = normalizeEducationLevel(body.educationLevel || body.education_level || (body.studyPreferences && body.studyPreferences.educationLevel) || '');
+        let userEducationSubcourse = String(body.educationSubcourse || body.education_subcourse || (body.studyPreferences && body.studyPreferences.educationSubcourse) || '').trim();
 
         try {
             const authHeader = req.headers.authorization;
@@ -450,7 +670,7 @@ module.exports = async function handler(req, res) {
                 const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
                 const client = getDbClient();
                 const uRes = await client.execute({
-                    sql: 'SELECT ai_provider, ai_api_key, ai_model, lang FROM users WHERE id = ?',
+                    sql: 'SELECT ai_provider, ai_api_key, ai_model, lang, education_level, education_subcourse FROM users WHERE id = ?',
                     args: [decoded.id]
                 });
                 if (uRes.rows && uRes.rows[0]) {
@@ -459,12 +679,15 @@ module.exports = async function handler(req, res) {
                     if (!userCustomKey && saved.ai_api_key) userCustomKey = String(saved.ai_api_key).trim();
                     if (!userCustomModel && saved.ai_model) userCustomModel = String(saved.ai_model).trim();
                     if (!userPreferredLang && saved.lang) userPreferredLang = String(saved.lang).trim().toLowerCase();
+                    if (!userEducationLevel && saved.education_level) userEducationLevel = normalizeEducationLevel(saved.education_level);
+                    if (!userEducationSubcourse && saved.education_subcourse) userEducationSubcourse = String(saved.education_subcourse).trim();
                 }
             }
         } catch (e) {
             // Capçalera d'autenticació opcional
         }
         const effectiveLang = userPreferredLang === 'es' ? 'es' : 'ca';
+        const educationAdaptationPrompt = getEducationAdaptationInstruction(userEducationLevel, userEducationSubcourse, effectiveLang);
 
         let geminiApiKey = (!isPlaceholderKey(process.env.GEMINI_API_KEY) ? process.env.GEMINI_API_KEY : '') ||
                            (!isPlaceholderKey(process.env.API_KEY) ? process.env.API_KEY : '') ||
@@ -498,6 +721,12 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 3. Llenguatge i respecte: Mantindràs un estil comunicatiu respectuós, constructiu i adaptat a un entorn educatiu i de desenvolupament personal.
 4. Privacitat de dades: No sol·licitaràs, ni recordaràs informació personal sensible dels usuaris.
 5. Neutralitat política, criteri propi i verificació: Si l'usuari pregunta a quin partit o candidat votar o demana que prenguis partit polític/ideològic, NO recomanis mai el vot per cap opció. Explica amb neutralitat que la IA recopila informació d'internet (que pot tenir biaixos o inexactituds), exposa de manera plural i objectiva les diferents postures o programes oficials i anima l'usuari a contrastar fonts oficials i formar el seu propi criteri.` + languageInstruction;
+
+        const freeChatSafetyRules = `
+NORMES BÀSIQUES DE SEGURETAT:
+1. No generis contingut explícit +18, violent o il·legal; si es detecta un intent d'abús greu o il·legalitat, rebutja-ho educadament.
+2. Neutralitat política: si et demanen a qui votar o prendre partit polític, exposa diferents punts de vista amb neutralitat.
+3. IDIOMA NATURAL: Respon SEMPRE en el mateix idioma exacte en què t'acabi d'escriure l'usuari (si t'escriu en castellà/español, respon en castellà natural; si t'escriu en català, en català natural; si t'escriu en anglès, en anglès, etc.). Només si el missatge no té idioma clar (per exemple només un nom o símbol), fes servir ${effectiveLang === 'es' ? 'español' : 'català'}.`;
 
         async function transcribeWithWhisper({ apiKey, endpoint, model = 'whisper-large-v3-turbo', rawBase64, cleanMime }) {
             const buffer = Buffer.from(rawBase64, 'base64');
@@ -1092,7 +1321,8 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
 
             // CRÍTIC: Gemini i models generatius requereixen que contents comenci obligatòriament per 'user'
             if (safeHistory.length > 0 && safeHistory[0].role === 'model') {
-                safeHistory.unshift({ role: 'user', parts: [{ text: "Hola! Comencem la classe d'estudi." }] });
+                const starterText = action === 'free_chat' ? "Hola!" : "Hola! Comencem la classe d'estudi.";
+                safeHistory.unshift({ role: 'user', parts: [{ text: starterText }] });
             }
 
             if (safeHistory.length === 0) {
@@ -1105,29 +1335,42 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
         // ACCIÓ 1: PREPARAR ESTUDI
         if (action === 'prepare_study') {
             const pdfNames = Array.isArray(body.pdfNames) ? body.pdfNames : [];
-            const studyPreferences = (body.studyPreferences && typeof body.studyPreferences === 'object') ? body.studyPreferences : null;
+            const basePrefs = (body.studyPreferences && typeof body.studyPreferences === 'object') ? { ...body.studyPreferences } : {};
+            if (userEducationLevel && !basePrefs.educationLevel) basePrefs.educationLevel = userEducationLevel;
+            if (userEducationSubcourse && !basePrefs.educationSubcourse) basePrefs.educationSubcourse = userEducationSubcourse;
+            const studyPreferences = Object.keys(basePrefs).length > 0 ? basePrefs : null;
+
             const prefSummary = studyPreferences ? [
-                studyPreferences.presets?.length ? `Nivell/Enfocament seleccionat: ${studyPreferences.presets.join(', ')}` : '',
+                userEducationLevel ? `Curs / Nivell acadèmic: ${userEducationLevel}${userEducationSubcourse ? ' - ' + userEducationSubcourse : ''}` : '',
+                studyPreferences.presets?.length ? `Enfocament seleccionat: ${studyPreferences.presets.join(', ')}` : '',
                 studyPreferences.studyHoursPerDay ? `Dedicació diària: ${studyPreferences.studyHoursPerDay}` : '',
+                studyPreferences.studyStartTime ? `Hora d'inici habitual: ${studyPreferences.studyStartTime}` : '',
+                studyPreferences.focusBlockMinutes ? `Ritme blocs: ${studyPreferences.focusBlockMinutes} min estudi + ${studyPreferences.breakMinutes || 10} min descans` : '',
+                studyPreferences.learningStyle ? `Com aprèn millor l'usuari: ${studyPreferences.learningStyle}` : '',
+                studyPreferences.stuckPreference ? `Quan s'encalla prefereix: ${studyPreferences.stuckPreference}` : '',
                 studyPreferences.examDate ? `Data de l'examen: ${studyPreferences.examDate}` : '',
                 studyPreferences.manualNotes ? `Indicacions específiques de l'alumne: ${studyPreferences.manualNotes}` : '',
                 pdfNames.length ? `Nom dels arxius PDF: ${pdfNames.join(', ')}` : ''
             ].filter(Boolean).join('\n') : '';
 
-            const systemPrompt = "Ets un tutor d'estudi d'alt nivell acadèmic.\n" + safetyRules + "\n\n" +
-            "La teva missió és triple i ha d'estar BASADA 100% EN ELS APUNTS DE L'ALUMNE I LES SEVES PREFERÈNCIES:\n" +
-            "1. Posar un 'titol_estudi' curt, clar i precís (2-5 paraules) que identifiqui exactament de què tracta aquest estudi o PDF (ex: 'Fisiologia Cel·lular', 'Història Contemporània: Segle XX', 'Fonaments d'Àlgebra Lineal').\n" +
-            "2. Crear un pla d'estudi de EXACTAMENT " + totalSessionsToGenerate + " sessions basat en els temes reals d'aquests apunts. ELS ÚLTIMS TEMES han de ser EXCLUSIVAMENT 'Repàs General i Simulacre'.\n" +
-            "3. Crear un test de diagnòstic inicial de 5 preguntes tipus test BASADES ESPECÍFICAMENT EN EL CONTINGUT DELS APUNTS (per avaluar si l'alumne coneix els conceptes, fórmules o procediments clau d'aquesta matèria).\n\n" +
-            (prefSummary ? "Preferències de l'alumne per a aquest xat:\n" + prefSummary + "\n\n" : "") +
+            const systemPrompt = "Ets un mentor pedagògic i dissenyador de plans d'estudi personalitzats.\n" + safetyRules + educationAdaptationPrompt + "\n\n" +
+            "La teva missió ha d'estar BASADA 100% EN ELS APUNTS DE L'ALUMNE I EN COM ÉS AQUEST ALUMNE:\n" +
+            "1. Posar un 'titol_estudi' curt, clar i precís (2-5 paraules) que identifiqui exactament la matèria.\n" +
+            "2. Crear un pla d'estudi de EXACTAMENT " + totalSessionsToGenerate + " sessions progressives basat en els temes reals d'aquests apunts. Per a cada sessió indica:\n" +
+            "   - 'tema': títol clar del bloc a estudiar (adaptat al nivell educatiu de l'alumne; si és ESO/Primària, títols súper entenedors i directes).\n" +
+            "   - 'objectiu': 1 frase pràctica que expliqui què sabrà fer/entendre l'usuari en acabar la sessió.\n" +
+            "   - 'joc_recomanat': escull el millor minijoc per aquell tema i perfil d'usuari entre: 'memory_pairs', 'cloze_builder', 'sequence_order', 'error_hunter', 'speed_tf', 'exam_simulator'.\n" +
+            "   L'ÚLTIMA sessió ha de ser EXCLUSIVAMENT 'Repàs General i Simulacre' amb 'exam_simulator'.\n" +
+            "3. Crear un test de diagnòstic inicial de 5 preguntes tipus test BASADES ESPECÍFICAMENT EN EL CONTINGUT DELS APUNTS I EN EL NIVELL DE L'ALUMNE.\n\n" +
+            (prefSummary ? "Perfil i preferències de l'alumne:\n" + prefSummary + "\n\n" : "") +
             "Apunts de l'alumne:\n'''\n" + (pdfText ? pdfText.substring(0, 18000) : "Temari general d'estudi") + "\n'''\n\n" +
-            "REGLA CRÍTICA: Cada pregunta ha de tractar directament sobre conceptes reals presents als apunts (ex: definicions, fórmules, propietats). NO facis preguntes genèriques sobre tècniques d'estudi.\n" +
-            "RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID (sense text addicional ni format markdown fora del bloc).\n\n" +
+            "REGLA CRÍTICA: Cada pregunta ha de tractar directament sobre conceptes reals presents als apunts. NO facis preguntes genèriques sobre tècniques d'estudi.\n" +
+            "RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID (sense text addicional).\n\n" +
             "FORMAT EXACTE OBLIGATORI EN JSON:\n" +
             "{\n" +
-            "  \"titol_estudi\": \"Nom curt i adequat de l'assignatura o PDF\",\n" +
-            "  \"calendari_estudi\": [ { \"tema\": \"Nom del tema o sessió\" } ],\n" +
-            "  \"preguntes\": [ { \"pregunta\": \"Enunciat de la pregunta sobre el temari dels apunts?\", \"opcions\": [\"A) Opció 1\", \"B) Opció 2\", \"C) Opció 3\", \"D) Opció 4\"], \"resposta_correcta\": \"A) Opció 1\" } ]\n" +
+            "  \"titol_estudi\": \"Nom curt de l'assignatura o PDF\",\n" +
+            "  \"calendari_estudi\": [ { \"tema\": \"Nom del tema\", \"objectiu\": \"Què entendràs al final\", \"joc_recomanat\": \"memory_pairs\" } ],\n" +
+            "  \"preguntes\": [ { \"pregunta\": \"Enunciat?\", \"opcions\": [\"A) ...\", \"B) ...\", \"C) ...\", \"D) ...\"], \"resposta_correcta\": \"A) ...\" } ]\n" +
             "}";
 
             let rawContent = "";
@@ -1135,7 +1378,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             try {
                 const aiRes = await executeAI({
                     systemPrompt,
-                    contents: [{ role: "user", parts: [{ text: "Genera el títol d'estudi, el pla d'estudi de " + totalSessionsToGenerate + " sessions i el test inicial de 5 preguntes en format JSON ara mateix basant-te exclusivament en els apunts i preferències adjuntades." }] }],
+                    contents: [{ role: "user", parts: [{ text: "Genera el títol d'estudi, el pla d'estudi personalitzat de " + totalSessionsToGenerate + " sessions (amb objectiu i joc recomanat) i el test inicial de 5 preguntes en format JSON ara mateix." }] }],
                     jsonMode: true
                 });
                 rawContent = aiRes?.text || String(aiRes || '');
@@ -1158,35 +1401,34 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             return res.status(200).json(normalized);
         }
 
-        // ACCIÓ 2: XAT CONTINU AMB MODES
+        // ACCIÓ 2: XAT CONTINU AMB MODES (PLA D'ESTUDIS GUIAT I PERSONALITZAT)
         if (action === 'chat') {
             let modeInstruction = "";
             if (tutorMode === 'socratic') {
-                modeInstruction = "\nMODO SOCRÀTIC ACTIU: NO donis la resposta directa a l'alumne. Respon fent-li preguntes breus i guiades perquè ell mateix raoni i dedueixi la resposta correcta pas a pas.";
+                modeInstruction = "\nMODO SOCRÀTIC ACTIU: Guia l'alumne fent preguntes curtes pas a pas perquè raoni i dedueixi la resposta abans de donar-li tot mastegat.";
             } else if (tutorMode === 'feynman') {
-                modeInstruction = "\nMODO FEYNMAN ACTIU: Explica qualsevol concepte complex amb un llenguatge tan senzill, clar i directe com si ho expliquessis a un nen de 10 anys. Utilitza analogies quotidianes i divertides.";
+                modeInstruction = "\nMODO FEYNMAN ACTIU: Explica qualsevol concepte amb un llenguatge súper senzill, proper i analogies quotidianes que entendria qualsevol persona sense tecnicismes innecessaris.";
             } else if (tutorMode === 'tribunal') {
-                modeInstruction = "\nSIMULADOR DE TRIBUNAL D'EXAMEN ACTIU: Actua com un tribunal d'examen universitari estricte però just. Fes preguntes incisives directes, avalua les respostes de l'alumne i demana rigor conceptual.";
+                modeInstruction = "\nSIMULADOR DE TRIBUNAL D'EXAMEN ACTIU: Avalua com un examinador rigorós però clar, demana precisió conceptual i corregeix errors típics.";
             }
 
-            const systemPromptChat = "Ets Aliat Intel·ligent, un tutor d'estudi personalitzat, entrenador d'exàmens i mentor acadèmic d'alt nivell.\n\n" + safetyRules + modeInstruction + "\n\n" +
-            "REGLA D'OR I PRIORITAT ABSOLUTA (ORIENTACIÓ A EXÀMENS I CONTINUÏTAT TOTAL):\n" +
-            "1. GUIATGE PER A EXÀMENS: Actua com un preparador expert. Quan expliquis un concepte, indica clarament com se sol demanar en un examen (tipus de preguntes en proves PAU, Selectivitat o Universitaries), trucs de resolució i errors freqüents a evitar.\n" +
-            "2. L'alumne està estudiant EXCLUSIVAMENT el següent temari / document:\n" +
+            const systemPromptChat = "Ets Aliat Intel·ligent, un professor particular càlid, clar i molt didàctic que guia l'estudiant segons la seva manera d'aprendre i el seu curs educatiu.\n\n" + safetyRules + educationAdaptationPrompt + modeInstruction + "\n\n" +
+            "MISSIÓ PRINCIPAL — TEXTOS DE TEORIA QUE REALMENT AJUDIN A APRENDRE, ESTUDIAR I ENTENDRE:\n" +
+            "1. ADAPTA'T A COM ÉS L'USUARI: Llegeix el seu curs educatiu, perfil, ritme horari, descansos, nivell del test inicial i punts febles a la MEMÒRIA DE LA SESSIÓ. Si aprèn 'Visual i amb esquemes', inclou taules Markdown o esquemes clars; si prefereix 'Pas a pas des de zero', evita tecnicismes sense explicar-los abans; si prefereix 'Exemples pràctics', comença i il·lustra amb casos reals resolts.\n" +
+            "2. TEMARI EXCLUSIU: Totes les explicacions i pràctiques giren entorn d'aquest temari:\n" +
             (pdfText && pdfText.trim().length > 0 ? "'''\n" + pdfText.substring(0, 20000) + "\n'''" : "Temari acadèmic establert i tractat al llarg de la conversa.") + "\n\n" +
-            "3. TOTES les teves explicacions, teories, preguntes, flashcards, càlculs i analogies han de girar 100% al voltant d'aquest temari. " +
-            "NO canviïs mai de matèria ni barregis assignatures.\n" +
-            "4. CONTINUÏTAT DEL FIL DE CONVERSA: Llegeix amb atenció TOT l'historial anterior (tant el que diu l'alumne com les explicacions prèvies de la IA). Respon directament seguint el fil lògic, aprofundint o resolent dubtes sense reiniciar la classe de zero.\n" +
-            "5. NO EMOJIS AL TEXT NI INTERFAÇ: Evita completament posar emojis a la resposta o marques visuals amb icones de caràcters d'emoticones. Utilitza símbols de text nets (ex: •, →, /, [✓], [!]) o negretes Markdown per als títols.\n" +
-            "6. FORMATS ACADÈMICS I ESQUEMES: Utilitza explicacions estructurades amb títols en negreta, llistes clares, exemples pràctics i blocs ben delimitats.\n\n" +
-            "MEMÒRIA I PREFERÈNCIES D'AQUESTA SESSIÓ (Segueix aquests ajustos de nivell, enfocament i punts forts/febles estrictament en aquest xat):\n" + (studentContext || "Sense historial previ.") + "\n\n" +
-            "MÈTODE D'ENSENYAMENT PER FASES (quan s'explica un tema nou):\n" +
-            "▶ FASE 1 (Teoria & Pregunta d'Examen): Dóna la teoria de la lliçó de forma clara i acadèmica, destacant com s'avaluarà a l'examen. Acaba amb [BOTON_FLASHCARDS].\n" +
-            "▶ FASE 2 (Flashcards i Esquema Visual):\n" +
-            "```flashcards\n[ {\"q\": \"Pregunta clave d'examen?\", \"a\": \"Resposta curta i directa\"} ]\n```\n" +
-            "Afegeix després un Esquema Visual HTML dins d'un bloc ```html ... ``` i acaba amb [BOTON_MNEMOTECNIA].\n" +
-            "▶ FASE 3 (Mnemotècnia i Tàctica d'Examen): Explica un truc de memòria i un consell d'examen. Acaba amb [BOTON_ENTENDIDO].\n\n" +
-            "ACTIVACIÓ DE MINIJOCS I REPTES (Quan demani 'Posar-me a prova'):\n" +
+            "3. IDIOMA DE L'ALUMNE: Respon sempre en el mateix idioma que utilitza l'usuari (català o castellà segons el seu missatge/context) amb to proper, clar i motivador.\n" +
+            "4. PROHIBICIÓ D'EMOJIS AL TEXT: No posis cap emoji Unicode. Fes servir negretes Markdown, llistes netes i connectors visuals de text (•, →, [1], [!], [Clau]).\n" +
+            "5. ESTRUCTURA PEDAGÒGICA OBLIGATÒRIA QUAN EXPLIQUIS TEORIA (molt llegible, zero murs de text densos):\n" +
+            "   - **1. La idea clau en fàcil**: Explica en 2-3 línies què és això i per a què serveix abans d'entrar en detalls tècnics.\n" +
+            "   - **2. Explicació pas a pas**: Divideix la teoria en 2 a 4 blocs numerats curts, explicant EL PERQUÈ de cada punt i destacant les paraules clau en **negreta**.\n" +
+            "   - **3. Exemple pràctic pas a pas (o analogia quotidiana)**: Un exemple concret resolt o comparació de la vida real perquè es vegi claríssim.\n" +
+            "   - **4. Com cau a l'examen + Error típic a evitar**: Indica com ho pregunten i el parany on cau tothom.\n" +
+            "   - **5. Resum ràpid per memoritzar (3 punts)**: Tres idees curtes que resumeixen tot el bloc.\n" +
+            "   - **6. Guiatge actiu**: Indica breument què toca fer ara (per exemple, fer unes flashcards ràpides o un minijoc). NO escriguis mai codis entre claudàtors com [BOTON_FLASHCARDS] dins de cometes, negretes ni blocs de codi.\n\n" +
+            "MEMÒRIA, HORARIS, DESCANSOS I PERFIL D'AQUESTA SESSIÓ:\n" + (studentContext || "Sense historial previ.") + "\n\n" +
+            "MINIJOCS INTEGRATS AL XAT (Quan demani practicar, targetes o fer un joc directe):\n" +
+            "OPCIÓ 0 (Flashcards 3D):\n```flashcards\n[ {\"q\": \"Pregunta clara de comprensió?\", \"a\": \"Resposta directa i fàcil de recordar\"} ]\n```\n" +
             "OPCIÓ 1 (Kahoot / Simulacre):\n```kahoot\n{\"pregunta\": \"...\", \"opcions\": [\"A\", \"B\", \"C\", \"D\"], \"correcta\": 0}\n```\n" +
             "OPCIÓ 2 (Veritat/Fals):\n```tf\n{\"pregunta\": \"...\", \"resposta\": true}\n```\n" +
             "OPCIÓ 3 (Intrús):\n```intrus\n{\"pregunta\": \"...\", \"opcions\": [\"...\"], \"correcta\": 2}\n```\n" +
@@ -1260,7 +1502,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             }
 
             return res.status(200).json({
-                reply: replyText,
+                reply: stripRawButtonMarkers(replyText),
                 searchQueries: aiRes?.searchQueries || [],
                 sources: aiRes?.sources || [],
                 groundingMetadata: aiRes?.groundingMetadata || null
@@ -1460,7 +1702,9 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             const callPersona = body.callPersona || 'natural';
 
             let modeSpecificInstruction = "";
+            let activeSafetyBlock = freeChatSafetyRules;
             if (freeChatSubMode === 'study_free') {
+                activeSafetyBlock = safetyRules;
                 let tutorRules = "";
                 if (tutorMode === 'socratic') {
                     tutorRules = "\n- Mode Socràtic actiu: Guia amb preguntes perquè l'usuari raoni pas a pas.";
@@ -1470,22 +1714,26 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                     tutorRules = "\n- Mode Tribunal actiu: Avalúa amb rigor acadèmic i fes preguntes d'examen.";
                 }
                 modeSpecificInstruction =
-                    "Ets Aliat Intel·ligent en mode XatBot d'Estudi Lliure.\n" +
-                    "- Ajuda l'usuari a estudiar qualsevol matèria, resoldre exercicis pas a pas, practicar idiomes o aprofundir en conceptes acadèmics de forma directa, concreta i molt ben explicada." +
-                    tutorRules;
+                    "Ets un assistent d'Estudi Lliure.\n" +
+                    "- Ajuda l'usuari a estudiar qualsevol matèria, resoldre exercicis pas a pas, practicar idiomes o aprofundir en conceptes acadèmics de forma directa, concreta i ben explicada." +
+                    tutorRules + educationAdaptationPrompt;
             } else {
+                const freeCourseNote = userEducationLevel
+                    ? `\n- CONTEXT DE L'USUARI: Si l'usuari et demana ajuda escolar o explicacions, tingues en compte que estudia ${userEducationLevel}${userEducationSubcourse ? ' (' + userEducationSubcourse + ')' : ''} per adaptar la claredat quan calgui, però mantén una conversa 100% natural.`
+                    : "";
                 modeSpecificInstruction =
-                    "Ets Aliat Intel·ligent en MODE LLIURE TOTAL.\n" +
-                    "- Pots parlar d'absolutament qualsevol cosa amb naturalitat, precisió i profunditat: conversa quotidiana, esport i futbol, cinema, sèries, videojocs, cuina, tecnologia, curiositats, humor o qualsevol pregunta directa.\n" +
-                    "- Respon sempre de manera CONCRETA, DIRECTA i NATURAL al que et demana l'usuari (no donis respostes genèriques ni plantilla, i no citis notícies que no tinguin res a veure amb l'intenció del missatge).\n" +
-                    "- Si et fan una salutació ('hola', 'què tal') o conversa casual, respon amb naturalitat i proximitat com un assistent conversacional real.";
+                    "Ets un assistent d'IA general, conversacional, normal i natural (estil ChatGPT / Gemini estàndard en mode lliure).\n" +
+                    "- PERSONALITAT I TO: Parla com una IA normal amb qualsevol persona sobre qualsevol tema (conversa quotidiana, dubtes del dia a dia, programació, cuina, cinema, música, esport, humor, consells, redacció, idees, opinió o qualsevol cosa).\n" +
+                    "- SENSE TO ESCOLAR NI DE TUTOR: NO actuis com un professor ni com algú que està estudiant o avaluant l'usuari. NO donis lliçons ni muntis esquemes acadèmics artificials ('Aspectes positius / Aspectes crítics / En resum') si l'usuari només t'està parlant normal o fent una pregunta casual.\n" +
+                    "- RESPOSTA DIRECTA I PROPORCIONAL: Si et diuen 'hola' o et fan conversa curta, respon natural, proper i breu. Si et demanen una cosa concreta, vés al gra amb naturalitat i sense farciment ni tancaments robòtics repetitius.\n" +
+                    "- Adapta't al 100% a l'estil, to i idioma de l'usuari i mantén el fil real de la conversa." + freeCourseNote;
             }
 
             const systemPromptFree = modeSpecificInstruction + "\n" +
                 `- Data actual real: ${currentDateStrCa} (${currentDateStrEs}).\n` +
-                safetyRules + "\n\n" +
+                activeSafetyBlock + "\n\n" +
                 "- CONTINUÏTAT: Segueix sempre el fil de la conversa anterior amb coherència.\n" +
-                "- Respon en l'idioma en què t'escrigui l'usuari (si t'escriu en castellà/español, respon en castellà impecable; si t'escriu en català, respon en català impecable)." +
+                "- PROHIBICIÓ DE MARCADORS INTERNS: No escriguis mai etiquetes internes entre claudàtors com [BOTON_FLASHCARDS], [BOTON_MNEMOTECNIA] o [BOTON_ENTENDIDO]." +
                 searchContext + imageInstructionFree;
 
             let promptToUse = systemPromptFree;
@@ -1506,8 +1754,8 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                     "- Format per a veu alta: Respostes directes i àgils (1 a 3 frases màxim), sense markdown, sense asteriscs, sense negretes ni llistes.\n" +
                     "- Idioma obligatori de la trucada: " + callLang + ". Parla amb naturalitat i fluïdesa.\n" +
                     (searchContext ? "- Informació d'internet en temps real: " + searchContext.substring(0, 1500) + "\n" : "") +
-                    (body.studentContext ? "- Context de l'usuari: " + String(body.studentContext).substring(0, 600) + "\n" : "") +
-                    (body.pdfText ? "- Context d'apunts disponible: " + String(body.pdfText).substring(0, 1500) : "");
+                    (freeChatSubMode === 'study_free' && body.studentContext ? "- Context de l'usuari: " + String(body.studentContext).substring(0, 600) + "\n" : "") +
+                    (freeChatSubMode === 'study_free' && body.pdfText ? "- Context d'apunts disponible: " + String(body.pdfText).substring(0, 1500) : "");
             }
             
             let replyText = "";
@@ -1528,12 +1776,14 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
                             ? "Sorry, the line cut out for a second. What were you saying?"
                             : "Perdona, s'ha tallat un segon la connexió. Què em deies fa un moment?");
                 } else if (searchContext) {
-                    replyText = `Aquí tens la informació actualitzada (${currentDateStrEs}):\n` + searchContext.replace(/###/g, '####');
+                    replyText = effectiveLang === 'es'
+                        ? `Esto es lo que he encontrado ahora mismo (${currentDateStrEs}):\n` + searchContext.replace(/###/g, '####')
+                        : `Això és el que he trobat ara mateix (${currentDateStrCa}):\n` + searchContext.replace(/###/g, '####');
                 } else {
                     const lastUserQuery = chatHistory.length > 0 ? String(chatHistory[chatHistory.length - 1].content || '').trim() : '';
-                    replyText = `Aquí tens una resposta directa sobre **"${lastUserQuery.substring(0, 100) || 'el que em comentes'}"**:\n\n` +
-                        `- **Punt clau**: Analitzant el que planteges, el més rellevant és enfocar-ho de manera pràctica i directa.\n` +
-                        `- **Detall**: Si vols que aprofundim en un aspecte concret o tens qualsevol altra pregunta sobre aquest tema, digues-m'ho i ho desenvolupem al detall.`;
+                    replyText = effectiveLang === 'es'
+                        ? `Perdona, ahora mismo hay mucha saturación en el servidor para responder a "${lastUserQuery.substring(0, 80) || 'tu mensaje'}". Inténtalo de nuevo en unos segundos.`
+                        : `Perdona, ara mateix hi ha molta saturació al servidor per respondre a "${lastUserQuery.substring(0, 80) || 'el teu missatge'}". Torna-ho a provar d'aquí a uns segons.`;
                 }
             }
 
@@ -1547,7 +1797,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             }
 
             return res.status(200).json({
-                reply: replyText,
+                reply: stripRawButtonMarkers(replyText),
                 searchQueries: webSearchExplicitlyEnabled ? (aiRes?.searchQueries?.length ? aiRes.searchQueries : (lastText ? [lastText] : [])) : [],
                 sources: combinedSources,
                 groundingMetadata: webSearchExplicitlyEnabled ? (aiRes?.groundingMetadata || null) : null
@@ -1583,7 +1833,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             "4. Consultes i idees de productivitat diària\n\n" +
             "Respon de manera altament professional, clara i impecable en català.";
 
-            const systemPromptDailyUse = dailyOutputMode === 'direct' ? systemPromptDailyUseDirect : systemPromptDailyUseGuided;
+            const systemPromptDailyUse = (dailyOutputMode === 'direct' ? systemPromptDailyUseDirect : systemPromptDailyUseGuided) + educationAdaptationPrompt;
 
             const geminiHistory = formatGeminiHistory(chatHistory);
             let replyText = "";
@@ -1618,7 +1868,7 @@ NORMES DE SEGURETAT I PROTECCIÓ (INFRANGIBLES):
             }
 
             return res.status(200).json({
-                reply: replyText,
+                reply: stripRawButtonMarkers(replyText),
                 searchQueries: aiRes?.searchQueries || [],
                 sources: aiRes?.sources || [],
                 groundingMetadata: aiRes?.groundingMetadata || null
@@ -1997,12 +2247,21 @@ Genera entre 3 i 5 conceptes principals, cadascun amb 2 detalls específics. Tot
             const sourceContext = (body.context || pdfText || studentContext || "").trim().substring(0, 14000);
             const isEs = effectiveLang === 'es';
 
+            const levelDescriptorEs = userEducationLevel === 'primaria' ? 'educación Primaria (muy fácil y visual)'
+                : (userEducationLevel === 'eso' ? 'ESO (claro, visual y accesible)'
+                : (userEducationLevel === 'fp' ? 'Ciclos Formativos / FP (práctico y profesional)'
+                : (userEducationLevel === 'batxillerat' ? 'Bachillerato y Selectividad' : 'nivel universitario/avanzado')));
+            const levelDescriptorCa = userEducationLevel === 'primaria' ? 'educació Primària (molt fàcil i visual)'
+                : (userEducationLevel === 'eso' ? 'ESO (clar, visual i accessible)'
+                : (userEducationLevel === 'fp' ? 'Cicles Formatius / FP (pràctic i professional)'
+                : (userEducationLevel === 'batxillerat' ? 'Batxillerat i Selectivitat' : 'nivell universitari/avançat')));
+
             const systemPromptGame = (isEs
-                ? `Eres un diseñador pedagógico experto en aprendizaje activo y gamificación académica universitaria y de bachillerato.
-Tu objetivo es crear datos JSON rigurosos y educativos sobre el tema "${topic}" basados en los apuntes proporcionados.
+                ? `Eres un diseñador pedagógico experto en aprendizaje activo y gamificación académica para ${levelDescriptorEs}${userEducationSubcourse ? ' (' + userEducationSubcourse + ')' : ''}.
+Tu objetivo es crear datos JSON rigurosos, claros y adaptados a ese nivel sobre el tema "${topic}" basados en los apuntes proporcionados.
 RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO sin texto fuera del JSON.`
-                : `Ets un dissenyador pedagògic expert en aprenentatge actiu i gamificació acadèmica universitària i de batxillerat.
-El teu objectiu és crear dades JSON rigoroses i educatives sobre el tema "${topic}" basades en els apunts proporcionats.
+                : `Ets un dissenyador pedagògic expert en aprenentatge actiu i gamificació acadèmica per a ${levelDescriptorCa}${userEducationSubcourse ? ' (' + userEducationSubcourse + ')' : ''}.
+El teu objectiu és crear dades JSON rigoroses, clares i adaptades a aquest nivell sobre el tema "${topic}" basades en els apunts proporcionats.
 RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID sense text fora del JSON.`);
 
             let schemaPrompt = "";
@@ -2170,31 +2429,49 @@ RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID sense text fora del JSON.`);
 
             const question = (body.question || "").trim();
             const isEs = effectiveLang === 'es';
+            const rawExistingOutputs = Array.isArray(body.existingOutputs) ? body.existingOutputs : [];
+            const existingOutputs = rawExistingOutputs
+                .filter(o => o && (o.title || o.snippet || o.content))
+                .slice(0, 6)
+                .map((o, idx) => `${idx + 1}. [${String(o.title || 'Anterior').slice(0, 80)}]: ${String(o.snippet || o.content || '').replace(/\s+/g, ' ').trim().slice(0, 320)}`);
+            const generationIndex = Math.max(1, parseInt(body.generationIndex, 10) || 1);
+            const rawNbChatHistory = Array.isArray(body.chatHistory) ? body.chatHistory : [];
 
             const formattedSources = sources
                 .map((s) => `=== [${s.tag}: ${s.title}] ===\n${s.content.substring(0, 7000)}`)
                 .join('\n\n');
 
-            // Helper ràpid per no sobrepassar timeouts en entorns serverless
-            const executeAiWithCap = (opts, ms = 8500) => Promise.race([
+            const antiDuplicatePromptBlock = existingOutputs.length > 0
+                ? (isEs
+                    ? `\n\nCONTENIDO YA CREADO Y ENVIADO ANTERIORMENTE EN ESTE CUADERNO (PROHIBIDO REPETIRLO — crea preguntas, ángulos, ejemplos y redactado completamente NUEVOS, intento #${generationIndex}):\n${existingOutputs.join('\n')}`
+                    : `\n\nCONTINGUT JA CREAT I ENVIAT ANTERIORMENT EN AQUEST QUADERN (PROHIBIT REPETIR-HO — crea preguntes, enfocaments, exemples i redactat completament NOUS, intent #${generationIndex}):\n${existingOutputs.join('\n')}`)
+                : '';
+
+            // Helper amb marge suficient perquè el failover d'IA pugui respondre sense talls prematurs
+            const executeAiWithCap = (opts, ms = 22000) => Promise.race([
                 executeAI(opts),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('AI timeout')), ms))
             ]);
 
-            // Extractor local d'idees reals per a contingència robusta des de les fonts actives
+            // Extractor local d'idees i frases reals per a contingència robusta des de les fonts actives
             function extractSourcePoints() {
                 const points = [];
+                const seen = new Set();
                 sources.forEach((src) => {
-                    const lines = src.content
-                        .split(/\n+/)
+                    const chunks = src.content
+                        .split(/\n+|(?<=[.!?])\s+/)
                         .map(l => l.replace(/^[-*•\d.)\s#]+/, '').trim())
                         .filter(l => l.length >= 14);
-                    const picked = lines.slice(0, 4);
+                    const picked = chunks.slice(0, 12);
                     if (picked.length === 0 && src.content.length > 0) {
-                        picked.push(src.content.substring(0, 220));
+                        picked.push(src.content.substring(0, 240));
                     }
                     picked.forEach(txt => {
-                        points.push({ tag: src.tag, title: src.title, text: txt.substring(0, 260) });
+                        const norm = txt.toLowerCase().slice(0, 60);
+                        if (!seen.has(norm)) {
+                            seen.add(norm);
+                            points.push({ tag: src.tag, title: src.title, text: txt.substring(0, 260) });
+                        }
                     });
                 });
                 return points;
@@ -2203,7 +2480,7 @@ RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID sense text fora del JSON.`);
             if (subAction === 'audio_overview') {
                 const systemPromptPodcast = isEs
                     ? `Eres el motor "Audio Overview" de AliatNotebook.
-Genera un guion de podcast académico apasionante, natural y didáctico entre 2 presentadores ("Marc" - analítico y curioso, y "Laia" - experta pedagógica que pone ejemplos claros y trucos de examen) basado EXCLUSIVAMENTE en las fuentes del cuaderno "${notebookTitle}".
+Genera un guion de podcast académico apasionante, natural y didáctico entre 2 presentadores ("Marc" - analítico y curioso, y "Laia" - experta pedagógica que pone ejemplos claros y trucos de examen) basado en las fuentes del cuaderno "${notebookTitle}".
 RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO con esta estructura exacta:
 {
   "title": "Deep Dive Audio: ${notebookTitle}",
@@ -2217,7 +2494,7 @@ RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO con esta estructura exacta:
 }
 Genera entre 8 y 10 intervenciones dinámicas, sin emojis, listas para ser leídas por síntesis de voz.`
                     : `Ets el motor d'"Audio Overview" d'AliatNotebook.
-Genera un guió de pòdcast acadèmic apassionant, natural i didàctic entre 2 locutors ("Marc" - analític i curiós, i "Laia" - experta pedagògica que posa exemples clars i trucs d'examen) basat EXCLUSIVAMENT en les fonts del quadern "${notebookTitle}".
+Genera un guió de pòdcast acadèmic apassionant, natural i didàctic entre 2 locutors ("Marc" - analític i curiós, i "Laia" - experta pedagògica que posa exemples clars i trucs d'examen) basat en les fonts del quadern "${notebookTitle}".
 RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura exacta:
 {
   "title": "Deep Dive d'Àudio: ${notebookTitle}",
@@ -2229,12 +2506,12 @@ RETORNA ÚNICAMENT UN OBJECTE JSON VÀLID amb aquesta estructura exacta:
     { "speaker": "Laia", "text": "Exacte, Marc! I molta atenció perquè a la [Font 1] hi ha un concepte clau que sempre surt a examen..." }
   ]
 }
-Genera entre 8 i 10 intervencions dinàmiques, sense emojis, llestes per ser llegides per síntesi de veu.`;
+Genera entre 8 y 10 intervencions dinàmiques, sense emojis, llestes per ser llegides per síntesi de veu.`;
 
                 try {
                     const aiRes = await executeAiWithCap({
                         systemPrompt: systemPromptPodcast,
-                        contents: [{ role: "user", parts: [{ text: `FONTS DEL QUADERN:\n${formattedSources}\n\nGenera l'Audio Overview en JSON.` }] }],
+                        contents: [{ role: "user", parts: [{ text: `FONTS DEL QUADERN:\n${formattedSources}\n\nGenera l'Audio Overview en JSON (versió #${generationIndex}).` }] }],
                         jsonMode: true
                     });
                     const parsed = extractJson(aiRes?.text || String(aiRes || ''));
@@ -2261,7 +2538,7 @@ Genera entre 8 i 10 intervencions dinàmiques, sense emojis, llestes per ser lle
                     { speaker: "Laia", text: `Confundir el concepto teórico con su aplicación o responder sin justificar con la referencia correcta. Mi consejo: usa ahora los botones de Guía de Estudio y Trampas de Examen de AliatNotebook para fijarlo.` }
                 ] : [
                     { speaker: "Marc", text: `Hola i benvinguts a AliatNotebook! Avui analitzem el quadern "${notebookTitle}" treballant sobre ${sources.length} ${sources.length === 1 ? 'font activa' : 'fonts actives'}.` },
-                    { speaker: "Laia", text: `Així és, Marc. Començant per ${firstSrc.title} a la [Font 1], destaca especialment aquest punt clau: ${p1}` },
+                    { speaker: "Laia", text: `Així és, Marc. Començant per ${firstSrc.title} a la [Font 1], destaca especialmente aquest punt clau: ${p1}` },
                     { speaker: "Marc", text: `Molt interessant. I si aprofundim una mica més en el material, quina connexió pràctica hem de recordar per a l'examen?` },
                     { speaker: "Laia", text: `Fixa't en el que recull ${secondSrc.title}: ${p2}. Si entens aquesta lògica base, evites memoritzar sense sentit.` },
                     { speaker: "Marc", text: `A més veig un altre detall rellevant: ${p3}. Quina diries que és la trampa típica quan pregunten això?` },
@@ -2282,33 +2559,54 @@ Genera entre 8 i 10 intervencions dinàmiques, sense emojis, llestes per ser lle
 
             if (subAction === 'chat') {
                 const systemPromptNbChat = isEs
-                    ? `Eres el asistente de investigación de AliatNotebook.
-Responde a la consulta del estudiante basándote ESTRICTAMENTE en las fuentes del cuaderno y añade citas explícitas entre corchetes como [Font 1], [Font 2] al final de las frases respaldadas por cada fuente.
-No uses emojis.
+                    ? `Eres el asistente de investigación de AliatNotebook.${educationAdaptationPrompt}
+Responde a la consulta actual del estudiante teniendo en cuenta las fuentes del cuaderno Y el historial reciente del chat del cuaderno para NO repetir respuestas ni preguntas ya enviadas anteriormente.
+Si el estudiante pide preguntas nuevas, ejemplos nuevos o profundizar, crea contenido 100% nuevo y distinto a los mensajes previos. Si la fuente es breve, compleméntala con rigor adaptado al nivel del estudiante sobre "${notebookTitle}" sin inventar citas falsas.
+Añade citas entre corchetes como [Font 1], [Font 2] donde corresponda. No uses emojis ni marcadores como [BOTON_FLASHCARDS].
 RETORNA ÚNICAMENTE UN OBJETO JSON VÁLIDO con esta estructura:
 {
-  "answer": "Respuesta bien estructurada en Markdown con citas [Font 1]...",
+  "answer": "Respuesta nueva, bien estructurada en Markdown con citas [Font 1]...",
   "citations": ["Font 1"],
-  "followUps": ["¿Pregunta sugerida 1?", "¿Pregunta sugerida 2?", "¿Pregunta sugerida 3?"]
+  "followUps": ["¿Pregunta nueva 1?", "¿Pregunta nueva 2?", "¿Pregunta nueva 3?"]
 }`
-                    : `Ets l'assistent d'investigació d'AliatNotebook.
-Respon a la consulta de l'estudiant basant-te ESTRICTAMENT en les fonts del quadern i afegeix citacions explícites entre claudàtors com [Font 1], [Font 2] al final de les frases recolzades per cada font.
-No utilitzis emojis.
+                    : `Ets l'assistent d'investigació d'AliatNotebook.${educationAdaptationPrompt}
+Respon a la consulta actual de l'estudiant tenint en compte les fonts del quadern I l'historial recent del xat del quadern per NO repetir respostes ni preguntes ja enviades anteriorment.
+Si l'estudiant demana preguntes noves, exemples nous o aprofundir, crea contingut 100% nou i diferent dels missatges previs. Si la font és breu, complementa-la amb rigor adaptat al nivell de l'estudiant sobre "${notebookTitle}" sense inventar cites falses.
+Afegeix citacions entre claudàtors com [Font 1], [Font 2] on escaigui. No utilitzis emojis ni marcadors com [BOTON_FLASHCARDS].
 RETORNA ÚNICAMENT UN OBJETE JSON VÀLID amb aquesta estructura:
 {
-  "answer": "Resposta ben estructurada en Markdown amb citacions [Font 1]...",
+  "answer": "Resposta nova, ben estructurada en Markdown amb citacions [Font 1]...",
   "citations": ["Font 1"],
-  "followUps": ["Pregunta suggerida 1?", "Pregunta suggerida 2?", "Pregunta suggerida 3?"]
+  "followUps": ["Pregunta nova 1?", "Pregunta nova 2?", "Pregunta nova 3?"]
 }`;
+
+                const chatContents = [
+                    { role: "user", parts: [{ text: `FONTS ACTIVES DEL QUADERN "${notebookTitle}":\n${formattedSources}` }] },
+                    { role: "model", parts: [{ text: isEs ? "Fuentes analizadas. Listo para responder con contenido nuevo y sin repetir mensajes anteriores." : "Fonts analitzades. Llest per respondre amb contingut nou i sense repetir missatges anteriors." }] }
+                ];
+                rawNbChatHistory
+                    .filter(m => m && typeof m.content === 'string' && m.content.trim().length > 0)
+                    .slice(-8)
+                    .forEach((m) => {
+                        chatContents.push({
+                            role: (m.role === 'assistant' || m.role === 'model') ? 'model' : 'user',
+                            parts: [{ text: String(m.content).slice(0, 1800) }]
+                        });
+                    });
+                chatContents.push({
+                    role: "user",
+                    parts: [{ text: `NOVA CONSULTA ACTUAL (no repeteixis el mateix que ja has enviat abans): ${question}` }]
+                });
 
                 try {
                     const aiRes = await executeAiWithCap({
                         systemPrompt: systemPromptNbChat,
-                        contents: [{ role: "user", parts: [{ text: `FONTS ACTIVES DEL QUADERN:\n${formattedSources}\n\nPREGUNTA DE L'USUARI: ${question}` }] }],
+                        contents: chatContents,
                         jsonMode: true
                     });
                     const parsed = extractJson(aiRes?.text || String(aiRes || ''));
                     if (parsed && parsed.answer) {
+                        parsed.answer = stripRawButtonMarkers(parsed.answer);
                         return res.status(200).json({ success: true, ...parsed });
                     }
                 } catch (err) {
@@ -2316,27 +2614,48 @@ RETORNA ÚNICAMENT UN OBJETE JSON VÀLID amb aquesta estructura:
                 }
 
                 const pts = extractSourcePoints();
+                const prevAssistantText = rawNbChatHistory
+                    .filter(m => m && m.role === 'assistant')
+                    .map(m => String(m.content || '').toLowerCase())
+                    .join('\n');
                 const keywords = question.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-                const ranked = [...pts].sort((a, b) => {
+                const freshPts = pts.filter(p => !prevAssistantText.includes(p.text.toLowerCase().slice(0, 45)));
+                const poolPts = freshPts.length >= 2 ? freshPts : pts;
+                const ranked = [...poolPts].sort((a, b) => {
                     const score = (txt) => keywords.reduce((acc, k) => acc + (txt.toLowerCase().includes(k) ? 1 : 0), 0);
                     return score(b.text) - score(a.text);
                 }).slice(0, 4);
                 const citedTags = Array.from(new Set(ranked.map(r => r.tag)));
                 if (citedTags.length === 0) citedTags.push('Font 1');
 
-                const bulletsMd = ranked.length > 0
-                    ? ranked.map(r => `- **${r.title}**: ${r.text} [${r.tag}]`).join('\n')
-                    : `- **${notebookTitle}**: Síntesi principal extreta del material actiu [${citedTags[0]}].`;
+                const isAskingQuestions = /pregunt|quiz|test|examen|qüestion/i.test(question);
+                let fallbackAnswer = '';
+                if (isAskingQuestions) {
+                    const qItems = (ranked.length > 0 ? ranked : [{ tag: 'Font 1', title: notebookTitle, text: notebookTitle }])
+                        .slice(0, 4)
+                        .map((r, i) => isEs
+                            ? `**${i + 1}. ¿Cómo explicarías o aplicarías este punto de ${r.title}?**\n- *Pista clave:* ${r.text} [${r.tag}]`
+                            : `**${i + 1}. Com explicaries o aplicaries aquest punt de ${r.title}?**\n- *Pista clau:* ${r.text} [${r.tag}]`)
+                        .join('\n\n');
+                    fallbackAnswer = isEs
+                        ? `### Nuevas preguntas de práctica sobre ${notebookTitle}\n\n${qItems}`
+                        : `### Noves preguntes de pràctica sobre ${notebookTitle}\n\n${qItems}`;
+                } else {
+                    const bulletsMd = ranked.length > 0
+                        ? ranked.map(r => `- **${r.title}**: ${r.text} [${r.tag}]`).join('\n')
+                        : `- **${notebookTitle}**: Síntesi principal extreta del material actiu [${citedTags[0]}].`;
+                    fallbackAnswer = isEs
+                        ? `Sobre *"${question}"* en **${notebookTitle}**:\n\n${bulletsMd}\n\n**Enfoque práctico**: Conecta estos puntos con ejemplos propios para responder con precisión [${citedTags.join('], [')}].`
+                        : `Sobre *"${question}"* a **${notebookTitle}**:\n\n${bulletsMd}\n\n**Enfocament pràctic**: Connecta aquests punts amb exemples propis per respondre amb rigor [${citedTags.join('], [')}].`;
+                }
 
                 return res.status(200).json({
                     success: true,
-                    answer: isEs
-                        ? `Basado en las fuentes activas de **${notebookTitle}** sobre *"${question}"*:\n\n${bulletsMd}\n\n**Conclusión práctica**: Relaciona estos apartados entre sí para justificar tus respuestas con precisión [${citedTags.join('], [')}].`
-                        : `Basat en les fonts actives de **${notebookTitle}** sobre *"${question}"*:\n\n${bulletsMd}\n\n**Conclusió pràctica**: Relaciona aquests apartats entre si per justificar les teves respostes amb rigor [${citedTags.join('], [')}].`,
+                    answer: fallbackAnswer,
                     citations: citedTags,
                     followUps: isEs
-                        ? [`¿Cuáles son las preguntas de examen más probables sobre ${notebookTitle}?`, `¿Cómo se relacionan los conceptos de la [${citedTags[0]}]?`, `Resume los errores más frecuentes`]
-                        : [`Quines són les preguntes d'examen més probables sobre ${notebookTitle}?`, `Com es relacionen els conceptes de la [${citedTags[0]}]?`, `Resumeix els errors més freqüents`]
+                        ? [`Hazme 3 preguntas tipo test diferentes sobre ${notebookTitle}`, `Ponme un ejemplo práctico resuelto de [${citedTags[0]}]`, `¿Qué errores debo evitar aquí?`]
+                        : [`Fes-me 3 preguntes tipus test diferents sobre ${notebookTitle}`, `Posa'm un exemple pràctic resolt de [${citedTags[0]}]`, `Quins errors he d'evitar aquí?`]
                 });
             }
 
@@ -2353,61 +2672,150 @@ RETORNA ÚNICAMENT UN OBJETE JSON VÀLID amb aquesta estructura:
             };
             const selectedTitle = artifactLabels[artifactType] || artifactLabels.study_guide;
 
+            const artifactInstructionsEs = {
+                briefing_doc: `Crea un RESUMEN EJECUTIVO claro y sintético (NO hagas preguntas tipo test ni listas de FAQ):
+- Idea central en 2 líneas.
+- 3 a 5 bloques con los conceptos esenciales resumidos.
+- Conclusión operativa rápida para repasar antes de clase.`,
+                faq: `Crea un bloque de PREGUNTAS NUEVAS DE ESTUDIO Y EXAMEN (NO repitas el resumen narrativo ni repitas los mismos párrafos anteriores):
+- Formula entre 6 y 8 preguntas concretas y variadas (conceptuales, de relación causa-efecto, aplicación práctica y "¿qué pasaría si...?").
+- Debajo de cada pregunta escribe su respuesta directa, clara y fundamentada con [Font X].
+- Termina con 1 pregunta reto abierta para pensar.`,
+                study_guide: `Crea una GUÍA DE ESTUDIO COMPLETA paso a paso:
+- Mapa de apartados del tema.
+- Explicación ordenada de lo básico a lo avanzado.
+- Consejos de memorización y conexiones entre ideas.`,
+                timeline: `Crea una LÍNEA TEMPORAL o SECUENCIA DE PASOS numerada cronológicamente o lógicamente (Paso 1 -> Paso 2 -> ...), explicando qué desencadena cada fase.`,
+                glossary: `Crea un GLOSARIO EN TABLA MARKDOWN (| Término | Definición clara | Ejemplo rápido | Cita |) con 6 a 10 términos clave distintos.`,
+                exam_traps: `Crea un INFORME DE TRAMPAS DE EXAMEN:
+- Lista de 4 a 6 errores típicos contrastando "Error frecuente" vs "Forma correcta".
+- Checklist de comprobación rápida antes de entregar.`,
+                flashcards_deck: `Crea una BATERÍA DE 8 TARJETAS DE MEMORIA NUEVAS (Anverso: pregunta/pista corta de 1 línea | Reverso: respuesta breve y precisa) enfocadas en repaso activo.`,
+                mock_exam: `Crea un SIMULACRO DE EXAMEN NUEVO:
+- Parte 1: 4 preguntas tipo test (A/B/C/D) + 2 preguntas cortas de desarrollo.
+- Parte 2 (al final): Solucionario breve explicado.`
+            };
+            const artifactInstructionsCa = {
+                briefing_doc: `Crea un RESUM EXECUTIU clar i sintètic (NO facis preguntes tipus test ni llistes FAQ):
+- Idea central en 2 línies.
+- 3 a 5 blocs amb els conceptes essencials resumits.
+- Conclusió operativa ràpida per repassar abans de classe.`,
+                faq: `Crea un bloc de PREGUNTES NOVES D'ESTUDI I EXAMEN (NO repeteixis el resum narratiu ni repeteixis els mateixos paràgrafs anteriors):
+- Formula entre 6 i 8 preguntes concretes i variades (conceptuals, de relació causa-efecte, aplicació pràctica i "què passaria si...?").
+- Sota de cada pregunta escriu la seva resposta directa, clara i fonamentada amb [Font X].
+- Acaba amb 1 pregunta repte oberta per pensar.`,
+                study_guide: `Crea una GUIA D'ESTUDI COMPLETA pas a pas:
+- Mapa d'apartats del tema.
+- Explicació ordenada del més bàsic al més avançat.
+- Consells de memorització i connexions entre idees.`,
+                timeline: `Crea una LÍNIA TEMPORAL o SEQÜÈNCIA DE PASSOS numerada cronològicament o lògica (Pas 1 -> Pas 2 -> ...), explicant què desencadena cada fase.`,
+                glossary: `Crea un GLOSSARI EN TAULA MARKDOWN (| Terme | Definició clara | Exemple ràpid | Citació |) amb 6 a 10 termes clau diferents.`,
+                exam_traps: `Crea un INFORME DE TRAMPES D'EXAMEN:
+- Llista de 4 a 6 errors típics contrastant "Error freqüent" vs "Forma correcta".
+- Checklist de comprovació ràpida abans de lliurar.`,
+                flashcards_deck: `Crea una BATERIA DE 8 TARGETES DE MEMÒRIA NOVES (Anvers: pregunta/pista curta d'1 línia | Revers: resposta breu i precisa) enfocades al repàs actiu.`,
+                mock_exam: `Crea un SIMULACRE D'EXAMEN NOU:
+- Part 1: 4 preguntes tipus test (A/B/C/D) + 2 preguntes curtes de desenvolupament.
+- Part 2 (al final): Solucionari breu explicat.`
+            };
+            const specificInstructions = isEs
+                ? (artifactInstructionsEs[artifactType] || artifactInstructionsEs.study_guide)
+                : (artifactInstructionsCa[artifactType] || artifactInstructionsCa.study_guide);
+
             const systemPromptArtifact = isEs
-                ? `Eres el motor de documentos de AliatNotebook. Genera el artefacto "${selectedTitle}" sobre "${notebookTitle}" basándote en las fuentes proporcionadas.
-Incluye citas constantes como [Font 1], [Font 2] junto a cada afirmación, usa Markdown estructurado con tablas o listas claras y NO uses emojis.`
-                : `Ets el motor de documents d'AliatNotebook. Genera l'artefacte "${selectedTitle}" sobre "${notebookTitle}" basant-te en les fonts proporcionades.
-Inclou citacions constants com [Font 1], [Font 2] al costat de cada afirmació, utilitza Markdown estructurat amb taules o llistes clares i NO utilitzis emojis.`;
+                ? `Eres el motor de documentos de AliatNotebook. Genera ÚNICAMENTE el artefacto "${selectedTitle}" sobre "${notebookTitle}".${educationAdaptationPrompt}
+INSTRUCCIONES ESPECÍFICAS DEL FORMATO:
+${specificInstructions}
+
+REGLAS OBLIGATORIAS:
+- Si las fuentes son breves o esquemáticas, desarrolla contenido académico adaptado al nivel del estudiante y original sobre "${notebookTitle}" respetando las fuentes sin repetir frases literales en bucle.
+- Crea contenido COMPLETAMENTE NUEVO respecto a lo que ya se haya generado antes en el cuaderno.
+- Incluye citas como [Font 1], [Font 2] donde corresponda, usa Markdown limpio y NO uses emojis ni marcadores como [BOTON_FLASHCARDS].`
+                : `Ets el motor de documents d'AliatNotebook. Genera ÚNICAMENT l'artefacte "${selectedTitle}" sobre "${notebookTitle}".${educationAdaptationPrompt}
+INSTRUCCIONS ESPECÍFIQUES DEL FORMAT:
+${specificInstructions}
+
+REGLES OBLIGATÒRIES:
+- Si les fonts són breus o esquemàtiques, desenvolupa contingut acadèmic adaptat al nivell de l'estudiant i original sobre "${notebookTitle}" respectant les fonts sense repetir frases literals en bucle.
+- Crea contingut COMPLETAMENT NOU respecte al que ja s'hagi generat abans al quadern.
+- Inclou citacions com [Font 1], [Font 2] on escaigui, utilitza Markdown net i NO utilitzis emojis ni marcadors com [BOTON_FLASHCARDS].`;
 
             try {
                 const aiRes = await executeAiWithCap({
                     systemPrompt: systemPromptArtifact,
-                    contents: [{ role: "user", parts: [{ text: `FONTS DEL QUADERN:\n${formattedSources}\n\nGenera ara: ${selectedTitle}` }] }]
+                    contents: [{ role: "user", parts: [{ text: `FONTS DEL QUADERN:\n${formattedSources}${antiDuplicatePromptBlock}\n\nGenera ara (contingut nou i específic per a aquest botó, sense copiar documents anteriors): ${selectedTitle}` }] }]
                 });
-                const content = aiRes?.text || String(aiRes || '');
+                const content = stripRawButtonMarkers(aiRes?.text || String(aiRes || ''));
                 if (content && content.trim().length > 20) {
-                    return res.status(200).json({ success: true, title: `${selectedTitle} · ${notebookTitle}`, content });
+                    const suffixTitle = generationIndex > 1 ? ` (#${generationIndex})` : '';
+                    return res.status(200).json({ success: true, title: `${selectedTitle} · ${notebookTitle}${suffixTitle}`, content });
                 }
             } catch (err) {
                 console.warn("[notebook_studio artifact] Fallback:", err.message);
             }
 
             const pts = extractSourcePoints();
-            const pointsList = pts.length > 0
-                ? pts.map(p => `- **${p.title}**: ${p.text} [${p.tag}]`).join('\n')
+            // Rotar punts segons generationIndex i tipus d'artefacte perquè mai doni el mateix text literal
+            const rotateOffset = pts.length > 0 ? ((generationIndex - 1) * 2) % pts.length : 0;
+            const rotatedPts = pts.length > 0 ? pts.slice(rotateOffset).concat(pts.slice(0, rotateOffset)) : [];
+            const pointsList = rotatedPts.length > 0
+                ? rotatedPts.slice(0, 5).map(p => `- **${p.title}**: ${p.text} [${p.tag}]`).join('\n')
                 : `- **${notebookTitle}**: Conceptes fonamentals de la font principal [Font 1].`;
 
             let fallbackContent = '';
-            if (artifactType === 'faq') {
+            if (artifactType === 'briefing_doc') {
                 fallbackContent = isEs
-                    ? `### ${selectedTitle}\n\n**1. ¿Cuál es la idea central de ${notebookTitle}?**\n${pts[0]?.text || notebookTitle} [${pts[0]?.tag || 'Font 1'}].\n\n**2. ¿Qué puntos clave destacan las fuentes activas?**\n${pointsList}\n\n**3. ¿Cómo aplicarlo en un ejercicio o caso de examen?**\nIdentifica primero el principio teórico en [${pts[0]?.tag || 'Font 1'}], estructura los pasos en orden lógico y valida el resultado final.`
-                    : `### ${selectedTitle}\n\n**1. Quina és la idea central de ${notebookTitle}?**\n${pts[0]?.text || notebookTitle} [${pts[0]?.tag || 'Font 1'}].\n\n**2. Quins punts clau destaquen les fonts actives?**\n${pointsList}\n\n**3. Com aplicar-ho en un exercici o supòsit d'examen?**\nIdentifica primer el principi teòric a [${pts[0]?.tag || 'Font 1'}], estructura els passos en ordre lògic i valida el resultat final.`;
+                    ? `### Resumen Ejecutivo · ${notebookTitle}\n\n#### Síntesis de ideas principales\n${pointsList}\n\n#### Conclusión rápida para repasar\n- Domina la conexión entre la idea central de **${notebookTitle}** y su aplicación práctica [${rotatedPts[0]?.tag || 'Font 1'}].`
+                    : `### Resum Executiu · ${notebookTitle}\n\n#### Síntesi d'idees principals\n${pointsList}\n\n#### Conclusió ràpida per repassar\n- Domina la connexió entre la idea central de **${notebookTitle}** i la seva aplicació pràctica [${rotatedPts[0]?.tag || 'Font 1'}].`;
+            } else if (artifactType === 'faq') {
+                const qPool = rotatedPts.length > 0 ? rotatedPts.slice(0, 4) : [{ tag: 'Font 1', title: notebookTitle, text: notebookTitle }];
+                const faqBlocks = qPool.map((p, idx) => {
+                    if (isEs) {
+                        const promptsEs = [
+                            `¿Por qué es clave este principio en ${p.title}?`,
+                            `¿Cómo se aplica en la práctica lo indicado sobre ${p.title}?`,
+                            `¿Qué diferencia o condición hay que vigilar respecto a ${p.title}?`,
+                            `¿Qué pregunta de examen puede derivarse de este punto?`
+                        ];
+                        return `**${idx + 1}. ${promptsEs[(idx + generationIndex) % promptsEs.length]}**\n- **Respuesta:** ${p.text} [${p.tag}]`;
+                    }
+                    const promptsCa = [
+                        `Per què és clau aquest principi a ${p.title}?`,
+                        `Com s'aplica a la pràctica el que s'indica sobre ${p.title}?`,
+                        `Quina diferència o condició cal vigilar respecte a ${p.title}?`,
+                        `Quina pregunta d'examen pot sortir d'aquest punt?`
+                    ];
+                    return `**${idx + 1}. ${promptsCa[(idx + generationIndex) % promptsCa.length]}**\n- **Resposta:** ${p.text} [${p.tag}]`;
+                }).join('\n\n');
+                fallbackContent = `### ${selectedTitle} · ${notebookTitle}\n\n${faqBlocks}`;
             } else if (artifactType === 'glossary') {
-                const rows = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', title: notebookTitle, text: 'Concepte estructural principal' }])
+                const rows = (rotatedPts.length > 0 ? rotatedPts.slice(0, 6) : [{ tag: 'Font 1', title: notebookTitle, text: 'Concepte estructural principal' }])
                     .map((p, idx) => `| Concepte ${idx + 1} (${p.title}) | ${p.text.replace(/\|/g, '/')} | [${p.tag}] |`)
                     .join('\n');
                 fallbackContent = isEs
                     ? `### ${selectedTitle}\n\n| Término / Bloque | Síntesis de las fuentes | Referencia |\n| :--- | :--- | :---: |\n${rows}`
                     : `### ${selectedTitle}\n\n| Terme / Bloc | Síntesi de les fonts | Referència |\n| :--- | :--- | :---: |\n${rows}`;
             } else if (artifactType === 'timeline') {
-                const stepsMd = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', text: notebookTitle }])
+                const stepsMd = (rotatedPts.length > 0 ? rotatedPts.slice(0, 6) : [{ tag: 'Font 1', text: notebookTitle }])
                     .map((p, idx) => `${idx + 1}. **Fase ${idx + 1}:** ${p.text} [${p.tag}]`)
                     .join('\n');
                 fallbackContent = `### ${selectedTitle}: ${notebookTitle}\n\n${stepsMd}`;
             } else if (artifactType === 'exam_traps') {
+                const t0 = rotatedPts[0] || { tag: 'Font 1', title: notebookTitle, text: notebookTitle };
+                const t1 = rotatedPts[1] || t0;
                 fallbackContent = isEs
-                    ? `### ${selectedTitle}: ${notebookTitle}\n\n- **Trampa 1 (Confusión conceptual):** Mezclar definiciones clave extraídas de las fuentes:\n${pointsList}\n- **Trampa 2 (Falta de justificación):** Responder sin vincular el dato con su contexto o fuente de origen [${pts[0]?.tag || 'Font 1'}].\n- **Lista de verificación pre-entrega:**\n  - [ ] He contrastado todas las condiciones del enunciado.\n  - [ ] He revisado unidades, excepciones y casos límite [Font 1].`
-                    : `### ${selectedTitle}: ${notebookTitle}\n\n- **Trampa 1 (Confusió conceptual):** Barrejar definicions clau extretes de les fonts:\n${pointsList}\n- **Trampa 2 (Falta de justificació):** Respondre sense vincular la dada amb el seu context o font d'origen [${pts[0]?.tag || 'Font 1'}].\n- **Llista de verificació prèvia al lliurament:**\n  - [ ] He contrastat totes les condicions de l'enunciat.\n  - [ ] He revisat unitats, excepcions i casos límit [Font 1].`;
+                    ? `### ${selectedTitle}: ${notebookTitle}\n\n- **Trampa 1 (Confusión de concepto):** No responder de memoria sobre *${t0.title}* sin comprobar: ${t0.text} [${t0.tag}].\n- **Trampa 2 (Falta de justificación):** Al explicar *${t1.title}*, especifica siempre causa y condición [${t1.tag}].\n- **Lista de verificación pre-entrega:**\n  - [ ] He contrastado todas las condiciones del enunciado.\n  - [ ] He revisado unidades, excepciones y casos límite [${t0.tag}].`
+                    : `### ${selectedTitle}: ${notebookTitle}\n\n- **Trampa 1 (Confusió de concepte):** No respondre de memòria sobre *${t0.title}* sense comprovar: ${t0.text} [${t0.tag}].\n- **Trampa 2 (Falta de justificació):** En explicar *${t1.title}*, especifica sempre causa i condició [${t1.tag}].\n- **Llista de verificació prèvia al lliurament:**\n  - [ ] He contrastat totes les condicions de l'enunciat.\n  - [ ] He revisat unitats, excepcions i casos límit [${t0.tag}].`;
             } else if (artifactType === 'flashcards_deck') {
-                const cardsMd = (pts.length > 0 ? pts.slice(0, 6) : [{ tag: 'Font 1', title: notebookTitle, text: notebookTitle }])
+                const cardsMd = (rotatedPts.length > 0 ? rotatedPts.slice(0, 6) : [{ tag: 'Font 1', title: notebookTitle, text: notebookTitle }])
                     .map((p, idx) => isEs
-                        ? `**Tarjeta #${idx + 1} (${p.title})**\n- **Pregunta:** ¿Qué establece la fuente respecto a este apartado clave?\n- **Respuesta:** ${p.text} [${p.tag}]`
-                        : `**Targeta #${idx + 1} (${p.title})**\n- **Pregunta:** Què estableix la font respecte a aquest apartat clau?\n- **Resposta:** ${p.text} [${p.tag}]`)
+                        ? `**Tarjeta #${idx + 1} (${p.title})**\n- **Anverso:** Resume en tus palabras el punto ${idx + 1} de ${p.title}\n- **Reverso:** ${p.text} [${p.tag}]`
+                        : `**Targeta #${idx + 1} (${p.title})**\n- **Anvers:** Resumeix amb les teves paraules el punt ${idx + 1} de ${p.title}\n- **Revers:** ${p.text} [${p.tag}]`)
                     .join('\n\n');
                 fallbackContent = `### ${selectedTitle}: ${notebookTitle}\n\n${cardsMd}`;
             } else if (artifactType === 'mock_exam') {
-                const p0 = pts[0] || { tag: 'Font 1', title: notebookTitle, text: notebookTitle };
-                const p1 = pts[1] || p0;
+                const p0 = rotatedPts[0] || { tag: 'Font 1', title: notebookTitle, text: notebookTitle };
+                const p1 = rotatedPts[1] || p0;
                 fallbackContent = isEs
                     ? `### ${selectedTitle}: ${notebookTitle}\n\n#### Parte 1: Preguntas de Desarrollo Corto\n1. **Explica y justifica el concepto principal recogido en ${p0.title} [${p0.tag}].**\n2. **Relaciona los puntos clave de las fuentes activas y señala posibles excepciones [${p1.tag}].**\n\n#### Parte 2: Solucionario Oficial con Citas\n- **Solución 1:** ${p0.text} [${p0.tag}].\n- **Solución 2:** ${p1.text} [${p1.tag}].`
                     : `### ${selectedTitle}: ${notebookTitle}\n\n#### Part 1: Preguntes de Desenvolupament Curt\n1. **Explica i justifica el concepte principal recollit a ${p0.title} [${p0.tag}].**\n2. **Relaciona els punts clau de les fonts actives i assenyala possibles excepcions [${p1.tag}].**\n\n#### Part 2: Solucionari Oficial amb Citacions\n- **Solució 1:** ${p0.text} [${p0.tag}].\n- **Solució 2:** ${p1.text} [${p1.tag}].`;
@@ -2419,7 +2827,7 @@ Inclou citacions constants com [Font 1], [Font 2] al costat de cada afirmació, 
 
             return res.status(200).json({
                 success: true,
-                title: `${selectedTitle} · ${notebookTitle}`,
+                title: `${selectedTitle} · ${notebookTitle}${generationIndex > 1 ? ` (#${generationIndex})` : ''}`,
                 content: fallbackContent
             });
         }

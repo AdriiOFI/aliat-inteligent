@@ -74,7 +74,7 @@ service cloud.firestore {
 
     function isValidUserSettings(data, userId) {
       return data.keys().hasAll(['ownerId', 'updatedAt'])
-        && data.keys().hasOnly(['ownerId', 'theme', 'aiProvider', 'aiModel', 'parkedVehicle', 'mapsPlacesJson', 'mapsParkingJson', 'updatedAt'])
+        && data.keys().hasOnly(['ownerId', 'theme', 'aiProvider', 'aiModel', 'parkedVehicle', 'mapsPlacesJson', 'mapsParkingJson', 'educationLevel', 'educationSubcourse', 'courseOnboarded', 'updatedAt'])
         && data.ownerId is string
         && isValidId(data.ownerId)
         && data.ownerId == userId
@@ -85,6 +85,9 @@ service cloud.firestore {
         && (!('parkedVehicle' in data) || data.parkedVehicle == null || isValidParkedVehicle(data.parkedVehicle))
         && (!('mapsPlacesJson' in data) || (data.mapsPlacesJson is string && data.mapsPlacesJson.size() <= 32768))
         && (!('mapsParkingJson' in data) || (data.mapsParkingJson is string && data.mapsParkingJson.size() <= 4096))
+        && (!('educationLevel' in data) || (data.educationLevel in ['primaria', 'eso', 'fp', 'batxillerat', 'universitat', 'altres']))
+        && (!('educationSubcourse' in data) || (data.educationSubcourse is string && data.educationSubcourse.size() <= 80))
+        && (!('courseOnboarded' in data) || data.courseOnboarded is bool)
         && data.updatedAt is timestamp;
     }
 
@@ -148,7 +151,7 @@ service cloud.firestore {
           && isValidId(userId)
           && isValidId(settingId)
           && exists(/databases/$(database)/documents/users/$(userId))
-          && existing().ownerId == request.auth.uid;
+          && (resource == null || existing().ownerId == request.auth.uid);
 
         allow list: if isVerifiedOwner(userId)
           && existing().ownerId == request.auth.uid;
@@ -167,7 +170,7 @@ service cloud.firestore {
           && exists(/databases/$(database)/documents/users/$(userId))
           && incoming().ownerId == existing().ownerId
           && incoming().updatedAt == request.time
-          && incoming().diff(existing()).affectedKeys().hasOnly(['theme', 'aiProvider', 'aiModel', 'parkedVehicle', 'mapsPlacesJson', 'mapsParkingJson', 'updatedAt']);
+          && incoming().diff(existing()).affectedKeys().hasOnly(['theme', 'aiProvider', 'aiModel', 'parkedVehicle', 'mapsPlacesJson', 'mapsParkingJson', 'educationLevel', 'educationSubcourse', 'courseOnboarded', 'updatedAt']);
 
         allow delete: if isVerifiedOwner(userId)
           && isValidId(userId)
@@ -181,7 +184,7 @@ service cloud.firestore {
           && isValidId(userId)
           && isValidId(placeId)
           && exists(/databases/$(database)/documents/users/$(userId))
-          && existing().ownerId == request.auth.uid;
+          && (resource == null || existing().ownerId == request.auth.uid);
 
         allow list: if isVerifiedOwner(userId)
           && isValidId(userId)
